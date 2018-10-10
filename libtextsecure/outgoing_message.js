@@ -109,7 +109,7 @@ OutgoingMessage.prototype = {
             });
           }
 
-          return null;
+          return true;
         })
       );
     // TODO: check if still applicable
@@ -125,9 +125,7 @@ OutgoingMessage.prototype = {
         ]).then((keys) => {
           const [preKey, signedPreKey] = keys;
           if (preKey == undefined || signedPreKey == undefined) {
-            log.error("Will need to request keys!")
-            this.fallBackEncryption = true;
-            return Promise.resolve();
+            return false;
           }
           else {
             const identityKey = StringView.hexToArrayBuffer(number);
@@ -365,7 +363,15 @@ OutgoingMessage.prototype = {
   sendToNumber(number) {
     return this.getStaleDeviceIdsForNumber(number).then(updateDevices =>
       this.getKeysForNumber(number, updateDevices)
-        .then(this.reloadDevicesAndSend(number, true))
+        .then(async (keysFound) =>  {
+          if (!keysFound)
+          {
+            log.info("Fallback encryption enabled");
+            this.fallBackEncryption = true;
+            this.message.preKeyMessage = await libloki.getPreKeyBundleForNumber(number);
+          }
+          return;
+        }).then(this.reloadDevicesAndSend(number, true))
         .catch(error => {
           if (error.message === 'Identity key changed') {
             // eslint-disable-next-line no-param-reassign
