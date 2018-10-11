@@ -47,7 +47,7 @@
     registerSingleDevice() {
       const createAccount = this.createAccount.bind(this);
       const clearSessionsAndPreKeys = this.clearSessionsAndPreKeys.bind(this);
-      const generateKeys = this.generateKeys.bind(this, 100);
+      const generateKeys = this.generateKeys.bind(this, 0);
       const confirmKeys = this.confirmKeys.bind(this);
       const registrationDone = this.registrationDone.bind(this);
       return this.queueTask(() =>
@@ -101,7 +101,7 @@
     registerSecondDevice(setProvisioningUrl, confirmNumber, progressCallback) {
       const createAccount = this.createAccount.bind(this);
       const clearSessionsAndPreKeys = this.clearSessionsAndPreKeys.bind(this);
-      const generateKeys = this.generateKeys.bind(this, 100, progressCallback);
+      const generateKeys = this.generateKeys.bind(this, 0, progressCallback);
       const confirmKeys = this.confirmKeys.bind(this);
       const registrationDone = this.registrationDone.bind(this);
       const registerKeys = this.server.registerKeys.bind(this.server);
@@ -193,7 +193,7 @@
       );
     },
     refreshPreKeys() {
-      const generateKeys = this.generateKeys.bind(this, 100);
+      const generateKeys = this.generateKeys.bind(this, 0);
       const registerKeys = this.server.registerKeys.bind(this.server);
 
       return this.queueTask(() =>
