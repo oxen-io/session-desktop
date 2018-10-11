@@ -223,6 +223,24 @@
         );
       });
     },
+    loadPreKeyForContactIdentityKeyString(contactIdentityKeyString) {
+      const prekey = new PreKey({ recipient: contactIdentityKeyString });
+      return new Promise(resolve => {
+        prekey.fetch().then(
+          () => {
+            window.log.info('Successfully fetched prekey for recipient :', contactIdentityKeyString);
+            resolve({
+              pubKey: prekey.get('publicKey'),
+              privKey: prekey.get('privateKey'),
+              keyId: prekey.get('id'),
+            });
+          },
+          () => {
+            resolve();
+          }
+        );
+      });
+    },
     loadContactPreKey(pubKey) {
       const prekey = new ContactPreKey({ identityKeyString: pubKey });
       return new Promise(resolve => {
@@ -256,11 +274,12 @@
         });
       });
     },
-    storePreKey(keyId, keyPair) {
+    storePreKey(keyId, keyPair, contactIdentityKeyString) {
       const prekey = new PreKey({
         id: keyId,
         publicKey: keyPair.pubKey,
         privateKey: keyPair.privKey,
+        recipient: contactIdentityKeyString,
       });
       return new Promise(resolve => {
         prekey.save().always(() => {
