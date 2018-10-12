@@ -331,6 +331,7 @@
               created_at: prekey.get('created_at'),
               keyId: prekey.get('id'),
               confirmed: prekey.get('confirmed'),
+              signature: prekey.get('signature'),
             });
           })
           .fail(() => {
@@ -381,18 +382,20 @@
               created_at: prekey.get('created_at'),
               keyId: prekey.get('id'),
               confirmed: prekey.get('confirmed'),
+              signature: prekey.get('signature'),
             }))
           );
         });
       });
     },
-    storeSignedPreKey(keyId, keyPair, confirmed) {
+    storeSignedPreKey(keyId, keyPair, confirmed, signature) {
       const prekey = new SignedPreKey({
         id: keyId,
         publicKey: keyPair.pubKey,
         privateKey: keyPair.privKey,
         created_at: Date.now(),
         confirmed: Boolean(confirmed),
+        signature,
       });
       return new Promise(resolve => {
         prekey.save().always(() => {

@@ -372,7 +372,7 @@ OutgoingMessage.prototype = {
           {
             log.info("Fallback encryption enabled");
             this.fallBackEncryption = true;
-            this.message.preKeyMessage = await libloki.getPreKeyBundleForNumber(number);
+            this.message.preKeyBundleMessage = await libloki.getPreKeyBundleForNumber(number);
           }
           return;
         }).then(this.reloadDevicesAndSend(number, true))

@@ -239,14 +239,14 @@
             window.log.info('Saving new signed prekey', res.keyId);
             return Promise.all([
               textsecure.storage.put('signedKeyId', signedKeyId + 1),
-              store.storeSignedPreKey(res.keyId, res.keyPair),
+              store.storeSignedPreKey(res.keyId, res.keyPair, undefined, res.signature),
             ])
               .then(() => {
                 const confirmed = true;
                 window.log.info('Confirming new signed prekey', res.keyId);
                 return Promise.all([
                   textsecure.storage.remove('signedKeyRotationRejected'),
-                  store.storeSignedPreKey(res.keyId, res.keyPair, confirmed),
+                  store.storeSignedPreKey(res.keyId, res.keyPair, confirmed, res.signature),
                 ]);
               })
               .then(() => cleanSignedPreKeys());
@@ -407,7 +407,7 @@
       const confirmed = true;
 
       window.log.info('confirmKeys: confirming key', key.keyId);
-      return store.storeSignedPreKey(key.keyId, key.keyPair, confirmed);
+      return store.storeSignedPreKey(key.keyId, key.keyPair, confirmed, key.signature);
     },
     generateKeys(count, providedProgressCallback) {
       const progressCallback =
@@ -449,7 +449,7 @@
             identityKey,
             signedKeyId
           ).then(res => {
-            store.storeSignedPreKey(res.keyId, res.keyPair);
+            store.storeSignedPreKey(res.keyId, res.keyPair, undefined, res.signature);
             result.signedPreKey = {
               keyId: res.keyId,
               publicKey: res.keyPair.pubKey,
