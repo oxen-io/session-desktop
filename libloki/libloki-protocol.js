@@ -63,9 +63,9 @@
         } else {
           // generate and store new prekey
           const preKeyId = textsecure.storage.get('maxPreKeyId', 1);
+          textsecure.storage.put('maxPreKeyId', preKeyId + 1);
           const preKey = await libsignal.KeyHelper.generatePreKey(preKeyId);
           await textsecure.storage.protocol.storePreKey(preKey.keyId, preKey.keyPair, pubKey);
-          textsecure.storage.put('maxPreKeyId', preKeyId + 1);
           resolve({ pubKey: preKey.keyPair.pubKey, keyId: preKeyId });
         }
       })
