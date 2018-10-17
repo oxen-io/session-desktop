@@ -56,7 +56,7 @@
     const signedKeyId = textsecure.storage.get('signedKeyId', 1) - 1;
     
     const [signedKey, preKey] = await Promise.all([
-      textsecure.storage.protocol.loadSignedPreKey(signedKeyId).then(signedKey => signedKey.pubKey),
+      textsecure.storage.protocol.loadSignedPreKey(signedKeyId),
       new Promise(async (resolve, reject) => {
         // retrieve existing prekey if we already generated one for that recipient
         const storedPreKey = await textsecure.storage.protocol.loadPreKeyForContactIdentityKeyString(pubKey);
@@ -79,7 +79,8 @@
 	    preKeyId: preKey.keyId,
 	    signedKeyId,
       preKey: preKey.pubKey,
-      signedKey,
+      signedKey: signedKey.pubKey,
+      signature: signedKey.signature,
     });
 
     return preKeyMessage;
