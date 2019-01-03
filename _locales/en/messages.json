@@ -47,7 +47,7 @@
     "description": "Application menu command to show all application windows"
   },
   "appMenuQuit": {
-    "message": "Quit Signal",
+    "message": "Quit Loki Messenger",
     "description": "Application menu command to close the application"
   },
   "editMenuUndo": {
@@ -614,12 +614,12 @@
       "Item under the Help menu, takes you to GitHub new issue form (title case)"
   },
   "signalDesktopPreferences": {
-    "message": "Signal Desktop Preferences",
+    "message": "Loki Messenger Preferences",
     "description":
       "Title of the window that pops up with Signal Desktop preferences in it"
   },
   "aboutSignalDesktop": {
-    "message": "About Signal Desktop",
+    "message": "About Loki Messenger",
     "description": "Item under the Help menu, which opens a small about window"
   },
   "speech": {
