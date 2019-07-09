@@ -4,6 +4,8 @@
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
+const nodeFetch = require('node-fetch');
+const { URLSearchParams } = require('url');
 
 const DEFAULT_CONNECTIONS = 3;
 const MAX_ACCEPTABLE_FAILURES = 1;
@@ -81,6 +83,31 @@ class LokiMessageAPI {
       pubKey,
       timestamp: messageTimeStamp,
     };
+
+    if (pubKey === 'LokiGroupChat') {
+      // console.log('sending to groupchat server', data, options);
+      // console.log('message', data.message.dataMessage);
+
+      const token = 'publicSecret';
+
+      // http://chat.lokinet.org/posts/stream/global
+      const formData = new URLSearchParams();
+      formData.append('text', data.message.dataMessage.body);
+      // FIXME: bonus round
+      // formData.append('reply_to', id)
+      // FIXME: attachments
+
+      nodeFetch('https://chat.lokinet.org/posts', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearar ${token}`,
+        },
+        body: formData,
+      });
+
+      return;
+    }
 
     const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');
     const p2pSuccess = await trySendP2p(
