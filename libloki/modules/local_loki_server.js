@@ -15,49 +15,50 @@ const STATUS = {
 const GROUPCHAT_POLL_EVERY = 5 * 1000;
 
 let lastGot = null;
-let haveIds = {};
+const haveIds = {};
 // set up group chat polling
-function pollForMessages(lokiServer) {
+async function pollForMessages(lokiServer) {
   let params = '?count=-20';
   if (lastGot !== null) {
-    params = '?since_id=' + lastGot;
+    params = `?since_id=${lastGot}`;
   }
   // http://chat.lokinet.org/posts/stream/global
-  nodeFetch('https://api.sapphire.moe/posts/stream/global' + params)
-    .then(res => res.json())
-    .then(response => {
-      if (response.meta.code != 200) {
-        console.error(
-          'error reading chat server',
-          response.meta.code,
-          response
-        );
-        return;
-      }
-      var revChono = response.data.reverse();
-      for (let i = 0; i < revChono.length; i += 1) {
-        const post = revChono[i];
-        if (haveIds[post.id] === undefined) {
-          lokiServer.emit('groupChat', {
-            message: {
-              body:
-                post.created_at + ' ' + post.user.username + ': ' + post.text,
-              from: post.user.username,
-              group: 'LokiGroupChat',
-              timestamp: new Date(post.created_at),
-            },
-            onSuccess: () => sendResponse(STATUS.OK),
-            onFailure: () => sendResponse(STATUS.NOT_FOUND),
-          });
-          haveIds[post.id] = true;
-          lastGot = Math.max(lastGot, post.id);
-        }
-      }
-    });
-
-  setTimeout(function() {
+  const res = await nodeFetch(
+    `https://api.sapphire.moe/posts/stream/global${params}`
+  );
+  const response = await res.json();
+  if (response.meta.code !== 200) {
+    /*
+    console.error(
+      'error reading chat server',
+      response.meta.code,
+      response
+    );
+    */
+    return;
+  }
+  const revChono = response.data.reverse();
+  for (let i = 0; i < revChono.length; i += 1) {
+    const post = revChono[i];
+    if (haveIds[post.id] === undefined) {
+      lokiServer.emit('groupChat', {
+        message: {
+          body: `${post.created_at} ${post.user.username}: ${post.text}`,
+          from: post.user.username,
+          group: 'LokiGroupChat',
+          timestamp: new Date(post.created_at),
+        },
+        // onSuccess: () => sendResponse(STATUS.OK),
+        // onFailure: () => sendResponse(STATUS.NOT_FOUND),
+      });
+      haveIds[post.id] = true;
+      lastGot = Math.max(lastGot, post.id);
+    }
+  }
+  function quickRunAgain() {
     pollForMessages(lokiServer);
-  }, GROUPCHAT_POLL_EVERY);
+  }
+  setTimeout(quickRunAgain, GROUPCHAT_POLL_EVERY);
 }
 
 class LocalLokiServer extends EventEmitter {
