@@ -2,6 +2,7 @@
 const https = require('https');
 const EventEmitter = require('events');
 const natUpnp = require('nat-upnp');
+const nodeFetch = require('node-fetch');
 
 const STATUS = {
   OK: 200,
@@ -10,6 +11,51 @@ const STATUS = {
   METHOD_NOT_ALLOWED: 405,
   INTERNAL_SERVER_ERROR: 500,
 };
+
+const GROUPCHAT_POLL_EVERY = 5 * 1000;
+
+let lastGot = null
+let haveIds = {}
+// set up group chat polling
+function pollForMessages(lokiServer) {
+  let params = '?count=-20'
+  if (lastGot !== null) {
+    params = '?since_id='+lastGot
+  }
+  // http://chat.lokinet.org/posts/stream/global
+  nodeFetch('https://api.sapphire.moe/posts/stream/global' + params)
+    .then(res => res.json())
+    .then(response => {
+      if (response.meta.code != 200) {
+        console.error('error reading chat server', response.meta.code, response);
+        return;
+      }
+      var revChono = response.data.reverse()
+      for(let i = 0; i < revChono.length; i += 1) {
+        const post = revChono[i];
+        if (haveIds[post.id] === undefined) {
+          lokiServer.emit('groupChat', {
+            message: {
+              body: post.created_at + ' ' + post.user.username + ': ' + post.text,
+              from: post.user.username,
+              group: 'LokiGroupChat',
+              timestamp: new Date(post.created_at)
+            },
+            onSuccess: () => sendResponse(STATUS.OK),
+            onFailure: () => sendResponse(STATUS.NOT_FOUND)
+          });
+          haveIds[post.id] = true;
+          lastGot = Math.max(lastGot, post.id)
+        }
+      }
+    });
+
+
+  setTimeout(function() {
+    pollForMessages(lokiServer);
+  }, GROUPCHAT_POLL_EVERY);
+}
+
 
 class LocalLokiServer extends EventEmitter {
   /**
@@ -25,6 +71,10 @@ class LocalLokiServer extends EventEmitter {
     if (!options.skipUpnp) {
       this.upnpClient = natUpnp.createClient();
     }
+
+    // start group chat polling
+    pollForMessages(this)
+
     this.server = https.createServer(httpsOptions, (req, res) => {
       let body = [];
 
