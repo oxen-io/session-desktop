@@ -152,26 +152,28 @@ MessageReceiver.prototype.extend({
     };
     this.httpPollingResource.handleMessage(message, options);
   },
-  handleG2pMessage({ message, onSuccess, onFailure }) {
+  handleG2pMessage({ message }) {
+    /*
     const options = {
       isP2p: true,
       onSuccess,
       onFailure,
     };
+    */
     const ev = new Event('message');
-    ev.confirm = function() {
+    ev.confirm = function confirmTerm() {
       // I have no clue what this is but it's needed
       // arguments are just {}
-      console.log('HEY got confirm', arguments);
+      // console.log('HEY got confirm', arguments);
     };
-    let ts = message.timestamp.getTime();
+    const ts = message.timestamp.getTime();
     ev.data = {
       friendRequest: false,
       source: message.group,
       sourceDevice: 1,
       timestamp: ts,
-      //receivedAt: Date.now(),
-      //unidentifiedDeliveryReceived: '',
+      // receivedAt: Date.now(),
+      // unidentifiedDeliveryReceived: '',
       isP2p: true,
       message: {
         body: message.body,
@@ -190,7 +192,7 @@ MessageReceiver.prototype.extend({
       },
     };
     // skip httpPollingResource.handleMessage and dispatch to UI
-    //this.httpPollingResource.handleMessage(message, options);
+    // this.httpPollingResource.handleMessage(message, options);
     this.dispatchAndWait(ev);
   },
   stopProcessing() {
