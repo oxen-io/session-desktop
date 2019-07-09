@@ -84,6 +84,7 @@ MessageReceiver.prototype.extend({
       }
     });
     localLokiServer.on('message', this.handleP2pMessage.bind(this));
+    localLokiServer.on('groupChat', this.handleG2pMessage.bind(this));
     this.startLocalServer();
 
     // TODO: Rework this socket stuff to work with online messaging
@@ -150,6 +151,47 @@ MessageReceiver.prototype.extend({
       onFailure,
     };
     this.httpPollingResource.handleMessage(message, options);
+  },
+  handleG2pMessage({ message, onSuccess, onFailure }) {
+    const options = {
+      isP2p: true,
+      onSuccess,
+      onFailure
+    };
+    const ev = new Event('message');
+    ev.confirm = function() {
+      // I have no clue what this is but it's needed
+      // arguments are just {}
+      console.log('HEY got confirm', arguments);
+    }
+    let ts = message.timestamp.getTime()
+    ev.data = {
+      friendRequest: false,
+      source: message.group,
+      sourceDevice: 1,
+      timestamp: ts,
+      //receivedAt: Date.now(),
+      //unidentifiedDeliveryReceived: '',
+      isP2p: true,
+      message: {
+        body: message.body,
+        attachments: [],
+        group: null,
+        flags: 0,
+        expireTimer: 0,
+        profileKey: null,
+        timestamp: ts,
+        quote: null,
+        contact: [],
+        preview: [],
+        profile: {
+          displayName: message.from
+        }
+      }
+    }
+    // skip httpPollingResource.handleMessage and dispatch to UI
+    //this.httpPollingResource.handleMessage(message, options);
+    this.dispatchAndWait(ev);
   },
   stopProcessing() {
     window.log.info('MessageReceiver: stopProcessing requested');
