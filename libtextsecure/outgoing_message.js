@@ -260,6 +260,20 @@ OutgoingMessage.prototype = {
   doSendMessage(number, deviceIds, recurse) {
     const ciphers = {};
 
+    if (number === 'LokiGroupChat') {
+      // talks to lokiMessageAPI.sendMessage
+      this.transmitMessage(
+        number,
+        {
+          message: this.message,
+          ourKey: textsecure.storage.user.getNumber(),
+        },
+        this.timestamp,
+        1
+      );
+      return Promise.resolve();
+    }
+
     /* Disabled because i'm not sure how senderCertificate works :thinking:
     const { numberInfo, senderCertificate } = this;
     const info = numberInfo && numberInfo[number] ? numberInfo[number] : {};
