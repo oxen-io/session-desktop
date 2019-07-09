@@ -670,6 +670,10 @@
         throw new Error('Tried to set verified for undefined/null key');
       }
 
+      if (number === 'LokiGroupChat') {
+        return VerifiedStatus.DEFAULT;
+      }
+
       const identityRecord = this.identityKeys[number];
       if (!identityRecord) {
         throw new Error(`No identity record for ${number}`);
