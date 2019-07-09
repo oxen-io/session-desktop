@@ -567,6 +567,10 @@ describe('Backup', () => {
             ConversationCollection: Whisper.ConversationCollection,
           }
         );
+        // remove groupChat
+        conversationCollection.remove(
+          conversationCollection.where({ id: 'LokiGroupChat' })
+        );
         assert.strictEqual(conversationCollection.length, CONVERSATION_COUNT);
 
         // We need to ommit any custom fields we have added
