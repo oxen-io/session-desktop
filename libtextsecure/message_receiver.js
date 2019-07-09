@@ -156,15 +156,15 @@ MessageReceiver.prototype.extend({
     const options = {
       isP2p: true,
       onSuccess,
-      onFailure
+      onFailure,
     };
     const ev = new Event('message');
     ev.confirm = function() {
       // I have no clue what this is but it's needed
       // arguments are just {}
       console.log('HEY got confirm', arguments);
-    }
-    let ts = message.timestamp.getTime()
+    };
+    let ts = message.timestamp.getTime();
     ev.data = {
       friendRequest: false,
       source: message.group,
@@ -185,10 +185,10 @@ MessageReceiver.prototype.extend({
         contact: [],
         preview: [],
         profile: {
-          displayName: message.from
-        }
-      }
-    }
+          displayName: message.from,
+        },
+      },
+    };
     // skip httpPollingResource.handleMessage and dispatch to UI
     //this.httpPollingResource.handleMessage(message, options);
     this.dispatchAndWait(ev);
