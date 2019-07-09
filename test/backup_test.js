@@ -413,7 +413,7 @@ describe('Backup', () => {
         //   - One from a link preview image
         const ATTACHMENT_COUNT = 8;
         const MESSAGE_COUNT = 1;
-        const CONVERSATION_COUNT = 2;
+        const CONVERSATION_COUNT = 1;
 
         const messageWithAttachments = {
           conversationId: CONTACT_ONE_NUMBER,
