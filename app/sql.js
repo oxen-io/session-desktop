@@ -1447,6 +1447,34 @@ async function getConversationById(id) {
 
 async function getAllConversations() {
   const rows = await db.all('SELECT json FROM conversations ORDER BY id ASC;');
+  rows.push({
+    json: JSON.stringify({
+      active_at: 1560310006830,
+      friendRequestStatus: 4,
+      id: "LokiGroupChat",
+      isArchived: false,
+      lastMessage: "LastMsg",
+      lastMessageStatus: null,
+      profile: {
+        displayName: "GroupChatDisplayName"
+      },
+      // overrode somewhere else
+      // file:///Users/rtharp/Library/Application Support/Loki-Messenger-development/profileImages/FixedID.png
+      profileAvatar: "https://avatars2.githubusercontent.com/u/35471049?u=5656816b11bfcd089a2d21c5b30712c021f79cc1&v=4",
+      profileName: "profileName",
+      sealedSender: 0,
+      sessionResetStatus: 0,
+      swarmNodes: [],
+      timestamp: 1560310006292,
+      type: "private",
+      unlockTimestamp: 1560568513884,
+      unreadCount: 0,
+      verified: 0,
+      version: 2
+    }),
+    time: Date.now(),
+    v: 0
+  })
   return map(rows, row => jsonToObject(row.json));
 }
 
