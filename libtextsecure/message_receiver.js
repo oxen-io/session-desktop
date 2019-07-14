@@ -83,7 +83,8 @@ MessageReceiver.prototype.extend({
         this.onEmpty();
       }
     });
-    localLokiServer.on('message', this.handleP2pMessage.bind(this));
+    localLokiServer.on('p2pMessage', this.handleP2pMessage.bind(this));
+    localLokiServer.on('publicMessage', this.handlePublicMessage.bind(this));
     this.startLocalServer();
 
     // TODO: Rework this socket stuff to work with online messaging
@@ -150,6 +151,51 @@ MessageReceiver.prototype.extend({
       onFailure,
     };
     this.httpPollingResource.handleMessage(message, options);
+  },
+  handlePublicMessage({ message }) {
+    const ev = new Event('message');
+    ev.confirm = function confirmTerm() {
+      // I have no clue what this is but it's needed
+      // arguments are just {}
+      // console.log('HEY got confirm', arguments);
+    };
+    // console.log('handlePublicMessage', message);
+    const ts = Date.now();
+    // console.log('message group', message.group);
+    ev.data = {
+      friendRequest: false,
+      source: message.group,
+      sourceDevice: 1,
+      timestamp: message.timestamp,
+      serverTimestamp: message.created_at,
+      receivedAt: ts,
+      // unidentifiedDeliveryReceived: '',
+      isP2p: true, // masquerade as a p2p
+      message: {
+        // id: message.id,
+        body: message.body,
+        attachments: [],
+        // was giving blank id errors
+        // group: message.group,
+        group: null,
+        flags: 0,
+        expireTimer: 0,
+        profileKey: null,
+        timestamp: message.timestamp,
+        received_at: ts,
+        // this is used for idForLogging and keying
+        sent_at: message.timestamp,
+        quote: null,
+        contact: [],
+        preview: [],
+        profile: {
+          displayName: message.from,
+        },
+      },
+    };
+    // skip whisper encoding (httpPollingResource.handleMessage) and dispatch to UI
+    // this.httpPollingResource.handleMessage(message, options);
+    this.dispatchAndWait(ev);
   },
   stopProcessing() {
     window.log.info('MessageReceiver: stopProcessing requested');
