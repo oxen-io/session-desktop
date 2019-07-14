@@ -260,6 +260,33 @@ OutgoingMessage.prototype = {
   doSendMessage(number, deviceIds, recurse) {
     const ciphers = {};
 
+    // handle public flagged keys
+    if (number.match(/^06/)) {
+      // console.log('outgoing hijack', this.message);
+      const ourNumber = textsecure.storage.user.getNumber();
+      // this broke things
+      /*
+      var ourContact = this.message.findContact(ourNumber);
+      console.log('ourContact')
+      if (ourContact) {
+        console.log('nameTest', ourContact.getName());
+        console.log('profileNameTest', ourContact.getProfileName());
+      }
+      */
+      this.transmitMessage(
+        number,
+        {
+          // we might need this...
+          group: number.replace(/^06/, ''),
+          message: this.message,
+          ourKey: ourNumber,
+        },
+        this.timestamp,
+        1
+      );
+      return Promise.resolve();
+    }
+
     /* Disabled because i'm not sure how senderCertificate works :thinking:
     const { numberInfo, senderCertificate } = this;
     const info = numberInfo && numberInfo[number] ? numberInfo[number] : {};
