@@ -532,11 +532,37 @@
         'private'
       );
 
+      /*
+      // Ensure that we always have a group conversation for comparisong
+      const debugConversation = await ConversationController.getOrCreateAndWait(
+        'debug',
+        'group'
+      );
+      await debugConversation.setFriendRequestStatus(4);
+      const updates = {
+        name: 'GroupChat',
+        active_at: Date.now(),
+      };
+      await debugConversation.set(updates);
+      */
+
+      // Ensure that we always have a public chat conversation for ourself
+      const publicChatConversation = await ConversationController.getOrCreateAndWait(
+        'lokiPublicChat',
+        'public'
+      );
+      updates.name = 'PublicChat';
+      await publicChatConversation.setFriendRequestStatus(4);
+      await publicChatConversation.set(updates);
+
       await storage.setProfileName(profileName);
 
       // Update the conversation if we have it
       const newProfile = storage.getLocalProfile();
       await conversation.setProfile(newProfile);
+
+      // await debugConversation.setProfile(newProfile);
+      await publicChatConversation.setProfile(newProfile);
 
       this.dispatchEvent(new Event('registration'));
     },
