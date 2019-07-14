@@ -929,6 +929,46 @@ MessageSender.prototype = {
     */
   },
 
+  async sendMessageToPublic(
+    groupId,
+    groupNumbers,
+    messageText,
+    attachments,
+    quote,
+    preview,
+    timestamp,
+    expireTimer,
+    profileKey,
+    options,
+    message
+  ) {
+    // const me = textsecure.storage.user.getNumber();
+
+    // we need to communicate our internal message id to prevent duplicates when it
+    // comes back in
+    // we didn't because it's keyed by from, deviceid and timestamp
+    // options.message_id = message.id;
+
+    // const numbers = groupNumbers.filter(number => number !== me);
+    const attrs = {
+      recipients: [`06${groupId}`],
+      body: messageText,
+      timestamp: message.get('timestamp'),
+      attachments,
+      quote,
+      preview,
+      needsSync: true,
+      expireTimer,
+      profileKey,
+      group: {
+        id: groupId,
+        type: textsecure.protobuf.GroupContext.Type.DELIVER,
+      },
+    };
+
+    return this.sendMessage(attrs, options);
+  },
+
   async sendMessageToGroup(
     groupId,
     groupNumbers,
@@ -1137,6 +1177,7 @@ textsecure.MessageSender = function MessageSenderWrapper(username, password) {
   this.sendMessageToNumber = sender.sendMessageToNumber.bind(sender);
   this.sendMessage = sender.sendMessage.bind(sender);
   this.resetSession = sender.resetSession.bind(sender);
+  this.sendMessageToPublic = sender.sendMessageToPublic.bind(sender);
   this.sendMessageToGroup = sender.sendMessageToGroup.bind(sender);
   this.sendTypingMessage = sender.sendTypingMessage.bind(sender);
   this.createGroup = sender.createGroup.bind(sender);
