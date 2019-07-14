@@ -4,6 +4,7 @@
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
+const nodeFetch = require('node-fetch');
 
 const DEFAULT_CONNECTIONS = 3;
 const MAX_ACCEPTABLE_FAILURES = 1;
@@ -77,6 +78,48 @@ class LokiMessageAPI {
   async sendMessage(pubKey, data, messageTimeStamp, ttl, options = {}) {
     const { isPing = false, numConnections = DEFAULT_CONNECTIONS } = options;
     // Data required to identify a message in a conversation
+
+    if (pubKey.match(/^06/)) {
+      // console.log('HIJACK', data);
+      // console.log('HIJACK dataMessage', data.message.dataMessage);
+      const payload = {
+        text: data.message.dataMessage.body,
+        annotations: [
+          {
+            type: 'network.loki.messenger.publicChat',
+            value: {
+              // id: data.id,
+              // channel will know this
+              // group: data.group,
+              timestamp: messageTimeStamp,
+              from: data.ourKey,
+            },
+          },
+        ],
+      };
+      // FIXME: use data.group to figure out channel id
+      // const res =
+      await nodeFetch('https://chat.lokinet.org/channels/1/messages', {
+        method: 'post',
+        headers: {
+          // x-www-form-urlencoded
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer loki',
+        },
+        body: JSON.stringify(payload),
+      });
+      // const body = await res.text();
+
+      // Causes "Error setting p2p on message"
+      /*
+      const messageEventData = {
+        pubkey: data.group,
+        timestamp: messageTimeStamp,
+      };
+      window.Whisper.events.trigger('p2pMessageSent', messageEventData);
+      */
+      return;
+    }
     const messageEventData = {
       pubKey,
       timestamp: messageTimeStamp,
