@@ -203,6 +203,7 @@
           isMe: this.model.isMe(),
           isBlocked: this.model.isBlocked(),
           isGroup: !this.model.isPrivate(),
+          isPublic: !this.model.isPrivate() && !this.model.isPrivate(),
           isOnline: this.model.isOnline(),
           isArchived: this.model.get('isArchived'),
 
