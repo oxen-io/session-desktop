@@ -539,12 +539,12 @@
         'group'
       );
       await debugConversation.setFriendRequestStatus(4);
+      await debugConversation.set(updates);
+      */
       const updates = {
         name: 'GroupChat',
         active_at: Date.now(),
       };
-      await debugConversation.set(updates);
-      */
 
       // Ensure that we always have a public chat conversation for ourself
       const publicChatConversation = await ConversationController.getOrCreateAndWait(
