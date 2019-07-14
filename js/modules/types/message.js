@@ -10,6 +10,7 @@ const {
 const MessageTS = require('../../../ts/types/Message');
 
 const GROUP = 'group';
+const PUBLIC = 'public';
 const PRIVATE = 'private';
 
 // Schema version history
@@ -54,6 +55,7 @@ const INITIAL_SCHEMA_VERSION = 0;
 
 // Public API
 exports.GROUP = GROUP;
+exports.PUBLIC = PUBLIC;
 exports.PRIVATE = PRIVATE;
 
 // Placeholder until we have stronger preconditions:
