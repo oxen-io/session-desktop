@@ -81,9 +81,9 @@
         throw new TypeError("'id' must be a string");
       }
 
-      if (type !== 'private' && type !== 'group') {
+      if (type !== 'private' && type !== 'group' && type !== 'public') {
         throw new TypeError(
-          `'type' must be 'private' or 'group'; got: '${type}'`
+          `'type' must be 'private', 'public' or 'group'; got: '${type}'`
         );
       }
 
@@ -236,7 +236,6 @@
             if (!conversation.get('lastMessage')) {
               promises.push(conversation.updateLastMessage());
             }
-
             promises.concat([
               conversation.updateProfile(),
               conversation.updateProfileAvatar(),
