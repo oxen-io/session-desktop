@@ -2,6 +2,7 @@
 const https = require('https');
 const EventEmitter = require('events');
 const natUpnp = require('nat-upnp');
+const nodeFetch = require('node-fetch');
 
 const STATUS = {
   OK: 200,
@@ -10,6 +11,80 @@ const STATUS = {
   METHOD_NOT_ALLOWED: 405,
   INTERNAL_SERVER_ERROR: 500,
 };
+
+const GROUPCHAT_POLL_EVERY = 5 * 1000;
+
+let lastGot = null;
+// const haveIds = {};
+// set up group chat polling
+async function pollForMessages(lokiServer) {
+  // our key?
+  let params = '?include_annotations=1&count=-20';
+  if (lastGot !== null) {
+    params += `&since_id=${lastGot}`;
+  }
+  const res = await nodeFetch(
+    // `https://chat.lokinet.org/posts/stream/global${params}`
+    `https://chat.lokinet.org/channels/1/messages${params}`
+  );
+  const response = await res.json();
+  if (response.meta.code !== 200) {
+    /*
+    console.error(
+      'error reading chat server',
+      response.meta.code,
+      response
+    );
+    */
+    return;
+  }
+  const revChono = response.data.reverse();
+  for (let i = 0; i < revChono.length; i += 1) {
+    const post = revChono[i];
+    // console.log('downloaded', post)
+    let from = post.user.username;
+
+    // let id = post.id
+    // console.log('created_at', post.created_at)
+    // Set some sensible defaults
+    const createdAtTimestamp = new Date(post.created_at).getTime();
+    let timestamp = createdAtTimestamp;
+    const group = 'lokiPublicChat';
+    if (post.annotations.length) {
+      const noteValue = post.annotations[0].value;
+      ({ from, timestamp } = noteValue);
+      // from = noteValue.from;
+      // id = noteValue.id;
+      // timestamp = noteValue.timestamp;
+      // by not hard coding the group, we'll allowing the backend to create new groups
+      // should be tied to channel any ways
+      // group = noteValue.group;
+    }
+    // if (haveIds[post.id] === undefined) {
+    lokiServer.emit('publicMessage', {
+      message: {
+        // id: id,
+        created_at: createdAtTimestamp,
+        body: `${post.created_at} ${post.user.username}: ${post.text}`,
+        from,
+        // FIXME: multiple group support
+        // the incoming channel should handle this...
+        group,
+        timestamp,
+      },
+      // onSuccess: () => sendResponse(STATUS.OK),
+      // onFailure: () => sendResponse(STATUS.NOT_FOUND),
+    });
+    // haveIds[post.id] = true;
+    lastGot = Math.max(lastGot, post.id);
+    // console.log('lastGot', lastGot)
+    // }
+  }
+  function quickRunAgain() {
+    pollForMessages(lokiServer);
+  }
+  setTimeout(quickRunAgain, GROUPCHAT_POLL_EVERY);
+}
 
 class LocalLokiServer extends EventEmitter {
   /**
@@ -25,6 +100,11 @@ class LocalLokiServer extends EventEmitter {
     if (!options.skipUpnp) {
       this.upnpClient = natUpnp.createClient();
     }
+
+    // start group chat polling
+    // how do we know what channels to check? registration should set this...
+    pollForMessages(this);
+
     this.server = https.createServer(httpsOptions, (req, res) => {
       let body = [];
 
@@ -66,7 +146,7 @@ class LocalLokiServer extends EventEmitter {
                 sendResponse(STATUS.NOT_FOUND, 'Invalid endpoint!');
                 return;
               }
-              this.emit('message', {
+              this.emit('p2pMessage', {
                 message: bodyObject.params.data,
                 onSuccess: () => sendResponse(STATUS.OK),
                 onFailure: () => sendResponse(STATUS.NOT_FOUND),
