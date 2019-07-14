@@ -167,7 +167,7 @@
 
       if (this.id === this.ourNumber) {
         this.set({ friendRequestStatus: FriendRequestStatusEnum.friends });
-      } else if (lokiP2pAPI) {
+      } else if (typeof lokiP2pAPI !== 'undefined') {
         // Online status handling, only for contacts that aren't us
         this.set({ isOnline: lokiP2pAPI.isOnline(this.id) });
       } else {
@@ -414,6 +414,11 @@
       const color = this.getColor();
       const typingKeys = Object.keys(this.contactTypingTimers || {});
 
+      let type = 'direct';
+      if (!this.isPrivate()) {
+        type = this.isPublic() ? 'public' : 'group';
+      }
+
       const result = {
         id: this.id,
 
@@ -421,7 +426,7 @@
         activeAt: this.get('active_at'),
         avatarPath: this.getAvatarPath(),
         color,
-        type: this.isPrivate() ? 'direct' : 'group',
+        type,
         isMe: this.isMe(),
         isTyping: typingKeys.length > 0,
         lastUpdated: this.get('timestamp'),
@@ -1034,7 +1039,11 @@
         return `Conversation must have ${missing}`;
       }
 
-      if (attributes.type !== 'private' && attributes.type !== 'group') {
+      if (
+        attributes.type !== 'private' &&
+        attributes.type !== 'group' &&
+        attributes.type !== 'public'
+      ) {
         return `Invalid conversation type: ${attributes.type}`;
       }
 
@@ -1371,6 +1380,20 @@
                 expireTimer,
                 profileKey,
                 options
+              );
+            case Message.PUBLIC:
+              return textsecure.messaging.sendMessageToPublic(
+                destination,
+                groupNumbers,
+                messageBody,
+                finalAttachments,
+                quote,
+                preview,
+                now,
+                expireTimer,
+                profileKey,
+                options,
+                model
               );
             default:
               throw new TypeError(
@@ -2286,6 +2309,10 @@
 
     isPrivate() {
       return this.get('type') === 'private';
+    },
+
+    isPublic() {
+      return this.get('type') === 'public';
     },
 
     getColor() {
