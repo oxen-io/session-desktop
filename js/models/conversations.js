@@ -2241,7 +2241,7 @@
       if (this.isPrivate() && !this.get('name')) {
         return this.get('profileName');
       }
-      return null;
+      return this.getTitle();
     },
 
     getDisplayName() {
