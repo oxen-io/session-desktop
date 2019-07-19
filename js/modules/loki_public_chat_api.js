@@ -36,26 +36,9 @@ class LokiPublicChatAPI extends EventEmitter {
     }
 
     if (success) {
-      let receivedAt = new Date().getTime();
       response.data.forEach(post => {
-        let from = post.user.username;
-        const serverTimestamp = new Date(post.created_at).getTime();
-        let timestamp = serverTimestamp;
-        if (post.annotations.length) {
-          const noteValue = post.annotations[0].value;
-          ({ from, timestamp } = noteValue);
-        }
-        receivedAt += 1; // Add 1ms to prevent duplicate timestamps
-
         this.emit('publicMessage', {
-          message: {
-            body: `${post.created_at} ${post.user.username}: ${post.text}`,
-            from,
-            source,
-            timestamp,
-            serverTimestamp,
-            receivedAt,
-          },
+          message: post.text,
         });
         this.lastGot[endpoint] = !this.lastGot[endpoint]
           ? post.id

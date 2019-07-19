@@ -43,9 +43,10 @@ function OutgoingMessage(
   this.failoverNumbers = [];
   this.unidentifiedDeliveries = [];
 
-  const { numberInfo, senderCertificate, online, messageType, isPing } =
+  const { numberInfo, senderCertificate, online, messageType, isPing, publicEndpoint } =
     options || {};
   this.numberInfo = numberInfo;
+  this.publicEndpoint = publicEndpoint;
   this.senderCertificate = senderCertificate;
   this.online = online;
   this.messageType = messageType || 'outgoing';
@@ -261,33 +262,6 @@ OutgoingMessage.prototype = {
   doSendMessage(number, deviceIds, recurse) {
     const ciphers = {};
     const ourKey = textsecure.storage.user.getNumber();
-    if (number.match(/^06/)) {
-      let conversation;
-      try {
-        conversation = ConversationController.get(number);
-      } catch (e) {
-        throw new Error('Trying to send public message to invalid conversation.');
-      }
-      const options = {
-        isPublic: true,
-        endpoint: conversation.getEndpoint(),
-      }
-      return this.transmitMessage(
-        number,
-        {
-          message: this.message,
-          ourKey,
-        },
-        this.timestamp,
-        1, // ttl
-        options
-      ).then(() => {
-        this.successfulNumbers[this.successfulNumbers.length] = number;
-        this.numberCompleted();
-      }).catch(error => {
-        throw error;
-      });
-    }
     /* Disabled because i'm not sure how senderCertificate works :thinking:
     const { numberInfo, senderCertificate } = this;
     const info = numberInfo && numberInfo[number] ? numberInfo[number] : {};
@@ -320,6 +294,19 @@ OutgoingMessage.prototype = {
 
     return Promise.all(
       deviceIds.map(async deviceId => {
+        if (this.publicEndpoint) {
+          const content = new Uint8Array(
+            dcodeIO.ByteBuffer.wrap(this.getPlaintext(), 'binary').toArrayBuffer()
+          );
+
+          return {
+            type: textsecure.protobuf.Envelope.Type.PUBLIC_CHAT_MSG,
+            ourKey,
+            sourceDevice: 1,
+            destinationRegistrationId: 1,
+            content,
+          };
+        }
         const address = new libsignal.SignalProtocolAddress(number, deviceId);
         const options = {};
         const fallBackCipher = new libloki.crypto.FallBackSessionCipher(
@@ -393,11 +380,18 @@ OutgoingMessage.prototype = {
         // TODO: handle multiple devices/messages per transmit
         const outgoingObject = outgoingObjects[0];
         const socketMessage = await this.wrapInWebsocketMessage(outgoingObject);
+        let options = {};
+        if (this.publicEndpoint) {
+          options = {
+            endpoint: this.publicEndpoint,
+          }
+        }
         await this.transmitMessage(
           number,
           socketMessage,
           this.timestamp,
-          outgoingObject.ttl
+          outgoingObject.ttl,
+          options
         );
         this.successfulNumbers[this.successfulNumbers.length] = number;
         this.numberCompleted();

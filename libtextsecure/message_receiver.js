@@ -154,36 +154,42 @@ MessageReceiver.prototype.extend({
     this.httpPollingResource.handleMessage(message, options);
   },
   handlePublicMessage({ message }) {
-    const ev = new Event('message');
-    ev.confirm = function confirmTerm() {};
-    ev.data = {
-      friendRequest: false,
-      source: message.source,
-      sourceDevice: 1,
-      timestamp: message.timestamp,
-      serverTimestamp: message.serverTimestamp,
-      receivedAt: message.receivedAt,
-      isP2p: true, // masquerade as a p2p
-      message: {
-        body: message.body,
-        attachments: [],
-        group: null,
-        flags: 0,
-        expireTimer: 0,
-        profileKey: null,
-        timestamp: message.timestamp,
-        received_at: message.receivedAt,
-        // this is used for idForLogging and keying
-        sent_at: message.timestamp,
-        quote: null,
-        contact: [],
-        preview: [],
-        profile: {
-          displayName: message.from,
-        },
-      },
+    const options = {
+      isP2p: true,
+      onSuccess: () => console.log('Successfully handled public message'),
+      onFailure: () => console.log('Failed to handle public message'),
     };
-    this.dispatchAndWait(ev);
+    this.httpPollingResource.handleMessage(message, options);
+    // const ev = new Event('message');
+    // ev.confirm = function confirmTerm() {};
+    // ev.data = {
+    //   friendRequest: false,
+    //   source: message.source,
+    //   sourceDevice: 1,
+    //   timestamp: message.timestamp,
+    //   serverTimestamp: message.serverTimestamp,
+    //   receivedAt: message.receivedAt,
+    //   isP2p: true, // masquerade as a p2p
+    //   message: {
+    //     body: message.body,
+    //     attachments: [],
+    //     group: null,
+    //     flags: 0,
+    //     expireTimer: 0,
+    //     profileKey: null,
+    //     timestamp: message.timestamp,
+    //     received_at: message.receivedAt,
+    //     // this is used for idForLogging and keying
+    //     sent_at: message.timestamp,
+    //     quote: null,
+    //     contact: [],
+    //     preview: [],
+    //     profile: {
+    //       displayName: message.from,
+    //     },
+    //   },
+    // };
+    // this.dispatchAndWait(ev);
   },
   stopProcessing() {
     window.log.info('MessageReceiver: stopProcessing requested');
@@ -824,6 +830,11 @@ MessageReceiver.prototype.extend({
         promise = fallBackSessionCipher
           .decrypt(ciphertext.toArrayBuffer())
           .then(this.unpad);
+        break;
+      }
+      case textsecure.protobuf.Envelope.Type.PUBLIC_CHAT_MSG: {
+        window.log.info('Public chat message from ', envelope.source);
+        promise = Promise.resolve(this.unpad(ciphertext.toArrayBuffer()));
         break;
       }
       case textsecure.protobuf.Envelope.Type.PREKEY_BUNDLE:

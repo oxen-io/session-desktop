@@ -82,10 +82,11 @@ class LokiMessageAPI {
       pubKey,
       timestamp: messageTimeStamp,
     };
+    const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');
 
-    if (options.isPublic) {
+    if (options.endpoint) {
       const payload = {
-        text: data.message.dataMessage.body,
+        text: data64,
         annotations: [
           {
             type: 'network.loki.messenger.publicChat',
@@ -113,7 +114,6 @@ class LokiMessageAPI {
       }
     }
 
-    const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');
     const p2pSuccess = await trySendP2p(
       pubKey,
       data64,

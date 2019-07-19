@@ -193,6 +193,9 @@
     isMe() {
       return this.id === this.ourNumber;
     },
+    isPublic() {
+      return this.id.match(/^06/);
+    },
     isBlocked() {
       return BlockedNumberController.isBlocked(this.id);
     },
@@ -1342,6 +1345,9 @@
 
         const options = this.getSendOptions();
         options.messageType = message.get('type');
+        if (this.isPublic()) {
+          options.publicEndpoint = this.getEndpoint();
+        }
 
         const groupNumbers = this.getRecipients();
 
@@ -2005,7 +2011,7 @@
       return this.get('nickname');
     },
     getEndpoint() {
-      if (!this.id.match(/^06/)) {
+      if (!this.isPublic()) {
         return null;
       }
       const server = this.get('server');

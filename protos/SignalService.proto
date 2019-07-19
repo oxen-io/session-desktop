@@ -13,6 +13,7 @@ message Envelope {
     RECEIPT       = 5;
     UNIDENTIFIED_SENDER = 6;
     FRIEND_REQUEST = 101; // contains prekeys + message and is using simple encryption
+    PUBLIC_CHAT_MSG = 102;
   }
 
   optional Type   type            = 1;

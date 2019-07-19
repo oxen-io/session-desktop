@@ -789,7 +789,7 @@ async function updateToLokiSchemaVersion1(currentVersion, instance) {
     sealedSender: 0,
     sessionResetStatus: 0,
     swarmNodes: [],
-    type: 'private',
+    type: 'group',
     profile: {
       displayName: 'Loki Public Chat',
     },
@@ -1608,7 +1608,7 @@ async function getAllPrivateConversations() {
 async function getAllPublicConversations() {
   const rows = await db.all(
     `SELECT json FROM conversations WHERE
-      type = 'private' AND
+      type = 'group' AND
       id LIKE '06%'
      ORDER BY id ASC;`
   );

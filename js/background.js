@@ -1254,6 +1254,11 @@
         return handleProfileUpdate({ data, confirm, messageDescriptor });
       }
 
+      const ourNumber = textsecure.storage.user.getNumber();
+      if (messageDescriptor.type === 'group' && messageDescriptor.id.match(/^06/) && data.source === ourNumber) {
+        // Remove public chat messages to ourselves
+        return event.confirm();
+      }
       const message = await createMessage(data);
       const isDuplicate = await isMessageDuplicate(message);
       if (isDuplicate) {
