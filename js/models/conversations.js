@@ -2004,6 +2004,15 @@
     getNickname() {
       return this.get('nickname');
     },
+    getEndpoint() {
+      if (!this.id.match(/^06/)) {
+        return null;
+      }
+      const server = this.get('server');
+      const channelId = this.get('channelId');
+      const endpoint = `${server}/channels/${channelId}/messages`;
+      return endpoint;
+    },
 
     // SIGNAL PROFILES
 

@@ -13,6 +13,7 @@
 /* global GroupBuffer: false */
 /* global WebSocketResource: false */
 /* global localLokiServer: false */
+/* global lokiPublicChatAPI: false */
 /* global localServerPort: false */
 /* global lokiMessageAPI: false */
 /* global lokiP2pAPI: false */
@@ -84,6 +85,7 @@ MessageReceiver.prototype.extend({
       }
     });
     localLokiServer.on('message', this.handleP2pMessage.bind(this));
+    lokiPublicChatAPI.on('publicMessage', this.handlePublicMessage.bind(this));
     this.startLocalServer();
 
     // TODO: Rework this socket stuff to work with online messaging
@@ -150,6 +152,39 @@ MessageReceiver.prototype.extend({
       onFailure,
     };
     this.httpPollingResource.handleMessage(message, options);
+  },
+  handlePublicMessage({ message }) {
+    const ev = new Event('message');
+    ev.confirm = function confirmTerm() {};
+    const ts = Date.now();
+    ev.data = {
+      friendRequest: false,
+      source: message.source,
+      sourceDevice: 1,
+      timestamp: message.timestamp,
+      serverTimestamp: message.created_at,
+      receivedAt: ts,
+      isP2p: true, // masquerade as a p2p
+      message: {
+        body: message.body,
+        attachments: [],
+        group: null,
+        flags: 0,
+        expireTimer: 0,
+        profileKey: null,
+        timestamp: message.timestamp,
+        received_at: ts,
+        // this is used for idForLogging and keying
+        sent_at: message.timestamp,
+        quote: null,
+        contact: [],
+        preview: [],
+        profile: {
+          displayName: message.from,
+        },
+      },
+    };
+    this.dispatchAndWait(ev);
   },
   stopProcessing() {
     window.log.info('MessageReceiver: stopProcessing requested');

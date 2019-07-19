@@ -203,9 +203,18 @@
   window.log.info('Storage fetch');
   storage.fetch();
 
-  const initAPIs = () => {
+  const initAPIs = async () => {
     const ourKey = textsecure.storage.user.getNumber();
     window.lokiMessageAPI = new window.LokiMessageAPI(ourKey);
+    window.lokiPublicChatAPI = new window.LokiPublicChatAPI(ourKey);
+    const publicConversations = await window.Signal.Data.getAllPublicConversations({
+      ConversationCollection: Whisper.ConversationCollection,
+    });
+    publicConversations.forEach(conversation => {
+      const endpoint = conversation.getEndpoint();
+      const groupName = conversation.getProfileName();
+      window.lokiPublicChatAPI.pollForMessages(conversation.id, groupName, endpoint);
+    });
     window.lokiP2pAPI = new window.LokiP2pAPI(ourKey);
     window.lokiP2pAPI.on('pingContact', pubKey => {
       const isPing = true;
@@ -245,7 +254,7 @@
 
     if (Whisper.Registration.isDone()) {
       startLocalLokiServer();
-      initAPIs();
+      await initAPIs();
     }
 
     const currentPoWDifficulty = storage.get('PoWDifficulty', null);
