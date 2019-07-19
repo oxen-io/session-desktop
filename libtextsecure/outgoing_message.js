@@ -185,13 +185,14 @@ OutgoingMessage.prototype = {
   },
 
   // Default ttl to 24 hours if no value provided
-  async transmitMessage(number, data, timestamp, ttl = 24 * 60 * 60 * 1000) {
+  async transmitMessage(number, data, timestamp, ttl = 24 * 60 * 60 * 1000, sendOptions = {}) {
     const pubKey = number;
     try {
       // TODO: Make NUM_CONCURRENT_CONNECTIONS a global constant
       const options = {
         numConnections: NUM_SEND_CONNECTIONS,
         isPing: this.isPing,
+        ...sendOptions,
       };
       await lokiMessageAPI.sendMessage(pubKey, data, timestamp, ttl, options);
     } catch (e) {
@@ -259,7 +260,34 @@ OutgoingMessage.prototype = {
   },
   doSendMessage(number, deviceIds, recurse) {
     const ciphers = {};
-
+    const ourKey = textsecure.storage.user.getNumber();
+    if (number.match(/^06/)) {
+      let conversation;
+      try {
+        conversation = ConversationController.get(number);
+      } catch (e) {
+        throw new Error('Trying to send public message to invalid conversation.');
+      }
+      const options = {
+        isPublic: true,
+        endpoint: conversation.getEndpoint(),
+      }
+      return this.transmitMessage(
+        number,
+        {
+          message: this.message,
+          ourKey,
+        },
+        this.timestamp,
+        1, // ttl
+        options
+      ).then(() => {
+        this.successfulNumbers[this.successfulNumbers.length] = number;
+        this.numberCompleted();
+      }).catch(error => {
+        throw error;
+      });
+    }
     /* Disabled because i'm not sure how senderCertificate works :thinking:
     const { numberInfo, senderCertificate } = this;
     const info = numberInfo && numberInfo[number] ? numberInfo[number] : {};
@@ -293,7 +321,6 @@ OutgoingMessage.prototype = {
     return Promise.all(
       deviceIds.map(async deviceId => {
         const address = new libsignal.SignalProtocolAddress(number, deviceId);
-        const ourKey = textsecure.storage.user.getNumber();
         const options = {};
         const fallBackCipher = new libloki.crypto.FallBackSessionCipher(
           address

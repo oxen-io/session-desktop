@@ -4,6 +4,7 @@
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
+const nodeFetch = require('node-fetch');
 
 const DEFAULT_CONNECTIONS = 3;
 const MAX_ACCEPTABLE_FAILURES = 1;
@@ -81,6 +82,36 @@ class LokiMessageAPI {
       pubKey,
       timestamp: messageTimeStamp,
     };
+
+    if (options.isPublic) {
+      const payload = {
+        text: data.message.dataMessage.body,
+        annotations: [
+          {
+            type: 'network.loki.messenger.publicChat',
+            value: {
+              timestamp: messageTimeStamp,
+              from: data.ourKey,
+            },
+          },
+        ],
+      };
+      try {
+        await nodeFetch(options.endpoint, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer loki',
+          },
+          body: JSON.stringify(payload),
+        });
+        return;
+      } catch (e) {
+        throw new window.textsecure.PublicChatError(
+          'Failed to send public chat message.'
+        );
+      }
+    }
 
     const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');
     const p2pSuccess = await trySendP2p(
