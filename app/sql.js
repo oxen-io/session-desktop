@@ -97,6 +97,7 @@ module.exports = {
   updateConversation,
   removeConversation,
   getAllConversations,
+  getAllPublicConversations,
   getPubKeysWithFriendStatus,
   getAllConversationIds,
   getAllPrivateConversations,
@@ -1598,6 +1599,17 @@ async function getAllPrivateConversations() {
   const rows = await db.all(
     `SELECT json FROM conversations WHERE
       type = 'private'
+     ORDER BY id ASC;`
+  );
+
+  return map(rows, row => jsonToObject(row.json));
+}
+
+async function getAllPublicConversations() {
+  const rows = await db.all(
+    `SELECT json FROM conversations WHERE
+      type = 'private' AND
+      id LIKE '06%'
      ORDER BY id ASC;`
   );
 
