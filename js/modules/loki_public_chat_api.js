@@ -1,8 +1,6 @@
-
 const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
-
 
 const GROUPCHAT_POLL_EVERY = 5 * 1000;
 
@@ -18,11 +16,11 @@ class LokiPublicChatAPI extends EventEmitter {
     const params = {
       include_annotations: 1,
       count: -20,
-    }
+    };
     if (this.lastGot[endpoint]) {
       params.since_id = this.lastGot[endpoint];
     }
-    url.search = new URLSearchParams(params)
+    url.search = new URLSearchParams(params);
 
     let res;
     let success = true;
@@ -57,7 +55,9 @@ class LokiPublicChatAPI extends EventEmitter {
             timestamp,
           },
         });
-        this.lastGot[endpoint] = !this.lastGot[endpoint] ? post.id : Math.max(this.lastGot[endpoint], post.id);
+        this.lastGot[endpoint] = !this.lastGot[endpoint]
+          ? post.id
+          : Math.max(this.lastGot[endpoint], post.id);
       });
     }
 
