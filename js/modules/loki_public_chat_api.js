@@ -2,7 +2,7 @@ const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
 
-const GROUPCHAT_POLL_EVERY = 5 * 1000;
+const GROUPCHAT_POLL_EVERY = 1000; // 1 second
 
 class LokiPublicChatAPI extends EventEmitter {
   constructor(ourKey) {
@@ -36,23 +36,25 @@ class LokiPublicChatAPI extends EventEmitter {
     }
 
     if (success) {
-      const revChono = response.data.reverse();
-      revChono.forEach(post => {
+      let receivedAt = new Date().getTime();
+      response.data.forEach(post => {
         let from = post.user.username;
-        const createdAtTimestamp = new Date(post.created_at).getTime();
-        let timestamp = createdAtTimestamp;
+        const serverTimestamp = new Date(post.created_at).getTime();
+        let timestamp = serverTimestamp;
         if (post.annotations.length) {
           const noteValue = post.annotations[0].value;
           ({ from, timestamp } = noteValue);
         }
+        receivedAt += 1; // Add 1ms to prevent duplicate timestamps
 
         this.emit('publicMessage', {
           message: {
-            created_at: createdAtTimestamp,
             body: `${post.created_at} ${post.user.username}: ${post.text}`,
             from,
             source,
             timestamp,
+            serverTimestamp,
+            receivedAt,
           },
         });
         this.lastGot[endpoint] = !this.lastGot[endpoint]

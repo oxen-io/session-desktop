@@ -156,14 +156,13 @@ MessageReceiver.prototype.extend({
   handlePublicMessage({ message }) {
     const ev = new Event('message');
     ev.confirm = function confirmTerm() {};
-    const ts = Date.now();
     ev.data = {
       friendRequest: false,
       source: message.source,
       sourceDevice: 1,
       timestamp: message.timestamp,
-      serverTimestamp: message.created_at,
-      receivedAt: ts,
+      serverTimestamp: message.serverTimestamp,
+      receivedAt: message.receivedAt,
       isP2p: true, // masquerade as a p2p
       message: {
         body: message.body,
@@ -173,7 +172,7 @@ MessageReceiver.prototype.extend({
         expireTimer: 0,
         profileKey: null,
         timestamp: message.timestamp,
-        received_at: ts,
+        received_at: message.receivedAt,
         // this is used for idForLogging and keying
         sent_at: message.timestamp,
         quote: null,
