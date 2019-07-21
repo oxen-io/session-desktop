@@ -213,13 +213,20 @@
       }
     );
     publicConversations.forEach(conversation => {
-      const endpoint = conversation.getEndpoint();
-      const groupName = conversation.getProfileName();
-      window.lokiPublicChatAPI.pollForMessages(
-        conversation.id,
-        groupName,
-        endpoint
+      const settings = conversation.getPublicSource();
+      window.log.info(`Setting up public conversation for ${conversation.id}`);
+      const publicChatServer = window.lokiPublicChatAPI.findOrCreateServer(
+        settings.server
       );
+      if (publicChatServer) {
+        publicChatServer.findOrCreateChannel(
+          settings.channel_id,
+          conversation.id
+        );
+        // should we set a reference in the conversation model itself?
+      } else {
+        window.log.warn(`Could not set up channel for ${conversation.id}`);
+      }
     });
     window.lokiP2pAPI = new window.LokiP2pAPI(ourKey);
     window.lokiP2pAPI.on('pingContact', pubKey => {
@@ -735,6 +742,15 @@
         conversation.onP2pMessageSent(pubKey, timestamp);
       } catch (e) {
         window.log.error('Error setting p2p on message');
+      }
+    });
+
+    Whisper.events.on('publicMessageSent', ({ pubKey, timestamp }) => {
+      try {
+        const conversation = ConversationController.get(pubKey);
+        conversation.onPublicMessageSent(pubKey, timestamp);
+      } catch (e) {
+        window.log.error('Error setting public on message');
       }
     });
 
@@ -1255,7 +1271,11 @@
       }
 
       const ourNumber = textsecure.storage.user.getNumber();
-      if (messageDescriptor.type === 'group' && messageDescriptor.id.match(/^06/) && data.source === ourNumber) {
+      if (
+        messageDescriptor.type === 'group' &&
+        messageDescriptor.id.match(/^06/) &&
+        data.source === ourNumber
+      ) {
         // Remove public chat messages to ourselves
         return event.confirm();
       }
@@ -1392,6 +1412,7 @@
       type: 'incoming',
       unread: 1,
       isP2p: data.isP2p,
+      isPublic: data.isPublic,
     };
 
     if (data.friendRequest) {
