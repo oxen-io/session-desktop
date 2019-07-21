@@ -43,7 +43,14 @@ function OutgoingMessage(
   this.failoverNumbers = [];
   this.unidentifiedDeliveries = [];
 
-  const { numberInfo, senderCertificate, online, messageType, isPing, publicEndpoint } =
+  const {
+    numberInfo,
+    senderCertificate,
+    online,
+    messageType,
+    isPing,
+    publicEndpoint,
+  } =
     options || {};
   this.numberInfo = numberInfo;
   this.publicEndpoint = publicEndpoint;
@@ -186,7 +193,13 @@ OutgoingMessage.prototype = {
   },
 
   // Default ttl to 24 hours if no value provided
-  async transmitMessage(number, data, timestamp, ttl = 24 * 60 * 60 * 1000, sendOptions = {}) {
+  async transmitMessage(
+    number,
+    data,
+    timestamp,
+    ttl = 24 * 60 * 60 * 1000,
+    sendOptions = {}
+  ) {
     const pubKey = number;
     try {
       // TODO: Make NUM_CONCURRENT_CONNECTIONS a global constant
@@ -296,9 +309,13 @@ OutgoingMessage.prototype = {
       deviceIds.map(async deviceId => {
         if (this.publicEndpoint) {
           const content = new Uint8Array(
-            dcodeIO.ByteBuffer.wrap(this.getPlaintext(), 'binary').toArrayBuffer()
+            dcodeIO.ByteBuffer.wrap(
+              this.getPlaintext(),
+              'binary'
+            ).toArrayBuffer()
           );
 
+          // we're returning an envelope
           return {
             type: textsecure.protobuf.Envelope.Type.PUBLIC_CHAT_MSG,
             ourKey,
@@ -379,12 +396,17 @@ OutgoingMessage.prototype = {
       .then(async outgoingObjects => {
         // TODO: handle multiple devices/messages per transmit
         const outgoingObject = outgoingObjects[0];
+        window.log.info('outgoingObject', JSON.stringify(outgoingObject));
         const socketMessage = await this.wrapInWebsocketMessage(outgoingObject);
         let options = {};
         if (this.publicEndpoint) {
+          window.log.info('attaching plaintext to publicChat', this.message);
+          const ourNumber = textsecure.storage.user.getNumber();
           options = {
             endpoint: this.publicEndpoint,
-          }
+            ourKey: ourNumber,
+            messageText: this.message.dataMessage.body,
+          };
         }
         await this.transmitMessage(
           number,
