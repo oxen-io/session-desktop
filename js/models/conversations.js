@@ -367,6 +367,11 @@
       await Promise.all(messages.map(m => m.setIsP2p(true)));
     },
 
+    async onPublicMessageSent(pubKey, timestamp) {
+      const messages = this._getMessagesWithTimestamp(pubKey, timestamp);
+      await Promise.all(messages.map(m => m.setIsPublic(true)));
+    },
+
     async onNewMessage(message) {
       await this.updateLastMessage();
 
@@ -2010,6 +2015,17 @@
     getNickname() {
       return this.get('nickname');
     },
+    // maybe "Backend" instead of "Source"?
+    getPublicSource() {
+      if (!this.isPublic()) {
+        return null;
+      }
+      return {
+        server: this.get('server'),
+        channel_id: this.get('channelId'),
+      };
+    },
+    // FIXME: remove or add public and/or "sending" hint to name...
     getEndpoint() {
       if (!this.isPublic()) {
         return null;
