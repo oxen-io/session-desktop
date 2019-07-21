@@ -154,10 +154,11 @@ MessageReceiver.prototype.extend({
     this.httpPollingResource.handleMessage(message, options);
   },
   handlePublicMessage({ message }) {
+    window.log.info(`handlePublicMessage ${message}`);
     const options = {
-      isP2p: true,
-      onSuccess: () => console.log('Successfully handled public message'),
-      onFailure: () => console.log('Failed to handle public message'),
+      isPublic: true,
+      onSuccess: () => window.log.info('Successfully handled public message'),
+      onFailure: () => window.log.info('Failed to handle public message'),
     };
     this.httpPollingResource.handleMessage(message, options);
     // const ev = new Event('message');
@@ -278,7 +279,8 @@ MessageReceiver.prototype.extend({
     //   });
   },
   handleRequest(request, options) {
-    const { isP2p, onSuccess, onFailure } = options;
+    const { isP2p, isPublic, onSuccess, onFailure } = options;
+    window.log.info('handleRequest', 'p2p', isP2p, 'public', isPublic);
     this.incoming = this.incoming || [];
     const lastPromise = _.last(this.incoming);
 
@@ -311,6 +313,7 @@ MessageReceiver.prototype.extend({
 
         envelope.id = envelope.serverGuid || window.getGuid();
         envelope.isP2p = isP2p;
+        envelope.isPublic = isPublic;
         envelope.serverTimestamp = envelope.serverTimestamp
           ? envelope.serverTimestamp.toNumber()
           : null;
@@ -607,6 +610,7 @@ MessageReceiver.prototype.extend({
     });
   },
   queueEnvelope(envelope, onSuccess = null, onFailure = null) {
+    window.log.info('queueEnvelope', JSON.stringify(envelope));
     const id = this.getEnvelopeId(envelope);
     window.log.info('queueing envelope', id);
 
@@ -714,6 +718,8 @@ MessageReceiver.prototype.extend({
   },
   async decrypt(envelope, ciphertext) {
     const { serverTrustRoot } = this;
+
+    window.log.info('decrypt: envelope', envelope, 'ciphertext', ciphertext);
 
     let promise;
     const address = new libsignal.SignalProtocolAddress(
@@ -833,7 +839,13 @@ MessageReceiver.prototype.extend({
         break;
       }
       case textsecure.protobuf.Envelope.Type.PUBLIC_CHAT_MSG: {
-        window.log.info('Public chat message from ', envelope.source);
+        window.log.info(
+          'Public chat message from ',
+          envelope.source,
+          JSON.stringify(envelope),
+          'options',
+          JSON.stringify(options)
+        );
         promise = Promise.resolve(this.unpad(ciphertext.toArrayBuffer()));
         break;
       }
@@ -1058,7 +1070,7 @@ MessageReceiver.prototype.extend({
     return this.removeFromCache(envelope);
   },
   handleDataMessage(envelope, msg) {
-    if (!envelope.isP2p) {
+    if (!envelope.isP2p && envelope.isPublic) {
       const timestamp = envelope.timestamp.toNumber();
       const now = Date.now();
       const ageInSeconds = (now - timestamp) / 1000;
@@ -1135,6 +1147,7 @@ MessageReceiver.prototype.extend({
           receivedAt: envelope.receivedAt,
           unidentifiedDeliveryReceived: envelope.unidentifiedDeliveryReceived,
           isP2p: envelope.isP2p,
+          isPublic: envelope.isPublic,
           message,
         };
         return this.dispatchAndWait(ev);
@@ -1169,6 +1182,11 @@ MessageReceiver.prototype.extend({
     });
   },
   async innerHandleContentMessage(envelope, plaintext) {
+    window.log.info(
+      'innerHandleContentMessage',
+      JSON.stringify(envelope),
+      JSON.stringify(plaintext)
+    );
     const content = textsecure.protobuf.Content.decode(plaintext);
 
     if (content.preKeyBundleMessage)
