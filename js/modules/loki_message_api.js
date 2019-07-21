@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
-/* global log, dcodeIO, window, callWorker, lokiP2pAPI, lokiSnodeAPI, textsecure */
+/* global dcodeIO, log, window, callWorker, lokiP2pAPI, lokiSnodeAPI, textsecure */
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
@@ -84,15 +84,19 @@ class LokiMessageAPI {
     };
     const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');
 
+    // FIXME: should have public/sending(ish hint) in the option to make
+    // this more obvious...
     if (options.endpoint) {
+      // could we emit back to LokiPublicChannelAPI somehow?
       const payload = {
-        text: data64,
+        text: options.messageText,
         annotations: [
           {
             type: 'network.loki.messenger.publicChat',
             value: {
               timestamp: messageTimeStamp,
-              from: data.ourKey,
+              from: options.ourKey,
+              // what other envelope data do we need to recreate the envelope?
             },
           },
         ],
@@ -106,6 +110,7 @@ class LokiMessageAPI {
           },
           body: JSON.stringify(payload),
         });
+        window.Whisper.events.trigger('publicMessageSent', messageEventData);
         return;
       } catch (e) {
         throw new window.textsecure.PublicChatError(
