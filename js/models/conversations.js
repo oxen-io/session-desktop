@@ -1352,6 +1352,7 @@
         options.messageType = message.get('type');
         if (this.isPublic()) {
           options.publicEndpoint = this.getEndpoint();
+          options.messageId = id;
         }
 
         const groupNumbers = this.getRecipients();
