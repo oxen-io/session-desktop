@@ -16,6 +16,7 @@
 /* global localServerPort: false */
 /* global lokiMessageAPI: false */
 /* global lokiP2pAPI: false */
+/* global lokiRssAPI: false */
 
 /* eslint-disable more/no-then */
 /* eslint-disable no-unreachable */
@@ -84,6 +85,7 @@ MessageReceiver.prototype.extend({
       }
     });
     localLokiServer.on('message', this.handleP2pMessage.bind(this));
+    lokiRssAPI.on('rssMessage', this.handleRssMessage.bind(this));
     this.startLocalServer();
 
     // TODO: Rework this socket stuff to work with online messaging
@@ -150,6 +152,12 @@ MessageReceiver.prototype.extend({
       onFailure,
     };
     this.httpPollingResource.handleMessage(message, options);
+  },
+  async handleRssMessage({ message }) {
+    const ev = new Event('message');
+    ev.confirm = function confirmTerm() {};
+    ev.data = message;
+    this.dispatchAndWait(ev);
   },
   stopProcessing() {
     window.log.info('MessageReceiver: stopProcessing requested');

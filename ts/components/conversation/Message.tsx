@@ -86,6 +86,7 @@ export interface Props {
   expirationLength?: number;
   expirationTimestamp?: number;
   isP2p?: boolean;
+  isRss?: boolean;
 
   onClickAttachment?: (attachment: AttachmentType) => void;
   onClickLinkPreview?: (url: string) => void;
@@ -668,7 +669,7 @@ export class Message extends React.PureComponent<Props, State> {
   }
 
   public renderText() {
-    const { text, textPending, i18n, direction, status } = this.props;
+    const { text, textPending, i18n, direction, status, isRss } = this.props;
 
     const contents =
       direction === 'incoming' && status === 'error'
@@ -692,6 +693,7 @@ export class Message extends React.PureComponent<Props, State> {
       >
         <MessageBody
           text={contents || ''}
+          isRss={isRss}
           i18n={i18n}
           textPending={textPending}
         />

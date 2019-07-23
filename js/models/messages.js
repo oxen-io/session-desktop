@@ -670,6 +670,7 @@
         expirationLength,
         expirationTimestamp,
         isP2p: !!this.get('isP2p'),
+        isRss: !!this.get('isRss'),
 
         onCopyText: () => this.copyText(),
         onReply: () => this.trigger('reply', this),
