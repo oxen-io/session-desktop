@@ -14,21 +14,30 @@ class LokiPublicChatAPI extends EventEmitter {
     this.servers = [];
   }
   findOrCreateServer(hostport) {
-    let thisServer = null;
     log.info(`LokiPublicChatAPI looking for ${hostport}`);
-    this.servers.some(server => {
-      // if we already have this hostport registered
-      if (server.server === hostport) {
-        thisServer = server;
-        return true;
-      }
-      return false;
-    });
-    if (thisServer === null) {
+    let thisServer = this.servers.find(server => server.server === hostport);
+    if (!thisServer) {
       thisServer = new LokiPublicServerAPI(this, hostport);
       this.servers.push(thisServer);
     }
     return thisServer;
+  }
+  unregisterChannel(hostport, channelId) {
+    let thisServer;
+    let i = 0;
+    for (; i < this.servers.length; i += 1) {
+      if (this.servers[i].server === hostport) {
+        thisServer = this.servers[i];
+        break;
+      }
+    }
+
+    if (!thisServer) {
+      log.warn(`Tried to unregister from nonexistent server ${hostport}`);
+      return;
+    }
+    thisServer.unregisterChannel(channelId);
+    this.servers.splice(i, 1);
   }
 }
 
@@ -39,25 +48,27 @@ class LokiPublicServerAPI {
     this.channels = [];
   }
   findOrCreateChannel(channelId, conversationId) {
-    let thisChannel = null;
-    this.channels.forEach(channel => {
-      if (
-        channel.channelId === channelId &&
-        channel.conversationId === conversationId
-      ) {
-        thisChannel = channel;
-      }
-    });
-    if (thisChannel === null) {
+    let thisChannel = this.channels.find(channel => channel.channelId === channelId);
+    if (!thisChannel) {
       thisChannel = new LokiPublicChannelAPI(this, channelId, conversationId);
       this.channels.push(thisChannel);
     }
     return thisChannel;
   }
   unregisterChannel(channelId) {
-    // find it, remove it
-    // if no channels left, request we deregister server
-    return channelId || this; // this is just to make eslint happy
+    let thisChannel;
+    let i = 0;
+    for (; i < this.channels.length; i += 1) {
+      if (this.channels[i].channelId === channelId) {
+        thisChannel = this.channels[i];
+        break;
+      }
+    }
+    if (!thisChannel) {
+      return;
+    }
+    this.channels.splice(i, 1);
+    thisChannel.stopPolling = true;
   }
 }
 
@@ -69,6 +80,7 @@ class LokiPublicChannelAPI {
     this.groupName = 'unknown';
     this.conversationId = conversationId;
     this.lastGot = 0;
+    this.stopPolling = false;
     log.info(`registered LokiPublicChannel ${channelId}`);
     // start polling
     this.pollForMessages();
@@ -77,11 +89,6 @@ class LokiPublicChannelAPI {
   async pollForChannel(source, endpoint) {
     // groupName will be loaded from server
     const url = new URL(this.baseChannelUrl);
-    /*
-    const params = {
-      include_annotations: 1,
-    };
-    */
     let res;
     let success = true;
     try {
@@ -99,16 +106,10 @@ class LokiPublicChannelAPI {
   }
 
   async pollForDeletions() {
-    // let id = 0;
     // read all messages from 0 to current
     // delete local copies if server state has changed to delete
     // run every minute
     const url = new URL(this.baseChannelUrl);
-    /*
-    const params = {
-      include_annotations: 1,
-    };
-    */
     let res;
     let success = true;
     try {
@@ -144,6 +145,10 @@ class LokiPublicChannelAPI {
     }
 
     const response = await res.json();
+    if (this.stopPolling) {
+      // Stop after latest await possible
+      return;
+    }
     if (response.meta.code !== 200) {
       success = false;
     }
@@ -151,7 +156,6 @@ class LokiPublicChannelAPI {
     if (success) {
       let receivedAt = new Date().getTime();
       response.data.forEach(adnMessage => {
-        // FIXME: create proper message for this message.DataMessage.body
         let timestamp = new Date(adnMessage.created_at).getTime();
         let from = adnMessage.user.username;
         let source;
