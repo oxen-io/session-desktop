@@ -194,7 +194,7 @@
       return this.id === this.ourNumber;
     },
     isRss() {
-      return this.id.match(/^rss:/);
+      return this.id && this.id.match(/^rss:/);
     },
     isBlocked() {
       return BlockedNumberController.isBlocked(this.id);
