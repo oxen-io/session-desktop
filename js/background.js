@@ -206,7 +206,6 @@
   const initAPIs = () => {
     const ourKey = textsecure.storage.user.getNumber();
     window.lokiMessageAPI = new window.LokiMessageAPI(ourKey);
-
     window.lokiRssAPI = new window.LokiRssAPI();
     window.lokiP2pAPI = new window.LokiP2pAPI(ourKey);
     window.lokiP2pAPI.on('pingContact', pubKey => {
