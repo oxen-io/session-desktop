@@ -2073,8 +2073,22 @@
       }
       const server = this.get('server');
       const channelId = this.get('channelId');
-      const endpoint = `${server}/channels/${channelId}/messages`;
+      const endpoint = `https://${server}/channels/${channelId}/messages`;
       return endpoint;
+    },
+    async getServerToken() {
+      if (!this.isPublic()) {
+        return null;
+      }
+      const token = await window.Signal.Data.getPublicServerTokenByServerName(this.get('server'));
+      return token;
+    },
+    async setServerToken(token) {
+      const server = this.get('server');
+      await window.Signal.Data.savePublicServerToken({
+        server,
+        token,
+      });
     },
 
     // SIGNAL PROFILES
