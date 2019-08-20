@@ -158,6 +158,21 @@
     }
   }
 
+  async function decryptToken(cipherText64, nonce64, serverPubKey64) {
+    const sodium = await window.getSodium();
+
+    const cipherText = new Uint8Array(dcodeIO.ByteBuffer.fromBase64(cipherText64).toArrayBuffer());
+    const nonce = new Uint8Array(dcodeIO.ByteBuffer.fromBase64(nonce64).toArrayBuffer());
+    const serverPubKey = new Uint8Array(dcodeIO.ByteBuffer.fromBase64(serverPubKey64).toArrayBuffer());
+
+    const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
+    const privateKey = new Uint8Array(myKeyPair.privKey);
+
+    const token = sodium.crypto_box_open_easy(cipherText, nonce, serverPubKey, privateKey);
+    const tokenString = sodium.to_string(token);
+    return tokenString;
+  }
+
   const snodeCipher = new LokiSnodeChannel();
 
   window.libloki.crypto = {
@@ -166,6 +181,7 @@
     FallBackSessionCipher,
     FallBackDecryptionError,
     snodeCipher,
+    decryptToken,
     // for testing
     _LokiSnodeChannel: LokiSnodeChannel,
     _decodeSnodeAddressToPubKey: decodeSnodeAddressToPubKey,
