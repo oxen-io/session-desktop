@@ -222,21 +222,25 @@
         ConversationCollection: Whisper.ConversationCollection,
       }
     );
-    publicConversations.forEach(conversation => {
+    await Promise.all(publicConversations.map(async conversation => {
       const settings = conversation.getPublicSource();
-      window.log.info(`Setting up public conversation for ${conversation.id}`);
       const publicChatServer = window.lokiPublicChatAPI.findOrCreateServer(
         settings.server
       );
-      if (publicChatServer) {
-        publicChatServer.findOrCreateChannel(
-          settings.channelId,
-          conversation.id
-        );
-      } else {
-        window.log.warn(`Could not set up channel for ${conversation.id}`);
+      if (!publicChatServer) {
+        window.log.warn(`Could not set up server for ${conversation.id}`);
+        return;
       }
-    });
+      let token = await conversation.getServerToken();
+      if (!token) {
+        token = await publicChatServer.getNewToken(ourKey);
+        if (token) {
+          conversation.setServerToken(token);
+        } else {
+          window.log.warn(`Could not get token for ${conversation.id}`);
+        }
+      }
+    }));
     window.lokiP2pAPI = new window.LokiP2pAPI(ourKey);
     window.lokiP2pAPI.on('pingContact', pubKey => {
       const isPing = true;

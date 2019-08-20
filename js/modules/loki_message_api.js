@@ -80,6 +80,7 @@ class LokiMessageAPI {
       isPing = false,
       numConnections = DEFAULT_CONNECTIONS,
       publicEndpoint = null,
+      token = null,
     } = options;
     // Data required to identify a message in a conversation
     const messageEventData = {
@@ -110,11 +111,12 @@ class LokiMessageAPI {
         ],
       };
       try {
+        // TODO: Handle case where token is null or gets rejected by server here
         const result = await nodeFetch(publicEndpoint, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer loki',
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         });

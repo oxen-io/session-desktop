@@ -1376,6 +1376,7 @@
         options.messageType = message.get('type');
         if (this.isPublic()) {
           options.publicEndpoint = this.getEndpoint();
+          options.token = await this.getServerToken();
         }
 
         const groupNumbers = this.getRecipients();

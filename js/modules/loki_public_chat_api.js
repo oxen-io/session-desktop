@@ -72,13 +72,68 @@ class LokiPublicServerAPI {
     this.channels.splice(i, 1);
     thisChannel.stopPolling = true;
   }
+
+  async getNewToken(ourKey) {
+    const token = await this.requestToken(ourKey);
+    if (!token) {
+      return null;
+    }
+    const registered = await this.submitToken(ourKey, token);
+    if (!registered) {
+      return null;
+    }
+    return token;
+  }
+
+  async requestToken(ourKey) {
+    const url = new URL(`http://localhost:8081/loki/v1/get_challenge`);
+    const params = {
+      pubKey: ourKey,
+    };
+    url.search = new URLSearchParams(params);
+
+    let res;
+    let success = true;
+    try {
+      res = await nodeFetch(url);
+    } catch (e) {
+      return null;
+    }
+    const body = await res.json();
+    const { cipherText64, nonce64, serverPubKey64 } = body;
+    const token = await window.libloki.crypto.decryptToken(cipherText64, nonce64, serverPubKey64);
+    return token;
+  }
+
+  async submitToken(ourKey, token) {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pubKey: ourKey,
+        token,
+      }),
+    };
+
+    let res;
+    let success = true;
+    try {
+      res = await nodeFetch(`http://localhost:8081/loki/v1/submit_challenge`, options);
+      success = res.ok;
+    } catch (e) {
+      return false;
+    }
+    return success;
+  }
 }
 
 class LokiPublicChannelAPI {
   constructor(serverAPI, channelId, conversationId) {
     this.serverAPI = serverAPI;
     this.channelId = channelId;
-    this.baseChannelUrl = `${serverAPI.server}/channels/${this.channelId}`;
+    this.baseChannelUrl = `https://${serverAPI.server}/channels/${this.channelId}`;
     this.groupName = 'unknown';
     this.conversationId = conversationId;
     this.lastGot = 0;
