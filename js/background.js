@@ -224,7 +224,11 @@
     );
     publicConversations.forEach(conversation => {
       const settings = conversation.getPublicSource();
-      window.lokiPublicChatAPI.registerChannel(settings.server, settings.channelId, conversation.id);
+      window.lokiPublicChatAPI.registerChannel(
+        settings.server,
+        settings.channelId,
+        conversation.id
+      );
     });
     window.lokiP2pAPI = new window.LokiP2pAPI(ourKey);
     window.lokiP2pAPI.on('pingContact', pubKey => {

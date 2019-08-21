@@ -2091,7 +2091,9 @@
       if (!this.isPublic()) {
         return null;
       }
-      let token = await window.Signal.Data.getPublicServerTokenByServerName(this.get('server'));
+      let token = await window.Signal.Data.getPublicServerTokenByServerName(
+        this.get('server')
+      );
       if (!token) {
         token = await this.getNewServerToken();
         if (token) {

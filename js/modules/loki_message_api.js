@@ -134,6 +134,7 @@ class LokiMessageAPI {
       }
       messageEventData.serverId = body.data.id;
       window.Whisper.events.trigger('publicMessageSent', messageEventData);
+      return;
     }
 
     const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');

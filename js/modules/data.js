@@ -778,7 +778,10 @@ async function getPublicServerTokenByServerName(server) {
   return token;
 }
 
-async function getPublicConversationsByServer(server, { ConversationCollection }) {
+async function getPublicConversationsByServer(
+  server,
+  { ConversationCollection }
+) {
   const conversations = await channels.getPublicConversationsByServer(server);
 
   const collection = new ConversationCollection();

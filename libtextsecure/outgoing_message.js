@@ -207,7 +207,9 @@ OutgoingMessage.prototype = {
         options.publicEndpoint = this.publicEndpoint;
         options.token = this.token;
         if (!options.token) {
-          throw new textsecure.PublicTokenError(`Couldn't get a valid token for ${options.publicEndpoint}`);
+          throw new textsecure.PublicTokenError(
+            `Couldn't get a valid token for ${options.publicEndpoint}`
+          );
         }
       }
       await lokiMessageAPI.sendMessage(pubKey, data, timestamp, ttl, options);

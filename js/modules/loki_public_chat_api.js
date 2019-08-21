@@ -1,4 +1,4 @@
-/* global log, textsecure */
+/* global log, textsecure, libloki */
 const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
@@ -118,7 +118,11 @@ class LokiPublicServerAPI {
     }
     const body = await res.json();
     const { cipherText64, nonce64, serverPubKey64 } = body;
-    const token = await window.libloki.crypto.decryptToken(cipherText64, nonce64, serverPubKey64);
+    const token = await libloki.crypto.decryptToken(
+      cipherText64,
+      nonce64,
+      serverPubKey64
+    );
     return token;
   }
 
@@ -137,7 +141,10 @@ class LokiPublicServerAPI {
     let res;
     let success = true;
     try {
-      res = await nodeFetch(`${this.baseServerUrl}/loki/v1/submit_challenge`, options);
+      res = await nodeFetch(
+        `${this.baseServerUrl}/loki/v1/submit_challenge`,
+        options
+      );
       success = res.ok;
     } catch (e) {
       return false;
@@ -150,7 +157,9 @@ class LokiPublicChannelAPI {
   constructor(serverAPI, channelId, conversationId) {
     this.serverAPI = serverAPI;
     this.channelId = channelId;
-    this.baseChannelUrl = `${serverAPI.baseServerUrl}/channels/${this.channelId}`;
+    this.baseChannelUrl = `${serverAPI.baseServerUrl}/channels/${
+      this.channelId
+    }`;
     this.groupName = 'unknown';
     this.conversationId = conversationId;
     this.lastGot = 0;

@@ -1643,9 +1643,12 @@ async function savePublicServerToken(data) {
 }
 
 async function getPublicServerTokenByServerName(server) {
-  const row = await db.get('SELECT * FROM server_tokens WHERE server = $server;', {
-    $server: server,
-  });
+  const row = await db.get(
+    'SELECT * FROM server_tokens WHERE server = $server;',
+    {
+      $server: server,
+    }
+  );
 
   if (!row) {
     return null;
@@ -1726,7 +1729,7 @@ async function getPublicConversationsByServer(server) {
       server = $server
      ORDER BY id ASC;`,
     {
-      server: server,
+      $server: server,
     }
   );
 
