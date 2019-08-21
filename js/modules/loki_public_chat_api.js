@@ -22,6 +22,10 @@ class LokiPublicChatAPI extends EventEmitter {
     }
     return thisServer;
   }
+  registerChannel(hostport, channelId, conversationId) {
+    const server = this.findOrCreateServer(hostport);
+    server.findOrCreateChannel(channelId, conversationId);
+  }
   unregisterChannel(hostport, channelId) {
     let thisServer;
     let i = 0;
@@ -46,6 +50,8 @@ class LokiPublicServerAPI {
     this.chatAPI = chatAPI;
     this.server = hostport;
     this.channels = [];
+    this.tokenPending = false;
+    this.tokenPromise = null;
     this.baseServerUrl = `https://${this.server}`;
   }
   findOrCreateChannel(channelId, conversationId) {
@@ -75,14 +81,22 @@ class LokiPublicServerAPI {
   }
 
   async getNewToken(ourKey) {
-    const token = await this.requestToken(ourKey);
-    if (!token) {
-      return null;
+    if (!this.tokenPending) {
+      this.tokenPending = true;
+      this.tokenPromise = new Promise(async res => {
+        const token = await this.requestToken(ourKey);
+        if (!token) {
+          res(null);
+        }
+        const registered = await this.submitToken(ourKey, token);
+        if (!registered) {
+          res(null);
+        }
+        res(token);
+      });
     }
-    const registered = await this.submitToken(ourKey, token);
-    if (!registered) {
-      return null;
-    }
+    const token = await this.tokenPromise;
+    this.tokenPending = false;
     return token;
   }
 
@@ -94,10 +108,12 @@ class LokiPublicServerAPI {
     url.search = new URLSearchParams(params);
 
     let res;
-    let success = true;
     try {
       res = await nodeFetch(url);
     } catch (e) {
+      return null;
+    }
+    if (!res.ok) {
       return null;
     }
     const body = await res.json();

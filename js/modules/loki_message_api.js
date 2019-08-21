@@ -110,9 +110,9 @@ class LokiMessageAPI {
           },
         ],
       };
+      let result;
       try {
-        // TODO: Handle case where token is null or gets rejected by server here
-        const result = await nodeFetch(publicEndpoint, {
+        result = await nodeFetch(publicEndpoint, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -120,15 +120,20 @@ class LokiMessageAPI {
           },
           body: JSON.stringify(payload),
         });
-        const body = await result.json();
-        messageEventData.serverId = body.data.id;
-        window.Whisper.events.trigger('publicMessageSent', messageEventData);
-        return;
       } catch (e) {
         throw new window.textsecure.PublicChatError(
-          'Failed to send public chat message.'
+          `Failed to send public chat message: ${e}`
         );
       }
+      const body = await result.json();
+      if (!result.ok) {
+        const error = body.meta.error_message;
+        throw new window.textsecure.PublicChatError(
+          `Failed to send public chat message: ${error}`
+        );
+      }
+      messageEventData.serverId = body.data.id;
+      window.Whisper.events.trigger('publicMessageSent', messageEventData);
     }
 
     const data64 = dcodeIO.ByteBuffer.wrap(data).toString('base64');

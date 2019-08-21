@@ -2077,11 +2077,27 @@
       const endpoint = `https://${server}/channels/${channelId}/messages`;
       return endpoint;
     },
+    async getNewServerToken() {
+      if (!this.isPublic()) {
+        return null;
+      }
+      const publicChatServer = window.lokiPublicChatAPI.findOrCreateServer(
+        this.get('server')
+      );
+      const token = await publicChatServer.getNewToken(this.ourNumber);
+      return token;
+    },
     async getServerToken() {
       if (!this.isPublic()) {
         return null;
       }
-      const token = await window.Signal.Data.getPublicServerTokenByServerName(this.get('server'));
+      let token = await window.Signal.Data.getPublicServerTokenByServerName(this.get('server'));
+      if (!token) {
+        token = await this.getNewServerToken();
+        if (token) {
+          await this.setServerToken(token);
+        }
+      }
       return token;
     },
     async setServerToken(token) {
