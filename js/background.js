@@ -228,7 +228,15 @@
         settings.server
       );
       if (!publicChatServer) {
-        window.log.warn(`Could not set up server for ${conversation.id}`);
+        window.log.warn(`Could not set up public server for ${conversation.id}`);
+        return;
+      }
+      const publicChatChannel = publicChatServer.findOrCreateChannel(
+        settings.channelId,
+        conversation.id
+      );
+      if (!publicChatChannel) {
+        window.log.warn(`Could not set up public channel for ${conversation.id}`);
         return;
       }
       let token = await conversation.getServerToken();

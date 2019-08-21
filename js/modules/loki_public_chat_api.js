@@ -46,6 +46,7 @@ class LokiPublicServerAPI {
     this.chatAPI = chatAPI;
     this.server = hostport;
     this.channels = [];
+    this.baseServerUrl = `https://${this.server}`;
   }
   findOrCreateChannel(channelId, conversationId) {
     let thisChannel = this.channels.find(
@@ -86,7 +87,7 @@ class LokiPublicServerAPI {
   }
 
   async requestToken(ourKey) {
-    const url = new URL(`http://localhost:8081/loki/v1/get_challenge`);
+    const url = new URL(`${this.baseServerUrl}/loki/v1/get_challenge`);
     const params = {
       pubKey: ourKey,
     };
@@ -120,7 +121,7 @@ class LokiPublicServerAPI {
     let res;
     let success = true;
     try {
-      res = await nodeFetch(`http://localhost:8081/loki/v1/submit_challenge`, options);
+      res = await nodeFetch(`${this.baseServerUrl}/loki/v1/submit_challenge`, options);
       success = res.ok;
     } catch (e) {
       return false;
@@ -133,7 +134,7 @@ class LokiPublicChannelAPI {
   constructor(serverAPI, channelId, conversationId) {
     this.serverAPI = serverAPI;
     this.channelId = channelId;
-    this.baseChannelUrl = `https://${serverAPI.server}/channels/${this.channelId}`;
+    this.baseChannelUrl = `${serverAPI.baseServerUrl}/channels/${this.channelId}`;
     this.groupName = 'unknown';
     this.conversationId = conversationId;
     this.lastGot = 0;
