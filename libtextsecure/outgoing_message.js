@@ -51,7 +51,6 @@ function OutgoingMessage(
     isPing,
     isPublic,
     channelSettings,
-    token,
   } =
     options || {};
   this.numberInfo = numberInfo;

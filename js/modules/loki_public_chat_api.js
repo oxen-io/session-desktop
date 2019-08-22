@@ -81,9 +81,7 @@ class LokiPublicServerAPI {
   }
 
   async getServerToken() {
-    let token = await Signal.Data.getPublicServerTokenByServerName(
-      this.server
-    );
+    let token = await Signal.Data.getPublicServerTokenByServerName(this.server);
     if (!token) {
       token = await this.getNewToken();
       if (token) {
@@ -103,10 +101,12 @@ class LokiPublicServerAPI {
         const token = await this.requestToken();
         if (!token) {
           res(null);
+          return;
         }
         const registered = await this.submitToken(token);
         if (!registered) {
           res(null);
+          return;
         }
         res(token);
       });
@@ -133,10 +133,9 @@ class LokiPublicServerAPI {
       return null;
     }
     const body = await res.json();
-    const { cipherText64, nonce64, serverPubKey64 } = body;
+    const { cipherText64, serverPubKey64 } = body;
     const token = await libloki.crypto.decryptToken(
       cipherText64,
-      nonce64,
       serverPubKey64
     );
     return token;
@@ -186,7 +185,9 @@ class LokiPublicChannelAPI {
   }
 
   getEndpoint() {
-    const endpoint = `https://${this.serverAPI.server}/channels/${this.channelId}/messages`;
+    const endpoint = `https://${this.serverAPI.server}/channels/${
+      this.channelId
+    }/messages`;
     return endpoint;
   }
 

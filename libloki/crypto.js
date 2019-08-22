@@ -158,29 +158,24 @@
     }
   }
 
-  async function decryptToken(cipherText64, nonce64, serverPubKey64) {
-    const sodium = await window.getSodium();
+  async function decryptToken(ivAndCipherText64, serverPubKey64) {
+    const ivAndCipherText = new Uint8Array(
+      dcodeIO.ByteBuffer.fromBase64(ivAndCipherText64).toArrayBuffer()
+    );
+    const iv = ivAndCipherText.slice(0, IV_LENGTH);
+    const cipherText = ivAndCipherText.slice(IV_LENGTH);
 
-    const cipherText = new Uint8Array(
-      dcodeIO.ByteBuffer.fromBase64(cipherText64).toArrayBuffer()
-    );
-    const nonce = new Uint8Array(
-      dcodeIO.ByteBuffer.fromBase64(nonce64).toArrayBuffer()
-    );
     const serverPubKey = new Uint8Array(
       dcodeIO.ByteBuffer.fromBase64(serverPubKey64).toArrayBuffer()
     );
-
-    const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
-    const privateKey = new Uint8Array(myKeyPair.privKey);
-
-    const token = sodium.crypto_box_open_easy(
-      cipherText,
-      nonce,
+    const { privKey } = await textsecure.storage.protocol.getIdentityKeyPair();
+    const symmetricKey = libsignal.Curve.calculateAgreement(
       serverPubKey,
-      privateKey
+      privKey
     );
-    const tokenString = sodium.to_string(token);
+
+    const token = await libsignal.crypto.decrypt(symmetricKey, cipherText, iv);
+    const tokenString = dcodeIO.ByteBuffer.wrap(token).toString('utf8');
     return tokenString;
   }
 

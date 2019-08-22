@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
-/* global log, dcodeIO, window, callWorker, lokiP2pAPI, lokiSnodeAPI, lokiPublicChatAPI, textsecure */
+/* global log, dcodeIO, window, callWorker,
+          lokiP2pAPI, lokiSnodeAPI, lokiPublicChatAPI, textsecure */
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
@@ -81,7 +82,6 @@ class LokiMessageAPI {
       isPublic = false,
       numConnections = DEFAULT_CONNECTIONS,
       channelSettings = null,
-      token = null,
     } = options;
     // Data required to identify a message in a conversation
     const messageEventData = {
@@ -92,14 +92,17 @@ class LokiMessageAPI {
     if (isPublic) {
       // could we emit back to LokiPublicChannelAPI somehow?
       const { server, channelId, conversationId } = channelSettings;
-      const severAPI = lokiPublicChatAPI.findOrCreateServer(server);
-      const token = await severAPI.getServerToken();
+      const serverAPI = lokiPublicChatAPI.findOrCreateServer(server);
+      const token = await serverAPI.getServerToken();
       if (!token) {
         throw new window.textsecure.PublicChatError(
           `Failed to retrieve valid token for ${conversationId}`
         );
       }
-      const channelAPI = severAPI.findOrCreateChannel(channelId, conversationId);
+      const channelAPI = serverAPI.findOrCreateChannel(
+        channelId,
+        conversationId
+      );
       const publicEndpoint = channelAPI.getEndpoint(conversationId);
 
       const { profile } = data;
@@ -137,6 +140,9 @@ class LokiMessageAPI {
       }
       const body = await result.json();
       if (!result.ok) {
+        if (result.status === 401) {
+          // Handle token timeout
+        }
         const error = body.meta.error_message;
         throw new window.textsecure.PublicChatError(
           `Failed to send public chat message: ${error}`

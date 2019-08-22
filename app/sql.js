@@ -834,7 +834,7 @@ async function updateToLokiSchemaVersion1(currentVersion, instance) {
 
   const lokiPublicServerData = {
     server: 'chat.lokinet.org',
-    token: null
+    token: null,
   };
 
   const baseData = {
@@ -843,9 +843,6 @@ async function updateToLokiSchemaVersion1(currentVersion, instance) {
     sessionResetStatus: 0,
     swarmNodes: [],
     type: 'group',
-    server: 'chat.lokinet.org',
-    name: 'Loki Public Chat',
-    channelId: '1',
     unlockTimestamp: null,
     unreadCount: 0,
     verified: 0,
@@ -855,12 +852,11 @@ async function updateToLokiSchemaVersion1(currentVersion, instance) {
   const publicChatData = {
     ...baseData,
     id: 'publicChat:1@chat.lokinet.org',
-    server: 'https://chat.lokinet.org',
+    server: 'chat.lokinet.org',
     name: 'Loki Public Chat',
     channelId: '1',
   };
 
-  const { id, type, name, friendRequestStatus } = publicChatData;
   const { server, token } = lokiPublicServerData;
 
   await instance.run(
