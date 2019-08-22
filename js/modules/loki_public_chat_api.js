@@ -1,4 +1,4 @@
-/* global log, textsecure, libloki */
+/* global log, textsecure, libloki, Signal */
 const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
@@ -80,15 +80,31 @@ class LokiPublicServerAPI {
     thisChannel.stopPolling = true;
   }
 
-  async getNewToken(ourKey) {
+  async getServerToken() {
+    let token = await Signal.Data.getPublicServerTokenByServerName(
+      this.server
+    );
+    if (!token) {
+      token = await this.getNewToken();
+      if (token) {
+        await Signal.Data.savePublicServerToken({
+          server: this.server,
+          token,
+        });
+      }
+    }
+    return token;
+  }
+
+  async getNewToken() {
     if (!this.tokenPending) {
       this.tokenPending = true;
       this.tokenPromise = new Promise(async res => {
-        const token = await this.requestToken(ourKey);
+        const token = await this.requestToken();
         if (!token) {
           res(null);
         }
-        const registered = await this.submitToken(ourKey, token);
+        const registered = await this.submitToken(token);
         if (!registered) {
           res(null);
         }
@@ -100,10 +116,10 @@ class LokiPublicServerAPI {
     return token;
   }
 
-  async requestToken(ourKey) {
+  async requestToken() {
     const url = new URL(`${this.baseServerUrl}/loki/v1/get_challenge`);
     const params = {
-      pubKey: ourKey,
+      pubKey: this.chatAPI.ourKey,
     };
     url.search = new URLSearchParams(params);
 
@@ -126,14 +142,14 @@ class LokiPublicServerAPI {
     return token;
   }
 
-  async submitToken(ourKey, token) {
+  async submitToken(token) {
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        pubKey: ourKey,
+        pubKey: this.chatAPI.ourKey,
         token,
       }),
     };
@@ -167,6 +183,11 @@ class LokiPublicChannelAPI {
     log.info(`registered LokiPublicChannel ${channelId}`);
     // start polling
     this.pollForMessages();
+  }
+
+  getEndpoint() {
+    const endpoint = `https://${this.serverAPI.server}/channels/${this.channelId}/messages`;
+    return endpoint;
   }
 
   async pollForChannel(source, endpoint) {

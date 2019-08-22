@@ -49,13 +49,14 @@ function OutgoingMessage(
     online,
     messageType,
     isPing,
-    publicEndpoint,
+    isPublic,
+    channelSettings,
     token,
   } =
     options || {};
   this.numberInfo = numberInfo;
-  this.publicEndpoint = publicEndpoint;
-  this.token = token;
+  this.isPublic = isPublic;
+  this.channelSettings = channelSettings;
   this.senderCertificate = senderCertificate;
   this.online = online;
   this.messageType = messageType || 'outgoing';
@@ -203,14 +204,9 @@ OutgoingMessage.prototype = {
         numConnections: NUM_SEND_CONNECTIONS,
         isPing: this.isPing,
       };
-      if (this.publicEndpoint) {
-        options.publicEndpoint = this.publicEndpoint;
-        options.token = this.token;
-        if (!options.token) {
-          throw new textsecure.PublicTokenError(
-            `Couldn't get a valid token for ${options.publicEndpoint}`
-          );
-        }
+      options.isPublic = this.isPublic;
+      if (this.isPublic) {
+        options.channelSettings = this.channelSettings;
       }
       await lokiMessageAPI.sendMessage(pubKey, data, timestamp, ttl, options);
     } catch (e) {
@@ -278,7 +274,7 @@ OutgoingMessage.prototype = {
   },
   doSendMessage(number, deviceIds, recurse) {
     const ciphers = {};
-    if (this.publicEndpoint) {
+    if (this.isPublic) {
       return this.transmitMessage(
         number,
         this.message.dataMessage,

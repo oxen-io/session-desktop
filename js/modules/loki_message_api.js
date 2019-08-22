@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
-/* global log, dcodeIO, window, callWorker, lokiP2pAPI, lokiSnodeAPI, textsecure */
+/* global log, dcodeIO, window, callWorker, lokiP2pAPI, lokiSnodeAPI, lokiPublicChatAPI, textsecure */
 
 const _ = require('lodash');
 const { rpc } = require('./loki_rpc');
@@ -78,8 +78,9 @@ class LokiMessageAPI {
   async sendMessage(pubKey, data, messageTimeStamp, ttl, options = {}) {
     const {
       isPing = false,
+      isPublic = false,
       numConnections = DEFAULT_CONNECTIONS,
-      publicEndpoint = null,
+      channelSettings = null,
       token = null,
     } = options;
     // Data required to identify a message in a conversation
@@ -88,10 +89,19 @@ class LokiMessageAPI {
       timestamp: messageTimeStamp,
     };
 
-    // FIXME: should have public/sending(ish hint) in the option to make
-    // this more obvious...
-    if (publicEndpoint) {
+    if (isPublic) {
       // could we emit back to LokiPublicChannelAPI somehow?
+      const { server, channelId, conversationId } = channelSettings;
+      const severAPI = lokiPublicChatAPI.findOrCreateServer(server);
+      const token = await severAPI.getServerToken();
+      if (!token) {
+        throw new window.textsecure.PublicChatError(
+          `Failed to retrieve valid token for ${conversationId}`
+        );
+      }
+      const channelAPI = severAPI.findOrCreateChannel(channelId, conversationId);
+      const publicEndpoint = channelAPI.getEndpoint(conversationId);
+
       const { profile } = data;
       let displayName = 'Anonymous';
       if (profile && profile.displayName) {

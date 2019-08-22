@@ -1374,9 +1374,9 @@
 
         const options = this.getSendOptions();
         options.messageType = message.get('type');
+        options.isPublic = this.isPublic();
         if (this.isPublic()) {
-          options.publicEndpoint = this.getEndpoint();
-          options.token = await this.getServerToken();
+          options.channelSettings = this.getPublicSource();
         }
 
         const groupNumbers = this.getRecipients();
@@ -2065,49 +2065,8 @@
       return {
         server: this.get('server'),
         channelId: this.get('channelId'),
+        conversationId: this.get('id'),
       };
-    },
-    // FIXME: remove or add public and/or "sending" hint to name...
-    getEndpoint() {
-      if (!this.isPublic()) {
-        return null;
-      }
-      const server = this.get('server');
-      const channelId = this.get('channelId');
-      const endpoint = `https://${server}/channels/${channelId}/messages`;
-      return endpoint;
-    },
-    async getNewServerToken() {
-      if (!this.isPublic()) {
-        return null;
-      }
-      const publicChatServer = window.lokiPublicChatAPI.findOrCreateServer(
-        this.get('server')
-      );
-      const token = await publicChatServer.getNewToken(this.ourNumber);
-      return token;
-    },
-    async getServerToken() {
-      if (!this.isPublic()) {
-        return null;
-      }
-      let token = await window.Signal.Data.getPublicServerTokenByServerName(
-        this.get('server')
-      );
-      if (!token) {
-        token = await this.getNewServerToken();
-        if (token) {
-          await this.setServerToken(token);
-        }
-      }
-      return token;
-    },
-    async setServerToken(token) {
-      const server = this.get('server');
-      await window.Signal.Data.savePublicServerToken({
-        server,
-        token,
-      });
     },
 
     // SIGNAL PROFILES
