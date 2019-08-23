@@ -16,7 +16,7 @@
 /* global localServerPort: false */
 /* global lokiMessageAPI: false */
 /* global lokiP2pAPI: false */
-/* global lokiRssAPI: false */
+/* global feeds: false */
 
 /* eslint-disable more/no-then */
 /* eslint-disable no-unreachable */
@@ -85,7 +85,10 @@ MessageReceiver.prototype.extend({
       }
     });
     localLokiServer.on('message', this.handleP2pMessage.bind(this));
-    lokiRssAPI.on('rssMessage', this.handleRssMessage.bind(this));
+    // set up pollers for any RSS feeds
+    feeds.forEach(feed => {
+      feed.on('rssMessage', this.handleRssMessage.bind(this));
+    })
     this.startLocalServer();
 
     // TODO: Rework this socket stuff to work with online messaging
