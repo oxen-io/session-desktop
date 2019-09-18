@@ -4,6 +4,12 @@ const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
 
+// we'll start by putting it here, and then move up the pipeline
+const remark = require('remark');
+const remarkHtml = require('remark-html');
+const remarkStrip = require('remark-strip-html');
+const remarkRecommended = require('remark-preset-lint-recommended');
+
 // Can't be less than 1200 if we have unauth'd requests
 const PUBLICCHAT_MSG_POLL_EVERY = 1.5 * 1000; // 1.5s
 const PUBLICCHAT_CHAN_POLL_EVERY = 20 * 1000; // 20s
@@ -66,7 +72,8 @@ class LokiPublicServerAPI {
     const ref = this;
     (async function justToEnableAsyncToGetToken() {
       ref.token = await ref.getOrRefreshServerToken();
-      log.info(`set token ${ref.token}`);
+      // lets not do this for security reasons
+      //log.info(`set token ${ref.token}`);
     })();
   }
 
@@ -518,9 +525,12 @@ class LokiPublicChannelAPI {
   }
 
   async pollOnceForMessages() {
+    // mark sure send() can access this object instance
+    const ref = this;
+
     const params = {
       include_annotations: 1,
-      include_deleted: false,
+      include_deleted: false, // don't waste bandwidth
     };
     if (!this.conversation) {
       log.warn('Trying to poll for non-existing public conversation');
@@ -534,14 +544,21 @@ class LokiPublicChannelAPI {
     const res = await this.serverRequest(`${this.baseChannelUrl}/messages`, {
       params,
     });
-
     if (!res.err && res.response) {
       let receivedAt = new Date().getTime();
+      const mdEngine = remark()
+        // DO NOT ALLOW users/servers to inject their own custom HTML
+        // not sure I trust this
+        // this does allow `<b>bold example</b>` to work
+        .use(remarkStrip)
+        .use(remarkRecommended) // better cross browser support?
+        .use(remarkHtml); // and finally convert to HTML
       res.response.data.reverse().forEach(adnMessage => {
         let timestamp = new Date(adnMessage.created_at).getTime();
         // pubKey lives in the username field
         let from = adnMessage.user.name;
         let quote = null;
+        let markdown = null;
         if (adnMessage.is_deleted) {
           return;
         }
@@ -550,7 +567,7 @@ class LokiPublicChannelAPI {
           adnMessage.annotations.length !== 0
         ) {
           const noteValue = adnMessage.annotations[0].value;
-          ({ timestamp, quote } = noteValue);
+          ({ timestamp, quote, markdown } = noteValue);
 
           if (quote) {
             quote.attachments = [];
@@ -561,57 +578,87 @@ class LokiPublicChannelAPI {
           if (!from) {
             ({ from } = noteValue);
           }
+
+          // check for markdown
+          if (markdown) {
+            // DO NOT ALLOW users/servers to slip in their own custom HTML
+            mdEngine.process(markdown, function(err, file) {
+              const markDownHTML = String(file);
+              console.log('html is', markDownHTML);
+              saveLocally(from, timestamp, adnMessage, {
+                markDownHTML,
+              });
+            });
+          } else {
+            saveLocally(from, timestamp, adnMessage);
+          }
+        } else {
+          // no annotation
+          // means no timestamp (from, quote or markdown)
+          log.warn('no annotation for', adnMessage.id);
         }
 
-        if (
-          !from ||
-          !timestamp ||
-          !adnMessage.id ||
-          !adnMessage.user ||
-          !adnMessage.user.username ||
-          !adnMessage.text
-        ) {
-          return; // Invalid message
-        }
+        function saveLocally(from, timestamp, adnMessage, options) {
+          if (
+            !from ||
+            !timestamp ||
+            !adnMessage.id ||
+            !adnMessage.user ||
+            !adnMessage.user.username ||
+            !adnMessage.text
+          ) {
+            return; // Invalid message
+          }
+          let text = adnMessage.text;
+          if (options && options.markDownHTML) {
+            text = options.markDownHTML;
+          }
 
-        const messageData = {
-          serverId: adnMessage.id,
-          friendRequest: false,
-          source: adnMessage.user.username,
-          sourceDevice: 1,
-          timestamp,
-          serverTimestamp: timestamp,
-          receivedAt,
-          isPublic: true,
-          message: {
-            body: adnMessage.text,
-            attachments: [],
-            group: {
-              id: this.conversationId,
-              type: textsecure.protobuf.GroupContext.Type.DELIVER,
-            },
-            flags: 0,
-            expireTimer: 0,
-            profileKey: null,
+          const messageData = {
+            serverId: adnMessage.id,
+            friendRequest: false,
+            source: adnMessage.user.username,
+            sourceDevice: 1,
             timestamp,
-            received_at: receivedAt,
-            sent_at: timestamp,
-            quote,
-            contact: [],
-            preview: [],
-            profile: {
-              displayName: from,
+            serverTimestamp: timestamp,
+            receivedAt,
+            isPublic: true,
+            message: {
+              body: text,
+              attachments: [],
+              group: {
+                id: ref.conversationId,
+                type: textsecure.protobuf.GroupContext.Type.DELIVER,
+              },
+              flags: 0,
+              expireTimer: 0,
+              profileKey: null,
+              timestamp,
+              received_at: receivedAt,
+              sent_at: timestamp,
+              quote,
+              contact: [],
+              preview: [],
+              profile: {
+                displayName: from,
+              },
             },
-          },
-        };
-        receivedAt += 1; // Ensure different arrival times
+          };
+          if (options && options.markDownHTML) {
+            messageData.message.hasMarkdown = true;
+            messageData.message.markDown = markdown;
+          }
+          // Ensure different arrival times, so two messages sent at the same
+          // timestamp are both received
+          receivedAt += 1;
 
-        this.serverAPI.chatAPI.emit('publicMessage', {
-          message: messageData,
-        });
+          ref.serverAPI.chatAPI.emit('publicMessage', {
+            message: messageData,
+          });
 
-        // now process any user meta data updates
-        // - update their conversation with a potentially new avatar
+          // now process any user meta data updates
+          // - update their conversation with a potentially new avatar
+        }
 
         this.lastGot = !this.lastGot
           ? adnMessage.id
@@ -622,7 +669,7 @@ class LokiPublicChannelAPI {
   }
 
   // create a message in the channel
-  async sendMessage(text, quote, messageTimeStamp, displayName, pubKey) {
+  async sendMessage(text, messageTimeStamp, displayName, pubKey, options) {
     const payload = {
       text,
       annotations: [
@@ -630,15 +677,25 @@ class LokiPublicChannelAPI {
           type: 'network.loki.messenger.publicChat',
           value: {
             timestamp: messageTimeStamp,
-            // will deprecated
+            // almost deprecated
             from: displayName,
-            // will deprecated
+            // is deprecated
             source: pubKey,
-            quote,
           },
         },
       ],
     };
+    const ref = this;
+
+    if (options.markDown) {
+      payload.annotations[0].value.markdown = options.markDown;
+    }
+    let quote
+    if (options.quote) {
+      quote = options.quote;
+      payload.annotations[0].value.quote = options.quote;
+    }
+
     if (quote && quote.id) {
       // copied from model/message.js copyFromQuotedMessage
       const collection = await Signal.Data.getMessagesBySentAt(quote.id, {
@@ -658,7 +715,7 @@ class LokiPublicChannelAPI {
         }
       }
     }
-    const res = await this.serverRequest(`${this.baseChannelUrl}/messages`, {
+    const res = await ref.serverRequest(`${this.baseChannelUrl}/messages`, {
       method: 'POST',
       objBody: payload,
     });
@@ -666,7 +723,7 @@ class LokiPublicChannelAPI {
       return res.response.data.id;
     }
     return false;
-  }
-}
+  } // end function
+} // end class
 
 module.exports = LokiPublicChatAPI;
