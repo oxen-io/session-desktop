@@ -51,11 +51,13 @@ function OutgoingMessage(
     isPing,
     isPublic,
     publicSendData,
+    markDown,
   } =
     options || {};
   this.numberInfo = numberInfo;
   this.isPublic = isPublic;
   this.publicSendData = publicSendData;
+  this.markDown = markDown;
   this.senderCertificate = senderCertificate;
   this.online = online;
   this.messageType = messageType || 'outgoing';
@@ -207,6 +209,7 @@ OutgoingMessage.prototype = {
       if (this.isPublic) {
         options.publicSendData = this.publicSendData;
       }
+      options.markDown = this.markDown;
       await lokiMessageAPI.sendMessage(pubKey, data, timestamp, ttl, options);
     } catch (e) {
       if (e.name === 'HTTPError' && (e.code !== 409 && e.code !== 410)) {
@@ -235,6 +238,7 @@ OutgoingMessage.prototype = {
     return messagePartCount * 160;
   },
   convertMessageToText(message) {
+    console.log('convertMessageToText', message);
     const messageBuffer = message.toArrayBuffer();
     const plaintext = new Uint8Array(
       this.getPaddedMessageLength(messageBuffer.byteLength + 1) - 1
