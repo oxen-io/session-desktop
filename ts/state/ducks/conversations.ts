@@ -41,6 +41,7 @@ export type ConversationType = {
     status: 'error' | 'sending' | 'sent' | 'delivered' | 'read';
     text: string;
     isRss: boolean;
+    hasMarkdown: boolean;
   };
   phoneNumber: string;
   type: 'direct' | 'group';
