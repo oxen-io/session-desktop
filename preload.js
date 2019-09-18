@@ -5,6 +5,11 @@ const electron = require('electron');
 const semver = require('semver');
 const selfsigned = require('selfsigned');
 
+const remark = require('remark');
+const remarkHtml = require('remark-html');
+const remarkStrip = require('remark-strip-html');
+const remarkRecommended = require('remark-preset-lint-recommended');
+
 const { deferredToPromise } = require('./js/modules/deferred_to_promise');
 const { JobQueue } = require('./js/modules/job_queue');
 
@@ -39,6 +44,22 @@ window.isBehindProxy = () => Boolean(config.proxyUrl);
 window.JobQueue = JobQueue;
 window.getStoragePubKey = key =>
   window.isDev() ? key.substring(0, key.length - 2) : key;
+
+
+// set up markdown engine
+const mdEngine = remark()
+  // DO NOT ALLOW users/servers to inject their own custom HTML
+  // not sure I trust this
+  // this does allow `<b>bold example</b>` to work
+  .use(remarkStrip)
+  .use(remarkRecommended) // better cross browser support?
+  .use(remarkHtml); // and finally convert to HTML
+
+window.markdoneHTMLConverter = (markdown) => {
+  const vfile = mdEngine.processSync(markdown);
+  const markDownHTML = String(vfile);
+  return markDownHTML;
+}
 
 window.isBeforeVersion = (toCheck, baseVersion) => {
   try {
