@@ -681,6 +681,10 @@
         isP2p: !!this.get('isP2p'),
         isPublic: !!this.get('isPublic'),
         isRss: !!this.get('isRss'),
+        // trigger to enable HTML processing like isRss
+        hasMarkdown: !!this.get('markDown'),
+        // original markDown text
+        markDown: this.get('markDown'),
         isModerator:
           !!this.get('isPublic') &&
           this.getConversation().isModerator(this.getSource()),
@@ -713,6 +717,11 @@
     createNonBreakingLastSeparator(text) {
       if (!text) {
         return null;
+      }
+
+      if (this.get('markDown')) {
+        // if we have markDown set, convert to HTML
+        text = window.markdoneHTMLConverter(this.get('markDown'));
       }
 
       const nbsp = '\xa0';
@@ -1272,6 +1281,20 @@
         Message: Whisper.Message,
       });
     },
+    async setMarkDown(markDown) {
+      if (_.isEqual(this.get('markDown'), markDown)) {
+        return;
+      }
+
+      this.set({
+        hasMarkdown: true,
+        markDown: markDown,
+      });
+
+      await window.Signal.Data.saveMessage(this.attributes, {
+        Message: Whisper.Message,
+      });
+    },
     getServerId() {
       return this.get('serverId');
     },
@@ -1770,6 +1793,7 @@
       const source = message.get('source');
       const type = message.get('type');
       let conversationId = message.get('conversationId');
+      console.log('handleDataMessage initialMessage', initialMessage);
       if (initialMessage.group) {
         conversationId = initialMessage.group.id;
       }
@@ -1784,7 +1808,7 @@
           initialMessage
         );
         const dataMessage = await upgradeMessageSchema(withQuoteReference);
-
+        console.log('dataMessage after schema', dataMessage);
         try {
           const now = new Date().getTime();
           let attributes = {
