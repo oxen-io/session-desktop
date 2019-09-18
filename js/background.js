@@ -1450,6 +1450,7 @@
       isP2p: data.isP2p,
       isPublic: data.isPublic,
       isRss: data.isRss,
+      hasMarkdown: data.hasMarkdown,
     };
 
     if (data.friendRequest) {
