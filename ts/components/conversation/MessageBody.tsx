@@ -10,6 +10,7 @@ import { LocalizerType, RenderTextCallbackType } from '../../types/Util';
 interface Props {
   text: string;
   isRss?: boolean;
+  hasMarkdown?: boolean;
   textPending?: boolean;
   /** If set, all emoji will be the same size. Otherwise, just one emoji will be large. */
   disableJumbomoji?: boolean;
@@ -75,6 +76,7 @@ export class MessageBody extends React.Component<Props> {
       disableJumbomoji,
       disableLinks,
       isRss,
+      hasMarkdown,
       i18n,
     } = this.props;
     const sizeClass = disableJumbomoji ? undefined : getSizeClass(text);
@@ -96,6 +98,7 @@ export class MessageBody extends React.Component<Props> {
       <Linkify
         text={textWithPending}
         isRss={isRss}
+        hasMarkdown={hasMarkdown}
         renderNonLink={({ key, text: nonLinkText }) => {
           return renderEmoji({
             i18n,
