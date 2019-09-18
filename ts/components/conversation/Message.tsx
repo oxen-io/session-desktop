@@ -90,6 +90,7 @@ export interface Props {
   isP2p?: boolean;
   isPublic?: boolean;
   isRss?: boolean;
+  hasMarkdown?: boolean;
 
   onClickAttachment?: (attachment: AttachmentType) => void;
   onClickLinkPreview?: (url: string) => void;
@@ -714,7 +715,15 @@ export class Message extends React.PureComponent<Props, State> {
   }
 
   public renderText() {
-    const { text, textPending, i18n, direction, status, isRss } = this.props;
+    const {
+      text,
+      textPending,
+      i18n,
+      direction,
+      status,
+      isRss,
+      hasMarkdown,
+    } = this.props;
 
     const contents =
       direction === 'incoming' && status === 'error'
@@ -739,6 +748,7 @@ export class Message extends React.PureComponent<Props, State> {
         <MessageBody
           text={contents || ''}
           isRss={isRss}
+          hasMarkdown={hasMarkdown}
           i18n={i18n}
           textPending={textPending}
         />
