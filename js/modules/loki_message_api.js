@@ -75,16 +75,19 @@ class LokiMessageAPI {
   }
 
   async sendMessage(pubKey, data, messageTimeStamp, ttl, options = {}) {
+    console.log('sendMessage Triggered!', options)
     const {
       isPing = false,
       isPublic = false,
       numConnections = DEFAULT_CONNECTIONS,
       publicSendData = null,
+      markDown = null,
     } = options;
     // Data required to identify a message in a conversation
     const messageEventData = {
       pubKey,
       timestamp: messageTimeStamp,
+      bob: 'sam',
     };
 
     if (isPublic) {
@@ -93,12 +96,21 @@ class LokiMessageAPI {
       if (profile && profile.displayName) {
         ({ displayName } = profile);
       }
+      const publicOptions = {};
+      // pass markDown if set
+      if (markDown) {
+        publicOptions.markDown = markDown;
+      }
+      // pass quote if set
+      if (data.quote) {
+        publicOptions.quote = quote;
+      }
       const res = await publicSendData.sendMessage(
         data.body,
-        data.quote,
         messageTimeStamp,
         displayName,
-        this.ourKey
+        this.ourKey,
+        publicOptions
       );
       if (res === false) {
         throw new window.textsecure.PublicChatError(
@@ -118,6 +130,7 @@ class LokiMessageAPI {
       messageEventData
     );
     if (p2pSuccess) {
+      console.log('SENT VIA P2P');
       return;
     }
 
