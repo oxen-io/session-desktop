@@ -476,6 +476,7 @@
           status: this.get('lastMessageStatus'),
           text: this.get('lastMessage'),
           isRss: this.isRss(),
+          hasMarkdown: this.get('lastMessageHasMD'),
         },
         isOnline: this.isOnline(),
         hasNickname: !!this.getNickname(),
@@ -1265,6 +1266,14 @@
         profileKey = storage.get('profileKey');
       }
 
+      let markDown = null;
+      if (hasMarkdown(body)) {
+        // back up markdown
+        markDown = body;
+        // replace body with the PLAINTEXT version
+        body = markdownToText(body);
+      }
+
       this.queueJob(async () => {
         const now = Date.now();
 
@@ -1346,6 +1355,10 @@
           ...messageWithSchema,
           id: window.getGuid(),
         };
+        // make sure this data is saved within the local model
+        if (markDown) {
+          attributes.markDown = markDown;
+        }
 
         const model = this.addSingleMessage(attributes);
         const message = MessageController.register(model.id, model);
@@ -1366,6 +1379,8 @@
         this.set({
           lastMessage: model.getNotificationText(),
           lastMessageStatus: 'sending',
+          lastMessageHasMD: model.get('hasMarkdown'),
+          lastMessageTimestamp: model.get('timestamp'),
           active_at: now,
           timestamp: now,
           isArchived: false,
@@ -1411,6 +1426,10 @@
             expireTimer,
             profileKey
           );
+          if (markDown) {
+            //dataMessage.hasMarkdown = true;
+            await message.setMarkDown(markDown);
+          }
           return message.sendSyncMessageOnly(dataMessage);
         }
 
@@ -1421,6 +1440,10 @@
         options.isPublic = this.isPublic();
         if (options.isPublic) {
           options.publicSendData = this.getPublicSendData();
+        }
+        // if we detected markDown, pass it along with our stripped text
+        if (markDown) {
+          options.markDown = markDown;
         }
 
         const groupNumbers = this.getRecipients();
@@ -1660,6 +1683,16 @@
           ? lastMessageModel.getNotificationText()
           : null,
       });
+
+      // strip out HTML from message text
+      lastMessageUpdate.lastMessageHasMD = lastMessageModel
+        ? lastMessageModel.get('hasMarkdown')
+        : null;
+
+      // so we can look up in the future
+      lastMessageUpdate.lastMessageTimestamp = lastMessageModel
+        ? lastMessageModel.get('timestamp')
+        : null;
 
       // Because we're no longer using Backbone-integrated saves, we need to manually
       //   clear the changed fields here so our hasChanged() check below is useful.
