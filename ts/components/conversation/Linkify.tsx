@@ -10,6 +10,7 @@ const linkify = LinkifyIt();
 interface Props {
   text: string;
   isRss?: boolean;
+  hasMarkdown?: boolean;
   /** Allows you to customize now non-links are rendered. Simplest is just a <span>. */
   renderNonLink?: RenderTextCallbackType;
 }
@@ -23,11 +24,11 @@ export class Linkify extends React.Component<Props> {
   };
 
   public render() {
-    const { text, renderNonLink, isRss } = this.props;
+    const { text, renderNonLink, isRss, hasMarkdown } = this.props;
     const results: Array<any> = [];
     let count = 1;
 
-    if (isRss && text.indexOf('</') !== -1) {
+    if ((hasMarkdown || isRss) && text.indexOf('</') !== -1) {
       results.push(
         <div
           key={count++}
