@@ -308,7 +308,12 @@
       if (this.isIncoming() && this.hasErrors()) {
         return i18n('incomingError');
       }
-      return this.get('body');
+      let body = this.get('body');
+      // strip out any markdown
+      if (hasMarkdown(body)) {
+        body = markdownToText(body);
+      }
+      return body;
     },
     isVerifiedChange() {
       return this.get('type') === 'verified-change';
@@ -682,7 +687,7 @@
         isPublic: !!this.get('isPublic'),
         isRss: !!this.get('isRss'),
         // trigger to enable HTML processing like isRss
-        hasMarkdown: !!this.get('markDown'),
+        hasMarkdown: this.hasMarkdown(),
         // original markDown text
         markDown: this.get('markDown'),
         isModerator:
@@ -719,9 +724,9 @@
         return null;
       }
 
-      if (this.get('markDown')) {
-        // if we have markDown set, convert to HTML
-        text = window.markdoneHTMLConverter(this.get('markDown'));
+      if (hasMarkdown(text)) {
+        // if we detect markDown, convert to HTML
+        text = window.markdoneHTMLConverter(text);
       }
 
       const nbsp = '\xa0';
@@ -733,6 +738,11 @@
             : spaces;
         return `${start}${newSpaces}${end}`;
       });
+    },
+    hasMarkdown() {
+      let body = this.get('body'); // get our body
+      if (!body) body = ''; // mark sure it's a string
+      return hasMarkdown(body);
     },
     getPropsForEmbeddedContact() {
       const regionCode = storage.get('regionCode');
