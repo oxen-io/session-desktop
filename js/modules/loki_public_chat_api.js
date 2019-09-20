@@ -73,7 +73,7 @@ class LokiPublicServerAPI {
     (async function justToEnableAsyncToGetToken() {
       ref.token = await ref.getOrRefreshServerToken();
       // lets not do this for security reasons
-      //log.info(`set token ${ref.token}`);
+      // log.info(`set token ${ref.token}`);
     })();
   }
 
