@@ -1,5 +1,7 @@
 // markdown detection functions
 
+// our HTML security depends on the accuracy of these functions
+
 // find closing array in a row
 // can't start on a closing
 function findClosing(text, closing, nextCantBe) {
