@@ -87,7 +87,6 @@ class LokiMessageAPI {
     const messageEventData = {
       pubKey,
       timestamp: messageTimeStamp,
-      bob: 'sam',
     };
 
     if (isPublic) {
@@ -130,7 +129,6 @@ class LokiMessageAPI {
       messageEventData
     );
     if (p2pSuccess) {
-      console.log('SENT VIA P2P');
       return;
     }
 
