@@ -1266,12 +1266,12 @@
         profileKey = storage.get('profileKey');
       }
 
+      // we're not going to touch the body on the wire for private convos
       let markDown = null;
+      let pureText = body; // for lastMessage in conversations
       if (hasMarkdown(body)) {
-        // back up markdown
-        markDown = body;
-        // replace body with the PLAINTEXT version
-        body = markdownToText(body);
+        markDown = body; // cache detection
+        pureText = markdownToText(body);
       }
 
       this.queueJob(async () => {
@@ -1355,10 +1355,6 @@
           ...messageWithSchema,
           id: window.getGuid(),
         };
-        // make sure this data is saved within the local model
-        if (markDown) {
-          attributes.markDown = markDown;
-        }
 
         const model = this.addSingleMessage(attributes);
         const message = MessageController.register(model.id, model);
@@ -1442,6 +1438,7 @@
           options.publicSendData = this.getPublicSendData();
         }
         // if we detected markDown, pass it along with our stripped text
+        // we need to for public chat
         if (markDown) {
           options.markDown = markDown;
         }
