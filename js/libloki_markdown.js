@@ -1,27 +1,29 @@
+/* global module */
+
 // markdown detection functions
 
 // our HTML security depends on the accuracy of these functions
 
 // find closing array in a row
 // can't start on a closing
-function findClosing(text, closing, nextCantBe) {
-  //console.log('findClosing', text)
+const findClosing = (text, closing, nextCantBe) => {
+  'use strict';
+
+  // console.log('findClosing', text)
   const len = text.length;
   let state = 0;
-  const matches = [];
-  for (let p = 0; p < len; p++) {
+  for (let p = 0; p < len; p += 1) {
     const c = text[p];
     if (!p) {
-      if (c == nextCantBe) {
+      if (c === nextCantBe) {
         return false;
       }
     }
     switch (state) {
       case 0:
-        if (c == '\\') {
-          idx = 0;
+        if (c === '\\') {
           state = 1;
-        } else if (closing == c) {
+        } else if (closing === c) {
           return true;
         }
         break;
@@ -29,22 +31,24 @@ function findClosing(text, closing, nextCantBe) {
         // we ignore this character for parsing
         state = 0;
         break;
+      default:
+        break;
     }
   }
   return false;
-}
+};
 
-function hasMarkdown(text) {
+const hasMarkdown = text => {
+  'use strict';
+
   const len = text.length;
-  let state = 0;
-  for (let p = 0; p < len; p++) {
+  for (let p = 0; p < len; p += 1) {
     const c = text[p];
-    //console.log(p, '/', len, 'c', c);
+    // console.log(p, '/', len, 'c', c);
     switch (c) {
       case '\\':
         // just process next char now right into the buffer
-        p++;
-        buffer += text.substr(p, 1);
+        p += 1;
         break;
       case '*':
         if (findClosing(text.substring(p + 1), '*', ' ')) {
@@ -61,43 +65,48 @@ function hasMarkdown(text) {
           return true;
         }
         break;
-      case '>':
-        next = text.substr(p + 1, 1);
-        if (next == ' ') {
+      case '>': {
+        const next = text.substr(p + 1, 1);
+        if (next === ' ') {
           return true;
         }
         break;
+      }
       case '-':
         // only activate if first char
-        if (p == 0) {
-          next = text.substr(p + 1, 1);
-          if (next == ' ') {
+        if (p === 0) {
+          const next = text.substr(p + 1, 1);
+          if (next === ' ') {
             return true;
           }
         }
         break;
       case ' ':
         // only activate if first char
-        if (p == 0) {
-          next3 = text.substr(p + 1, 3);
-          //console.log('next3 ['+next3+']')
-          if (next3 == '   ') {
+        if (p === 0) {
+          const next3 = text.substr(p + 1, 3);
+          // console.log('next3 ['+next3+']')
+          if (next3 === '   ') {
             // enables code
             return true;
           }
         }
         break;
+      default:
+        break;
     }
   }
   return false;
-}
+};
 
-function markdownToText(markdownStr) {
+const markdownToText = markdownStr => {
+  'use strict';
+
   const len = markdownStr.length;
   let state = 0;
   let buffer = '';
-  let bucket = [];
-  for (let p = 0; p < len; p++) {
+  const bucket = [];
+  for (let p = 0; p < len; p += 1) {
     const c = markdownStr[p];
     switch (state) {
       case 0:
@@ -131,25 +140,26 @@ function markdownToText(markdownStr) {
             }
             state = 4;
             break;
-          case '>':
-            // can be done anywhere (comparison (4>5) and faces (:>) shouldn't have spaces?))
-            next = markdownStr.substr(p + 1, 1);
-            if (next == ' ') {
+          case '>': {
+            // can be done anywhere (comparison (4>5) and faces (:>) shouldn't
+            // have spaces?))
+            const next = markdownStr.substr(p + 1, 1);
+            if (next === ' ') {
               // flush anything pending
               if (buffer) {
                 bucket.push(buffer);
                 buffer = '';
               }
-              p++;
+              p += 1;
               state = 5;
             }
             break;
+          }
           case '-':
             // only activate if first char
-            if (p == 0) {
-              next = markdownStr.substr(p + 1, 1);
-              if (next == ' ') {
-                //p++;
+            if (p === 0) {
+              const next = markdownStr.substr(p + 1, 1);
+              if (next === ' ') {
                 buffer += c; // just keep as is
                 state = 6;
               }
@@ -160,9 +170,9 @@ function markdownToText(markdownStr) {
             break;
           case ' ':
             // only activate if first char
-            if (p == 0) {
-              next3 = markdownStr.substr(p + 1, 3);
-              if (next3 == '   ') {
+            if (p === 0) {
+              const next3 = markdownStr.substr(p + 1, 3);
+              if (next3 === '   ') {
                 p += 3;
                 state = 7;
               }
@@ -183,10 +193,10 @@ function markdownToText(markdownStr) {
         state = 0;
         break;
       case 2: // italics
-        if (c == '\\') {
-          p++; // skip next character
+        if (c === '\\') {
+          p += 1; // skip next character
         }
-        if (c == '*') {
+        if (c === '*') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -196,10 +206,10 @@ function markdownToText(markdownStr) {
         }
         break;
       case 3: // bold
-        if (c == '\\') {
-          p++; // skip next character
+        if (c === '\\') {
+          p += 1; // skip next character
         }
-        if (c == '_') {
+        if (c === '_') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -209,10 +219,10 @@ function markdownToText(markdownStr) {
         }
         break;
       case 4: // code
-        if (c == '\\') {
-          p++; // skip next character
+        if (c === '\\') {
+          p += 1; // skip next character
         }
-        if (c == '`') {
+        if (c === '`') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -222,7 +232,7 @@ function markdownToText(markdownStr) {
         }
         break;
       case 5: // blockquote
-        if (c == '\n') {
+        if (c === '\n') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -232,7 +242,7 @@ function markdownToText(markdownStr) {
         }
         break;
       case 6: // list
-        if (c == '\n') {
+        if (c === '\n') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -242,7 +252,7 @@ function markdownToText(markdownStr) {
         }
         break;
       case 7: // 4space code
-        if (c == '\n') {
+        if (c === '\n') {
           // flush buffer
           bucket.push(buffer);
           buffer = '';
@@ -251,29 +261,31 @@ function markdownToText(markdownStr) {
           buffer += c;
         }
         break;
+      default:
+        break;
     }
   }
   // finish these states
-  if (state == 5 || state == 6 || state == 7) {
+  if (state === 5 || state === 6 || state === 7) {
     // flush buffer
     bucket.push(buffer);
     buffer = '';
     state = 0;
-  }
-  // flush any remaining plain text
-  else if (!state && buffer) {
-    // flush buffer
+  } else if (!state && buffer) {
+    // flush any remaining plain text
     bucket.push(buffer);
     buffer = '';
   }
   if (state) {
-    console.log('ending state', state, 'buffer [' + buffer + ']');
+    // console.log('ending state', state, `buffer [${buffer}]`);
   }
   return bucket.join(' ');
-}
+};
 
 // node and browser compatibility
-(function(ref) {
+(ref => {
+  'use strict';
+
   if (ref.constructor.name === 'Module') {
     // node
     module.exports = {

@@ -45,7 +45,6 @@ window.JobQueue = JobQueue;
 window.getStoragePubKey = key =>
   window.isDev() ? key.substring(0, key.length - 2) : key;
 
-
 // set up markdown engine
 const mdEngine = remark()
   // DO NOT ALLOW users/servers to inject their own custom HTML
@@ -55,11 +54,11 @@ const mdEngine = remark()
   .use(remarkRecommended) // better cross browser support?
   .use(remarkHtml); // and finally convert to HTML
 
-window.markdoneHTMLConverter = (markdown) => {
+window.markdoneHTMLConverter = markdown => {
   const vfile = mdEngine.processSync(markdown);
   const markDownHTML = String(vfile);
   return markDownHTML;
-}
+};
 
 window.isBeforeVersion = (toCheck, baseVersion) => {
   try {

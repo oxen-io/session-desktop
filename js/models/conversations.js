@@ -12,6 +12,7 @@
   BlockedNumberController,
   lokiP2pAPI,
   lokiPublicChatAPI,
+  hasMarkdown,
   JobQueue
 */
 
@@ -1268,10 +1269,8 @@
 
       // we're not going to touch the body on the wire for private convos
       let markDown = null;
-      let pureText = body; // for lastMessage in conversations
       if (hasMarkdown(body)) {
         markDown = body; // cache detection
-        pureText = markdownToText(body);
       }
 
       this.queueJob(async () => {
@@ -1422,8 +1421,8 @@
             expireTimer,
             profileKey
           );
+          // might not need this
           if (markDown) {
-            //dataMessage.hasMarkdown = true;
             await message.setMarkDown(markDown);
           }
           return message.sendSyncMessageOnly(dataMessage);

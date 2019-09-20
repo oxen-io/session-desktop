@@ -75,7 +75,6 @@ class LokiMessageAPI {
   }
 
   async sendMessage(pubKey, data, messageTimeStamp, ttl, options = {}) {
-    console.log('sendMessage Triggered!', options)
     const {
       isPing = false,
       isPublic = false,
@@ -102,7 +101,7 @@ class LokiMessageAPI {
       }
       // pass quote if set
       if (data.quote) {
-        publicOptions.quote = quote;
+        publicOptions.quote = data.quote;
       }
       const res = await publicSendData.sendMessage(
         data.body,

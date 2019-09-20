@@ -10,6 +10,8 @@
   Signal,
   textsecure,
   Whisper,
+  hasMarkdown,
+  markdownToText,
   clipboard
 */
 
@@ -724,14 +726,15 @@
         return null;
       }
 
+      let processedText = text;
       if (hasMarkdown(text)) {
         // if we detect markDown, convert to HTML
-        text = window.markdoneHTMLConverter(text);
+        processedText = window.markdoneHTMLConverter(text);
       }
 
       const nbsp = '\xa0';
       const regex = /(\S)( +)(\S+\s*)$/;
-      return text.replace(regex, (match, start, spaces, end) => {
+      return processedText.replace(regex, (match, start, spaces, end) => {
         const newSpaces =
           end.length < 12
             ? _.reduce(spaces, accumulator => accumulator + nbsp, '')
@@ -741,7 +744,9 @@
     },
     hasMarkdown() {
       let body = this.get('body'); // get our body
-      if (!body) body = ''; // mark sure it's a string
+      if (!body) {
+        body = ''; // mark sure it's a string
+      }
       return hasMarkdown(body);
     },
     getPropsForEmbeddedContact() {
@@ -1298,7 +1303,7 @@
 
       this.set({
         hasMarkdown: true,
-        markDown: markDown,
+        markDown,
       });
 
       await window.Signal.Data.saveMessage(this.attributes, {
@@ -1803,7 +1808,6 @@
       const source = message.get('source');
       const type = message.get('type');
       let conversationId = message.get('conversationId');
-      console.log('handleDataMessage initialMessage', initialMessage);
       if (initialMessage.group) {
         conversationId = initialMessage.group.id;
       }
@@ -1818,7 +1822,6 @@
           initialMessage
         );
         const dataMessage = await upgradeMessageSchema(withQuoteReference);
-        console.log('dataMessage after schema', dataMessage);
         try {
           const now = new Date().getTime();
           let attributes = {

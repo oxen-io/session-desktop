@@ -562,6 +562,8 @@ class LokiPublicChannelAPI {
         if (adnMessage.is_deleted) {
           return;
         }
+        let text;
+        ({ text } = adnMessage);
         if (
           Array.isArray(adnMessage.annotations) &&
           adnMessage.annotations.length !== 0
@@ -582,15 +584,8 @@ class LokiPublicChannelAPI {
           // check for markdown
           if (markdown) {
             // DO NOT ALLOW users/servers to slip in their own custom HTML
-            mdEngine.process(markdown, function(err, file) {
-              const markDownHTML = String(file);
-              console.log('html is', markDownHTML);
-              saveLocally(from, timestamp, adnMessage, {
-                markDownHTML,
-              });
-            });
-          } else {
-            saveLocally(from, timestamp, adnMessage);
+            const file = mdEngine.processSync(markdown);
+            text = String(file);
           }
         } else {
           // no annotation
@@ -598,67 +593,63 @@ class LokiPublicChannelAPI {
           log.warn('no annotation for', adnMessage.id);
         }
 
-        function saveLocally(from, timestamp, adnMessage, options) {
-          if (
-            !from ||
-            !timestamp ||
-            !adnMessage.id ||
-            !adnMessage.user ||
-            !adnMessage.user.username ||
-            !adnMessage.text
-          ) {
-            return; // Invalid message
-          }
-          let text = adnMessage.text;
-          if (options && options.markDownHTML) {
-            text = options.markDownHTML;
-          }
-
-          const messageData = {
-            serverId: adnMessage.id,
-            friendRequest: false,
-            source: adnMessage.user.username,
-            sourceDevice: 1,
-            timestamp,
-            serverTimestamp: timestamp,
-            receivedAt,
-            isPublic: true,
-            message: {
-              body: text,
-              attachments: [],
-              group: {
-                id: ref.conversationId,
-                type: textsecure.protobuf.GroupContext.Type.DELIVER,
-              },
-              flags: 0,
-              expireTimer: 0,
-              profileKey: null,
-              timestamp,
-              received_at: receivedAt,
-              sent_at: timestamp,
-              quote,
-              contact: [],
-              preview: [],
-              profile: {
-                displayName: from,
-              },
-            },
-          };
-          if (options && options.markDownHTML) {
-            messageData.message.hasMarkdown = true;
-            messageData.message.markDown = markdown;
-          }
-          // Ensure different arrival times, so two messages sent at the same
-          // timestamp are both received
-          receivedAt += 1;
-
-          ref.serverAPI.chatAPI.emit('publicMessage', {
-            message: messageData,
-          });
-
-          // now process any user meta data updates
-          // - update their conversation with a potentially new avatar
+        if (
+          !from ||
+          !timestamp ||
+          !adnMessage.id ||
+          !adnMessage.user ||
+          !adnMessage.user.username ||
+          !adnMessage.text
+        ) {
+          return; // Invalid message
         }
+
+        const messageData = {
+          serverId: adnMessage.id,
+          friendRequest: false,
+          source: adnMessage.user.username,
+          sourceDevice: 1,
+          timestamp,
+          serverTimestamp: timestamp,
+          receivedAt,
+          isPublic: true,
+          message: {
+            body: text,
+            attachments: [],
+            group: {
+              id: ref.conversationId,
+              type: textsecure.protobuf.GroupContext.Type.DELIVER,
+            },
+            flags: 0,
+            expireTimer: 0,
+            profileKey: null,
+            timestamp,
+            received_at: receivedAt,
+            sent_at: timestamp,
+            quote,
+            contact: [],
+            preview: [],
+            profile: {
+              displayName: from,
+            },
+          },
+        };
+        /*
+        if (options && options.markDownHTML) {
+          messageData.message.hasMarkdown = true;
+          messageData.message.markDown = markdown;
+        }
+        */
+        // Ensure different arrival times, so two messages sent at the same
+        // timestamp are both received
+        receivedAt += 1;
+
+        ref.serverAPI.chatAPI.emit('publicMessage', {
+          message: messageData,
+        });
+
+        // now process any user meta data updates
+        // - update their conversation with a potentially new avatar
 
         this.lastGot = !this.lastGot
           ? adnMessage.id
@@ -690,9 +681,9 @@ class LokiPublicChannelAPI {
     if (options.markDown) {
       payload.annotations[0].value.markdown = options.markDown;
     }
-    let quote
+    let quote;
     if (options.quote) {
-      quote = options.quote;
+      ({ quote } = options);
       payload.annotations[0].value.quote = options.quote;
     }
 
