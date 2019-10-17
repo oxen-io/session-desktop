@@ -5,7 +5,7 @@ const { Agent } = require('https');
 
 const is = require('@sindresorhus/is');
 
-/* global Buffer, setTimeout, log, _ */
+/* global Buffer, setTimeout, log, _, process */
 
 /* eslint-disable more/no-then, no-bitwise, no-nested-ternary */
 
@@ -259,6 +259,9 @@ function _promiseAjax(providedUrl, options) {
     if (options.contentType) {
       fetchOptions.headers['Content-Type'] = options.contentType;
     }
+
+    // make sure SSL verification is on
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
 
     fetch(url, fetchOptions)
       .then(response => {

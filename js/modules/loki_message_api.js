@@ -44,9 +44,15 @@ const trySendP2p = async (pubKey, data64, isPing, messageEventData) => {
     return false;
   }
   try {
-    await rpc(p2pDetails.address, p2pDetails.port, 'store', {
-      data: data64,
-    });
+    await rpc(
+      p2pDetails.address,
+      p2pDetails.port,
+      'store',
+      {
+        data: data64,
+      },
+      { snode: true }
+    );
     lokiP2pAPI.setContactOnline(pubKey);
     window.Whisper.events.trigger('p2pMessageSent', messageEventData);
     if (isPing) {
@@ -238,7 +244,9 @@ class LokiMessageAPI {
     while (successiveFailures < MAX_ACCEPTABLE_FAILURES) {
       await sleepFor(successiveFailures * 500);
       try {
-        const result = await rpc(`https://${address}`, port, 'store', params);
+        const result = await rpc(`https://${address}`, port, 'store', params, {
+          snode: true,
+        });
 
         // Make sure we aren't doing too much PoW
         const currentDifficulty = window.storage.get('PoWDifficulty', null);
@@ -359,6 +367,7 @@ class LokiMessageAPI {
       headers: {
         [LOKI_LONGPOLL_HEADER]: true,
       },
+      snode: true,
     };
 
     const result = await rpc(

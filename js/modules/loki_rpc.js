@@ -1,4 +1,4 @@
-/* global log, libloki, textsecure, getStoragePubKey */
+/* global log, libloki, textsecure, getStoragePubKey, process */
 
 const nodeFetch = require('node-fetch');
 const { parse } = require('url');
@@ -47,12 +47,23 @@ const fetch = async (url, options = {}) => {
     }
   }
 
+  // disable SSL verification
+  if (options.snode) {
+    delete options.snode;
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    log.info('snode communication enabled', url);
+  } else {
+    log.info('non-snode rpc communication', url);
+  }
   try {
     const response = await nodeFetch(url, {
       ...options,
       timeout,
       method,
     });
+    // quickly re-enable SSL verification
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+    log.info('snode communication disabled', url);
 
     let result;
     // Wrong swarm

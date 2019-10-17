@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
-/* global log, window, textsecure */
+/* global log, window, textsecure, process */
 
 const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
@@ -56,6 +56,8 @@ class LokiRssAPI extends EventEmitter {
   async getFeed() {
     let response;
     let success = true;
+    // make sure SSL verification is on
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
     try {
       response = await nodeFetch(this.feedUrl);
     } catch (e) {

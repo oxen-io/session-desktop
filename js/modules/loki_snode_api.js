@@ -106,7 +106,7 @@ class LokiSnodeAPI {
         seedNode.port,
         'get_n_service_nodes',
         params,
-        {}, // Options
+        { snode: true }, // Options
         '/json_rpc' // Seed request endpoint
       );
       // Filter 0.0.0.0 nodes which haven't submitted uptime proofs
@@ -193,9 +193,15 @@ class LokiSnodeAPI {
     // TODO: Hit multiple random nodes and merge lists?
     const { ip, port } = await this.getRandomSnodeAddress();
     try {
-      const result = await rpc(`https://${ip}`, port, 'get_snodes_for_pubkey', {
-        pubKey,
-      });
+      const result = await rpc(
+        `https://${ip}`,
+        port,
+        'get_snodes_for_pubkey',
+        {
+          pubKey,
+        },
+        { snode: true }
+      );
       const snodes = result.snodes.filter(snode => snode.ip !== '0.0.0.0');
       return snodes;
     } catch (e) {

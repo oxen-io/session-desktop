@@ -1,5 +1,5 @@
 /* global log, textsecure, libloki, Signal, Whisper, Headers, ConversationController,
-clearTimeout, MessageController, libsignal, StringView, window, _, dcodeIO */
+clearTimeout, MessageController, libsignal, StringView, window, _, dcodeIO, process */
 const EventEmitter = require('events');
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
@@ -249,6 +249,10 @@ class LokiAppDotNetServerAPI {
         fetchOptions.body = JSON.stringify(objBody);
       }
       fetchOptions.headers = new Headers(headers);
+
+      // make sure SSL verification is on
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+
       result = await nodeFetch(url, fetchOptions || undefined);
     } catch (e) {
       log.info(`e ${e}`);
