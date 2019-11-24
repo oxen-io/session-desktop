@@ -112,6 +112,7 @@
     const flags = textsecure.protobuf.DataMessage.Flags.UNPAIRING_REQUEST;
     const dataMessage = new textsecure.protobuf.DataMessage({
       flags,
+      timestamp: Date.now(),
     });
     const content = new textsecure.protobuf.Content({
       dataMessage,
@@ -186,6 +187,9 @@
     });
     return syncMessage;
   }
+
+  // Can be used by both secondary and primary devices
+  // to send request or grant pairing authorisations
   async function sendPairingAuthorisation(authorisation, recipientPubKey) {
     const pairingAuthorisation = createPairingAuthorisationProtoMessage(
       authorisation
@@ -207,6 +211,7 @@
       );
       const dataMessage = new textsecure.protobuf.DataMessage({
         profile,
+        timestamp: Date.now(),
       });
       // Attach contact list
       const conversations = await window.Signal.Data.getConversationsWithFriendStatus(
