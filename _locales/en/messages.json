@@ -1801,6 +1801,10 @@
     "message": "Hide menu bar",
     "description": "Label text for menu bar visibility setting"
   },
+  "fontSizeLabel": {
+    "message": "Font Size",
+    "description": "Label text for font size setting"
+  },
   "startConversation": {
     "message": "Start new conversation…",
     "description":

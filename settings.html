@@ -66,6 +66,33 @@
       <label for='hide-menu-bar'>{{ hideMenuBar }}</label>
     </div>
     {{ /isHideMenuBarSupported }}
+    <br />
+
+    <div>{{ fontSizeLabel }}</div>
+    <div class='inputs'>
+      <input
+        name='font-size-setting'
+        id='font-size-setting'
+        type='range'
+        list='tickmarks'
+        min='8'
+        max='16'
+        step='1'
+        value='12'
+      >
+      <label for='font-size-setting'>12pt</label>
+      <datalist id='tickmarks'>
+        <option value='8'>
+        <option value='9'>
+        <option value='10'>
+        <option value='11'>
+        <option value='12'>
+        <option value='13'>
+        <option value='14'>
+        <option value='15'>
+        <option value='16'>
+      </datalist>
+    </div>
     <hr>
     <div class='notification-settings'>
       <h3>{{ notifications }}</h3>

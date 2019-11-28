@@ -75,6 +75,7 @@
     },
   });
 
+  
   const ReadReceiptSettingView = Whisper.View.extend({
     initialize(options) {
       this.value = options.value;
