@@ -377,6 +377,9 @@ export class Message extends React.PureComponent<Props, State> {
     } else if (!firstAttachment.pending && isAudio(attachments)) {
       return (
         <audio
+          onClick={(e: any) => {
+            e.stopPropagation();
+          }}
           controls={true}
           className={classNames(
             'module-message__audio-attachment',
