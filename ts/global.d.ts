@@ -13,6 +13,7 @@ interface Window {
   Session: any;
   i18n: any;
   generateID: any;
+  storage: any;
 }
 
 interface Promise<T> {
