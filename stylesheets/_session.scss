@@ -722,3 +722,7 @@ label {
   margin-top: 50px;
   margin-left: 75px;
 }
+
+.messages li {
+  transition: $session-transition-duration !important;
+}
