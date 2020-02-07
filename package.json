@@ -207,8 +207,8 @@
   "build": {
     "appId": "com.loki-project.messenger-desktop",
     "afterSign": "build/notarize.js",
+    "artifactName": "${name}-${os}-${version}.${ext}",
     "mac": {
-      "artifactName": "${name}-mac-${version}.${ext}",
       "category": "public.app-category.social-networking",
       "icon": "build/icons/mac/icon.icns",
       "target": [
@@ -225,15 +225,8 @@
     },
     "win": {
       "asarUnpack": "node_modules/spellchecker/vendor/hunspell_dictionaries",
-      "artifactName": "${name}-win-${version}.${ext}",
       "publisherName": "Loki Project",
       "icon": "build/icons/win/icon.ico",
-      "publish": [
-        {
-          "provider": "generic",
-          "url": "https://getsession.org/"
-        }
-      ],
       "target": [
         "nsis"
       ]
