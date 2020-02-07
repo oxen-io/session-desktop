@@ -239,7 +239,9 @@
       ]
     },
     "nsis": {
-      "deleteAppDataOnUninstall": true
+      "deleteAppDataOnUninstall": true,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "category": "Network",
@@ -248,7 +250,8 @@
       },
       "asarUnpack": "node_modules/spellchecker/vendor/hunspell_dictionaries",
       "target": [
-        "deb"
+        "deb",
+        "AppImage"
       ],
       "icon": "build/icons/png"
     },
@@ -318,7 +321,8 @@
       "node_modules/socks/build/common/*.js",
       "node_modules/socks/build/client/*.js",
       "node_modules/smart-buffer/build/*.js",
-      "!node_modules/@journeyapps/sqlcipher/deps/*"
+      "!node_modules/@journeyapps/sqlcipher/deps/*",
+      "!build/*.js"
     ]
   }
 }
