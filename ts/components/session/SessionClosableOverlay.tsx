@@ -54,8 +54,12 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
   public getContacts() {
     const conversations = window.getConversations() || [];
 
-    let conversationList = conversations.filter((conversation: any) => {
-      return conversation.isPrivate() && !conversation.isSecondaryDevice() && conversation.isFriend();
+    const conversationList = conversations.filter((conversation: any) => {
+      return (
+        conversation.isPrivate() &&
+        !conversation.isSecondaryDevice() &&
+        conversation.isFriend()
+      );
     });
 
     return conversationList.map((d: any) => {
