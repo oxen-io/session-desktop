@@ -67,7 +67,7 @@ jobs:
         run: $(yarn bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --publish=never --config.directories.output=release
 
       - name: Remove unpacked files
-        run:
+        run: |
           ls -d -- */ | xargs -I{} echo "Removing {}"
           ls -d -- */ | xargs -I{} rm -rf {}
         shell: bash
