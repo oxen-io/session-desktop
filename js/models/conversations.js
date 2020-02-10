@@ -886,6 +886,9 @@
           throw new Error('Invalid friend request state');
       }
     },
+    isOurConversation() {
+      return this.id === this.ourNumber;
+    },
     isSecondaryDevice() {
       return !!this.get('secondaryStatus');
     },

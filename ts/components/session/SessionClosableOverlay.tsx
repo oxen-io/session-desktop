@@ -56,6 +56,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
 
     const conversationList = conversations.filter((conversation: any) => {
       return (
+        !conversation.isOurConversation() &&
         conversation.isPrivate() &&
         !conversation.isSecondaryDevice() &&
         conversation.isFriend()
