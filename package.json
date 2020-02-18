@@ -129,11 +129,11 @@
     "reselect": "4.0.0",
     "rimraf": "2.6.2",
     "semver": "5.4.1",
-    "spellchecker": "3.7.0",
     "tar": "4.4.8",
     "testcheck": "1.0.0-rc.2",
     "tmp": "0.0.33",
     "to-arraybuffer": "1.0.1",
+    "typo-js": "1.1.0",
     "underscore": "1.9.0",
     "uuid": "3.3.2",
     "websocket": "1.0.28"
