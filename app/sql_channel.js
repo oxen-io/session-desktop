@@ -36,7 +36,8 @@ function initialize() {
       console.log(
         `sql channel error with call ${callName}: ${errorForDisplay}`
       );
-      event.sender.send(`${SQL_CHANNEL_KEY}-done`, jobId, errorForDisplay);
+      // FIXME audric
+      // event.sender.send(`${SQL_CHANNEL_KEY}-done`, jobId, errorForDisplay);
     }
   });
 
