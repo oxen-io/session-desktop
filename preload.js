@@ -51,7 +51,7 @@ window.getDefaultFileServer = () => config.defaultFileServer;
 window.initialisedAPI = false;
 
 if (process.env.NODE_ENV === 'test-integration-session') {
-  window.electronRequire = require
+  window.electronRequire = require;
 }
 
 window.isBeforeVersion = (toCheck, baseVersion) => {
