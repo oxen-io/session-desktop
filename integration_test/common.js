@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { Application } = require('spectron');
 const path = require('path');
 
@@ -9,6 +10,17 @@ chai.should();
 chai.use(chaiAsPromised);
 
 module.exports = {
+    TEST_MNEMONIC: 'onboard refer gumball nudged hope doctor saucepan wise karate sensible saga tutor doctor',
+    TEST_DISPLAY_NAME: 'test1234',
+    VALID_GROUP_URL: 'https://chat.getsession.org',
+    VALID_GROUP_URL2: 'https://chat-dev.lokinet.org',
+    VALID_GROUP_NAME: 'Session Public Chat',
+    VALID_GROUP_NAME2: 'Loki Dev Chat',
+
+    timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    
     async startApp() {
         const environment = this.getEnvironment();
 
@@ -35,6 +47,7 @@ module.exports = {
         if (app && app.isRunning()) {
             app.stop()
                 .catch(e => {
+                    // eslint-disable-next-line no-console
                     console.warn('error:', e);
             })
 
@@ -54,6 +67,6 @@ module.exports = {
 
     await app.client.element(RegistrationPage.continueSessionButton).click();
     await app.client.waitForExist(RegistrationPage.conversationListContainer, 4000);
-  }
+  },
 
 };
