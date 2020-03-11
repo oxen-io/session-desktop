@@ -3,6 +3,7 @@ const path = require('path');
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const RegistrationPage = require('./page-objects/registration.page');
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -43,6 +44,16 @@ module.exports = {
     
     getEnvironment() {
         return 'test-integration-session';
-    }
+  },
+    
+  async restoreFromMnemonic(app, mnemonic, displayName) {
+    await app.client.element(RegistrationPage.registrationTabs).click();
+    await app.client.element(RegistrationPage.restoreFromSeedMode).click();
+    await app.client.element(RegistrationPage.recoveryPhraseInput).setValue(mnemonic);
+    await app.client.element(RegistrationPage.displayNameInput).setValue(displayName);
+
+    await app.client.element(RegistrationPage.continueSessionButton).click();
+    await app.client.waitForExist(RegistrationPage.conversationListContainer, 4000);
+  }
 
 };

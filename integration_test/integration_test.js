@@ -2,11 +2,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 const hooks = require('./hooks');
-const { describe, beforeEach, afterEach, it } = require('mocha');
+const { after, afterEach, before, beforeEach, describe, it } = require('mocha');
 const RegistrationPage = require('./page-objects/registration.page');
+const ConversationPage = require('./page-objects/conversation.page');
 
 const TEST_MNEMONIC = 'onboard refer gumball nudged hope doctor saucepan wise karate sensible saga tutor doctor';
 const TEST_DISPLAY_NAME = 'test1234';
+const VALID_GROUP_URL = 'http://chat.getsession.org';
+const VALID_GROUP_NAME = 'Session Public Chat';
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -55,8 +58,61 @@ describe('Window Test and Login', function () {
     await app.client.waitForExist(RegistrationPage.conversationListContainer, 4000);
 
     await timeout(2000);
+  });
 
+});
+
+
+
+
+
+describe('Joining open groups', function () {
+  let app;
+  this.timeout(20000);
+
+  before(async () => {
+    app = await hooks.startApp();
+    await timeout(2000);
+    await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
+    await hooks.restoreFromMnemonic(app, TEST_MNEMONIC, TEST_DISPLAY_NAME);
+    await timeout(2000);
 
   });
 
+  after(async () => {
+    // eslint-disable-next-line prefer-destructuring
+    const ipcRenderer = app.electron.ipcRenderer;
+    ipcRenderer.send('delete-all-data');
+    await timeout(2000);
+    await hooks.stopApp(app);
+    await timeout(2000);
+  });
+
+  beforeEach(async () => {
+    
+  });
+  
+  afterEach(async() => {
+
+  });
+  
+  it('works with valid group url', async () => {
+    await app.client.element(ConversationPage.globeButtonSection).click();
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+
+    await app.client.element(ConversationPage.openGroupInputUrl).setValue(VALID_GROUP_URL);
+    await app.client.element(ConversationPage.openGroupInputUrl).getValue().should.eventually.equal(VALID_GROUP_URL);
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+
+    // validate session loader is shown
+    await app.client.waitForExist(ConversationPage.sessionLoader, 1000);
+    await app.client.waitForExist(ConversationPage.sessionToastJoinOpenGroupSuccess, 5000);
+
+    // validate overlay is closed
+    await app.client.isExisting(ConversationPage.leftPaneOverlay).should.eventually.be.equal(false);
+
+    // validate open chat has been added
+    await app.client.waitForExist(ConversationPage.rowOpenGroupConversationName, 4000);
+    await timeout(1000);
+  });
 });
