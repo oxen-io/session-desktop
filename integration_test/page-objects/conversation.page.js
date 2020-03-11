@@ -4,8 +4,10 @@ module.exports = {
   openGroupInputUrl: '//textarea[contains(@placeholder, "chat.getsession.org")]',
   sessionLoader: '//div[contains(@class, "session-loader")]',
   sessionToastJoinOpenGroupSuccess: '//div[contains(string(), "Successfully connected to new open group server")][contains(@class, "session-toast-wrapper")]',
+  sessionToastJoinOpenGroupAlreadyExist: '//div[contains(string(), "You are already connected to this public channel")][contains(@class, "session-toast-wrapper")]',
   leftPaneOverlay: '//div[contains(@class, "module-left-pane-overlay")]',
-  rowOpenGroupConversationName: '//span[contains(string(), "Session Public Chat")][contains(@class, "module-conversation__user__profile-number")]',
+  rowOpenGroupConversationName: (groupName) => `//span[contains(string(), "${groupName}")][contains(@class, "module-conversation__user__profile-number")]`,
+  
    /* registrationTabs: '//div[contains(string(), "Sign In")][contains(@class, "session-registration__tab")][contains(@role, "tab")]',
     restoreFromSeedMode: '//div[contains(string(), "Restore From Recovery")][contains(@role, "button")]',
     recoveryPhraseInput: '//input[contains(@placeholder, "Enter Recovery Phrase")]',
