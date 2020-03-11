@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 const hooks = require('./common');
-const {  afterEach, beforeEach, describe, it } = require('mocha');
+const {  after, before, describe, it } = require('mocha');
 const RegistrationPage = require('./page-objects/registration.page');
 
 
@@ -10,13 +10,13 @@ describe('Window Test and Login', function () {
     let app;
     this.timeout(20000);
   
-    beforeEach(async () => {
+    before(async () => {
       app = await hooks.startApp();
       await hooks.timeout(2000);
       await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);  
     });
     
-    afterEach(async() => {
+    after(async() => {
       // eslint-disable-next-line prefer-destructuring
       const ipcRenderer = app.electron.ipcRenderer;
       ipcRenderer.send('delete-all-data');
