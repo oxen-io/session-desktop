@@ -63,6 +63,8 @@ describe('Window Test and Login', function() {
     );
 
     await common.timeout(2000);
-    console.log('FIXME add check of recovered pubkey')
+
+    // eslint-disable-next-line more/no-then
+    await app.webContents.executeJavaScript("window.storage.get('primaryDevicePubKey')").should.eventually.be.equal(common.TEST_PUBKEY);
   });
 });

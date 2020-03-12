@@ -13,6 +13,7 @@ chai.use(chaiAsPromised);
 module.exports = {
   TEST_MNEMONIC:
     'onboard refer gumball nudged hope doctor saucepan wise karate sensible saga tutor doctor',
+  TEST_PUBKEY: '05a05b061b17f578999f39679fd56852db79e037f12057b7791950af3aea4b1f00',
   TEST_DISPLAY_NAME: 'test1234',
   VALID_GROUP_URL: 'https://chat.getsession.org',
   VALID_GROUP_URL2: 'https://chat-dev.lokinet.org',
