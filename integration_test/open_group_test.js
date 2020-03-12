@@ -12,7 +12,6 @@ describe('Open groups', function() {
 
   before(async () => {
     app = await common.startApp();
-    await common.timeout(2000);
     await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
     await common.restoreFromMnemonic(
       app,

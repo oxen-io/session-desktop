@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names  */
 /* eslint-disable import/no-extraneous-dependencies */
 
@@ -12,7 +13,6 @@ describe('Window Test and Login', function() {
 
   before(async () => {
     app = await common.startApp();
-    await common.timeout(2000);
     await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
   });
 

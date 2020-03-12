@@ -36,12 +36,14 @@ module.exports = {
       },
       startTimeout: 5000,
       requireName: 'electronRequire',
+      chromeDriverLogPath: '../chromedriverlog.txt',
+      chromeDriverArgs: ['remote-debugging-port=9222']
       // chromeDriverLogPath: '../chromedriverlog.txt'
     });
 
     chaiAsPromised.transferPromiseness = app.transferPromiseness;
-
-    app.start();
+    await app.start();
+    await app.client.waitUntilWindowLoaded();
     return app;
   },
 
