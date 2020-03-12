@@ -1,4 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable prefer-destructuring */
+
 const { Application } = require('spectron');
 const path = require('path');
 
@@ -38,7 +40,7 @@ module.exports = {
       startTimeout: 5000,
       requireName: 'electronRequire',
       chromeDriverLogPath: '../chromedriverlog.txt',
-      chromeDriverArgs: ['remote-debugging-port=9222']
+      chromeDriverArgs: ['remote-debugging-port=9222'],
       // chromeDriverLogPath: '../chromedriverlog.txt'
     });
 
@@ -48,14 +50,40 @@ module.exports = {
     return app;
   },
 
-  stopApp(app) {
+  async stopApp(app) {
     if (app && app.isRunning()) {
-      app.stop().catch(e => {
-        // eslint-disable-next-line no-console
-        console.warn('error:', e);
-      });
+      await app.stop();
+      await this.timeout(2000);
+      return Promise.resolve();
     }
     return Promise.resolve();
+
+  },
+
+  async startAndAssureCleanedApp() {
+    let app = await this.startApp();
+    await this.timeout(2000);
+
+    const ipcRenderer = app.electron.ipcRenderer;
+    ipcRenderer.send('delete-all-data');
+    await this.timeout(2000);
+    await this.stopApp(app);
+    await this.timeout(2000);
+    app = await this.startApp();
+    await this.timeout(2000);
+    await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
+    
+    return app;
+  },
+
+  async stopAndAssureCleanedApp(app) {
+    const ipcRenderer = app.electron.ipcRenderer;
+    ipcRenderer.send('delete-all-data');
+    await this.timeout(2000);
+    await this.stopApp(app);
+    await this.timeout(2000);
+
+    return null;
   },
 
   getEnvironment() {

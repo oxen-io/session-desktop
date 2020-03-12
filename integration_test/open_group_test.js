@@ -3,7 +3,6 @@
 const common = require('./common');
 const { after, before, describe, it } = require('mocha');
 const ConversationPage = require('./page-objects/conversation.page');
-const RegistrationPage = require('./page-objects/registration.page');
 
 describe('Open groups', function() {
   let app;
@@ -11,8 +10,7 @@ describe('Open groups', function() {
   this.slow(15000);
 
   before(async () => {
-    app = await common.startApp();
-    await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
+    app = await common.startAndAssureCleanedApp();
     await common.restoreFromMnemonic(
       app,
       common.TEST_MNEMONIC,
@@ -22,12 +20,7 @@ describe('Open groups', function() {
   });
 
   after(async () => {
-    // eslint-disable-next-line prefer-destructuring
-    const ipcRenderer = app.electron.ipcRenderer;
-    ipcRenderer.send('delete-all-data');
-    await common.timeout(2000);
     await common.stopApp(app);
-    await common.timeout(2000);
   });
 
   it('works with valid group url', async () => {

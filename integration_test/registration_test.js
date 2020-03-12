@@ -12,17 +12,11 @@ describe('Window Test and Login', function() {
   this.slow(15000);
 
   before(async () => {
-    app = await common.startApp();
-    await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
+    app = await common.startAndAssureCleanedApp();
   });
 
   after(async () => {
-    // eslint-disable-next-line prefer-destructuring
-    const ipcRenderer = app.electron.ipcRenderer;
-    ipcRenderer.send('delete-all-data');
-    await common.timeout(2000);
     await common.stopApp(app);
-    await common.timeout(2000);
   });
 
   it('opens one window', () => {
