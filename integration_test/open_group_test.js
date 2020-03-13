@@ -13,8 +13,8 @@ describe('Open groups', function() {
     app = await common.startAndAssureCleanedApp();
     await common.restoreFromMnemonic(
       app,
-      common.TEST_MNEMONIC,
-      common.TEST_DISPLAY_NAME
+      common.TEST_MNEMONIC1,
+      common.TEST_DISPLAY_NAME1
     );
     await common.timeout(2000);
   });

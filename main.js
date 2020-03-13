@@ -344,7 +344,6 @@ function createWindow() {
       prepareURL([__dirname, 'libloki', 'test', 'index.html'])
     );
   } else if (config.environment === 'test-integration-session') {
-    console.warn('case test-integration-session');
     mainWindow.loadURL(prepareURL([__dirname, 'background.html']));
   } else {
     mainWindow.loadURL(prepareURL([__dirname, 'background.html']));

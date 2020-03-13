@@ -34,20 +34,20 @@ describe('Window Test and Login', function() {
     await app.client.element(RegistrationPage.restoreFromSeedMode).click();
     await app.client
       .element(RegistrationPage.recoveryPhraseInput)
-      .setValue(common.TEST_MNEMONIC);
+      .setValue(common.TEST_MNEMONIC1);
     await app.client
       .element(RegistrationPage.displayNameInput)
-      .setValue(common.TEST_DISPLAY_NAME);
+      .setValue(common.TEST_DISPLAY_NAME1);
 
     // validate fields are filled
     await app.client
       .element(RegistrationPage.recoveryPhraseInput)
       .getValue()
-      .should.eventually.equal(common.TEST_MNEMONIC);
+      .should.eventually.equal(common.TEST_MNEMONIC1);
     await app.client
       .element(RegistrationPage.displayNameInput)
       .getValue()
-      .should.eventually.equal(common.TEST_DISPLAY_NAME);
+      .should.eventually.equal(common.TEST_DISPLAY_NAME1);
 
     // trigger login
     await app.client.element(RegistrationPage.continueSessionButton).click();
@@ -59,6 +59,6 @@ describe('Window Test and Login', function() {
     await common.timeout(2000);
 
     // eslint-disable-next-line more/no-then
-    await app.webContents.executeJavaScript("window.storage.get('primaryDevicePubKey')").should.eventually.be.equal(common.TEST_PUBKEY);
+    await app.webContents.executeJavaScript("window.storage.get('primaryDevicePubKey')").should.eventually.be.equal(common.TEST_PUBKEY1);
   });
 });

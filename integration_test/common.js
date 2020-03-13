@@ -13,10 +13,16 @@ chai.should();
 chai.use(chaiAsPromised);
 
 module.exports = {
-  TEST_MNEMONIC:
+  TEST_MNEMONIC1:
     'onboard refer gumball nudged hope doctor saucepan wise karate sensible saga tutor doctor',
-  TEST_PUBKEY: '05a05b061b17f578999f39679fd56852db79e037f12057b7791950af3aea4b1f00',
-  TEST_DISPLAY_NAME: 'test1234',
+  TEST_PUBKEY1: '05a05b061b17f578999f39679fd56852db79e037f12057b7791950af3aea4b1f00',
+  TEST_DISPLAY_NAME1: 'integration_tester_1',
+
+  TEST_MNEMONIC2:
+    'guide inbound jerseys bays nouns basin sulking awkward stockpile ostrich ascend pylons ascend',
+  TEST_PUBKEY2: '054e1ca8681082dbd9aad1cf6fc89a32254e15cba50c75b5a73ac10a0b96bcbd2a',
+  TEST_DISPLAY_NAME2: 'integration_tester_2',
+
   VALID_GROUP_URL: 'https://chat.getsession.org',
   VALID_GROUP_URL2: 'https://chat-dev.lokinet.org',
   VALID_GROUP_NAME: 'Session Public Chat',
@@ -41,7 +47,6 @@ module.exports = {
       requireName: 'electronRequire',
       chromeDriverLogPath: '../chromedriverlog.txt',
       chromeDriverArgs: ['remote-debugging-port=9222'],
-      // chromeDriverLogPath: '../chromedriverlog.txt'
     });
 
     chaiAsPromised.transferPromiseness = app.transferPromiseness;
@@ -70,7 +75,6 @@ module.exports = {
     await this.stopApp(app);
     await this.timeout(2000);
     app = await this.startApp();
-    await this.timeout(2000);
     await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
     
     return app;
@@ -79,9 +83,8 @@ module.exports = {
   async stopAndAssureCleanedApp(app) {
     const ipcRenderer = app.electron.ipcRenderer;
     ipcRenderer.send('delete-all-data');
-    await this.timeout(2000);
+    await app.client.waitForExist(RegistrationPage.registrationTabs, 2000);
     await this.stopApp(app);
-    await this.timeout(2000);
 
     return null;
   },
