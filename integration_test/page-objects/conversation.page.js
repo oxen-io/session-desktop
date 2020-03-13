@@ -10,11 +10,13 @@ module.exports = {
     `//*[contains(@class, "module-message__text--outgoing")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
   existingFriendRequestText: textMessage =>
     `//*[contains(@class, "module-message-friend-request__container")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
+
   
   // conversations
   conversationButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "chatBubble")]]',
-  
+  retrySendButton:
+    '//div[contains(string(), "Retry Send")][contains(@class, "module-friend-request__buttonContainer--outgoing")]',
   
   // channels
   globeButtonSection:
