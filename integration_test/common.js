@@ -34,7 +34,7 @@ module.exports = {
   },
 
   async startApp(env = 'test-integration-session') {
-    console.log('starting app with NODE_APP_INSTANCE', env)
+    // console.log('starting app with NODE_APP_INSTANCE', env)
     const app = new Application({
       path: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
       args: ['.'],
@@ -49,7 +49,7 @@ module.exports = {
       startTimeout: 10000,
       requireName: 'electronRequire',
       // chromeDriverLogPath: '../chromedriverlog.txt',
-      // chromeDriverArgs: [`remote-debugging-port=${Math.floor(Math.random() * (9999 - 9000) + 9000)}`],
+      chromeDriverArgs: [`remote-debugging-port=${  Math.floor(Math.random() * (9999 - 9000) + 9000)}`],
     });
 
     chaiAsPromised.transferPromiseness = app.transferPromiseness;
@@ -76,10 +76,10 @@ module.exports = {
   },
 
   async killall() {
-    return new Promise( (resolve, reject) => {
+    return new Promise( (resolve) => {
       exec('killall electron', (err, stdout, stderr) => {
         if (err) {
-          reject(err);
+          resolve({ stdout, stderr });
         } else {
           resolve({ stdout, stderr });
         }

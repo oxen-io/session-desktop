@@ -1,15 +1,16 @@
 /* eslint-disable func-names  */
 /* eslint-disable import/no-extraneous-dependencies */
 const common = require('./common');
-const { after, before, describe, it } = require('mocha');
+const { afterEach, beforeEach, describe, it } = require('mocha');
 const ConversationPage = require('./page-objects/conversation.page');
 
 describe('Open groups', function() {
   let app;
-  this.timeout(20000);
+  this.timeout(30000);
   this.slow(15000);
 
-  before(async () => {
+  beforeEach(async () => {
+    await common.killall();
     app = await common.startAndAssureCleanedApp();
     await common.restoreFromMnemonic(
       app,
@@ -19,8 +20,8 @@ describe('Open groups', function() {
     await common.timeout(2000);
   });
 
-  after(async () => {
-    await common.stopApp(app);
+  afterEach(async () => {
+    await common.killall();
   });
 
   it('works with valid group url', async () => {
@@ -40,7 +41,7 @@ describe('Open groups', function() {
     await app.client.waitForExist(ConversationPage.sessionLoader, 1000);
     await app.client.waitForExist(
       ConversationPage.sessionToastJoinOpenGroupSuccess,
-      5000
+      9000
     );
 
     // validate overlay is closed
@@ -67,11 +68,12 @@ describe('Open groups', function() {
       .setValue(common.VALID_GROUP_URL2);
     await app.client.element(ConversationPage.joinOpenGroupButton).click();
     // first add is a success
+    await common.timeout(2000);
     await app.client.waitForExist(
       ConversationPage.rowOpenGroupConversationName(
         common.VALID_GROUP_NAME2
       ),
-      6000
+      8000
     );
 
     // adding a second time the same open group
@@ -101,12 +103,29 @@ describe('Open groups', function() {
   });
 
   it('can send message to open group', async () => {
+    // join dev-chat group
+    await app.client.element(ConversationPage.globeButtonSection).click();
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+
+    await app.client
+      .element(ConversationPage.openGroupInputUrl)
+      .setValue(common.VALID_GROUP_URL2);
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+    // first add is a success
+    await common.timeout(2000);
+    await app.client.waitForExist(
+      ConversationPage.rowOpenGroupConversationName(
+        common.VALID_GROUP_NAME2
+      ),
+      8000
+    );
     // generate a message containing the current timestamp so we can find it in the list of messages
     const textMessage = common.generateSendMessageText();
-    // the test 'cannot join two times the same open group' must have been run before that one
     await app.client
       .element(ConversationPage.conversationButtonSection)
       .click();
+    
+      
 
     await app.client.waitForExist(
       ConversationPage.rowOpenGroupConversationName(

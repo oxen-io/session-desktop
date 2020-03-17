@@ -1,15 +1,16 @@
 /* eslint-disable func-names  */
 /* eslint-disable import/no-extraneous-dependencies */
 const common = require('./common');
-const { after, before, describe, it } = require('mocha');
+const { afterEach, beforeEach, describe, it } = require('mocha');
 const ConversationPage = require('./page-objects/conversation.page');
 
 describe('Add friends', function() {
   let app;
-  this.timeout(20000);
+  this.timeout(60000);
   this.slow(15000);
 
-  before(async () => {
+  beforeEach(async () => {
+    await common.killall();
     app = await common.startAndAssureCleanedApp();
     await common.restoreFromMnemonic(
       app,
@@ -19,8 +20,10 @@ describe('Add friends', function() {
     await common.timeout(2000);
   });
 
-  after(async () => {
+
+  afterEach(async () => {
     await common.stopApp(app);
+    await common.killall();
   });
 
   it('can add a friend by sessionID', async () => {
@@ -40,14 +43,14 @@ describe('Add friends', function() {
       .getValue()
       .should.eventually.equal(common.TEST_PUBKEY2);
     await app.client.element(ConversationPage.nextButton).click();
-    await common.timeout(1000);
+    await app.client.waitForExist(ConversationPage.sendFriendRequestTextarea,
+      1000
+    );
 
     // send a text message to that user (will be a friend request)
     await app.client
       .element(ConversationPage.sendFriendRequestTextarea)
       .setValue(textMessage);
-    await common.timeout(3000);
-
     await app.client.keys('Enter');
     await app.client.waitForExist(
       ConversationPage.existingFriendRequestText(
@@ -58,5 +61,6 @@ describe('Add friends', function() {
     // assure friend request message has been sent
     await common.timeout(3000);
     await app.client.isExisting(ConversationPage.retrySendButton).should.eventually.be.equal(false);
+
   });
 });

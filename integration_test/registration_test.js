@@ -12,6 +12,7 @@ describe('Window Test and Login', function() {
   this.slow(15000);
 
   before(async () => {
+    await common.killall();
     app = await common.startAndAssureCleanedApp();
   });
 
@@ -26,7 +27,7 @@ describe('Window Test and Login', function() {
   it('window title is correct', () => {
     app.client
       .getTitle()
-      .should.eventually.be.equal(`Session - ${common.getEnvironment()}`);
+      .should.eventually.be.equal('Session - test-integration-session');
   });
 
   it('can restore from seed', async () => {
@@ -58,7 +59,6 @@ describe('Window Test and Login', function() {
 
     await common.timeout(2000);
 
-    // eslint-disable-next-line more/no-then
     await app.webContents.executeJavaScript("window.storage.get('primaryDevicePubKey')").should.eventually.be.equal(common.TEST_PUBKEY1);
   });
 });

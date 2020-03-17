@@ -12,6 +12,7 @@ describe('Link Device', function() {
   this.slow(15000);
 
   before(async () => {
+    await common.killall();
     app = await common.startAndAssureCleanedApp();
     app2 = await common.startAndAssureCleanedApp2();
 
