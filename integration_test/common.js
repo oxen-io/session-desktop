@@ -16,12 +16,14 @@ chai.use(chaiAsPromised);
 module.exports = {
   TEST_MNEMONIC1:
     'faxed mechanic mocked agony unrest loincloth pencil eccentric boyfriend oasis speedy ribbon faxed',
-  TEST_PUBKEY1: '0552b85a43fb992f6bdb122a5a379505a0b99a16f0628ab8840249e2a60e12a413',
+  TEST_PUBKEY1:
+    '0552b85a43fb992f6bdb122a5a379505a0b99a16f0628ab8840249e2a60e12a413',
   TEST_DISPLAY_NAME1: 'integration_tester_1',
 
   TEST_MNEMONIC2:
     'guide inbound jerseys bays nouns basin sulking awkward stockpile ostrich ascend pylons ascend',
-  TEST_PUBKEY2: '054e1ca8681082dbd9aad1cf6fc89a32254e15cba50c75b5a73ac10a0b96bcbd2a',
+  TEST_PUBKEY2:
+    '054e1ca8681082dbd9aad1cf6fc89a32254e15cba50c75b5a73ac10a0b96bcbd2a',
   TEST_DISPLAY_NAME2: 'integration_tester_2',
 
   VALID_GROUP_URL: 'https://chat.getsession.org',
@@ -44,7 +46,7 @@ module.exports = {
         LOKI_DEV: 1,
         ELECTRON_ENABLE_LOGGING: true,
         ELECTRON_ENABLE_STACK_DUMPING: true,
-        ELECTRON_DISABLE_SANDBOX:1, 
+        ELECTRON_DISABLE_SANDBOX: 1,
       },
       startTimeout: 10000,
       requireName: 'electronRequire',
@@ -65,18 +67,16 @@ module.exports = {
     return app2;
   },
 
-
   async stopApp(app) {
     if (app && app.isRunning()) {
       await app.stop();
       return Promise.resolve();
     }
     return Promise.resolve();
-
   },
 
   async killall() {
-    return new Promise( (resolve) => {
+    return new Promise(resolve => {
       exec('killall electron', (err, stdout, stderr) => {
         if (err) {
           resolve({ stdout, stderr });
@@ -84,11 +84,11 @@ module.exports = {
           resolve({ stdout, stderr });
         }
       });
-    })
+    });
   },
 
   async rmFolder(folder) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec(`rm -r ${folder}`, (err, stdout, stderr) => {
         if (err) {
           resolve({ stdout, stderr });
@@ -100,22 +100,21 @@ module.exports = {
   },
 
   async startAndAssureCleanedApp2() {
-    const app2 = await this.startAndAssureCleanedApp('test-integration-session-2');
+    const app2 = await this.startAndAssureCleanedApp(
+      'test-integration-session-2'
+    );
     return app2;
   },
-
 
   async startAndAssureCleanedApp(env = 'test-integration-session') {
     // FIXME make it dynamic and windows/macos compatible?
     if (env === 'test-integration-session') {
       await this.rmFolder('~/.config/Loki-Messenger-testIntegrationProfile');
-    }
-    else {
+    } else {
       await this.rmFolder('~/.config/Loki-Messenger-testIntegration2Profile');
     }
-    const app = await this.startApp(env); 
+    const app = await this.startApp(env);
     await app.client.waitForExist(RegistrationPage.registrationTabSignIn, 4000);
-    
 
     return app;
   },

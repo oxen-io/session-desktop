@@ -51,9 +51,7 @@ describe('Open groups', function() {
 
     // validate open chat has been added
     await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(
-        common.VALID_GROUP_NAME
-      ),
+      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME),
       4000
     );
     await common.timeout(1000);
@@ -70,9 +68,7 @@ describe('Open groups', function() {
     // first add is a success
     await common.timeout(2000);
     await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(
-        common.VALID_GROUP_NAME2
-      ),
+      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2),
       8000
     );
 
@@ -114,9 +110,7 @@ describe('Open groups', function() {
     // first add is a success
     await common.timeout(2000);
     await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(
-        common.VALID_GROUP_NAME2
-      ),
+      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2),
       8000
     );
     // generate a message containing the current timestamp so we can find it in the list of messages
@@ -124,20 +118,14 @@ describe('Open groups', function() {
     await app.client
       .element(ConversationPage.conversationButtonSection)
       .click();
-    
-      
 
     await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(
-        common.VALID_GROUP_NAME2
-      ),
+      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2),
       200
     );
     await app.client
       .element(
-        ConversationPage.rowOpenGroupConversationName(
-          common.VALID_GROUP_NAME2
-        )
+        ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2)
       )
       .click();
     await app.client

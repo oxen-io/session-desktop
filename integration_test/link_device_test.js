@@ -31,7 +31,6 @@ describe('Link Device', function() {
     await common.timeout(2000);
   });
 
-
   after(() => common.killall());
 
   it('link two desktop devices', async () => {
@@ -40,50 +39,38 @@ describe('Link Device', function() {
     await app.client.element(ConversationPage.deviceSettingsRow).click();
 
     // // validate that the no paired device is shown
-    await app.client.waitForExist(
-      ConversationPage.noPairedDeviceMessage,
-      300
-    );
+    await app.client.waitForExist(ConversationPage.noPairedDeviceMessage, 300);
 
     await app.client.element(ConversationPage.linkDeviceButton).click();
 
     // validate device pairing dialog is shown and has a qrcode
-    await app.client.waitForExist(
-      ConversationPage.devicePairingDialog,
-      500
-    );
-    await app.client.waitForExist(
-      ConversationPage.qrImageDiv,
-      100
-    );
+    await app.client.waitForExist(ConversationPage.devicePairingDialog, 500);
+    await app.client.waitForExist(ConversationPage.qrImageDiv, 100);
 
     // TODO we should validate that the displayed qrcode is the correct pubkey
     // next trigger the link request from the app2 with the app1 pubkey
     await app2.client.element(RegistrationPage.registrationTabSignIn).click();
     await app2.client.element(RegistrationPage.linkDeviceMode).click();
     await app2.client
-    .element(RegistrationPage.textareaLinkDevicePubkey)
-    .setValue(common.TEST_PUBKEY1);
+      .element(RegistrationPage.textareaLinkDevicePubkey)
+      .setValue(common.TEST_PUBKEY1);
     await app2.client
-    .element(RegistrationPage.textareaLinkDevicePubkey)
-    .getValue()
-    .should.eventually.equal(common.TEST_PUBKEY1);
+      .element(RegistrationPage.textareaLinkDevicePubkey)
+      .getValue()
+      .should.eventually.equal(common.TEST_PUBKEY1);
     await app2.client.element(RegistrationPage.linkDeviceTriggerButton).click();
-    await app.client.waitForExist(
-      RegistrationPage.toastWrapper,
-      7000
-    );
-    let secretWordsapp1 = await app.client.element(RegistrationPage.secretToastDescription).getText();
+    await app.client.waitForExist(RegistrationPage.toastWrapper, 7000);
+    let secretWordsapp1 = await app.client
+      .element(RegistrationPage.secretToastDescription)
+      .getText();
     secretWordsapp1 = secretWordsapp1.split(': ')[1];
 
-    await app2.client.waitForExist(
-      RegistrationPage.toastWrapper,
-      6000
-    );
-    await app2.client.element(RegistrationPage.secretToastDescription).getText().should.eventually.be.equal(secretWordsapp1);
-
-
+    await app2.client.waitForExist(RegistrationPage.toastWrapper, 6000);
+    await app2.client
+      .element(RegistrationPage.secretToastDescription)
+      .getText()
+      .should.eventually.be.equal(secretWordsapp1);
 
     await common.timeout(5000);
-  }); 
+  });
 });

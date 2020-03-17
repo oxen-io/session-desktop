@@ -59,6 +59,8 @@ describe('Window Test and Login', function() {
 
     await common.timeout(2000);
 
-    await app.webContents.executeJavaScript("window.storage.get('primaryDevicePubKey')").should.eventually.be.equal(common.TEST_PUBKEY1);
+    await app.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(common.TEST_PUBKEY1);
   });
 });

@@ -20,7 +20,6 @@ describe('Add friends', function() {
     await common.timeout(2000);
   });
 
-
   afterEach(async () => {
     await common.stopApp(app);
     await common.killall();
@@ -34,7 +33,7 @@ describe('Add friends', function() {
     await app.client
       .isExisting(ConversationPage.leftPaneOverlay)
       .should.eventually.be.equal(true);
-    
+
     await app.client
       .element(ConversationPage.sessionIDInput)
       .setValue(common.TEST_PUBKEY2);
@@ -43,7 +42,8 @@ describe('Add friends', function() {
       .getValue()
       .should.eventually.equal(common.TEST_PUBKEY2);
     await app.client.element(ConversationPage.nextButton).click();
-    await app.client.waitForExist(ConversationPage.sendFriendRequestTextarea,
+    await app.client.waitForExist(
+      ConversationPage.sendFriendRequestTextarea,
       1000
     );
 
@@ -53,14 +53,13 @@ describe('Add friends', function() {
       .setValue(textMessage);
     await app.client.keys('Enter');
     await app.client.waitForExist(
-      ConversationPage.existingFriendRequestText(
-        textMessage
-      ),
+      ConversationPage.existingFriendRequestText(textMessage),
       1000
     );
     // assure friend request message has been sent
     await common.timeout(3000);
-    await app.client.isExisting(ConversationPage.retrySendButton).should.eventually.be.equal(false);
-
+    await app.client
+      .isExisting(ConversationPage.retrySendButton)
+      .should.eventually.be.equal(false);
   });
 });

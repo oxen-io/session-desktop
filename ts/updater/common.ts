@@ -84,8 +84,8 @@ export async function showCannotUpdateDialog(
   };
 
   return new Promise(resolve => async () => {
-      await dialog.showMessageBox(mainWindow, options);
-      resolve();
+    await dialog.showMessageBox(mainWindow, options);
+    resolve();
   });
 }
 
