@@ -5,6 +5,7 @@
 const common = require('./common');
 const { after, before, describe, it } = require('mocha');
 const RegistrationPage = require('./page-objects/registration.page');
+const ConversationPage = require('./page-objects/conversation.page');
 
 describe('Window Test and Login', function() {
   let app;
@@ -62,5 +63,31 @@ describe('Window Test and Login', function() {
     await app.webContents
       .executeJavaScript("window.storage.get('primaryDevicePubKey')")
       .should.eventually.be.equal(common.TEST_PUBKEY1);
+  });
+
+  it('can create new account', async () => {
+    await app.client.element(RegistrationPage.createSessionIDButton).click();
+    // wait for the animation of generated pubkey to finish
+    await common.timeout(2000);
+    const pubkeyGenerated = await app.client
+      .element(RegistrationPage.textareaGeneratedPubkey)
+      .getValue();
+    // validate generated pubkey
+    pubkeyGenerated.should.have.lengthOf(66);
+    pubkeyGenerated.substr(0, 2).should.be.equal('05');
+    await app.client.element(RegistrationPage.continueButton).click();
+    await app.client.waitForExist(RegistrationPage.displayNameInput, 500);
+    await app.client
+      .element(RegistrationPage.displayNameInput)
+      .setValue(common.TEST_DISPLAY_NAME1);
+    await app.client.element(RegistrationPage.getStartedButton).click();
+    await app.client.waitForExist(
+      ConversationPage.conversationButtonSection,
+      5000
+    );
+
+    await app.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(pubkeyGenerated);
   });
 });

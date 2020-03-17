@@ -2,6 +2,16 @@ module.exports = {
   registrationTabSignIn:
     '//div[contains(string(), "Sign In")][contains(@class, "session-registration__tab")][contains(@role, "tab")]',
 
+  // create new account
+  createSessionIDButton:
+    '//div[contains(string(), "Create Session ID")][contains(@role, "button")]',
+  continueButton:
+    '//div[contains(string(), "Continue")][contains(@role, "button")]',
+  textareaGeneratedPubkey:
+    '//textarea[contains(@class, "session-id-editable-textarea")]',
+  getStartedButton:
+    '//div[contains(string(), "Get started")][contains(@role, "button")]',
+
   // restore from seed
   restoreFromSeedMode:
     '//div[contains(string(), "Restore From Recovery")][contains(@role, "button")]',
