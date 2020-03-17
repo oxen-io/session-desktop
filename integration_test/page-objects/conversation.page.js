@@ -46,4 +46,12 @@ module.exports = {
   // settings
   settingsButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "gear")]]',
+  deviceSettingsRow: '//*[contains(@class, "left-pane-setting-category-list-item")][contains(string(), "Devices")]',
+
+
+  // device pairing
+  noPairedDeviceMessage: '//*[contains(@class, "session-settings-item__title")][contains(string(), "No paired devices")]',
+  linkDeviceButton: '//div[contains(string(), "Link New Device")][contains(@role, "button")]',
+  devicePairingDialog: '//*[contains(@class,"device-pairing-dialog")]',
+  qrImageDiv: '//div[contains(@class,"qr-image")]',
 };

@@ -87,6 +87,18 @@ module.exports = {
     })
   },
 
+  async rmFolder(folder) {
+    return new Promise((resolve) => {
+      exec(`rm -r ${folder}`, (err, stdout, stderr) => {
+        if (err) {
+          resolve({ stdout, stderr });
+        } else {
+          resolve({ stdout, stderr });
+        }
+      });
+    });
+  },
+
   async startAndAssureCleanedApp2() {
     const app2 = await this.startAndAssureCleanedApp('test-integration-session-2');
     return app2;
@@ -94,23 +106,22 @@ module.exports = {
 
 
   async startAndAssureCleanedApp(env = 'test-integration-session') {
-    let app = await this.startApp(env);
-    await this.timeout(2000); 
-
-    const ipcRenderer = app.electron.ipcRenderer;
-    ipcRenderer.send('delete-all-data');
-    await this.timeout(3000); 
-    await app.stop();
-    await this.timeout(3000);
-    app = await this.startApp(env); 
-    await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
+    // FIXME make it dynamic and windows/macos compatible?
+    if (env === 'test-integration-session') {
+      await this.rmFolder('~/.config/Loki-Messenger-testIntegrationProfile');
+    }
+    else {
+      await this.rmFolder('~/.config/Loki-Messenger-testIntegration2Profile');
+    }
+    const app = await this.startApp(env); 
+    await app.client.waitForExist(RegistrationPage.registrationTabSignIn, 4000);
     
 
     return app;
   },
 
   async restoreFromMnemonic(app, mnemonic, displayName) {
-    await app.client.element(RegistrationPage.registrationTabs).click();
+    await app.client.element(RegistrationPage.registrationTabSignIn).click();
     await app.client.element(RegistrationPage.restoreFromSeedMode).click();
     await app.client
       .element(RegistrationPage.recoveryPhraseInput)

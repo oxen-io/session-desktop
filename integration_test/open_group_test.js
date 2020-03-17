@@ -158,7 +158,6 @@ describe('Open groups', function() {
       ConversationPage.existingSendMessageText(textMessage),
       3000
     );
-    await common.timeout(5000);
     // we should validate that the message has been added effectively sent
     // (checking the check icon on the metadata part of the message?)
   });

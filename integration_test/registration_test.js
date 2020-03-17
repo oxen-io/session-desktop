@@ -31,7 +31,7 @@ describe('Window Test and Login', function() {
   });
 
   it('can restore from seed', async () => {
-    await app.client.element(RegistrationPage.registrationTabs).click();
+    await app.client.element(RegistrationPage.registrationTabSignIn).click();
     await app.client.element(RegistrationPage.restoreFromSeedMode).click();
     await app.client
       .element(RegistrationPage.recoveryPhraseInput)
