@@ -413,7 +413,7 @@ window.pubkeyPattern = /@[a-fA-F0-9]{64,66}\b/g;
 window.lokiFeatureFlags = {
   multiDeviceUnpairing: true,
   privateGroupChats: true,
-  useSnodeProxy: true,
+  useSnodeProxy: false,
   useSealedSender: true,
 };
 
