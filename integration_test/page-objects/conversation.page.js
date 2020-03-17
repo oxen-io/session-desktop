@@ -42,4 +42,8 @@ module.exports = {
     '//textarea[contains(@placeholder, "Enter a Session ID")]',
   nextButton:
     '//div[contains(string(), "Next")][contains(@role, "button")]',
+  
+  // settings
+  settingsButtonSection:
+    '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "gear")]]',
 };

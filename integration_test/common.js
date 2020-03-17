@@ -8,14 +8,15 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const RegistrationPage = require('./page-objects/registration.page');
 // const ConversationPage = require('./page-objects/conversation.page');
+const { exec } = require('child_process');
 
 chai.should();
 chai.use(chaiAsPromised);
 
 module.exports = {
   TEST_MNEMONIC1:
-    'onboard refer gumball nudged hope doctor saucepan wise karate sensible saga tutor doctor',
-  TEST_PUBKEY1: '05a05b061b17f578999f39679fd56852db79e037f12057b7791950af3aea4b1f00',
+    'faxed mechanic mocked agony unrest loincloth pencil eccentric boyfriend oasis speedy ribbon faxed',
+  TEST_PUBKEY1: '0552b85a43fb992f6bdb122a5a379505a0b99a16f0628ab8840249e2a60e12a413',
   TEST_DISPLAY_NAME1: 'integration_tester_1',
 
   TEST_MNEMONIC2:
@@ -28,69 +29,84 @@ module.exports = {
   VALID_GROUP_NAME: 'Session Public Chat',
   VALID_GROUP_NAME2: 'Loki Dev Chat',
 
-  timeout(ms) {
+  async timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
 
-  async startApp() {
-    const environment = this.getEnvironment();
-
+  async startApp(env = 'test-integration-session') {
+    console.log('starting app with NODE_APP_INSTANCE', env)
     const app = new Application({
       path: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
       args: ['.'],
       env: {
-        NODE_ENV: environment,
+        NODE_APP_INSTANCE: env,
+        NODE_ENV: 'production',
+        LOKI_DEV: 1,
         ELECTRON_ENABLE_LOGGING: true,
         ELECTRON_ENABLE_STACK_DUMPING: true,
+        ELECTRON_DISABLE_SANDBOX:1, 
       },
-      startTimeout: 5000,
+      startTimeout: 10000,
       requireName: 'electronRequire',
-      chromeDriverLogPath: '../chromedriverlog.txt',
-      chromeDriverArgs: ['remote-debugging-port=9222'],
+      // chromeDriverLogPath: '../chromedriverlog.txt',
+      // chromeDriverArgs: [`remote-debugging-port=${Math.floor(Math.random() * (9999 - 9000) + 9000)}`],
     });
 
     chaiAsPromised.transferPromiseness = app.transferPromiseness;
+
     await app.start();
     await app.client.waitUntilWindowLoaded();
+
     return app;
   },
+
+  async startApp2() {
+    const app2 = await this.startApp('test-integration-session-2');
+    return app2;
+  },
+
 
   async stopApp(app) {
     if (app && app.isRunning()) {
       await app.stop();
-      await this.timeout(2000);
       return Promise.resolve();
     }
     return Promise.resolve();
 
   },
 
-  async startAndAssureCleanedApp() {
-    let app = await this.startApp();
-    await this.timeout(2000);
+  async killall() {
+    return new Promise( (resolve, reject) => {
+      exec('killall electron', (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ stdout, stderr });
+        }
+      });
+    })
+  },
+
+  async startAndAssureCleanedApp2() {
+    const app2 = await this.startAndAssureCleanedApp('test-integration-session-2');
+    return app2;
+  },
+
+
+  async startAndAssureCleanedApp(env = 'test-integration-session') {
+    let app = await this.startApp(env);
+    await this.timeout(2000); 
 
     const ipcRenderer = app.electron.ipcRenderer;
     ipcRenderer.send('delete-all-data');
-    await this.timeout(2000);
-    await this.stopApp(app);
-    await this.timeout(2000);
-    app = await this.startApp();
+    await this.timeout(3000); 
+    await app.stop();
+    await this.timeout(3000);
+    app = await this.startApp(env); 
     await app.client.waitForExist(RegistrationPage.registrationTabs, 4000);
     
+
     return app;
-  },
-
-  async stopAndAssureCleanedApp(app) {
-    const ipcRenderer = app.electron.ipcRenderer;
-    ipcRenderer.send('delete-all-data');
-    await app.client.waitForExist(RegistrationPage.registrationTabs, 2000);
-    await this.stopApp(app);
-
-    return null;
-  },
-
-  getEnvironment() {
-    return 'test-integration-session';
   },
 
   async restoreFromMnemonic(app, mnemonic, displayName) {

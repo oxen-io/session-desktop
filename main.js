@@ -343,7 +343,8 @@ function createWindow() {
     mainWindow.loadURL(
       prepareURL([__dirname, 'libloki', 'test', 'index.html'])
     );
-  } else if (config.environment === 'test-integration-session') {
+  } else if (config.environment === 'test-integration-session' ||
+              config.environment === 'test-integration-session-2') {
     mainWindow.loadURL(prepareURL([__dirname, 'background.html']));
   } else {
     mainWindow.loadURL(prepareURL([__dirname, 'background.html']));
@@ -370,6 +371,7 @@ function createWindow() {
       config.environment === 'test-lib' ||
       config.environment === 'test-loki' ||
       config.environment === 'test-integration-session' ||
+      config.environment === 'test-integration-session-2' ||
       (mainWindow.readyForShutdown && windowState.shouldQuit())
     ) {
       return;
@@ -702,7 +704,8 @@ app.on('ready', async () => {
     process.env.NODE_ENV !== 'test' &&
     process.env.NODE_ENV !== 'test-lib' &&
     process.env.NODE_ENV !== 'test-loki' &&
-    process.env.NODE_ENV !== 'test-integration-session'
+    process.env.NODE_ENV !== 'test-integration-session'  &&
+    process.env.NODE_ENV !== 'test-integration-session-2'
   ) {
     installFileHandler({
       protocol: electronProtocol,
@@ -899,7 +902,8 @@ app.on('window-all-closed', () => {
     config.environment === 'test' ||
     config.environment === 'test-lib' ||
     config.environment === 'test-loki' ||
-    config.environment === 'test-integration-session'
+    config.environment === 'test-integration-session' ||
+    config.environment === 'test-integration-session-2'
   ) {
     app.quit();
   }
