@@ -66,14 +66,22 @@ class StubAppDotNetAPI extends OriginalAppDotNetApi {
         },
       };
     }
-
-    const response = {
-      ok: 'ok',
-    };
+    if (endpoint === 'token') {
+      return {
+        statusCode: 200,
+        response: {
+          data: {
+            user: {
+              name: 'unknown name',
+            },
+          },
+        },
+      };
+    }
 
     return {
       statusCode: 200,
-      response,
+      response: { },
     };
   }
 }
