@@ -3,7 +3,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 const common = require('./common');
-const { after, before, describe, it } = require('mocha');
+const { afterEach, beforeEach, describe, it } = require('mocha');
 const RegistrationPage = require('./page-objects/registration.page');
 const ConversationPage = require('./page-objects/conversation.page');
 
@@ -12,12 +12,12 @@ describe('Window Test and Login', function() {
   this.timeout(20000);
   this.slow(15000);
 
-  before(async () => {
+  beforeEach(async () => {
     await common.killall();
     app = await common.startAndAssureCleanedApp();
   });
 
-  after(async () => {
+  afterEach(async () => {
     await common.stopApp(app);
   });
 

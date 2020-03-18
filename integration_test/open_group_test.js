@@ -12,11 +12,14 @@ describe('Open groups', function() {
   beforeEach(async () => {
     await common.killall();
     app = await common.startAndAssureCleanedApp();
+    common.stubOpenGroupsCalls(app);
+
     await common.restoreFromMnemonic(
       app,
       common.TEST_MNEMONIC1,
       common.TEST_DISPLAY_NAME1
     );
+
     await common.timeout(2000);
   });
 
@@ -38,7 +41,7 @@ describe('Open groups', function() {
     await app.client.element(ConversationPage.joinOpenGroupButton).click();
 
     // validate session loader is shown
-    await app.client.waitForExist(ConversationPage.sessionLoader, 1000);
+    await app.client.waitForExist(ConversationPage.sessionLoader, 500);
     await app.client.waitForExist(
       ConversationPage.sessionToastJoinOpenGroupSuccess,
       9000
@@ -54,6 +57,7 @@ describe('Open groups', function() {
       ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME),
       4000
     );
+
     await common.timeout(1000);
   });
 
@@ -94,8 +98,6 @@ describe('Open groups', function() {
     await app.client
       .isExisting(ConversationPage.leftPaneOverlay)
       .should.eventually.be.equal(true);
-
-    await common.timeout(1000);
   });
 
   it('can send message to open group', async () => {

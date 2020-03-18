@@ -44,6 +44,7 @@ module.exports = {
         NODE_APP_INSTANCE: env,
         NODE_ENV: 'production',
         LOKI_DEV: 1,
+        USE_STUBBED_NETWORK: true,
         ELECTRON_ENABLE_LOGGING: true,
         ELECTRON_ENABLE_STACK_DUMPING: true,
         ELECTRON_DISABLE_SANDBOX: 1,
@@ -138,4 +139,10 @@ module.exports = {
 
   generateSendMessageText: () =>
     `Test message from integration tests ${Date.now()}`,
+
+  stubOpenGroupsCalls: app => {
+    app.webContents.executeJavaScript(
+      'window.LokiAppDotNetServerAPI = window.StubAppDotNetAPI;'
+    );
+  },
 };

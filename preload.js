@@ -305,6 +305,7 @@ window.lokiSnodeAPI = new LokiSnodeAPI({
 window.LokiMessageAPI = require('./js/modules/loki_message_api');
 
 window.LokiPublicChatAPI = require('./js/modules/loki_public_chat_api');
+window.StubAppDotNetApi = require('./integration_test/stubs/stub_app_dot_net_api.js');
 
 window.LokiAppDotNetServerAPI = require('./js/modules/loki_app_dot_net_api');
 
