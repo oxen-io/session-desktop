@@ -52,7 +52,11 @@ module.exports = {
       startTimeout: 10000,
       requireName: 'electronRequire',
       // chromeDriverLogPath: '../chromedriverlog.txt',
-      chromeDriverArgs: [`remote-debugging-port=${  Math.floor(Math.random() * (9999 - 9000) + 9000)}`],
+      chromeDriverArgs: [
+        `remote-debugging-port=${Math.floor(
+          Math.random() * (9999 - 9000) + 9000
+        )}`,
+      ],
     });
 
     chaiAsPromised.transferPromiseness = app.transferPromiseness;
