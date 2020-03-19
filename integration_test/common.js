@@ -9,6 +9,8 @@ const chaiAsPromised = require('chai-as-promised');
 const RegistrationPage = require('./page-objects/registration.page');
 // const ConversationPage = require('./page-objects/conversation.page');
 const { exec } = require('child_process');
+const url = require('url');
+const http = require('http');
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -148,5 +150,50 @@ module.exports = {
     app.webContents.executeJavaScript(
       'window.LokiAppDotNetServerAPI = window.StubAppDotNetAPI;'
     );
+  },
+
+  stubSnodeCalls(app) {
+    this.startStubSnode();
+    app.webContents.executeJavaScript(
+      'window.LokiMessageAPI = window.StubMessageAPI;'
+    );
+  },
+
+  startStubSnode() {
+    if (!this.stubSnode) {
+      this.stubSnode = http.createServer((request, response) => {
+        const { query } = url.parse(request.url, true);
+        const { pubkey, data, timestamp } = query;
+
+        if (pubkey) {
+          if (request.method === 'POST') {
+            // console.warn('POST', [data, timestamp]);
+
+            let ori = this.messages[pubkey];
+            if (!this.messages[pubkey]) {
+              ori = [];
+            }
+
+            this.messages[pubkey] = [...ori, { data, timestamp }];
+
+            response.writeHead(200, { 'Content-Type': 'text/html' });
+            response.end();
+          } else {
+            const retrievedMessages = { messages: this.messages[pubkey] };
+            // console.warn('get', pubkey, retrievedMessages);
+
+            if (this.messages[pubkey]) {
+              response.writeHead(200, { 'Content-Type': 'application/json' });
+              response.write(JSON.stringify(retrievedMessages));
+            }
+            response.end();
+          }
+        }
+        response.end();
+      });
+      this.stubSnode.listen(3000);
+    } else {
+      this.messages = {};
+    }
   },
 };
