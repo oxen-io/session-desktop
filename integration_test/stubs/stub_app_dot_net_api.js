@@ -1,11 +1,6 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-unused-vars */
-/* global log, textsecure, libloki, Signal, Whisper, ConversationController,
-clearTimeout, MessageController, libsignal, StringView, window, _,
-dcodeIO, Buffer, lokiSnodeAPI, TextDecoder, process */
+/* global clearTimeout, Buffer, TextDecoder, process */
 
 const OriginalAppDotNetApi = require('../../js/modules/loki_app_dot_net_api.js');
-const nodeFetch = require('node-fetch');
 
 const sampleFeed =
   '<?xml version="1.0" encoding="windows-1252"?><rss version="2.0"><channel>    <title>FeedForAll Sample Feed</title></channel></rss>';
@@ -16,8 +11,7 @@ const samplesGetMessages = {
     {
       channel_id: 1,
       created_at: '2020-03-18T04:48:44.000Z',
-      entities:
-      {
+      entities: {
         mentions: [],
         hashtags: [],
         links: [],
@@ -30,19 +24,21 @@ const samplesGetMessages = {
       reply_to: null,
       text: 'hgt',
       html: '<span itemscope="https://app.net/schemas/Post">hgt</span>',
-      annotations:
-        [
-          {
-            type: 'network.loki.messenger.publicChat',
-            value: {
-              timestamp: 1584506921361,
-              sig: '262ab113810564d7ff6474dea264e10e2143d91c004903d06d8d9fddb5b74b2c6245865544d5cf76ee16a3fca045bc028a48c51f8a290508a29b6013d014dc83',
-              sigver: 1,
-            },
-          }],
+      annotations: [
+        {
+          type: 'network.loki.messenger.publicChat',
+          value: {
+            timestamp: 1584506921361,
+            sig:
+              '262ab113810564d7ff6474dea264e10e2143d91c004903d06d8d9fddb5b74b2c6245865544d5cf76ee16a3fca045bc028a48c51f8a290508a29b6013d014dc83',
+            sigver: 1,
+          },
+        },
+      ],
       user: {
         id: 2448,
-        username: '050cd79763303bcc251bd489a6f7da823a2b8555402b01a7959ebca550d048600f',
+        username:
+          '050cd79763303bcc251bd489a6f7da823a2b8555402b01a7959ebca550d048600f',
         created_at: '2020-03-18T02:42:05.000Z',
         canonical_url: null,
         type: null,
@@ -54,8 +50,7 @@ const samplesGetMessages = {
           height: null,
           is_default: false,
         },
-        cover_image:
-        {
+        cover_image: {
           url: null,
           width: null,
           height: null,
@@ -74,12 +69,12 @@ const samplesGetMessages = {
   ],
 };
 
-
 class StubAppDotNetAPI extends OriginalAppDotNetApi {
   // make a request to the server
   async serverRequest(endpoint, options = {}) {
-    console.log('stubbed serverRequest with', endpoint);
-    const { params = {}, method, rawBody, objBody } = options;
+    const { method } = options;
+    // console.warn('STUBBED ', method, ':', endpoint);
+
     if (
       endpoint === 'loki/v1/rss/messenger' ||
       endpoint === 'loki/v1/rss/loki'
@@ -112,7 +107,8 @@ class StubAppDotNetAPI extends OriginalAppDotNetApi {
 
     if (
       endpoint === 'loki/v1/channel/1/deletes' ||
-      endpoint === 'loki/v1/channel/1/moderators') {
+      endpoint === 'loki/v1/channel/1/moderators'
+    ) {
       return {
         statusCode: 200,
         response: {
@@ -162,7 +158,7 @@ class StubAppDotNetAPI extends OriginalAppDotNetApi {
 
     return {
       statusCode: 200,
-      response: { },
+      response: {},
     };
   }
 }

@@ -6,22 +6,37 @@ const ConversationPage = require('./page-objects/conversation.page');
 
 describe('Add friends', function() {
   let app;
+  let app2;
   this.timeout(60000);
   this.slow(15000);
 
   beforeEach(async () => {
     await common.killall();
-    app = await common.startAndAssureCleanedApp();
-    await common.restoreFromMnemonic(
+    [app, app2] = await Promise.all([
+      common.startAndAssureCleanedApp(),
+      common.startAndAssureCleanedApp2(),
+    ]);
+    common.stubSnodeCalls(app);
+    common.stubSnodeCalls(app2);
+    const login1 = common.restoreFromMnemonic(
       app,
       common.TEST_MNEMONIC1,
       common.TEST_DISPLAY_NAME1
     );
+
+    const login2 = common.restoreFromMnemonic(
+      app2,
+      common.TEST_MNEMONIC2,
+      common.TEST_DISPLAY_NAME2
+    );
+    await Promise.all([login1, login2]);
+
     await common.timeout(2000);
   });
 
   afterEach(async () => {
     await common.stopApp(app);
+    await common.stopApp(app2);
     await common.killall();
   });
 

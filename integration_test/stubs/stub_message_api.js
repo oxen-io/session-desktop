@@ -1,9 +1,4 @@
-/* eslint-disable no-console */
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-unused-vars */
-/* global log, textsecure, libloki, Signal, Whisper, ConversationController,
-clearTimeout, MessageController, libsignal, StringView, window, _,
-dcodeIO, Buffer, lokiSnodeAPI, TextDecoder, process */
+/* global clearTimeout, window, dcodeIO, Buffer, TextDecoder, process */
 const nodeFetch = require('node-fetch');
 
 class StubMessageAPI {
@@ -12,8 +7,9 @@ class StubMessageAPI {
     this.baseUrl = 'http://localhost:3000';
   }
 
+  // eslint-disable-next-line no-unused-vars
   async sendMessage(pubKey, data, messageTimeStamp, ttl, options = {}) {
-    console.warn('STUBBED message api ', pubKey, ttl);
+    // console.warn('STUBBED message api ', pubKey, ttl);
     const post = {
       method: 'POST',
     };
@@ -31,7 +27,6 @@ class StubMessageAPI {
   }
 
   async startLongPolling(numConnections, stopPolling, callback) {
-    console.warn('STUBBED startLongPolling api ', numConnections);
     const ourPubkey = window.storage.get('primaryDevicePubKey');
 
     const get = {
@@ -42,7 +37,7 @@ class StubMessageAPI {
       get
     );
     const json = await res.json();
-    console.warn('STUBBED polling messages ', json.messages);
+    // console.warn('STUBBED polling messages ', json.messages);
 
     callback(json.messages || []);
   }
