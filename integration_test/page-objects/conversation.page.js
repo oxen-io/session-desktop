@@ -38,6 +38,18 @@ module.exports = {
     '//div[contains(string(), "Add Contact")][contains(@role, "button")]',
   sessionIDInput: '//textarea[contains(@placeholder, "Enter a Session ID")]',
   nextButton: '//div[contains(string(), "Next")][contains(@role, "button")]',
+  oneNotificationFriendRequestLeft:
+    '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "users")]  and .//*[contains(@class, "notification-count") and contains(string(), "1")] ]',
+  oneNotificationFriendRequestTop:
+    '//*[contains(@class,"contact-notification-count-bubble") and contains(string(), "1")]',
+  friendRequestFromUser: (displayName, pubkey) =>
+    `//*[contains(@class,"module-left-pane__list-popup")  and .//*[contains(@class, "module-conversation__user") and .//*[contains(string(), "${displayName}")] and .//*[contains(string(), "(...${pubkey.substring(
+      60
+    )})")]]]`,
+  acceptFriendRequestButton:
+    '//*[contains(@role, "button")][contains(@class, "session-button")][contains(string(), "Accept")]',
+  acceptedFriendRequestMessage:
+    '//*[contains(@class, "module-friend-request__title")][contains(string(), "Friend request accepted")]',
 
   // settings
   settingsButtonSection:

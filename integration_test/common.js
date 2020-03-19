@@ -15,6 +15,8 @@ const http = require('http');
 chai.should();
 chai.use(chaiAsPromised);
 
+const STUB_SNODE_SERVER_PORT = 3000;
+
 module.exports = {
   TEST_MNEMONIC1:
     'faxed mechanic mocked agony unrest loincloth pencil eccentric boyfriend oasis speedy ribbon faxed',
@@ -84,13 +86,28 @@ module.exports = {
 
   async killall() {
     return new Promise(resolve => {
-      exec('killall electron', (err, stdout, stderr) => {
+      exec('killall -9 electron', (err, stdout, stderr) => {
         if (err) {
           resolve({ stdout, stderr });
         } else {
           resolve({ stdout, stderr });
         }
       });
+    });
+  },
+
+  async killStubSnodeServer() {
+    return new Promise(resolve => {
+      exec(
+        `lsof -ti:${STUB_SNODE_SERVER_PORT} |xargs kill -9`,
+        (err, stdout, stderr) => {
+          if (err) {
+            resolve({ stdout, stderr });
+          } else {
+            resolve({ stdout, stderr });
+          }
+        }
+      );
     });
   },
 
@@ -153,14 +170,15 @@ module.exports = {
   },
 
   stubSnodeCalls(app) {
-    this.startStubSnode();
     app.webContents.executeJavaScript(
       'window.LokiMessageAPI = window.StubMessageAPI;'
     );
   },
 
-  startStubSnode() {
+  async startStubSnodeServer() {
     if (!this.stubSnode) {
+      await this.killStubSnodeServer();
+      this.messages = {};
       this.stubSnode = http.createServer((request, response) => {
         const { query } = url.parse(request.url, true);
         const { pubkey, data, timestamp } = query;
@@ -191,7 +209,7 @@ module.exports = {
         }
         response.end();
       });
-      this.stubSnode.listen(3000);
+      this.stubSnode.listen(STUB_SNODE_SERVER_PORT);
     } else {
       this.messages = {};
     }

@@ -16,6 +16,7 @@ describe('Add friends', function() {
       common.startAndAssureCleanedApp(),
       common.startAndAssureCleanedApp2(),
     ]);
+    await common.startStubSnodeServer();
     common.stubSnodeCalls(app);
     common.stubSnodeCalls(app2);
     const login1 = common.restoreFromMnemonic(
@@ -36,7 +37,6 @@ describe('Add friends', function() {
 
   afterEach(async () => {
     await common.stopApp(app);
-    await common.stopApp(app2);
     await common.killall();
   });
 
@@ -76,5 +76,48 @@ describe('Add friends', function() {
     await app.client
       .isExisting(ConversationPage.retrySendButton)
       .should.eventually.be.equal(false);
+
+    // wait for left notification Friend Request count to go to 1 and click it
+    await app2.client.waitForExist(
+      ConversationPage.oneNotificationFriendRequestLeft,
+      5000
+    );
+    await app2.client
+      .element(ConversationPage.oneNotificationFriendRequestLeft)
+      .click();
+    // open the dropdown from the top friend request count
+    await app2.client.waitForExist(
+      ConversationPage.oneNotificationFriendRequestTop,
+      100
+    );
+    await app2.client
+      .element(ConversationPage.oneNotificationFriendRequestTop)
+      .click();
+
+    // we should have our app1 friend request here
+    await app2.client.waitForExist(
+      ConversationPage.friendRequestFromUser(
+        common.TEST_DISPLAY_NAME1,
+        common.TEST_PUBKEY1
+      ),
+      100
+    );
+    await app2.client.waitForExist(
+      ConversationPage.acceptFriendRequestButton,
+      100
+    );
+
+    // accept the friend request and validate that on both side the "accepted FR" message is shown
+    await app2.client
+      .element(ConversationPage.acceptFriendRequestButton)
+      .click();
+    await app2.client.waitForExist(
+      ConversationPage.acceptedFriendRequestMessage,
+      1000
+    );
+    await app.client.waitForExist(
+      ConversationPage.acceptedFriendRequestMessage,
+      5000
+    );
   });
 });
