@@ -3,7 +3,7 @@
 /* eslint-disable func-names  */
 /* eslint-disable import/no-extraneous-dependencies */
 const common = require('./common');
-const { after, before, describe, it } = require('mocha');
+const { afterEach, beforeEach, describe, it } = require('mocha');
 const ConversationPage = require('./page-objects/conversation.page');
 const RegistrationPage = require('./page-objects/registration.page');
 
@@ -13,14 +13,16 @@ describe('Link Device', function() {
   this.timeout(600000);
   this.slow(15000);
 
-  before(async () => {
+  beforeEach(async () => {
     await common.killall();
     [app, app2] = await Promise.all([
       common.startAndAssureCleanedApp(),
       common.startAndAssureCleanedApp2(),
     ]);
+    await common.startStubSnodeServer();
+    common.stubSnodeCalls(app);
+    common.stubSnodeCalls(app2);
 
-    await common.timeout(2000);
 
     // login first app
     await common.restoreFromMnemonic(
@@ -31,7 +33,7 @@ describe('Link Device', function() {
     await common.timeout(2000);
   });
 
-  after(() => common.killall());
+  afterEach(() => common.killall());
 
   it('link two desktop devices', async () => {
     // start the pairing dialog for the first app
@@ -70,7 +72,5 @@ describe('Link Device', function() {
       .element(RegistrationPage.secretToastDescription)
       .getText()
       .should.eventually.be.equal(secretWordsapp1);
-
-    await common.timeout(5000);
   });
 });
