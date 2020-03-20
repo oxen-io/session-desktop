@@ -42,7 +42,6 @@ module.exports = {
   },
 
   async startApp(env = 'test-integration-session') {
-    // console.log('starting app with NODE_APP_INSTANCE', env)
     const app = new Application({
       path: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
       args: ['.'],
@@ -86,7 +85,7 @@ module.exports = {
     return Promise.resolve();
   },
 
-  async killall() {
+  async killallElectron() {
     return new Promise(resolve => {
       exec('killall -9 electron', (err, stdout, stderr) => {
         if (err) {
@@ -98,20 +97,6 @@ module.exports = {
     });
   },
 
-  async killStubSnodeServer() {
-    return new Promise(resolve => {
-      exec(
-        `lsof -ti:${STUB_SNODE_SERVER_PORT} |xargs kill -9`,
-        (err, stdout, stderr) => {
-          if (err) {
-            resolve({ stdout, stderr });
-          } else {
-            resolve({ stdout, stderr });
-          }
-        }
-      );
-    });
-  },
 
   async rmFolder(folder) {
     return new Promise(resolve => {
@@ -143,6 +128,36 @@ module.exports = {
     await app.client.waitForExist(RegistrationPage.registrationTabSignIn, 4000);
 
     return app;
+  },
+
+  async startAndStub({mnemonic, displayName, stubSnode = false, stubOpenGroups = false, env = 'test-integration-session'}) {
+    const app = await this.startAndAssureCleanedApp(env);
+
+    if (stubSnode) {
+      await this.startStubSnodeServer();
+      this.stubSnodeCalls(app);
+    }
+
+    if (stubOpenGroups) {
+      this.stubOpenGroupsCalls(app);
+    }
+
+    if (mnemonic && displayName) {
+      await this.restoreFromMnemonic(
+        app,
+        mnemonic,
+        displayName
+      );
+      await this.timeout(2000);
+    }
+    
+    return app;
+  },
+  
+  async startAndStub2(props) {
+    const app2 = await this.startAndStub({env: 'test-integration-session-2', ...props});
+    
+    return app2;
   },
 
   async restoreFromMnemonic(app, mnemonic, displayName) {
@@ -179,7 +194,6 @@ module.exports = {
 
   async startStubSnodeServer() {
     if (!this.stubSnode) {
-      await this.killStubSnodeServer();
       this.messages = {};
       this.stubSnode = http.createServer((request, response) => {
         const { query } = url.parse(request.url, true);
@@ -219,4 +233,26 @@ module.exports = {
       this.messages = {};
     }
   },
+
+  async stopStubSnodeServer() {
+    if (this.stubSnode) {
+      this.stubSnode.close();
+      this.stubSnode = null;
+    }
+  },
+
+  // async killStubSnodeServer() {
+  //   return new Promise(resolve => {
+  //     exec(
+  //       `lsof -ti:${STUB_SNODE_SERVER_PORT} |xargs kill -9`,
+  //       (err, stdout, stderr) => {
+  //         if (err) {
+  //           resolve({ stdout, stderr });
+  //         } else {
+  //           resolve({ stdout, stderr });
+  //         }
+  //       }
+  //     );
+  //   });
+  // },
 };

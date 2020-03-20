@@ -10,21 +10,17 @@ describe('Open groups', function() {
   this.slow(15000);
 
   beforeEach(async () => {
-    await common.killall();
-    app = await common.startAndAssureCleanedApp();
-    common.stubOpenGroupsCalls(app);
-
-    await common.restoreFromMnemonic(
-      app,
-      common.TEST_MNEMONIC1,
-      common.TEST_DISPLAY_NAME1
-    );
-
-    await common.timeout(2000);
+    await common.killallElectron();
+    const login = {
+      mnemonic: common.TEST_MNEMONIC1,
+      displayName: common.TEST_DISPLAY_NAME1,
+      stubOpenGroups: true,
+    }
+    app = await common.startAndStub(login);
   });
 
   afterEach(async () => {
-    await common.killall();
+    await common.killallElectron();
   });
 
   it('works with valid group url', async () => {

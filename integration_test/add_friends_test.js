@@ -11,33 +11,31 @@ describe('Add friends', function() {
   this.slow(15000);
 
   beforeEach(async () => {
-    await common.killall();
+    await common.killallElectron();
+    await common.stopStubSnodeServer();
+
+    const app1Props = {
+      mnemonic: common.TEST_MNEMONIC1,
+      displayName: common.TEST_DISPLAY_NAME1,
+      stubSnode: true,
+    };
+
+    const app2Props = {
+      mnemonic: common.TEST_MNEMONIC2,
+      displayName: common.TEST_DISPLAY_NAME2,
+      stubSnode: true,
+    };
+
     [app, app2] = await Promise.all([
-      common.startAndAssureCleanedApp(),
-      common.startAndAssureCleanedApp2(),
+      common.startAndStub(app1Props),
+      common.startAndStub2(app2Props),
     ]);
-    await common.startStubSnodeServer();
-    common.stubSnodeCalls(app);
-    common.stubSnodeCalls(app2);
-    const login1 = common.restoreFromMnemonic(
-      app,
-      common.TEST_MNEMONIC1,
-      common.TEST_DISPLAY_NAME1
-    );
-
-    const login2 = common.restoreFromMnemonic(
-      app2,
-      common.TEST_MNEMONIC2,
-      common.TEST_DISPLAY_NAME2
-    );
-    await Promise.all([login1, login2]);
-
-    await common.timeout(2000);
   });
 
   afterEach(async () => {
     await common.stopApp(app);
-    await common.killall();
+    await common.killallElectron();
+    await common.stopStubSnodeServer();
   });
 
   it('can add a friend by sessionID', async () => {

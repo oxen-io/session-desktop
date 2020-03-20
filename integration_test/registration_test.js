@@ -13,7 +13,7 @@ describe('Window Test and Login', function() {
   this.slow(15000);
 
   beforeEach(async () => {
-    await common.killall();
+    await common.killallElectron();
     app = await common.startAndAssureCleanedApp();
   });
 

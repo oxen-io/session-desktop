@@ -14,25 +14,29 @@ describe('Link Device', function() {
   this.slow(15000);
 
   beforeEach(async () => {
-    await common.killall();
-    [app, app2] = await Promise.all([
-      common.startAndAssureCleanedApp(),
-      common.startAndAssureCleanedApp2(),
-    ]);
-    await common.startStubSnodeServer();
-    common.stubSnodeCalls(app);
-    common.stubSnodeCalls(app2);
+    await common.killallElectron();
+    await common.stopStubSnodeServer();
 
-    // login first app
-    await common.restoreFromMnemonic(
-      app,
-      common.TEST_MNEMONIC1,
-      common.TEST_DISPLAY_NAME1
-    );
-    await common.timeout(2000);
+    const app1Props = {
+      mnemonic: common.TEST_MNEMONIC1,
+      displayName: common.TEST_DISPLAY_NAME1,
+      stubSnode: true,
+    };
+
+    const app2Props = {
+      stubSnode: true,
+    };
+      
+    [app, app2] = await Promise.all([
+      common.startAndStub(app1Props),
+      common.startAndStub2(app2Props),
+    ]);
   });
 
-  afterEach(() => common.killall());
+  afterEach(async () => {
+    await common.killallElectron();
+    await common.stopStubSnodeServer();
+  });
 
   it('link two desktop devices', async () => {
     // start the pairing dialog for the first app
