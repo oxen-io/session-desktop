@@ -50,10 +50,8 @@ window.getStoragePubKey = key =>
 window.getDefaultFileServer = () => config.defaultFileServer;
 window.initialisedAPI = false;
 
-if (
-  process.env.NODE_APP_INSTANCE === 'test-integration-session' ||
-  process.env.NODE_APP_INSTANCE === 'test-integration-session-2'
-) {
+if (typeof process.env.NODE_APP_INSTANCE === 'string' &&
+  process.env.NODE_APP_INSTANCE.includes('test-integration')) {
   window.electronRequire = require;
 }
 
@@ -417,7 +415,7 @@ window.pubkeyPattern = /@[a-fA-F0-9]{64,66}\b/g;
 window.lokiFeatureFlags = {
   multiDeviceUnpairing: true,
   privateGroupChats: true,
-  useSnodeProxy: false,
+  useSnodeProxy: !process.env.USE_STUBBED_NETWORK,
   useSealedSender: true,
 };
 
