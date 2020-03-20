@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable prefer-destructuring */
 
@@ -16,6 +17,7 @@ chai.should();
 chai.use(chaiAsPromised);
 
 const STUB_SNODE_SERVER_PORT = 3000;
+const ENABLE_LOG = false;
 
 module.exports = {
   TEST_MNEMONIC1:
@@ -185,7 +187,9 @@ module.exports = {
 
         if (pubkey) {
           if (request.method === 'POST') {
-            // console.warn('POST', [data, timestamp]);
+            if (ENABLE_LOG) {
+              console.warn('POST', [data, timestamp]);
+            }
 
             let ori = this.messages[pubkey];
             if (!this.messages[pubkey]) {
@@ -198,8 +202,9 @@ module.exports = {
             response.end();
           } else {
             const retrievedMessages = { messages: this.messages[pubkey] };
-            // console.warn('get', pubkey, retrievedMessages);
-
+            if (ENABLE_LOG) {
+              console.warn('GET', pubkey, retrievedMessages);
+            }
             if (this.messages[pubkey]) {
               response.writeHead(200, { 'Content-Type': 'application/json' });
               response.write(JSON.stringify(retrievedMessages));
