@@ -10,12 +10,16 @@ module.exports = {
     `//*[contains(@class, "module-message__text--outgoing")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
   existingFriendRequestText: textMessage =>
     `//*[contains(@class, "module-message-friend-request__container")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
+  existingReceivedMessageText: textMessage =>
+    `//*[contains(@class, "module-message__text--incoming")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
 
   // conversations
   conversationButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "chatBubble")]]',
   retrySendButton:
     '//div[contains(string(), "Retry Send")][contains(@class, "module-friend-request__buttonContainer--outgoing")]',
+  headerTitleMembers: (number) =>
+    `//span[contains(string(), "${number} members")][contains(@class, "module-conversation-header__title-text")]`,
 
   // channels
   globeButtonSection:
@@ -30,6 +34,23 @@ module.exports = {
     '//div[contains(string(), "You are already connected to this public channel")][contains(@class, "session-toast-wrapper")]',
   rowOpenGroupConversationName: groupName =>
     `//span[contains(string(), "${groupName}")][contains(@class, "module-conversation__user__profile-number")]`,
+
+  // closed group
+  createClosedGroupButton:
+    '//div[contains(string(), "Create Closed Group")][contains(@role, "button")]',
+  closedGroupNameTextarea:
+    '//textarea[contains(@placeholder, "Enter a group name")]',
+  createClosedGroupMemberItem:
+    '//div[contains(@class, "session-member-item")]',
+  createClosedGroupMemberItemSelected:
+    '//div[contains(@class, "session-member-item selected")]',
+  validateCreationClosedGroupButton:
+    '//div[contains(string(), "Create Closed Group")][contains(@class, "session-button")][contains(@role, "button")]',
+  sessionToastGroupCreatedSuccess:
+    '//div[contains(string(), "Group created successfully")][contains(@class, "session-toast-wrapper")]',
+  headerTitleGroupName: (groupname) =>
+    `//span[contains(string(), "${groupname}")][contains(@class, "module-contact-name__profile-name")]`,
+
 
   // contacts
   contactsButtonSection:

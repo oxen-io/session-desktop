@@ -8,7 +8,7 @@ const path = require('path');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const RegistrationPage = require('./page-objects/registration.page');
-// const ConversationPage = require('./page-objects/conversation.page');
+const ConversationPage = require('./page-objects/conversation.page');
 const { exec } = require('child_process');
 const url = require('url');
 const http = require('http');
@@ -20,6 +20,7 @@ const STUB_SNODE_SERVER_PORT = 3000;
 const ENABLE_LOG = false;
 
 module.exports = {
+  /* **************  USERS  ****************** */
   TEST_MNEMONIC1:
     'faxed mechanic mocked agony unrest loincloth pencil eccentric boyfriend oasis speedy ribbon faxed',
   TEST_PUBKEY1:
@@ -32,10 +33,16 @@ module.exports = {
     '054e1ca8681082dbd9aad1cf6fc89a32254e15cba50c75b5a73ac10a0b96bcbd2a',
   TEST_DISPLAY_NAME2: 'integration_tester_2',
 
+  /* **************  OPEN GROUPS  ****************** */
   VALID_GROUP_URL: 'https://chat.getsession.org',
   VALID_GROUP_URL2: 'https://chat-dev.lokinet.org',
   VALID_GROUP_NAME: 'Session Public Chat',
   VALID_GROUP_NAME2: 'Loki Dev Chat',
+
+  /* **************  CLOSED GROUPS  ****************** */
+  VALID_CLOSED_GROUP_NAME1: 'Closed Group 1',
+
+
 
   async timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -150,13 +157,13 @@ module.exports = {
       );
       await this.timeout(2000);
     }
-    
+
     return app;
   },
-  
+
   async startAndStub2(props) {
     const app2 = await this.startAndStub({env: 'test-integration-session-2', ...props});
-    
+
     return app2;
   },
 
@@ -175,6 +182,82 @@ module.exports = {
       RegistrationPage.conversationListContainer,
       4000
     );
+  },
+
+  async startAppsAsFriends() {
+    const app1Props = {
+      mnemonic: this.TEST_MNEMONIC1,
+      displayName: this.TEST_DISPLAY_NAME1,
+      stubSnode: true,
+    };
+
+    const app2Props = {
+      mnemonic: this.TEST_MNEMONIC2,
+      displayName: this.TEST_DISPLAY_NAME2,
+      stubSnode: true,
+    };
+
+    const [app, app2] = await Promise.all([
+      this.startAndStub(app1Props),
+      this.startAndStub2(app2Props),
+    ]);
+
+  /** add each other as friends */
+  const textMessage = this.generateSendMessageText();
+
+  await app.client.element(ConversationPage.contactsButtonSection).click();
+  await app.client.element(ConversationPage.addContactButton).click();
+
+  await app.client
+    .element(ConversationPage.sessionIDInput)
+    .setValue(this.TEST_PUBKEY2);
+  await app.client.element(ConversationPage.nextButton).click();
+  await app.client.waitForExist(
+    ConversationPage.sendFriendRequestTextarea,
+    1000
+  );
+
+  // send a text message to that user (will be a friend request)
+  await app.client
+    .element(ConversationPage.sendFriendRequestTextarea)
+    .setValue(textMessage);
+  await app.client.keys('Enter');
+  await app.client.waitForExist(
+    ConversationPage.existingFriendRequestText(textMessage),
+    1000
+  );
+
+  // wait for left notification Friend Request count to go to 1 and click it
+  await app2.client.waitForExist(
+    ConversationPage.oneNotificationFriendRequestLeft,
+    5000
+  );
+  await app2.client
+    .element(ConversationPage.oneNotificationFriendRequestLeft)
+    .click();
+  // open the dropdown from the top friend request count
+  await app2.client.waitForExist(
+    ConversationPage.oneNotificationFriendRequestTop,
+    100
+  );
+  await app2.client
+    .element(ConversationPage.oneNotificationFriendRequestTop)
+    .click();
+
+  // accept the friend request and validate that on both side the "accepted FR" message is shown
+  await app2.client
+    .element(ConversationPage.acceptFriendRequestButton)
+    .click();
+  await app2.client.waitForExist(
+    ConversationPage.acceptedFriendRequestMessage,
+    1000
+  );
+  await app.client.waitForExist(
+    ConversationPage.acceptedFriendRequestMessage,
+    5000
+  );
+
+    return [app, app2];
   },
 
   generateSendMessageText: () =>
