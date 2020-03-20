@@ -64,4 +64,11 @@ module.exports = {
     '//div[contains(string(), "Link New Device")][contains(@role, "button")]',
   devicePairingDialog: '//*[contains(@class,"device-pairing-dialog")]',
   qrImageDiv: '//div[contains(@class,"qr-image")]',
+  allowPairingButton:
+    '//div[contains(string(), "Allow Pairing")][contains(@role, "button")]',
+  okButton: '//div[contains(string(), "OK")][contains(@role, "button")]',
+  devicePairedDescription: secretWords =>
+    `//div[contains(string(), "${secretWords}")][contains(@class, "session-settings-item__description")]`,
+  unpairDeviceButton:
+    '//div[contains(string(), "Unpair Device")][contains(@role, "button")][contains(@class, "danger")]',
 };

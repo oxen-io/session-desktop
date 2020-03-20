@@ -27,7 +27,7 @@ class StubMessageAPI {
   }
 
   async startLongPolling(numConnections, stopPolling, callback) {
-    const ourPubkey = window.storage.get('primaryDevicePubKey');
+    const ourPubkey = this.ourKey;
 
     const get = {
       method: 'GET',

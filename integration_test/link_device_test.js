@@ -23,7 +23,6 @@ describe('Link Device', function() {
     common.stubSnodeCalls(app);
     common.stubSnodeCalls(app2);
 
-
     // login first app
     await common.restoreFromMnemonic(
       app,
@@ -72,5 +71,24 @@ describe('Link Device', function() {
       .element(RegistrationPage.secretToastDescription)
       .getText()
       .should.eventually.be.equal(secretWordsapp1);
+    await app.client.element(ConversationPage.allowPairingButton).click();
+    await app.client.element(ConversationPage.okButton).click();
+    // validate device paired in settings list with correct secrets
+    await app.client.waitForExist(
+      ConversationPage.devicePairedDescription(secretWordsapp1),
+      2000
+    );
+    await app.client.element(ConversationPage.unpairDeviceButton);
+
+    // validate app2 (secondary device) is linked successfully
+    await app2.client.waitForExist(
+      RegistrationPage.conversationListContainer,
+      4000
+    );
+
+    // validate primary pubkey of app2 is the same that in app1
+    await app2.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(common.TEST_PUBKEY1);
   });
 });
