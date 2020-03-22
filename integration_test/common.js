@@ -42,8 +42,6 @@ module.exports = {
   /* **************  CLOSED GROUPS  ****************** */
   VALID_CLOSED_GROUP_NAME1: 'Closed Group 1',
 
-
-
   async timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
@@ -104,7 +102,6 @@ module.exports = {
     });
   },
 
-
   async rmFolder(folder) {
     return new Promise(resolve => {
       exec(`rm -r ${folder}`, (err, stdout, stderr) => {
@@ -137,7 +134,13 @@ module.exports = {
     return app;
   },
 
-  async startAndStub({mnemonic, displayName, stubSnode = false, stubOpenGroups = false, env = 'test-integration-session'}) {
+  async startAndStub({
+    mnemonic,
+    displayName,
+    stubSnode = false,
+    stubOpenGroups = false,
+    env = 'test-integration-session',
+  }) {
     const app = await this.startAndAssureCleanedApp(env);
 
     if (stubSnode) {
@@ -150,11 +153,7 @@ module.exports = {
     }
 
     if (mnemonic && displayName) {
-      await this.restoreFromMnemonic(
-        app,
-        mnemonic,
-        displayName
-      );
+      await this.restoreFromMnemonic(app, mnemonic, displayName);
       await this.timeout(2000);
     }
 
@@ -162,7 +161,10 @@ module.exports = {
   },
 
   async startAndStub2(props) {
-    const app2 = await this.startAndStub({env: 'test-integration-session-2', ...props});
+    const app2 = await this.startAndStub({
+      env: 'test-integration-session-2',
+      ...props,
+    });
 
     return app2;
   },
@@ -202,60 +204,60 @@ module.exports = {
       this.startAndStub2(app2Props),
     ]);
 
-  /** add each other as friends */
-  const textMessage = this.generateSendMessageText();
+    /** add each other as friends */
+    const textMessage = this.generateSendMessageText();
 
-  await app.client.element(ConversationPage.contactsButtonSection).click();
-  await app.client.element(ConversationPage.addContactButton).click();
+    await app.client.element(ConversationPage.contactsButtonSection).click();
+    await app.client.element(ConversationPage.addContactButton).click();
 
-  await app.client
-    .element(ConversationPage.sessionIDInput)
-    .setValue(this.TEST_PUBKEY2);
-  await app.client.element(ConversationPage.nextButton).click();
-  await app.client.waitForExist(
-    ConversationPage.sendFriendRequestTextarea,
-    1000
-  );
+    await app.client
+      .element(ConversationPage.sessionIDInput)
+      .setValue(this.TEST_PUBKEY2);
+    await app.client.element(ConversationPage.nextButton).click();
+    await app.client.waitForExist(
+      ConversationPage.sendFriendRequestTextarea,
+      1000
+    );
 
-  // send a text message to that user (will be a friend request)
-  await app.client
-    .element(ConversationPage.sendFriendRequestTextarea)
-    .setValue(textMessage);
-  await app.client.keys('Enter');
-  await app.client.waitForExist(
-    ConversationPage.existingFriendRequestText(textMessage),
-    1000
-  );
+    // send a text message to that user (will be a friend request)
+    await app.client
+      .element(ConversationPage.sendFriendRequestTextarea)
+      .setValue(textMessage);
+    await app.client.keys('Enter');
+    await app.client.waitForExist(
+      ConversationPage.existingFriendRequestText(textMessage),
+      1000
+    );
 
-  // wait for left notification Friend Request count to go to 1 and click it
-  await app2.client.waitForExist(
-    ConversationPage.oneNotificationFriendRequestLeft,
-    5000
-  );
-  await app2.client
-    .element(ConversationPage.oneNotificationFriendRequestLeft)
-    .click();
-  // open the dropdown from the top friend request count
-  await app2.client.waitForExist(
-    ConversationPage.oneNotificationFriendRequestTop,
-    100
-  );
-  await app2.client
-    .element(ConversationPage.oneNotificationFriendRequestTop)
-    .click();
+    // wait for left notification Friend Request count to go to 1 and click it
+    await app2.client.waitForExist(
+      ConversationPage.oneNotificationFriendRequestLeft,
+      5000
+    );
+    await app2.client
+      .element(ConversationPage.oneNotificationFriendRequestLeft)
+      .click();
+    // open the dropdown from the top friend request count
+    await app2.client.waitForExist(
+      ConversationPage.oneNotificationFriendRequestTop,
+      100
+    );
+    await app2.client
+      .element(ConversationPage.oneNotificationFriendRequestTop)
+      .click();
 
-  // accept the friend request and validate that on both side the "accepted FR" message is shown
-  await app2.client
-    .element(ConversationPage.acceptFriendRequestButton)
-    .click();
-  await app2.client.waitForExist(
-    ConversationPage.acceptedFriendRequestMessage,
-    1000
-  );
-  await app.client.waitForExist(
-    ConversationPage.acceptedFriendRequestMessage,
-    5000
-  );
+    // accept the friend request and validate that on both side the "accepted FR" message is shown
+    await app2.client
+      .element(ConversationPage.acceptFriendRequestButton)
+      .click();
+    await app2.client.waitForExist(
+      ConversationPage.acceptedFriendRequestMessage,
+      1000
+    );
+    await app.client.waitForExist(
+      ConversationPage.acceptedFriendRequestMessage,
+      5000
+    );
 
     return [app, app2];
   },

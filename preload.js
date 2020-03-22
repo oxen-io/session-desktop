@@ -50,8 +50,10 @@ window.getStoragePubKey = key =>
 window.getDefaultFileServer = () => config.defaultFileServer;
 window.initialisedAPI = false;
 
-if (typeof process.env.NODE_APP_INSTANCE === 'string' &&
-  process.env.NODE_APP_INSTANCE.includes('test-integration')) {
+if (
+  typeof process.env.NODE_APP_INSTANCE === 'string' &&
+  process.env.NODE_APP_INSTANCE.includes('test-integration')
+) {
   window.electronRequire = require;
 }
 

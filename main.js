@@ -369,8 +369,9 @@ function createWindow() {
       config.environment === 'test' ||
       config.environment === 'test-lib' ||
       config.environment === 'test-loki' ||
-      config.environment.includes('test-integration')
-      (mainWindow.readyForShutdown && windowState.shouldQuit())
+      config.environment.includes('test-integration')(
+        mainWindow.readyForShutdown && windowState.shouldQuit()
+      )
     ) {
       return;
     }

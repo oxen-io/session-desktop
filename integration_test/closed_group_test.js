@@ -37,22 +37,33 @@ describe('Closed groups', function() {
       .should.eventually.equal(common.VALID_CLOSED_GROUP_NAME1);
 
     await app.client
-      .element(ConversationPage.createClosedGroupMemberItem).isVisible();
+      .element(ConversationPage.createClosedGroupMemberItem)
+      .isVisible();
 
     // select the first friend as a member of the groups being created
     await app.client
-      .element(ConversationPage.createClosedGroupMemberItem).click();
+      .element(ConversationPage.createClosedGroupMemberItem)
+      .click();
     await app.client
-      .element(ConversationPage.createClosedGroupMemberItemSelected).isVisible();
+      .element(ConversationPage.createClosedGroupMemberItemSelected)
+      .isVisible();
 
     // trigger the creation of the group
     await app.client
-      .element(ConversationPage.validateCreationClosedGroupButton).click();
+      .element(ConversationPage.validateCreationClosedGroupButton)
+      .click();
 
-    await app.client.waitForExist(ConversationPage.sessionToastGroupCreatedSuccess, 1000);
-    await app.client.waitForExist(ConversationPage.headerTitleGroupName(common.VALID_CLOSED_GROUP_NAME1), 100);
+    await app.client.waitForExist(
+      ConversationPage.sessionToastGroupCreatedSuccess,
+      1000
+    );
+    await app.client.waitForExist(
+      ConversationPage.headerTitleGroupName(common.VALID_CLOSED_GROUP_NAME1),
+      100
+    );
     await app.client
-      .element(ConversationPage.headerTitleMembers(2)).isVisible();
+      .element(ConversationPage.headerTitleMembers(2))
+      .isVisible();
 
     // validate overlay is closed
     await app.client
@@ -60,25 +71,37 @@ describe('Closed groups', function() {
       .should.eventually.be.equal(false);
 
     // move back to the conversation section
-    await app.client.element(ConversationPage.conversationButtonSection).click();
+    await app.client
+      .element(ConversationPage.conversationButtonSection)
+      .click();
 
     // validate open chat has been added
     await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(common.VALID_CLOSED_GROUP_NAME1),
+      ConversationPage.rowOpenGroupConversationName(
+        common.VALID_CLOSED_GROUP_NAME1
+      ),
       100
     );
 
-
     // next check app2 has been invited and has the group in its conversations
     await app2.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(common.VALID_CLOSED_GROUP_NAME1),
+      ConversationPage.rowOpenGroupConversationName(
+        common.VALID_CLOSED_GROUP_NAME1
+      ),
       6000
     );
     // open the closed group conversation on app2
-    await app2.client.element(ConversationPage.conversationButtonSection).click();
+    await app2.client
+      .element(ConversationPage.conversationButtonSection)
+      .click();
     await common.timeout(500);
-    await app2.client.element(
-      ConversationPage.rowOpenGroupConversationName(common.VALID_CLOSED_GROUP_NAME1)).click();
+    await app2.client
+      .element(
+        ConversationPage.rowOpenGroupConversationName(
+          common.VALID_CLOSED_GROUP_NAME1
+        )
+      )
+      .click();
 
     // send a message from app and validate it is received on app2
     const textMessage = common.generateSendMessageText();

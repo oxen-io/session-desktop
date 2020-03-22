@@ -26,7 +26,7 @@ describe('Link Device', function() {
     const app2Props = {
       stubSnode: true,
     };
-      
+
     [app, app2] = await Promise.all([
       common.startAndStub(app1Props),
       common.startAndStub2(app2Props),

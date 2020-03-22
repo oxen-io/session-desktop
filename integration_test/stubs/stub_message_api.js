@@ -1,4 +1,4 @@
-/* global clearTimeout, window, dcodeIO, Buffer, TextDecoder, process */
+/* global clearTimeout, dcodeIO, Buffer, TextDecoder, process */
 const nodeFetch = require('node-fetch');
 
 class StubMessageAPI {

@@ -18,7 +18,7 @@ module.exports = {
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "chatBubble")]]',
   retrySendButton:
     '//div[contains(string(), "Retry Send")][contains(@class, "module-friend-request__buttonContainer--outgoing")]',
-  headerTitleMembers: (number) =>
+  headerTitleMembers: number =>
     `//span[contains(string(), "${number} members")][contains(@class, "module-conversation-header__title-text")]`,
 
   // channels
@@ -40,17 +40,15 @@ module.exports = {
     '//div[contains(string(), "Create Closed Group")][contains(@role, "button")]',
   closedGroupNameTextarea:
     '//textarea[contains(@placeholder, "Enter a group name")]',
-  createClosedGroupMemberItem:
-    '//div[contains(@class, "session-member-item")]',
+  createClosedGroupMemberItem: '//div[contains(@class, "session-member-item")]',
   createClosedGroupMemberItemSelected:
     '//div[contains(@class, "session-member-item selected")]',
   validateCreationClosedGroupButton:
     '//div[contains(string(), "Create Closed Group")][contains(@class, "session-button")][contains(@role, "button")]',
   sessionToastGroupCreatedSuccess:
     '//div[contains(string(), "Group created successfully")][contains(@class, "session-toast-wrapper")]',
-  headerTitleGroupName: (groupname) =>
+  headerTitleGroupName: groupname =>
     `//span[contains(string(), "${groupname}")][contains(@class, "module-contact-name__profile-name")]`,
-
 
   // contacts
   contactsButtonSection:
