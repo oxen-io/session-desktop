@@ -93,6 +93,12 @@ module.exports = {
   deviceSettingsRow:
     '//*[contains(@class, "left-pane-setting-category-list-item")][contains(string(), "Devices")]',
 
+  descriptionDeleteAccount: commonPage.spanWithClassAndText(
+    'session-confirm-main-message',
+    'Are you sure you want to delete your account?'
+  ),
+  validateDeleteAccount: commonPage.divRoleButtonDangerWithText('OK'),
+
   // device pairing
   noPairedDeviceMessage:
     '//*[contains(@class, "session-settings-item__title")][contains(string(), "No paired devices")]',
@@ -107,4 +113,5 @@ module.exports = {
       secretWords
     ),
   unpairDeviceButton: commonPage.divRoleButtonDangerWithText('Unpair Device'),
+  deleteAccountButton: commonPage.divRoleButtonDangerWithText('Delete Account'),
 };

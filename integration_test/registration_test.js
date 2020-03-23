@@ -14,24 +14,29 @@ describe('Window Test and Login', function() {
 
   beforeEach(async () => {
     await common.killallElectron();
-    app = await common.startAndAssureCleanedApp();
   });
 
   afterEach(async () => {
     await common.stopApp(app);
+    await common.killallElectron();
   });
 
-  it('opens one window', () => {
+  it('opens one window', async () => {
+    app = await common.startAndAssureCleanedApp();
     app.client.getWindowCount().should.eventually.be.equal(1);
   });
 
-  it('window title is correct', () => {
+  it('window title is correct', async () => {
+    app = await common.startAndAssureCleanedApp();
+
     app.client
       .getTitle()
       .should.eventually.be.equal('Session - test-integration-session');
   });
 
   it('can restore from seed', async () => {
+    app = await common.startAndAssureCleanedApp();
+
     await app.client.element(RegistrationPage.registrationTabSignIn).click();
     await app.client.element(RegistrationPage.restoreFromSeedMode).click();
     await app.client
@@ -66,6 +71,7 @@ describe('Window Test and Login', function() {
   });
 
   it('can create new account', async () => {
+    app = await common.startAndAssureCleanedApp();
     await app.client.element(RegistrationPage.createSessionIDButton).click();
     // wait for the animation of generated pubkey to finish
     await common.timeout(2000);
@@ -89,5 +95,50 @@ describe('Window Test and Login', function() {
     await app.webContents
       .executeJavaScript("window.storage.get('primaryDevicePubKey')")
       .should.eventually.be.equal(pubkeyGenerated);
+  });
+
+  it('can delete account when logged in', async () => {
+    // login as user1
+    const login = {
+      mnemonic: common.TEST_MNEMONIC1,
+      displayName: common.TEST_DISPLAY_NAME1,
+      stubOpenGroups: true,
+    };
+    app = await common.startAndStub(login);
+
+    await app.client.waitForExist(
+      RegistrationPage.conversationListContainer,
+      4000
+    );
+
+    await app.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(common.TEST_PUBKEY1);
+    // delete account
+    await app.client.element(ConversationPage.settingsButtonSection).click();
+    await app.client.element(ConversationPage.deleteAccountButton).click();
+    await app.client.waitForExist(
+      ConversationPage.descriptionDeleteAccount,
+      100
+    );
+    // click on the modal OK button to delete the account
+    await app.client.element(ConversationPage.validateDeleteAccount).click();
+    // wait for the app restart
+    await common.timeout(2000);
+
+    // Spectron will loose the connection with the app during the app restart.
+    // We have to restart the app without altering the logged in user or anything here, just to get a valid new ref to the app.
+    await common.stopApp(app);
+    app = await common.startApp();
+
+    // validate that on app start, the registration sign in is shown
+    await app.client.waitForExist(RegistrationPage.registrationTabSignIn, 3000);
+    // validate that no pubkey are set in storage
+    await app.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(null);
+    // and that the conversation list is not shown
+    await app.client.isExisting(RegistrationPage.conversationListContainer)
+      .should.eventually.be.false;
   });
 });
