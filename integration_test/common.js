@@ -262,6 +262,89 @@ module.exports = {
     return [app, app2];
   },
 
+  async linkApp2ToApp(app, app2) {
+    // app needs to be logged in as user1 and app2 needs to be logged out
+    // start the pairing dialog for the first app
+    await app.client.element(ConversationPage.settingsButtonSection).click();
+    await app.client.element(ConversationPage.deviceSettingsRow).click();
+
+    await app.client.isVisible(ConversationPage.noPairedDeviceMessage);
+
+    await app.client.element(ConversationPage.linkDeviceButton).click();
+
+    // validate device pairing dialog is shown and has a qrcode
+    await app.client.isVisible(ConversationPage.devicePairingDialog);
+    await app.client.isVisible(ConversationPage.qrImageDiv);
+
+    // next trigger the link request from the app2 with the app1 pubkey
+    await app2.client.element(RegistrationPage.registrationTabSignIn).click();
+    await app2.client.element(RegistrationPage.linkDeviceMode).click();
+    await app2.client
+      .element(RegistrationPage.textareaLinkDevicePubkey)
+      .setValue(this.TEST_PUBKEY1);
+    await app2.client.element(RegistrationPage.linkDeviceTriggerButton).click();
+    await app.client.waitForExist(RegistrationPage.toastWrapper, 7000);
+    let secretWordsapp1 = await app.client
+      .element(RegistrationPage.secretToastDescription)
+      .getText();
+    secretWordsapp1 = secretWordsapp1.split(': ')[1];
+
+    await app2.client.waitForExist(RegistrationPage.toastWrapper, 6000);
+    await app2.client
+      .element(RegistrationPage.secretToastDescription)
+      .getText()
+      .should.eventually.be.equal(secretWordsapp1);
+    await app.client.element(ConversationPage.allowPairingButton).click();
+    await app.client.element(ConversationPage.okButton).click();
+    // validate device paired in settings list with correct secrets
+    await app.client.waitForExist(
+      ConversationPage.devicePairedDescription(secretWordsapp1),
+      2000
+    );
+    await app.client.element(ConversationPage.unpairDeviceButton);
+
+    // validate app2 (secondary device) is linked successfully
+    await app2.client.waitForExist(
+      RegistrationPage.conversationListContainer,
+      4000
+    );
+
+    // validate primary pubkey of app2 is the same that in app1
+    await app2.webContents
+      .executeJavaScript("window.storage.get('primaryDevicePubKey')")
+      .should.eventually.be.equal(this.TEST_PUBKEY1);
+  },
+
+  async triggerUnlinkApp2FromApp(app, app2) {
+    // check app2 is loggedin
+    await app2.client.isExisting(RegistrationPage.conversationListContainer);
+
+    await app.client.element(ConversationPage.settingsButtonSection).click();
+    await app.client.element(ConversationPage.deviceSettingsRow).click();
+    // click the unlink button
+    await app.client.element(ConversationPage.unpairDeviceButton).click();
+    await app.client.element(ConversationPage.validateUnpairDevice).click();
+    // let time to app2 to catch the event and restart dropping its data
+    await this.timeout(5000);
+
+    // check that the app restarted
+    // (did not find a better way than checking the app no longer being accessible)
+    let isApp2Joinable = true;
+    try {
+      await app2.client.isExisting(RegistrationPage.registrationTabSignIn);
+    } catch (err) {
+      // if we get an error here, it means Spectron is lost.
+      // this is a good thing because it means app2 restarted
+      isApp2Joinable = false;
+    }
+
+    if (isApp2Joinable) {
+      throw new Error(
+        'app2 is still joinable so it did not restart, so it did not unlink correctly'
+      );
+    }
+  },
+
   generateSendMessageText: () =>
     `Test message from integration tests ${Date.now()}`,
 
@@ -275,6 +358,11 @@ module.exports = {
     app.webContents.executeJavaScript(
       'window.LokiMessageAPI = window.StubMessageAPI;'
     );
+  },
+
+  logsContainsString: async (app, str) => {
+    const logs = JSON.stringify(await app.client.getRenderProcessLogs());
+    return logs.includes(str);
   },
 
   async startStubSnodeServer() {

@@ -114,4 +114,5 @@ module.exports = {
     ),
   unpairDeviceButton: commonPage.divRoleButtonDangerWithText('Unpair Device'),
   deleteAccountButton: commonPage.divRoleButtonDangerWithText('Delete Account'),
+  validateUnpairDevice: commonPage.divRoleButtonDangerWithText('Unpair'),
 };
