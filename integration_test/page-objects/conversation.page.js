@@ -1,11 +1,13 @@
+const commonPage = require('./common.page');
+
 module.exports = {
-  // common
-  sessionLoader: '//div[contains(@class, "session-loader")]',
-  leftPaneOverlay: '//div[contains(@class, "module-left-pane-overlay")]',
-  sendMessageTextarea:
-    '//textarea[contains(@placeholder, "Type your message")]',
-  sendFriendRequestTextarea:
-    '//textarea[contains(@placeholder, "Send your first message")]',
+  // conversation view
+  sessionLoader: commonPage.divWithClass('session-loader'),
+  leftPaneOverlay: commonPage.divWithClass('module-left-pane-overlay'),
+  sendMessageTextarea: commonPage.textAreaWithPlaceholder('Type your message'),
+  sendFriendRequestTextarea: commonPage.textAreaWithPlaceholder(
+    'Send your first message'
+  ),
   existingSendMessageText: textMessage =>
     `//*[contains(@class, "module-message__text--outgoing")and .//span[contains(@class, "text-selectable")][contains(string(), '${textMessage}')]]`,
   existingFriendRequestText: textMessage =>
@@ -16,47 +18,62 @@ module.exports = {
   // conversations
   conversationButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "chatBubble")]]',
-  retrySendButton:
-    '//div[contains(string(), "Retry Send")][contains(@class, "module-friend-request__buttonContainer--outgoing")]',
+  retrySendButton: commonPage.divWithClassAndText(
+    'module-friend-request__buttonContainer--outgoing',
+    'Retry Send'
+  ),
   headerTitleMembers: number =>
-    `//span[contains(string(), "${number} members")][contains(@class, "module-conversation-header__title-text")]`,
+    commonPage.spanWithClassAndText(
+      'module-conversation-header__title-text',
+      `${number} members`
+    ),
 
   // channels
   globeButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "globe")]]',
-  joinOpenGroupButton:
-    '//div[contains(string(), "Join Open Group")][contains(@role, "button")]',
-  openGroupInputUrl:
-    '//textarea[contains(@placeholder, "chat.getsession.org")]',
-  sessionToastJoinOpenGroupSuccess:
-    '//div[contains(string(), "Successfully connected to new open group server")][contains(@class, "session-toast-wrapper")]',
-  sessionToastJoinOpenGroupAlreadyExist:
-    '//div[contains(string(), "You are already connected to this public channel")][contains(@class, "session-toast-wrapper")]',
+  joinOpenGroupButton: commonPage.divRoleButtonWithText('Join Open Group'),
+  openGroupInputUrl: commonPage.textAreaWithPlaceholder('chat.getsession.org'),
+  sessionToastJoinOpenGroupSuccess: commonPage.toastWithText(
+    'Successfully connected to new open group server'
+  ),
+  sessionToastJoinOpenGroupAlreadyExist: commonPage.toastWithText(
+    'You are already connected to this public channel'
+  ),
   rowOpenGroupConversationName: groupName =>
-    `//span[contains(string(), "${groupName}")][contains(@class, "module-conversation__user__profile-number")]`,
+    commonPage.spanWithClassAndText(
+      'module-conversation__user__profile-number',
+      groupName
+    ),
 
   // closed group
-  createClosedGroupButton:
-    '//div[contains(string(), "Create Closed Group")][contains(@role, "button")]',
-  closedGroupNameTextarea:
-    '//textarea[contains(@placeholder, "Enter a group name")]',
-  createClosedGroupMemberItem: '//div[contains(@class, "session-member-item")]',
-  createClosedGroupMemberItemSelected:
-    '//div[contains(@class, "session-member-item selected")]',
-  validateCreationClosedGroupButton:
-    '//div[contains(string(), "Create Closed Group")][contains(@class, "session-button")][contains(@role, "button")]',
-  sessionToastGroupCreatedSuccess:
-    '//div[contains(string(), "Group created successfully")][contains(@class, "session-toast-wrapper")]',
+  createClosedGroupButton: commonPage.divRoleButtonWithText(
+    'Create Closed Group'
+  ),
+  closedGroupNameTextarea: commonPage.textAreaWithPlaceholder(
+    'Enter a group name'
+  ),
+  createClosedGroupMemberItem: commonPage.divWithClass('session-member-item'),
+  createClosedGroupMemberItemSelected: commonPage.divWithClass(
+    'session-member-item selected'
+  ),
+  validateCreationClosedGroupButton: commonPage.divRoleButtonWithText(
+    'Create Closed Group'
+  ),
+  sessionToastGroupCreatedSuccess: commonPage.toastWithText(
+    'Group created successfully'
+  ),
   headerTitleGroupName: groupname =>
-    `//span[contains(string(), "${groupname}")][contains(@class, "module-contact-name__profile-name")]`,
+    commonPage.spanWithClassAndText(
+      'module-contact-name__profile-name',
+      groupname
+    ),
 
   // contacts
   contactsButtonSection:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "users")]]',
-  addContactButton:
-    '//div[contains(string(), "Add Contact")][contains(@role, "button")]',
-  sessionIDInput: '//textarea[contains(@placeholder, "Enter a Session ID")]',
-  nextButton: '//div[contains(string(), "Next")][contains(@role, "button")]',
+  addContactButton: commonPage.divRoleButtonWithText('Add Contact'),
+  sessionIDInput: commonPage.textAreaWithPlaceholder('Enter a Session ID'),
+  nextButton: commonPage.divRoleButtonWithText('Next'),
   oneNotificationFriendRequestLeft:
     '//*[contains(@class,"session-icon-button")  and .//*[contains(@class, "users")]  and .//*[contains(@class, "notification-count") and contains(string(), "1")] ]',
   oneNotificationFriendRequestTop:
@@ -79,15 +96,15 @@ module.exports = {
   // device pairing
   noPairedDeviceMessage:
     '//*[contains(@class, "session-settings-item__title")][contains(string(), "No paired devices")]',
-  linkDeviceButton:
-    '//div[contains(string(), "Link New Device")][contains(@role, "button")]',
+  linkDeviceButton: commonPage.divRoleButtonWithText('Link New Device'),
   devicePairingDialog: '//*[contains(@class,"device-pairing-dialog")]',
-  qrImageDiv: '//div[contains(@class,"qr-image")]',
-  allowPairingButton:
-    '//div[contains(string(), "Allow Pairing")][contains(@role, "button")]',
-  okButton: '//div[contains(string(), "OK")][contains(@role, "button")]',
+  qrImageDiv: commonPage.divWithClass('qr-image'),
+  allowPairingButton: commonPage.divRoleButtonWithText('Allow Pairing'),
+  okButton: commonPage.divRoleButtonWithText('OK'),
   devicePairedDescription: secretWords =>
-    `//div[contains(string(), "${secretWords}")][contains(@class, "session-settings-item__description")]`,
-  unpairDeviceButton:
-    '//div[contains(string(), "Unpair Device")][contains(@role, "button")][contains(@class, "danger")]',
+    commonPage.divWithClassAndText(
+      'session-settings-item__description',
+      secretWords
+    ),
+  unpairDeviceButton: commonPage.divRoleButtonDangerWithText('Unpair Device'),
 };

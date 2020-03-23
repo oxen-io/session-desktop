@@ -1,37 +1,39 @@
+const commonPage = require('./common.page');
+
 module.exports = {
   registrationTabSignIn:
     '//div[contains(string(), "Sign In")][contains(@class, "session-registration__tab")][contains(@role, "tab")]',
 
   // create new account
-  createSessionIDButton:
-    '//div[contains(string(), "Create Session ID")][contains(@role, "button")]',
-  continueButton:
-    '//div[contains(string(), "Continue")][contains(@role, "button")]',
+  createSessionIDButton: commonPage.divRoleButtonWithText('Create Session ID'),
+  continueButton: commonPage.divRoleButtonWithText('Continue'),
   textareaGeneratedPubkey:
     '//textarea[contains(@class, "session-id-editable-textarea")]',
-  getStartedButton:
-    '//div[contains(string(), "Get started")][contains(@role, "button")]',
+  getStartedButton: commonPage.divRoleButtonWithText('Get started'),
 
   // restore from seed
-  restoreFromSeedMode:
-    '//div[contains(string(), "Restore From Recovery")][contains(@role, "button")]',
+  restoreFromSeedMode: commonPage.divRoleButtonWithText(
+    'Restore From Recovery'
+  ),
 
-  recoveryPhraseInput:
-    '//input[contains(@placeholder, "Enter Recovery Phrase")]',
-  displayNameInput: '//input[contains(@placeholder, "Enter a display name")]',
-  passwordInput: '//input[contains(@placeholder, "Enter password (optional)")]',
-  continueSessionButton:
-    '//div[contains(string(), "Continue Your Session")][contains(@role, "button")]',
-  conversationListContainer:
-    '//div[contains(@class, "module-conversations-list-content")]',
+  recoveryPhraseInput: commonPage.inputWithPlaceholder('Enter Recovery Phrase'),
+  displayNameInput: commonPage.inputWithPlaceholder('Enter a display name'),
+  passwordInput: commonPage.inputWithPlaceholder('Enter password (optional)'),
+  continueSessionButton: commonPage.divRoleButtonWithText(
+    'Continue Your Session'
+  ),
+  conversationListContainer: commonPage.divWithClass(
+    'module-conversations-list-content'
+  ),
 
   // device linking
-  linkDeviceMode:
-    '//div[contains(string(), "Link Device to Existing Session ID")][contains(@role, "button")]',
-  textareaLinkDevicePubkey:
-    '//textarea[contains(@placeholder, "Enter other device’s Session ID here")]',
-  linkDeviceTriggerButton:
-    '//div[contains(string(), "Link Device")][contains(@role, "button")]',
+  linkDeviceMode: commonPage.divRoleButtonWithText(
+    'Link Device to Existing Session ID'
+  ),
+  textareaLinkDevicePubkey: commonPage.textAreaWithPlaceholder(
+    'Enter other device’s Session ID here'
+  ),
+  linkDeviceTriggerButton: commonPage.divRoleButtonWithText('Link Device'),
   toastWrapper: '//*[contains(@class,"session-toast-wrapper")]',
 
   secretToastDescription: '//p[contains(@class, "description")]',
