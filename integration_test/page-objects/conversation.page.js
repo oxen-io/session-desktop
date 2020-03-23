@@ -103,6 +103,9 @@ module.exports = {
   noPairedDeviceMessage:
     '//*[contains(@class, "session-settings-item__title")][contains(string(), "No paired devices")]',
   linkDeviceButton: commonPage.divRoleButtonWithText('Link New Device'),
+  linkDeviceButtonDisabled: commonPage.divRoleButtonWithTextDisabled(
+    'Link New Device'
+  ),
   devicePairingDialog: '//*[contains(@class,"device-pairing-dialog")]',
   qrImageDiv: commonPage.divWithClass('qr-image'),
   allowPairingButton: commonPage.divRoleButtonWithText('Allow Pairing'),

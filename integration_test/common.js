@@ -15,6 +15,7 @@ const http = require('http');
 
 chai.should();
 chai.use(chaiAsPromised);
+chai.Assertion.includeStack = true;
 
 const STUB_SNODE_SERVER_PORT = 3000;
 const ENABLE_LOG = false;
@@ -268,7 +269,9 @@ module.exports = {
     await app.client.element(ConversationPage.deviceSettingsRow).click();
 
     await app.client.isVisible(ConversationPage.noPairedDeviceMessage);
-
+    // we should not find the linkDeviceButtonDisabled button (as DISABLED)
+    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+      .should.eventually.be.false;
     await app.client.element(ConversationPage.linkDeviceButton).click();
 
     // validate device pairing dialog is shown and has a qrcode
@@ -300,7 +303,10 @@ module.exports = {
       ConversationPage.devicePairedDescription(secretWordsapp1),
       2000
     );
-    await app.client.element(ConversationPage.unpairDeviceButton);
+
+    await app.client.isExisting(ConversationPage.unpairDeviceButton);
+    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+      .should.eventually.be.true;
 
     // validate app2 (secondary device) is linked successfully
     await app2.client.waitForExist(
@@ -320,9 +326,16 @@ module.exports = {
 
     await app.client.element(ConversationPage.settingsButtonSection).click();
     await app.client.element(ConversationPage.deviceSettingsRow).click();
+    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+      .should.eventually.be.true;
     // click the unlink button
     await app.client.element(ConversationPage.unpairDeviceButton).click();
     await app.client.element(ConversationPage.validateUnpairDevice).click();
+
+    await app.client.waitForExist(ConversationPage.noPairedDeviceMessage, 2000);
+    await app.client.element(ConversationPage.linkDeviceButton).isEnabled()
+      .should.eventually.be.false;
+
     // let time to app2 to catch the event and restart dropping its data
     await this.timeout(5000);
 
