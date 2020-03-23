@@ -93,7 +93,7 @@ if (process.platform === 'linux') {
 const simpleChecker = {
   spellCheck(words) {
     let mispelled;
-    if(Array.isArray(words)) {
+    if (Array.isArray(words)) {
       mispelled = words.filter(word => this.isMisspelled(word));
     } else {
       mispelled = this.isMisspelled(words);
