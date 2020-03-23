@@ -37,7 +37,7 @@ describe('Open groups', function() {
     await app.client.element(ConversationPage.joinOpenGroupButton).click();
 
     // validate session loader is shown
-    await app.client.waitForExist(ConversationPage.sessionLoader, 500);
+    await app.client.isExisting(ConversationPage.sessionLoader);
     await app.client.waitForExist(
       ConversationPage.sessionToastJoinOpenGroupSuccess,
       9000
@@ -117,9 +117,8 @@ describe('Open groups', function() {
       .element(ConversationPage.conversationButtonSection)
       .click();
 
-    await app.client.waitForExist(
-      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2),
-      200
+    await app.client.isExisting(
+      ConversationPage.rowOpenGroupConversationName(common.VALID_GROUP_NAME2)
     );
     await app.client
       .element(

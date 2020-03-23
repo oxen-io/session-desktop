@@ -84,26 +84,21 @@ describe('Add friends', function() {
       .element(ConversationPage.oneNotificationFriendRequestLeft)
       .click();
     // open the dropdown from the top friend request count
-    await app2.client.waitForExist(
-      ConversationPage.oneNotificationFriendRequestTop,
-      100
+    await app2.client.isExisting(
+      ConversationPage.oneNotificationFriendRequestTop
     );
     await app2.client
       .element(ConversationPage.oneNotificationFriendRequestTop)
       .click();
 
     // we should have our app1 friend request here
-    await app2.client.waitForExist(
+    await app2.client.isExisting(
       ConversationPage.friendRequestFromUser(
         common.TEST_DISPLAY_NAME1,
         common.TEST_PUBKEY1
-      ),
-      100
+      )
     );
-    await app2.client.waitForExist(
-      ConversationPage.acceptFriendRequestButton,
-      100
-    );
+    await app2.client.isExisting(ConversationPage.acceptFriendRequestButton);
 
     // accept the friend request and validate that on both side the "accepted FR" message is shown
     await app2.client

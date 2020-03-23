@@ -57,9 +57,8 @@ describe('Closed groups', function() {
       ConversationPage.sessionToastGroupCreatedSuccess,
       1000
     );
-    await app.client.waitForExist(
-      ConversationPage.headerTitleGroupName(common.VALID_CLOSED_GROUP_NAME1),
-      100
+    await app.client.isExisting(
+      ConversationPage.headerTitleGroupName(common.VALID_CLOSED_GROUP_NAME1)
     );
     await app.client
       .element(ConversationPage.headerTitleMembers(2))
@@ -76,11 +75,10 @@ describe('Closed groups', function() {
       .click();
 
     // validate open chat has been added
-    await app.client.waitForExist(
+    await app.client.isExisting(
       ConversationPage.rowOpenGroupConversationName(
         common.VALID_CLOSED_GROUP_NAME1
-      ),
-      100
+      )
     );
 
     // next check app2 has been invited and has the group in its conversations

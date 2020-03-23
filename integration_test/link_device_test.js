@@ -101,4 +101,19 @@ describe('Link Device', function() {
     await common.timeout(1000);
     await common.triggerUnlinkApp2FromApp(app, app2);
   });
+
+  it('ling and unlink repeatedly two devices', async () => {
+    // await common.linkApp2ToApp(app, app2);
+    // await common.timeout(1000);
+    // await common.triggerUnlinkApp2FromApp(app, app2);
+    // await common.linkApp2ToApp(app, app2);
+    // await common.timeout(1000);
+    // await common.triggerUnlinkApp2FromApp(app, app2);
+    // await common.linkApp2ToApp(app, app2);
+    // await common.timeout(1000);
+    // await common.triggerUnlinkApp2FromApp(app, app2);
+    // await common.linkApp2ToApp(app, app2);
+    // await common.timeout(1000);
+    // await common.triggerUnlinkApp2FromApp(app, app2);
+  });
 });

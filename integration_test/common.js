@@ -238,9 +238,8 @@ module.exports = {
       .element(ConversationPage.oneNotificationFriendRequestLeft)
       .click();
     // open the dropdown from the top friend request count
-    await app2.client.waitForExist(
-      ConversationPage.oneNotificationFriendRequestTop,
-      100
+    await app2.client.isExisting(
+      ConversationPage.oneNotificationFriendRequestTop
     );
     await app2.client
       .element(ConversationPage.oneNotificationFriendRequestTop)

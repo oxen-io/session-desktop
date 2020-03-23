@@ -82,7 +82,7 @@ describe('Window Test and Login', function() {
     pubkeyGenerated.should.have.lengthOf(66);
     pubkeyGenerated.substr(0, 2).should.be.equal('05');
     await app.client.element(RegistrationPage.continueButton).click();
-    await app.client.waitForExist(RegistrationPage.displayNameInput, 500);
+    await app.client.isExisting(RegistrationPage.displayNameInput);
     await app.client
       .element(RegistrationPage.displayNameInput)
       .setValue(common.TEST_DISPLAY_NAME1);
@@ -117,10 +117,7 @@ describe('Window Test and Login', function() {
     // delete account
     await app.client.element(ConversationPage.settingsButtonSection).click();
     await app.client.element(ConversationPage.deleteAccountButton).click();
-    await app.client.waitForExist(
-      ConversationPage.descriptionDeleteAccount,
-      100
-    );
+    await app.client.isExisting(ConversationPage.descriptionDeleteAccount);
     // click on the modal OK button to delete the account
     await app.client.element(ConversationPage.validateDeleteAccount).click();
     // wait for the app restart
