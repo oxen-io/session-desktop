@@ -91,9 +91,14 @@ if (process.platform === 'linux') {
 }
 
 const simpleChecker = {
-  spellCheck(words, callback) {
-    const mispelled = words.filter(word => this.isMisspelled(word));
-    callback(mispelled);
+  spellCheck(words) {
+    let mispelled;
+    if(Array.isArray(words)) {
+      mispelled = words.filter(word => this.isMisspelled(word));
+    } else {
+      mispelled = this.isMisspelled(words);
+    }
+    return !mispelled;
   },
   isMisspelled(word) {
     const misspelled = !spellchecker.check(word);
