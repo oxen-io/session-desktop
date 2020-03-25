@@ -234,6 +234,7 @@ function createWindow() {
         contextIsolation: false,
         preload: path.join(__dirname, 'preload.js'),
         nativeWindowOpen: true,
+        spellcheck: false,
       },
       icon: path.join(__dirname, 'images', 'session', 'icon_64.png'),
     },
@@ -369,9 +370,8 @@ function createWindow() {
       config.environment === 'test' ||
       config.environment === 'test-lib' ||
       config.environment === 'test-loki' ||
-      config.environment.includes('test-integration')(
-        mainWindow.readyForShutdown && windowState.shouldQuit()
-      )
+      config.environment.includes('test-integration') ||
+      (mainWindow.readyForShutdown && windowState.shouldQuit())
     ) {
       return;
     }

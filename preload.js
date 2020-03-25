@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* global Whisper: false */
 /* global window: false */
 const path = require('path');
@@ -303,9 +304,12 @@ window.lokiSnodeAPI = new LokiSnodeAPI({
 });
 
 window.LokiMessageAPI = require('./js/modules/loki_message_api');
-window.StubMessageAPI = require('./integration_test/stubs/stub_message_api');
+
+if (process.env.USE_STUBBED_NETWORK) {
+  window.StubMessageAPI = require('./integration_test/stubs/stub_message_api');
+  window.StubAppDotNetApi = require('./integration_test/stubs/stub_app_dot_net_api');
+}
 window.LokiPublicChatAPI = require('./js/modules/loki_public_chat_api');
-window.StubAppDotNetApi = require('./integration_test/stubs/stub_app_dot_net_api');
 
 window.LokiAppDotNetServerAPI = require('./js/modules/loki_app_dot_net_api');
 

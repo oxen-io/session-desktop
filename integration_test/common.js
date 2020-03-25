@@ -12,10 +12,11 @@ const ConversationPage = require('./page-objects/conversation.page');
 const { exec } = require('child_process');
 const url = require('url');
 const http = require('http');
+const fse = require('fs-extra');
 
 chai.should();
 chai.use(chaiAsPromised);
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 const STUB_SNODE_SERVER_PORT = 3000;
 const ENABLE_LOG = false;
@@ -43,12 +44,14 @@ module.exports = {
   /* **************  CLOSED GROUPS  ****************** */
   VALID_CLOSED_GROUP_NAME1: 'Closed Group 1',
 
+  USER_DATA_ROOT_FOLDER: '',
+
   async timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
 
   async startApp(env = 'test-integration-session') {
-    const app = new Application({
+    const app1 = new Application({
       path: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
       args: ['.'],
       env: {
@@ -70,12 +73,12 @@ module.exports = {
       ],
     });
 
-    chaiAsPromised.transferPromiseness = app.transferPromiseness;
+    chaiAsPromised.transferPromiseness = app1.transferPromiseness;
 
-    await app.start();
-    await app.client.waitUntilWindowLoaded();
+    await app1.start();
+    await app1.client.waitUntilWindowLoaded();
 
-    return app;
+    return app1;
   },
 
   async startApp2() {
@@ -83,17 +86,21 @@ module.exports = {
     return app2;
   },
 
-  async stopApp(app) {
-    if (app && app.isRunning()) {
-      await app.stop();
+  async stopApp(app1) {
+    if (app1 && app1.isRunning()) {
+      await app1.stop();
       return Promise.resolve();
     }
     return Promise.resolve();
   },
 
   async killallElectron() {
+    const killStr =
+      process.platform === 'win32'
+        ? 'taskkill /im electron.exe /t /f'
+        : 'killall -9 electron';
     return new Promise(resolve => {
-      exec('killall -9 electron', (err, stdout, stderr) => {
+      exec(killStr, (err, stdout, stderr) => {
         if (err) {
           resolve({ stdout, stderr });
         } else {
@@ -104,15 +111,7 @@ module.exports = {
   },
 
   async rmFolder(folder) {
-    return new Promise(resolve => {
-      exec(`rm -r ${folder}`, (err, stdout, stderr) => {
-        if (err) {
-          resolve({ stdout, stderr });
-        } else {
-          resolve({ stdout, stderr });
-        }
-      });
-    });
+    await fse.remove(folder);
   },
 
   async startAndAssureCleanedApp2() {
@@ -123,16 +122,22 @@ module.exports = {
   },
 
   async startAndAssureCleanedApp(env = 'test-integration-session') {
-    // FIXME make it dynamic and windows/macos compatible?
-    if (env === 'test-integration-session') {
-      await this.rmFolder('~/.config/Loki-Messenger-testIntegrationProfile');
-    } else {
-      await this.rmFolder('~/.config/Loki-Messenger-testIntegration2Profile');
-    }
-    const app = await this.startApp(env);
-    await app.client.waitForExist(RegistrationPage.registrationTabSignIn, 4000);
+    const prefix = 'test-integration-session-';
+    const envNumber = env.substr(env.lastIndexOf(prefix) + prefix.length) || '';
+    const userData = path.join(
+      this.USER_DATA_ROOT_FOLDER,
+      `Loki-Messenger-testIntegration${envNumber}Profile`
+    );
 
-    return app;
+    await this.rmFolder(userData);
+
+    const app1 = await this.startApp(env);
+    await app1.client.waitForExist(
+      RegistrationPage.registrationTabSignIn,
+      4000
+    );
+
+    return app1;
   },
 
   async startAndStub({
@@ -142,23 +147,23 @@ module.exports = {
     stubOpenGroups = false,
     env = 'test-integration-session',
   }) {
-    const app = await this.startAndAssureCleanedApp(env);
+    const app1 = await this.startAndAssureCleanedApp(env);
 
     if (stubSnode) {
       await this.startStubSnodeServer();
-      this.stubSnodeCalls(app);
+      this.stubSnodeCalls(app1);
     }
 
     if (stubOpenGroups) {
-      this.stubOpenGroupsCalls(app);
+      this.stubOpenGroupsCalls(app1);
     }
 
     if (mnemonic && displayName) {
-      await this.restoreFromMnemonic(app, mnemonic, displayName);
+      await this.restoreFromMnemonic(app1, mnemonic, displayName);
       await this.timeout(2000);
     }
 
-    return app;
+    return app1;
   },
 
   async startAndStub2(props) {
@@ -170,18 +175,18 @@ module.exports = {
     return app2;
   },
 
-  async restoreFromMnemonic(app, mnemonic, displayName) {
-    await app.client.element(RegistrationPage.registrationTabSignIn).click();
-    await app.client.element(RegistrationPage.restoreFromSeedMode).click();
-    await app.client
+  async restoreFromMnemonic(app1, mnemonic, displayName) {
+    await app1.client.element(RegistrationPage.registrationTabSignIn).click();
+    await app1.client.element(RegistrationPage.restoreFromSeedMode).click();
+    await app1.client
       .element(RegistrationPage.recoveryPhraseInput)
       .setValue(mnemonic);
-    await app.client
+    await app1.client
       .element(RegistrationPage.displayNameInput)
       .setValue(displayName);
 
-    await app.client.element(RegistrationPage.continueSessionButton).click();
-    await app.client.waitForExist(
+    await app1.client.element(RegistrationPage.continueSessionButton).click();
+    await app1.client.waitForExist(
       RegistrationPage.conversationListContainer,
       4000
     );
@@ -200,7 +205,7 @@ module.exports = {
       stubSnode: true,
     };
 
-    const [app, app2] = await Promise.all([
+    const [app1, app2] = await Promise.all([
       this.startAndStub(app1Props),
       this.startAndStub2(app2Props),
     ]);
@@ -208,24 +213,24 @@ module.exports = {
     /** add each other as friends */
     const textMessage = this.generateSendMessageText();
 
-    await app.client.element(ConversationPage.contactsButtonSection).click();
-    await app.client.element(ConversationPage.addContactButton).click();
+    await app1.client.element(ConversationPage.contactsButtonSection).click();
+    await app1.client.element(ConversationPage.addContactButton).click();
 
-    await app.client
+    await app1.client
       .element(ConversationPage.sessionIDInput)
       .setValue(this.TEST_PUBKEY2);
-    await app.client.element(ConversationPage.nextButton).click();
-    await app.client.waitForExist(
+    await app1.client.element(ConversationPage.nextButton).click();
+    await app1.client.waitForExist(
       ConversationPage.sendFriendRequestTextarea,
       1000
     );
 
     // send a text message to that user (will be a friend request)
-    await app.client
+    await app1.client
       .element(ConversationPage.sendFriendRequestTextarea)
       .setValue(textMessage);
-    await app.client.keys('Enter');
-    await app.client.waitForExist(
+    await app1.client.keys('Enter');
+    await app1.client.waitForExist(
       ConversationPage.existingFriendRequestText(textMessage),
       1000
     );
@@ -254,29 +259,29 @@ module.exports = {
       ConversationPage.acceptedFriendRequestMessage,
       1000
     );
-    await app.client.waitForExist(
+    await app1.client.waitForExist(
       ConversationPage.acceptedFriendRequestMessage,
       5000
     );
 
-    return [app, app2];
+    return [app1, app2];
   },
 
-  async linkApp2ToApp(app, app2) {
+  async linkApp2ToApp(app1, app2) {
     // app needs to be logged in as user1 and app2 needs to be logged out
     // start the pairing dialog for the first app
-    await app.client.element(ConversationPage.settingsButtonSection).click();
-    await app.client.element(ConversationPage.deviceSettingsRow).click();
+    await app1.client.element(ConversationPage.settingsButtonSection).click();
+    await app1.client.element(ConversationPage.deviceSettingsRow).click();
 
-    await app.client.isVisible(ConversationPage.noPairedDeviceMessage);
+    await app1.client.isVisible(ConversationPage.noPairedDeviceMessage);
     // we should not find the linkDeviceButtonDisabled button (as DISABLED)
-    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+    await app1.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
       .should.eventually.be.false;
-    await app.client.element(ConversationPage.linkDeviceButton).click();
+    await app1.client.element(ConversationPage.linkDeviceButton).click();
 
     // validate device pairing dialog is shown and has a qrcode
-    await app.client.isVisible(ConversationPage.devicePairingDialog);
-    await app.client.isVisible(ConversationPage.qrImageDiv);
+    await app1.client.isVisible(ConversationPage.devicePairingDialog);
+    await app1.client.isVisible(ConversationPage.qrImageDiv);
 
     // next trigger the link request from the app2 with the app1 pubkey
     await app2.client.element(RegistrationPage.registrationTabSignIn).click();
@@ -285,8 +290,8 @@ module.exports = {
       .element(RegistrationPage.textareaLinkDevicePubkey)
       .setValue(this.TEST_PUBKEY1);
     await app2.client.element(RegistrationPage.linkDeviceTriggerButton).click();
-    await app.client.waitForExist(RegistrationPage.toastWrapper, 7000);
-    let secretWordsapp1 = await app.client
+    await app1.client.waitForExist(RegistrationPage.toastWrapper, 7000);
+    let secretWordsapp1 = await app1.client
       .element(RegistrationPage.secretToastDescription)
       .getText();
     secretWordsapp1 = secretWordsapp1.split(': ')[1];
@@ -296,16 +301,16 @@ module.exports = {
       .element(RegistrationPage.secretToastDescription)
       .getText()
       .should.eventually.be.equal(secretWordsapp1);
-    await app.client.element(ConversationPage.allowPairingButton).click();
-    await app.client.element(ConversationPage.okButton).click();
+    await app1.client.element(ConversationPage.allowPairingButton).click();
+    await app1.client.element(ConversationPage.okButton).click();
     // validate device paired in settings list with correct secrets
-    await app.client.waitForExist(
+    await app1.client.waitForExist(
       ConversationPage.devicePairedDescription(secretWordsapp1),
       2000
     );
 
-    await app.client.isExisting(ConversationPage.unpairDeviceButton);
-    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+    await app1.client.isExisting(ConversationPage.unpairDeviceButton);
+    await app1.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
       .should.eventually.be.true;
 
     // validate app2 (secondary device) is linked successfully
@@ -320,20 +325,23 @@ module.exports = {
       .should.eventually.be.equal(this.TEST_PUBKEY1);
   },
 
-  async triggerUnlinkApp2FromApp(app, app2) {
+  async triggerUnlinkApp2FromApp(app1, app2) {
     // check app2 is loggedin
     await app2.client.isExisting(RegistrationPage.conversationListContainer);
 
-    await app.client.element(ConversationPage.settingsButtonSection).click();
-    await app.client.element(ConversationPage.deviceSettingsRow).click();
-    await app.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
+    await app1.client.element(ConversationPage.settingsButtonSection).click();
+    await app1.client.element(ConversationPage.deviceSettingsRow).click();
+    await app1.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
       .should.eventually.be.true;
     // click the unlink button
-    await app.client.element(ConversationPage.unpairDeviceButton).click();
-    await app.client.element(ConversationPage.validateUnpairDevice).click();
+    await app1.client.element(ConversationPage.unpairDeviceButton).click();
+    await app1.client.element(ConversationPage.validateUnpairDevice).click();
 
-    await app.client.waitForExist(ConversationPage.noPairedDeviceMessage, 2000);
-    await app.client.element(ConversationPage.linkDeviceButton).isEnabled()
+    await app1.client.waitForExist(
+      ConversationPage.noPairedDeviceMessage,
+      2000
+    );
+    await app1.client.element(ConversationPage.linkDeviceButton).isEnabled()
       .should.eventually.be.false;
 
     // let time to app2 to catch the event and restart dropping its data
@@ -360,20 +368,20 @@ module.exports = {
   generateSendMessageText: () =>
     `Test message from integration tests ${Date.now()}`,
 
-  stubOpenGroupsCalls: app => {
-    app.webContents.executeJavaScript(
+  stubOpenGroupsCalls: app1 => {
+    app1.webContents.executeJavaScript(
       'window.LokiAppDotNetServerAPI = window.StubAppDotNetAPI;'
     );
   },
 
-  stubSnodeCalls(app) {
-    app.webContents.executeJavaScript(
+  stubSnodeCalls(app1) {
+    app1.webContents.executeJavaScript(
       'window.LokiMessageAPI = window.StubMessageAPI;'
     );
   },
 
-  logsContainsString: async (app, str) => {
-    const logs = JSON.stringify(await app.client.getRenderProcessLogs());
+  logsContainsString: async (app1, str) => {
+    const logs = JSON.stringify(await app1.client.getRenderProcessLogs());
     return logs.includes(str);
   },
 
