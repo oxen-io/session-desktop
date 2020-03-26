@@ -2050,6 +2050,19 @@
         // cannot be used for establishing regular private conversations
         return null;
       }
+      // if we receive a message not being a friend request but
+      // we are not friend with that user already,
+      // return early so we do not handle more another message with a non friend
+      if (
+        !message.isFriendRequest() &&
+        !conversation.isFriend() &&
+        !isGroupMessage
+      ) {
+        window.log.warn(
+          `Dropping message with non friend for conversation ${conversation.idForLogging()} as this is not a friend request message`
+        );
+        return null;
+      }
 
       return conversation.queueJob(async () => {
         window.log.info(
