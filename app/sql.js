@@ -2473,7 +2473,7 @@ async function getLastHashBySnode(snode) {
     return null;
   }
 
-  return row.lastHash;
+  return row.hash;
 }
 
 async function getSeenMessagesByHashList(hashes) {
