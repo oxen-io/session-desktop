@@ -338,7 +338,8 @@ OutgoingMessage.prototype = {
         let thisDeviceMessageType = this.messageType;
         if (
           thisDeviceMessageType !== 'pairing-request' &&
-          thisDeviceMessageType !== 'friend-request'
+          thisDeviceMessageType !== 'friend-request' &&
+          thisDeviceMessageType !== 'onlineBroadcast'
         ) {
           let conversation;
           try {
