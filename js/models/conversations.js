@@ -3015,7 +3015,7 @@
           const messageId = message.id;
           const isExpiringMessage = Message.hasExpiration(messageJSON);
 
-          window.log.info('Add notification', {
+          window.log.debug('Add notification', {
             conversationId: this.idForLogging(),
             isExpiringMessage,
             messageSentAt,
@@ -3066,7 +3066,7 @@
         : 'friendRequestNotificationMessage';
 
       const iconUrl = await conversation.getNotificationIcon();
-      window.log.info('Add notification for friend request updated', {
+      window.log.debug('Add notification for friend request updated', {
         conversationId: conversation.idForLogging(),
       });
       Whisper.Notifications.add({

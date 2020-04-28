@@ -184,7 +184,7 @@
       this.update();
     },
     clear() {
-      window.log.info('Remove all notifications');
+      window.log.debug('Remove all notifications');
       this.reset([]);
       this.update();
     },
