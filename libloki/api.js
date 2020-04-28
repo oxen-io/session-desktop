@@ -159,31 +159,23 @@
     });
     return syncMessage;
   }
-  function createGroupSyncProtoMessage(conversations) {
-    // We only want to sync across closed groups that we haven't left
-    const sessionGroups = conversations.filter(
-      c => c.isClosedGroup() && !c.get('left') && c.isFriend()
-    );
+  function createGroupSyncProtoMessage(sessionGroup) {
+    // We are getting a single open group here
 
-    if (sessionGroups.length === 0) {
-      return null;
-    }
 
-    const rawGroups = sessionGroups.map(conversation => ({
-      id: window.Signal.Crypto.bytesFromString(conversation.id),
-      name: conversation.get('name'),
-      members: conversation.get('members') || [],
-      blocked: conversation.isBlocked(),
-      expireTimer: conversation.get('expireTimer'),
-      admins: conversation.get('groupAdmins') || [],
-    }));
+    const rawGroup = {
+      id: window.Signal.Crypto.bytesFromString(sessionGroup.id),
+      name: sessionGroup.get('name'),
+      members: sessionGroup.get('members') || [],
+      blocked: sessionGroup.isBlocked(),
+      expireTimer: sessionGroup.get('expireTimer'),
+      admins: sessionGroup.get('groupAdmins') || [],
+    };
 
-    // Convert raw groups to an array of buffers
-    const groupDetails = rawGroups
-      .map(x => new textsecure.protobuf.GroupDetails(x))
-      .map(x => x.encode());
+    // Convert raw group to a buffer
+    const groupDetail = new textsecure.protobuf.GroupDetails(rawGroup).encode()
     // Serialise array of byteBuffers into 1 byteBuffer
-    const byteBuffer = serialiseByteBuffers(groupDetails);
+    const byteBuffer = serialiseByteBuffers([groupDetail]);
     const data = new Uint8Array(byteBuffer.toArrayBuffer());
     const groups = new textsecure.protobuf.SyncMessage.Groups({
       data,

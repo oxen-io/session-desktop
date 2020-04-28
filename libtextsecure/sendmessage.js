@@ -694,13 +694,22 @@ MessageSender.prototype = {
     // primaryDevicePubKey is set to our own number if we are the master device
     const primaryDeviceKey = window.storage.get('primaryDevicePubKey');
     if (!primaryDeviceKey) {
+      window.console.debug('sendGroupSyncMessage: no primary device pubkey');
+      return Promise.resolve();
+    }
+        // We only want to sync across closed groups that we haven't left
+    const sessionGroups = conversations.filter(
+      c => c.isClosedGroup() && !c.get('left') && c.isFriend()
+    );
+    if (sessionGroups.length === 0) {
+      window.console.info('No closed group to sync.');
       return Promise.resolve();
     }
 
     // We need to sync across 1 group at a time
     // This is because we could hit the storage server limit with one group
-    const syncPromises = conversations
-      .map(c => libloki.api.createGroupSyncProtoMessage([c]))
+    const syncPromises = sessionGroups
+      .map(c => libloki.api.createGroupSyncProtoMessage(c))
       .filter(message => message != null)
       .map(syncMessage => {
         const contentMessage = new textsecure.protobuf.Content();
