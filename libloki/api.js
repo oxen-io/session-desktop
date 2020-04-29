@@ -4,16 +4,12 @@
 (function() {
   window.libloki = window.libloki || {};
 
-  async function sendBackgroundMessage(pubKey) {
-    return sendOnlineBroadcastMessage(pubKey);
-  }
-
-  async function sendOnlineBroadcastMessage(pubKey, isPing = false) {
+  async function sendBackgroundMessage(pubKey, isPing = false) {
     const authorisation = await window.libloki.storage.getGrantAuthorisationForSecondaryPubKey(
       pubKey
     );
     if (authorisation && authorisation.primaryDevicePubKey !== pubKey) {
-      sendOnlineBroadcastMessage(authorisation.primaryDevicePubKey);
+      sendBackgroundMessage(authorisation.primaryDevicePubKey);
       return;
     }
     const p2pAddress = null;
@@ -266,7 +262,6 @@
 
   window.libloki.api = {
     sendBackgroundMessage,
-    sendOnlineBroadcastMessage,
     sendPairingAuthorisation,
     createPairingAuthorisationProtoMessage,
     sendUnpairingMessageToSecondary,
