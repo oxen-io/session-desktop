@@ -432,7 +432,6 @@ OutgoingMessage.prototype = {
     const secretSessionCipher = new window.Signal.Metadata.SecretSessionCipher(
       textsecure.storage.protocol
     );
-    // ciphers[address.getDeviceId()] = secretSessionCipher;
 
     const senderCert = new textsecure.protobuf.SenderCertificate();
 
@@ -449,7 +448,7 @@ OutgoingMessage.prototype = {
     const content = window.Signal.Crypto.arrayBufferToBase64(ciphertext);
 
     return {
-      type, // FallBackSessionCipher sets this to FRIEND_REQUEST
+      type,
       ttl,
       ourKey,
       sourceDevice,
@@ -606,6 +605,28 @@ OutgoingMessage.prototype = {
       }
     });
   },
+};
+
+OutgoingMessage.buildAutoFriendRequestMessage = function buildAutoFriendRequestMessage(
+  pubKey
+) {
+  const dataMessage = new textsecure.protobuf.DataMessage({});
+
+  const content = new textsecure.protobuf.Content({
+    dataMessage,
+  });
+
+  const options = { messageType: 'onlineBroadcast' };
+  // Send a empty message with information about how to contact us directly
+  return new OutgoingMessage(
+    null, // server
+    Date.now(), // timestamp,
+    [pubKey], // numbers
+    content, // message
+    true, // silent
+    () => null, // callback
+    options
+  );
 };
 
 window.textsecure = window.textsecure || {};

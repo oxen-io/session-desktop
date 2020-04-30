@@ -4,27 +4,25 @@
 (function() {
   window.libloki = window.libloki || {};
 
-  async function sendBackgroundMessage(pubKey, isPing = false) {
+  // Returns the primary device pubkey for this secondary device pubkey
+  // or the same pubkey if there is no other device
+  async function getPrimaryDevicePubkey(pubKey) {
     const authorisation = await window.libloki.storage.getGrantAuthorisationForSecondaryPubKey(
       pubKey
     );
-    if (authorisation && authorisation.primaryDevicePubKey !== pubKey) {
-      sendBackgroundMessage(authorisation.primaryDevicePubKey);
+    return authorisation ? authorisation.primaryDevicePubKey : pubKey;
+  }
+
+  async function sendBackgroundMessage(pubKey, isPing = false) {
+    const primaryPubKey = await getPrimaryDevicePubkey(pubKey);
+    if (primaryPubKey !== pubKey) {
+      // if we got the secondary device pubkey first,
+      // call ourself again with the primary device pubkey
+      await sendBackgroundMessage(primaryPubKey);
       return;
     }
-    const p2pAddress = null;
-    const p2pPort = null;
-    // We result loki address message for sending "background" messages
-    const type = textsecure.protobuf.LokiAddressMessage.Type.HOST_UNREACHABLE;
 
-    const lokiAddressMessage = new textsecure.protobuf.LokiAddressMessage({
-      p2pAddress,
-      p2pPort,
-      type,
-    });
-    const content = new textsecure.protobuf.Content({
-      lokiAddressMessage,
-    });
+    const content = new textsecure.protobuf.Content({});
 
     const options = { messageType: 'onlineBroadcast', isPing };
     // Send a empty message with information about how to contact us directly
@@ -37,7 +35,21 @@
       () => null, // callback
       options
     );
+
     await outgoingMessage.sendToNumber(pubKey);
+  }
+
+  async function sendAutoFriendRequestMessage(pubKey) {
+    const primaryPubKey = await getPrimaryDevicePubkey(pubKey);
+    if (primaryPubKey !== pubKey) {
+      // if we got the secondary device pubkey first,
+      // call ourself again with the primary device pubkey
+      await sendAutoFriendRequestMessage(primaryPubKey);
+      return;
+    }
+
+    const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage();
+    await autoFrMessage.sendToNumber(pubKey);
   }
 
   function createPairingAuthorisationProtoMessage({
@@ -158,7 +170,6 @@
   function createGroupSyncProtoMessage(sessionGroup) {
     // We are getting a single open group here
 
-
     const rawGroup = {
       id: window.Signal.Crypto.bytesFromString(sessionGroup.id),
       name: sessionGroup.get('name'),
@@ -169,7 +180,7 @@
     };
 
     // Convert raw group to a buffer
-    const groupDetail = new textsecure.protobuf.GroupDetails(rawGroup).encode()
+    const groupDetail = new textsecure.protobuf.GroupDetails(rawGroup).encode();
     // Serialise array of byteBuffers into 1 byteBuffer
     const byteBuffer = serialiseByteBuffers([groupDetail]);
     const data = new Uint8Array(byteBuffer.toArrayBuffer());
@@ -262,6 +273,7 @@
 
   window.libloki.api = {
     sendBackgroundMessage,
+    sendAutoFriendRequestMessage,
     sendPairingAuthorisation,
     createPairingAuthorisationProtoMessage,
     sendUnpairingMessageToSecondary,

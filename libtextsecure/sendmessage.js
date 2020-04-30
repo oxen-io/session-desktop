@@ -697,7 +697,7 @@ MessageSender.prototype = {
       window.console.debug('sendGroupSyncMessage: no primary device pubkey');
       return Promise.resolve();
     }
-        // We only want to sync across closed groups that we haven't left
+    // We only want to sync across closed groups that we haven't left
     const sessionGroups = conversations.filter(
       c => c.isClosedGroup() && !c.get('left') && c.isFriend()
     );

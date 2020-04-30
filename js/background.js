@@ -1750,8 +1750,7 @@
       }
 
       if (conversation.isFriendRequestStatusNone()) {
-        // Will be replaced with automatic friend request
-        libloki.api.sendBackgroundMessage(conversation.id);
+        libloki.api.sendAutoFriendRequestMessage(conversation.id);
       } else {
         // Accept any pending friend requests if there are any
         conversation.onAcceptFriendRequest({ blockSync: true });
