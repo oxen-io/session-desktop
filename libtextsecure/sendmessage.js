@@ -644,6 +644,8 @@ MessageSender.prototype = {
       contentMessage.syncMessage = syncMessage;
 
       const silent = true;
+      libloki.api.debug.logGroupSync('Sending group sync request with content', contentMessage);
+
       return this.sendIndividualProto(
         myNumber,
         contentMessage,
@@ -677,6 +679,8 @@ MessageSender.prototype = {
         contentMessage.syncMessage = syncMessage;
 
         const silent = true;
+        libloki.api.debug.logGroupSync('Sending group sync request with content', contentMessage);
+
         return this.sendIndividualProto(
           primaryDeviceKey,
           contentMessage,

@@ -1,8 +1,33 @@
 /* global window, textsecure, dcodeIO, StringView, ConversationController */
+/* eslint-disable no-bitwise */
 
 // eslint-disable-next-line func-names
 (function() {
   window.libloki = window.libloki || {};
+
+  const DebugFlagsEnum = {
+    GROUP_SYNC_MESSAGES: 1,
+    CONTACT_SYNC_MESSAGES: 2,
+  }
+
+  const debugFlags =  DebugFlagsEnum.GROUP_SYNC_MESSAGES |
+                      DebugFlagsEnum.CONTACT_SYNC_MESSAGES;
+
+  const debugLogFn = window.log.info;
+
+  function logGroupSync(...args) {
+    if (debugFlags | DebugFlagsEnum.GROUP_SYNC_MESSAGES) {
+      debugLogFn(...args);
+    }
+  }
+
+  function logContactSync(...args) {
+    if (debugFlags | DebugFlagsEnum.GROUP_CONTACT_MESSAGES) {
+      debugLogFn(...args);
+    }
+  }
+
+
 
   // Returns the primary device pubkey for this secondary device pubkey
   // or the same pubkey if there is no other device
@@ -271,6 +296,11 @@
     return p;
   }
 
+  const debug = {
+    logContactSync,
+    logGroupSync,
+  }
+
   window.libloki.api = {
     sendBackgroundMessage,
     sendAutoFriendRequestMessage,
@@ -280,5 +310,6 @@
     createContactSyncProtoMessage,
     createGroupSyncProtoMessage,
     createOpenGroupsSyncProtoMessage,
+    debug,
   };
 })();
