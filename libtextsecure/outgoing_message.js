@@ -126,8 +126,8 @@ OutgoingMessage.prototype = {
         )
         .then(devicesPubKeys => {
           if (devicesPubKeys.length === 0) {
-            // eslint-disable-next-line no-param-reassign
-            devicesPubKeys = [number];
+            // No need to start the sending of message without a recipient
+            return Promise.resolve();
           }
           return this.doSendMessage(number, devicesPubKeys, recurse);
         });
