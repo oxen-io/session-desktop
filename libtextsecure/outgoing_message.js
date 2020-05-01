@@ -64,7 +64,6 @@ function OutgoingMessage(
     senderCertificate,
     online,
     messageType,
-    isPing,
     isPublic,
     publicSendData,
   } =
@@ -80,7 +79,6 @@ function OutgoingMessage(
   this.senderCertificate = senderCertificate;
   this.online = online;
   this.messageType = messageType || 'outgoing';
-  this.isPing = isPing || false;
 }
 
 OutgoingMessage.prototype = {
@@ -220,7 +218,6 @@ OutgoingMessage.prototype = {
       // TODO: Make NUM_CONCURRENT_CONNECTIONS a global constant
       const options = {
         numConnections: NUM_SEND_CONNECTIONS,
-        isPing: this.isPing,
       };
       options.isPublic = this.isPublic;
       if (this.isPublic) {
