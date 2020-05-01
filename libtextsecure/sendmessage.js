@@ -658,9 +658,12 @@ MessageSender.prototype = {
       return Promise.resolve();
     }
 
+    const sessionContacts = conversations.filter(
+      c => c.isPrivate() && !c.isSecondaryDevice() && c.isFriend()
+    );
     // We need to sync across 3 contacts at a time
     // This is to avoid hitting storage server limit
-    const chunked = _.chunk(conversations, 3);
+    const chunked = _.chunk(sessionContacts, 3);
     const syncMessages = await Promise.all(
       chunked.map(c => libloki.api.createContactSyncProtoMessage(c))
     );

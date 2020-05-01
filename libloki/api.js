@@ -160,11 +160,9 @@
     result.reset();
     return result;
   }
-  async function createContactSyncProtoMessage(conversations) {
+  async function createContactSyncProtoMessage(sessionContacts) {
     // Extract required contacts information out of conversations
-    const sessionContacts = conversations.filter(
-      c => c.isPrivate() && !c.isSecondaryDevice() && c.isFriend()
-    );
+
 
     if (sessionContacts.length === 0) {
       return null;
