@@ -1888,6 +1888,10 @@
     await window.Signal.Data.updateConversation(id, conversation.attributes, {
       Conversation: Whisper.Conversation,
     });
+
+    // send a session request for all the members we do not have a session with
+    window.libloki.api.sendSessionRequestsToMembers(updates.members);
+
     const { expireTimer } = details;
     const isValidExpireTimer = typeof expireTimer === 'number';
     if (!isValidExpireTimer) {
