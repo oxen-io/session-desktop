@@ -486,7 +486,7 @@ OutgoingMessage.prototype = {
         throw error;
       });
   },
-  // Send a message to a private group or a session chat (one to one)
+  // Send a message to a private group member or a session chat (one to one)
   async sendSessionMessage(outgoingObjects) {
     // TODO: handle multiple devices/messages per transmit
     const promises = outgoingObjects.map(async outgoingObject => {
@@ -499,6 +499,7 @@ OutgoingMessage.prototype = {
         isFriendRequest,
         isSessionRequest,
       } = outgoingObject;
+
       try {
         const socketMessage = await this.wrapInWebsocketMessage(outgoingObject);
         await this.transmitMessage(
