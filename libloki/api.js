@@ -6,14 +6,29 @@
   window.libloki = window.libloki || {};
 
   const DebugFlagsEnum = {
+    // If you add anything, be sure it is bitwise safe! (unique and 2 multiples)
     GROUP_SYNC_MESSAGES: 1,
     CONTACT_SYNC_MESSAGES: 2,
+    AUTO_FRIEND_REQUEST_MESSAGES: 4,
+    SESSION_REQUEST_MESSAGES: 8,
+    SESSION_MESSSAGE_SENDING: 16,
+    SESSION_BACKGROUND_MESSSAGE: 32,
   }
 
   const debugFlags =  DebugFlagsEnum.GROUP_SYNC_MESSAGES |
-                      DebugFlagsEnum.CONTACT_SYNC_MESSAGES;
+    DebugFlagsEnum.CONTACT_SYNC_MESSAGES |
+    DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES |
+    DebugFlagsEnum.SESSION_REQUEST_MESSAGES |
+    DebugFlagsEnum.SESSION_MESSSAGE_SENDING;
 
-  const debugLogFn = window.log.info;
+  const debugLogFn = window.console.warn;
+
+  function logSessionMessageSending(...args) {
+    if (debugFlags | DebugFlagsEnum.SESSION_MESSSAGE_SENDING) {
+      debugLogFn(...args);
+    }
+  }
+
 
   function logGroupSync(...args) {
     if (debugFlags | DebugFlagsEnum.GROUP_SYNC_MESSAGES) {
@@ -27,7 +42,23 @@
     }
   }
 
+  function logAutoFriendRequest(...args) {
+    if (debugFlags | DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES) {
+      debugLogFn(...args);
+    }
+  }
 
+  function logSessionRequest(...args) {
+    if (debugFlags | DebugFlagsEnum.SESSION_REQUEST_MESSAGES) {
+      debugLogFn(...args);
+    }
+  }
+
+  function logBackgroundMessage(...args) {
+    if (debugFlags | DebugFlagsEnum.SESSION_BACKGROUND_MESSSAGE) {
+      debugLogFn(...args);
+    }
+  }
 
   // Returns the primary device pubkey for this secondary device pubkey
   // or the same pubkey if there is no other device
@@ -38,7 +69,7 @@
     return authorisation ? authorisation.primaryDevicePubKey : pubKey;
   }
 
-  async function sendBackgroundMessage(pubKey, isPing = false) {
+  async function sendBackgroundMessage(pubKey) {
     const primaryPubKey = await getPrimaryDevicePubkey(pubKey);
     if (primaryPubKey !== pubKey) {
       // if we got the secondary device pubkey first,
@@ -47,21 +78,9 @@
       return;
     }
 
-    const content = new textsecure.protobuf.Content({});
-
-    const options = { messageType: 'onlineBroadcast', isPing };
-    // Send a empty message with information about how to contact us directly
-    const outgoingMessage = new textsecure.OutgoingMessage(
-      null, // server
-      Date.now(), // timestamp,
-      [pubKey], // numbers
-      content, // message
-      true, // silent
-      () => null, // callback
-      options
-    );
-
-    await outgoingMessage.sendToNumber(pubKey);
+    const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage();
+    window.libloki.api.debug.logBackgroundMessage('Sending background message to', pubKey)
+    await backgroundMessage.sendToNumber(pubKey);
   }
 
   async function sendAutoFriendRequestMessage(pubKey) {
@@ -74,6 +93,7 @@
     }
 
     const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage();
+    window.libloki.api.debug.logAutoFriendRequest('Sending auto Friend request to', pubKey)
     await autoFrMessage.sendToNumber(pubKey);
   }
 
@@ -296,14 +316,42 @@
     return p;
   }
 
+  function sendSessionRequestsToMembers(members = []) {
+    // For every member, see if we need to establish a session:
+    members.forEach(memberPubKey => {
+      const haveSession = _.some(
+        textsecure.storage.protocol.sessions,
+        s => s.number === memberPubKey
+      );
+
+      const ourPubKey = textsecure.storage.user.getNumber();
+      if (!haveSession && memberPubKey !== ourPubKey) {
+        // eslint-disable-next-line more/no-then
+        ConversationController.getOrCreateAndWait(
+          memberPubKey,
+          'private'
+        ).then(() => {
+          const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
+          window.libloki.api.debug.logSessionRequest('Sending session request to', memberPubKey);
+          sessionRequestMessage.sendToNumber(memberPubKey);
+        });
+      }
+    });
+  }
+
   const debug = {
     logContactSync,
     logGroupSync,
+    logAutoFriendRequest,
+    logSessionRequest,
+    logSessionMessageSending,
+    logBackgroundMessage,
   }
 
   window.libloki.api = {
     sendBackgroundMessage,
     sendAutoFriendRequestMessage,
+    sendSessionRequestsToMembers,
     sendPairingAuthorisation,
     createPairingAuthorisationProtoMessage,
     sendUnpairingMessageToSecondary,

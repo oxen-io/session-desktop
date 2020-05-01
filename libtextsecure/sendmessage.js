@@ -456,17 +456,9 @@ MessageSender.prototype = {
         window.log.error(`No session for number: ${number}`);
         // If it was a message to a group then we need to send a session request
         if (outgoing.isGroup) {
-          this.sendMessageToNumber(
-            number,
-            '(If you see this message, you must be using an out-of-date client)',
-            [],
-            undefined,
-            [],
-            Date.now(),
-            undefined,
-            undefined,
-            { messageType: 'friend-request', sessionRequest: true }
-          );
+          const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
+          window.libloki.api.debug.logSessionRequest('Sending session request to', number)
+          sessionRequestMessage.sendToNumber(number);
         }
       }
     });
@@ -679,7 +671,7 @@ MessageSender.prototype = {
         contentMessage.syncMessage = syncMessage;
 
         const silent = true;
-        libloki.api.debug.logGroupSync('Sending group sync request with content', contentMessage);
+        libloki.api.debug.logGroupSync('Sending contact sync message with content', contentMessage);
 
         return this.sendIndividualProto(
           primaryDeviceKey,

@@ -1996,33 +1996,9 @@
               }
             }
           }
-          // For every member, see if we need to establish a session:
-          initialMessage.group.members.forEach(memberPubKey => {
-            const haveSession = _.some(
-              textsecure.storage.protocol.sessions,
-              s => s.number === memberPubKey
-            );
+          // send a session request for all the members we do not have a session with
+          window.libloki.api.sendSessionRequestsToMembers(initialMessage.group.members);
 
-            const ourPubKey = textsecure.storage.user.getNumber();
-            if (!haveSession && memberPubKey !== ourPubKey) {
-              ConversationController.getOrCreateAndWait(
-                memberPubKey,
-                'private'
-              ).then(() => {
-                textsecure.messaging.sendMessageToNumber(
-                  memberPubKey,
-                  '(If you see this message, you must be using an out-of-date client)',
-                  [],
-                  undefined,
-                  [],
-                  Date.now(),
-                  undefined,
-                  undefined,
-                  { messageType: 'friend-request', sessionRequest: true }
-                );
-              });
-            }
-          });
         } else if (newGroup) {
           // We have an unknown group, we should request info from the sender
           textsecure.messaging.requestGroupInfo(conversationId, [

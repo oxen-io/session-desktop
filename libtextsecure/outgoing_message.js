@@ -361,6 +361,7 @@ OutgoingMessage.prototype = {
     }
 
     let messageBuffer;
+    let logDetails;
     if (isMultiDeviceRequest) {
       const tempMessage = new textsecure.protobuf.Content();
       const tempDataMessage = new textsecure.protobuf.DataMessage();
@@ -371,9 +372,20 @@ OutgoingMessage.prototype = {
       tempMessage.preKeyBundleMessage = this.message.preKeyBundleMessage;
       tempMessage.dataMessage = tempDataMessage;
       messageBuffer = tempMessage.toArrayBuffer();
+      logDetails = {
+        tempMessage,
+        isFriendRequest: enableFallBackEncryption,
+        isSessionRequest,
+      };
     } else {
       messageBuffer = this.message.toArrayBuffer();
+      logDetails = {
+        message:this.message,
+        isFriendRequest: enableFallBackEncryption,
+        isSessionRequest,
+      };
     }
+    libloki.api.debug.logSessionMessageSending('sending session message to', devicePubKey, ' details:', logDetails);
 
     const plaintext = this.getPlaintext(messageBuffer);
 
@@ -615,6 +627,51 @@ OutgoingMessage.buildAutoFriendRequestMessage = function buildAutoFriendRequestM
   const content = new textsecure.protobuf.Content({
     dataMessage,
   });
+
+  const options = { messageType: 'onlineBroadcast' };
+  // Send a empty message with information about how to contact us directly
+  return new OutgoingMessage(
+    null, // server
+    Date.now(), // timestamp,
+    [pubKey], // numbers
+    content, // message
+    true, // silent
+    () => null, // callback
+    options
+  );
+};
+
+OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage(
+  pubKey
+) {
+  const body = '(If you see this message, you must be using an out-of-date client)';
+  const flags = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
+
+  const dataMessage = new textsecure.protobuf.DataMessage({body, flags});
+
+  const content = new textsecure.protobuf.Content({
+    dataMessage,
+  });
+
+  const options = { messageType: 'friend-request' };
+  // Send a empty message with information about how to contact us directly
+  return new OutgoingMessage(
+    null, // server
+    Date.now(), // timestamp,
+    [pubKey], // numbers
+    content, // message
+    true, // silent
+    () => null, // callback
+    options
+  );
+};
+
+OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
+  pubKey
+) {
+  const content = new textsecure.protobuf.Content({});
+  const dataMessage = new textsecure.protobuf.DataMessage();
+  content.dataMessage = dataMessage;
 
   const options = { messageType: 'onlineBroadcast' };
   // Send a empty message with information about how to contact us directly
