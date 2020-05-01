@@ -667,9 +667,20 @@ OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage
 OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
   pubKey
 ) {
-  const content = new textsecure.protobuf.Content({});
-  const dataMessage = new textsecure.protobuf.DataMessage();
-  content.dataMessage = dataMessage;
+  const p2pAddress = null;
+  const p2pPort = null;
+  // We result loki address message for sending "background" messages
+  const type = textsecure.protobuf.LokiAddressMessage.Type.HOST_UNREACHABLE;
+
+  // This is needed even if LokiAddressMessage shouldn't be used.
+  // looks like the message is not sent or dropped on reception
+  // if the content is completely empty
+  const lokiAddressMessage = new textsecure.protobuf.LokiAddressMessage({
+    p2pAddress,
+    p2pPort,
+    type,
+  });
+  const content = new textsecure.protobuf.Content({lokiAddressMessage});
 
   const options = { messageType: 'onlineBroadcast' };
   // Send a empty message with information about how to contact us directly
