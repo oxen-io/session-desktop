@@ -1,4 +1,4 @@
-/* global window, textsecure, dcodeIO, StringView, ConversationController */
+/* global window, textsecure, dcodeIO, StringView, ConversationController, _ */
 /* eslint-disable no-bitwise */
 
 // eslint-disable-next-line func-names
@@ -13,15 +13,15 @@
     SESSION_MESSSAGE_SENDING: 16,
     SESSION_BACKGROUND_MESSSAGE: 32,
     // If you add anything, be sure it is bitwise safe! (unique and 2 multiples)
-  }
+  };
 
-  const debugFlags = DebugFlagsEnum.GROUP_SYNC_MESSAGES |
+  const debugFlags =
+    DebugFlagsEnum.GROUP_SYNC_MESSAGES |
     DebugFlagsEnum.CONTACT_SYNC_MESSAGES |
     DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES |
     DebugFlagsEnum.SESSION_REQUEST_MESSAGES |
     DebugFlagsEnum.SESSION_MESSSAGE_SENDING |
     DebugFlagsEnum.SESSION_BACKGROUND_MESSSAGE;
-
 
   // feel free to change this to window.console.warn to have a stack with all those logs
   // disable loki logs
@@ -32,7 +32,6 @@
       debugLogFn(...args);
     }
   }
-
 
   function logGroupSync(...args) {
     if (debugFlags | DebugFlagsEnum.GROUP_SYNC_MESSAGES && debugLogFn) {
@@ -47,7 +46,10 @@
   }
 
   function logAutoFriendRequest(...args) {
-    if (debugFlags | DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES && debugLogFn) {
+    if (
+      debugFlags | DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES &&
+      debugLogFn
+    ) {
       debugLogFn(...args);
     }
   }
@@ -83,7 +85,10 @@
     }
 
     const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage();
-    window.libloki.api.debug.logBackgroundMessage('Sending background message to', pubKey)
+    window.libloki.api.debug.logBackgroundMessage(
+      'Sending background message to',
+      pubKey
+    );
     await backgroundMessage.sendToNumber(pubKey);
   }
 
@@ -97,7 +102,10 @@
     }
 
     const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage();
-    window.libloki.api.debug.logAutoFriendRequest('Sending auto Friend request to', pubKey)
+    window.libloki.api.debug.logAutoFriendRequest(
+      'Sending auto Friend request to',
+      pubKey
+    );
     await autoFrMessage.sendToNumber(pubKey);
   }
 
@@ -166,7 +174,6 @@
   }
   async function createContactSyncProtoMessage(sessionContacts) {
     // Extract required contacts information out of conversations
-
 
     if (sessionContacts.length === 0) {
       return null;
@@ -329,14 +336,16 @@
       const ourPubKey = textsecure.storage.user.getNumber();
       if (!haveSession && memberPubKey !== ourPubKey) {
         // eslint-disable-next-line more/no-then
-        ConversationController.getOrCreateAndWait(
-          memberPubKey,
-          'private'
-        ).then(() => {
-          const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
-          window.libloki.api.debug.logSessionRequest('Sending session request to', memberPubKey);
-          sessionRequestMessage.sendToNumber(memberPubKey);
-        });
+        ConversationController.getOrCreateAndWait(memberPubKey, 'private').then(
+          () => {
+            const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
+            window.libloki.api.debug.logSessionRequest(
+              'Sending session request to',
+              memberPubKey
+            );
+            sessionRequestMessage.sendToNumber(memberPubKey);
+          }
+        );
       }
     });
   }
@@ -348,7 +357,7 @@
     logSessionRequest,
     logSessionMessageSending,
     logBackgroundMessage,
-  }
+  };
 
   window.libloki.api = {
     sendBackgroundMessage,

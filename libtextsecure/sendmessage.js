@@ -457,7 +457,10 @@ MessageSender.prototype = {
         // If it was a message to a group then we need to send a session request
         if (outgoing.isGroup) {
           const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
-          window.libloki.api.debug.logSessionRequest('Sending session request to', number)
+          window.libloki.api.debug.logSessionRequest(
+            'Sending session request to',
+            number
+          );
           sessionRequestMessage.sendToNumber(number);
         }
       }
@@ -636,7 +639,10 @@ MessageSender.prototype = {
       contentMessage.syncMessage = syncMessage;
 
       const silent = true;
-      libloki.api.debug.logGroupSync('Sending group sync request with content', contentMessage);
+      libloki.api.debug.logGroupSync(
+        'Sending group sync request with content',
+        contentMessage
+      );
 
       return this.sendIndividualProto(
         myNumber,
@@ -674,7 +680,10 @@ MessageSender.prototype = {
         contentMessage.syncMessage = syncMessage;
 
         const silent = true;
-        libloki.api.debug.logGroupSync('Sending contact sync message with content', contentMessage);
+        libloki.api.debug.logGroupSync(
+          'Sending contact sync message with content',
+          contentMessage
+        );
 
         return this.sendIndividualProto(
           primaryDeviceKey,

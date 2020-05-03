@@ -377,12 +377,17 @@ OutgoingMessage.prototype = {
     } else {
       messageBuffer = this.message.toArrayBuffer();
       logDetails = {
-        message:this.message,
+        message: this.message,
         isFriendRequest: enableFallBackEncryption,
         isSessionRequest,
       };
     }
-    libloki.api.debug.logSessionMessageSending('sending session message to', devicePubKey, ' details:', logDetails);
+    libloki.api.debug.logSessionMessageSending(
+      'sending session message to',
+      devicePubKey,
+      ' details:',
+      logDetails
+    );
 
     const plaintext = this.getPlaintext(messageBuffer);
 
@@ -642,10 +647,11 @@ OutgoingMessage.buildAutoFriendRequestMessage = function buildAutoFriendRequestM
 OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage(
   pubKey
 ) {
-  const body = '(If you see this message, you must be using an out-of-date client)';
+  const body =
+    '(If you see this message, you must be using an out-of-date client)';
   const flags = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
 
-  const dataMessage = new textsecure.protobuf.DataMessage({body, flags});
+  const dataMessage = new textsecure.protobuf.DataMessage({ body, flags });
 
   const content = new textsecure.protobuf.Content({
     dataMessage,
@@ -680,7 +686,7 @@ OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
     p2pPort,
     type,
   });
-  const content = new textsecure.protobuf.Content({lokiAddressMessage});
+  const content = new textsecure.protobuf.Content({ lokiAddressMessage });
 
   const options = { messageType: 'onlineBroadcast' };
   // Send a empty message with information about how to contact us directly

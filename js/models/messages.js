@@ -1997,8 +1997,9 @@
             }
           }
           // send a session request for all the members we do not have a session with
-          window.libloki.api.sendSessionRequestsToMembers(initialMessage.group.members);
-
+          window.libloki.api.sendSessionRequestsToMembers(
+            initialMessage.group.members
+          );
         } else if (newGroup) {
           // We have an unknown group, we should request info from the sender
           textsecure.messaging.requestGroupInfo(conversationId, [
