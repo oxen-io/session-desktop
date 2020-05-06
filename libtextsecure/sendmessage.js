@@ -1255,8 +1255,12 @@ MessageSender.prototype = {
     profileKey,
     options
   ) {
-    const me = textsecure.storage.user.getNumber();
-    const numbers = groupNumbers.filter(number => number !== me);
+    // We always assume that only primary device is a member in the group
+    const primaryDeviceKey =
+      window.storage.get('primaryDevicePubKey') ||
+      textsecure.storage.user.getNumber();
+    const numbers = groupNumbers.filter(number => number !== primaryDeviceKey);
+
     const attrs = {
       recipients: numbers,
       timestamp,
