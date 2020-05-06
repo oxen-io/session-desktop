@@ -1966,24 +1966,8 @@
       const descriptorId = await textsecure.MessageReceiver.arrayBufferToString(
         messageDescriptor.id
       );
-      let message;
-      const { source } = data;
 
-      // Note: This only works currently because we have a 1 device limit
-      // When we change that, the check below needs to change too
-      const ourNumber = textsecure.storage.user.getNumber();
-      const primaryDevice = window.storage.get('primaryDevicePubKey');
-      const isOurDevice =
-        source && (source === ourNumber || source === primaryDevice);
-      const isPublicChatMessage =
-        messageDescriptor.type === 'group' &&
-        descriptorId.match(/^publicChat:/);
-      if (isPublicChatMessage && isOurDevice) {
-        // Public chat messages from ourselves should be outgoing
-        message = await createSentMessage(data);
-      } else {
-        message = await createMessage(data);
-      }
+      const message = await createMessage(data);
 
       const isDuplicate = await isMessageDuplicate(message);
       if (isDuplicate) {

@@ -120,8 +120,20 @@ MessageReceiver.prototype.extend({
       );
     }
 
-    const ev = new Event('message');
-    ev.confirm = function confirmTerm() {};
+    const ourNumber = textsecure.storage.user.getNumber();
+    const primaryDevice = window.storage.get('primaryDevicePubKey');
+    const isOurDevice =
+    message.source && (message.source === ourNumber || message.source === primaryDevice);
+    const isPublicChatMessage = message.message.group && message.message.group.id && !!message.message.group.id.match(/^publicChat:/);
+    let ev;
+
+    if (isPublicChatMessage && isOurDevice) {
+      // Public chat messages from ourselves should be outgoing
+      ev = new Event('sent');
+    } else {
+      ev = new Event('message');
+    }
+    ev.confirm = function confirmTerm() { };
     ev.data = message;
     this.dispatchAndWait(ev);
   },
@@ -1428,7 +1440,7 @@ MessageReceiver.prototype.extend({
     const ourNumber = textsecure.storage.user.getNumber();
     const ourPrimaryNumber = window.storage.get('primaryDevicePubKey');
     const ourOtherDevices = await libloki.storage.getAllDevicePubKeysForPrimaryPubKey(
-      window.storage.get('primaryDevicePubKey')
+      ourPrimaryNumber
     );
     const ourDevices = new Set([
       ourNumber,
@@ -1653,9 +1665,6 @@ MessageReceiver.prototype.extend({
       ...attachment,
       data: dcodeIO.ByteBuffer.wrap(attachment.data).toArrayBuffer(), // ByteBuffer to ArrayBuffer
     });
-
-    const cleaned = this.cleanAttachment(attachment);
-    return this.downloadAttachment(cleaned);
   },
   async handleEndSession(number) {
     window.log.info('got end session');
