@@ -854,17 +854,7 @@ MessageReceiver.prototype.extend({
     }
     return p.then(() =>
       this.processDecrypted(envelope, msg).then(message => {
-        const senderPubKey = envelope.source;
         const primaryDevicePubKey = window.storage.get('primaryDevicePubKey');
-
-        if (this.shouldIgnoreBlockedGroup(message, senderPubKey)) {
-          window.log.warn(
-            `Message ${this.getEnvelopeId(
-              envelope
-            )} ignored; destined for blocked group`
-          );
-          return this.removeFromCache(envelope);
-        }
 
         // handle profileKey and avatar updates
         if (envelope.source === primaryDevicePubKey) {
@@ -1028,7 +1018,11 @@ MessageReceiver.prototype.extend({
     return this.handlePairingRequest(envelope, pairingAuthorisation);
   },
 
-  async handleSecondaryDeviceFriendRequest(pubKey, deviceMapping) {
+  async handleSecondaryDeviceFriendRequest(pubKey) {
+    // fetch the device mapping from the server
+    const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(
+      pubKey
+    );
     if (!deviceMapping) {
       return false;
     }
@@ -1181,20 +1175,7 @@ MessageReceiver.prototype.extend({
     }
   },
 
-  shouldIgnoreBlockedGroup(message, senderPubKey) {
-    const groupId = message.group && message.group.id;
-    const isBlocked = this.isGroupBlocked(groupId);
-    const isLeavingGroup = Boolean(
-      message.group &&
-      message.group.type === textsecure.protobuf.GroupContext.Type.QUIT
-    );
 
-    const primaryDevicePubKey = window.storage.get('primaryDevicePubKey');
-    const isMe = senderPubKey === textsecure.storage.user.getNumber() ||
-      senderPubKey === primaryDevicePubKey;
-
-    return (groupId && isBlocked && !(isMe && isLeavingGroup));
-  },
 
   handleDataMessage(envelope, msg) {
     window.log.info('data message from', this.getEnvelopeId(envelope));
@@ -1205,24 +1186,21 @@ MessageReceiver.prototype.extend({
     }
     return p.then(() =>
       this.processDecrypted(envelope, msg).then(async message => {
-        const groupId = message.group && message.group.id;
         const ourPubKey = textsecure.storage.user.getNumber();
         const senderPubKey = envelope.source;
         const isMe = senderPubKey === ourPubKey;
         const conversation = window.ConversationController.get(senderPubKey);
 
-        const isGroupMessage = !!groupId;
-        const { UNPAIRING_REQUEST, SESSION_REQUEST } = textsecure.protobuf.DataMessage.Flags;
-        /* eslint-disable no-bitwise */
-        const isSessionRequest = Boolean(message.flags & SESSION_REQUEST);
+        const { UNPAIRING_REQUEST } = textsecure.protobuf.DataMessage.Flags;
 
-        /* Be sure to handle a friend request only, not session_request here.
-           Session requests are handled in message.js handleDataMessage() */
+        /* Be sure to handle a friend request only,
+           not a SESSION_REQUEST here.
+           Session requests are handled in message.js handleDataMessage()
+          */
         const friendRequest =
-          envelope.type === textsecure.protobuf.Envelope.Type.FRIEND_REQUEST && !isSessionRequest;
-        const isUnpairingRequest = Boolean(message.flags & UNPAIRING_REQUEST) && !friendRequest;
-        /* eslint-enable no-bitwise */
-
+          envelope.type === textsecure.protobuf.Envelope.Type.FRIEND_REQUEST;
+        // eslint-disable-next-line no-bitwise
+        const isUnpairingRequest = Boolean(message.flags & UNPAIRING_REQUEST) // && !friendRequest;
 
         if (isUnpairingRequest) {
           return this.handleUnpairRequest(envelope, ourPubKey);
@@ -1235,46 +1213,6 @@ MessageReceiver.prototype.extend({
             message.profile,
             message.profileKey
           );
-        }
-
-        // If we got a friend request message or
-        // Check to see if we need to auto accept their friend request
-        //  if we're not friends with the current user that sent this private message
-        if (friendRequest || (!isGroupMessage && !conversation.isFriend())) {
-          if (isMe) {
-            window.log.info('refusing to add a friend request to ourselves');
-            throw new Error('Cannot add a friend request for ourselves!');
-          } else {
-
-            // fetch the device mapping from the server
-            const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(
-              senderPubKey
-            );
-            // auto-accept friend request if the device is paired to one of our friend
-            const shouldAutoAcceptFR = await this.handleSecondaryDeviceFriendRequest(
-              senderPubKey,
-              deviceMapping
-            );
-            if (shouldAutoAcceptFR) {
-              // sending a message back = accepting friend request
-              // Directly setting friend request status to skip the pending state
-              await conversation.setFriendRequestStatus(
-                window.friends.friendRequestStatusEnum.friends
-              );
-              window.libloki.api.sendBackgroundMessage(senderPubKey);
-              return this.removeFromCache(envelope);
-            }
-          }
-        }
-
-
-        if (this.shouldIgnoreBlockedGroup(message, senderPubKey)) {
-          window.log.warn(
-            `Message ${this.getEnvelopeId(
-              envelope
-            )} ignored; destined for blocked group`
-          );
-          return this.removeFromCache(envelope);
         }
 
         const ev = new Event('message');
@@ -1622,9 +1560,7 @@ MessageReceiver.prototype.extend({
   isBlocked(number) {
     return textsecure.storage.get('blocked', []).indexOf(number) >= 0;
   },
-  isGroupBlocked(groupId) {
-    return textsecure.storage.get('blocked-groups', []).indexOf(groupId) >= 0;
-  },
+
   cleanAttachment(attachment) {
     return {
       ..._.omit(attachment, 'thumbnail'),
