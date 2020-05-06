@@ -84,7 +84,10 @@
       return;
     }
 
-    const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage(pubKey, debugMessageType);
+    const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage(
+      pubKey,
+      debugMessageType
+    );
     await backgroundMessage.sendToNumber(pubKey);
   }
 
@@ -97,7 +100,9 @@
       return;
     }
 
-    const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage(pubKey);
+    const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage(
+      pubKey
+    );
     await autoFrMessage.sendToNumber(pubKey);
   }
 
@@ -131,7 +136,9 @@
   }
 
   function sendUnpairingMessageToSecondary(pubKey) {
-    const unpairingMessage = textsecure.OutgoingMessage.buildUnpairingMessage(pubKey);
+    const unpairingMessage = textsecure.OutgoingMessage.buildUnpairingMessage(
+      pubKey
+    );
     return unpairingMessage.sendToNumber(pubKey);
   }
   // Serialise as <Element0.length><Element0><Element1.length><Element1>...
@@ -264,7 +271,14 @@
           resolve();
         }
       };
-      const pairingRequestMessage = textsecure.OutgoingMessage.buildPairingRequestMessage(recipientPubKey, ourNumber, ourConversation, authorisation, pairingAuthorisation, callback);
+      const pairingRequestMessage = textsecure.OutgoingMessage.buildPairingRequestMessage(
+        recipientPubKey,
+        ourNumber,
+        ourConversation,
+        authorisation,
+        pairingAuthorisation,
+        callback
+      );
 
       pairingRequestMessage.sendToNumber(recipientPubKey);
     });
@@ -284,7 +298,9 @@
         // eslint-disable-next-line more/no-then
         ConversationController.getOrCreateAndWait(memberPubKey, 'private').then(
           () => {
-            const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage(memberPubKey);
+            const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage(
+              memberPubKey
+            );
             sessionRequestMessage.sendToNumber(memberPubKey);
           }
         );

@@ -123,8 +123,12 @@ MessageReceiver.prototype.extend({
     const ourNumber = textsecure.storage.user.getNumber();
     const primaryDevice = window.storage.get('primaryDevicePubKey');
     const isOurDevice =
-    message.source && (message.source === ourNumber || message.source === primaryDevice);
-    const isPublicChatMessage = message.message.group && message.message.group.id && !!message.message.group.id.match(/^publicChat:/);
+      message.source &&
+      (message.source === ourNumber || message.source === primaryDevice);
+    const isPublicChatMessage =
+      message.message.group &&
+      message.message.group.id &&
+      !!message.message.group.id.match(/^publicChat:/);
     let ev;
 
     if (isPublicChatMessage && isOurDevice) {
@@ -133,7 +137,7 @@ MessageReceiver.prototype.extend({
     } else {
       ev = new Event('message');
     }
-    ev.confirm = function confirmTerm() { };
+    ev.confirm = function confirmTerm() {};
     ev.data = message;
     this.dispatchAndWait(ev);
   },
@@ -986,9 +990,7 @@ MessageReceiver.prototype.extend({
 
   async handleSecondaryDeviceFriendRequest(pubKey) {
     // fetch the device mapping from the server
-    const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(
-      pubKey
-    );
+    const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(pubKey);
     if (!deviceMapping) {
       return false;
     }
@@ -1134,14 +1136,15 @@ MessageReceiver.prototype.extend({
   async handleUnpairRequest(envelope, ourPubKey) {
     // TODO: move high-level pairing logic to libloki.multidevice.xx
 
-    const legit = await this.unpairingRequestIsLegit(envelope.source, ourPubKey);
+    const legit = await this.unpairingRequestIsLegit(
+      envelope.source,
+      ourPubKey
+    );
     this.removeFromCache(envelope);
     if (legit) {
       await this.clearAppAndRestart();
     }
   },
-
-
 
   handleDataMessage(envelope, msg) {
     window.log.info('data message from', this.getEnvelopeId(envelope));
@@ -1159,14 +1162,10 @@ MessageReceiver.prototype.extend({
 
         const { UNPAIRING_REQUEST } = textsecure.protobuf.DataMessage.Flags;
 
-        /* Be sure to handle a friend request only,
-           not a SESSION_REQUEST here.
-           Session requests are handled in message.js handleDataMessage()
-          */
         const friendRequest =
           envelope.type === textsecure.protobuf.Envelope.Type.FRIEND_REQUEST;
         // eslint-disable-next-line no-bitwise
-        const isUnpairingRequest = Boolean(message.flags & UNPAIRING_REQUEST) // && !friendRequest;
+        const isUnpairingRequest = Boolean(message.flags & UNPAIRING_REQUEST);
 
         if (isUnpairingRequest) {
           return this.handleUnpairRequest(envelope, ourPubKey);
@@ -1192,7 +1191,7 @@ MessageReceiver.prototype.extend({
           unidentifiedDeliveryReceived: envelope.unidentifiedDeliveryReceived,
           message,
         };
-        await this.dispatchAndWait(ev);
+        return this.dispatchAndWait(ev);
       })
     );
   },

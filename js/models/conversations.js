@@ -1035,7 +1035,11 @@
           direction: 'incoming',
           status: ['pending', 'expired'],
         });
-        window.libloki.api.sendBackgroundMessage(this.id, window.textsecure.OutgoingMessage.DebugMessageType.INCOMING_FR_ACCEPTED);
+        window.libloki.api.sendBackgroundMessage(
+          this.id,
+          window.textsecure.OutgoingMessage.DebugMessageType
+            .INCOMING_FR_ACCEPTED
+        );
       }
     },
     // Our outgoing friend request has been accepted
@@ -1052,7 +1056,11 @@
           response: 'accepted',
           status: ['pending', 'expired'],
         });
-        window.libloki.api.sendBackgroundMessage(this.id, window.textsecure.OutgoingMessage.DebugMessageType.OUTGOING_FR_ACCEPTED);
+        window.libloki.api.sendBackgroundMessage(
+          this.id,
+          window.textsecure.OutgoingMessage.DebugMessageType
+            .OUTGOING_FR_ACCEPTED
+        );
         return true;
       }
       return false;
@@ -2137,7 +2145,10 @@
       await this.setSessionResetStatus(SessionResetEnum.request_received);
       // send empty message, this will trigger the new session to propagate
       // to the reset initiator.
-      window.libloki.api.sendBackgroundMessage(this.id, window.textsecure.OutgoingMessage.DebugMessageType.SESSION_RESET_RECV);
+      window.libloki.api.sendBackgroundMessage(
+        this.id,
+        window.textsecure.OutgoingMessage.DebugMessageType.SESSION_RESET_RECV
+      );
     },
 
     isSessionResetReceived() {
@@ -2173,7 +2184,10 @@
     async onNewSessionAdopted() {
       if (this.get('sessionResetStatus') === SessionResetEnum.initiated) {
         // send empty message to confirm that we have adopted the new session
-        window.libloki.api.sendBackgroundMessage(this.id, window.textsecure.OutgoingMessage.DebugMessageType.SESSION_RESET);
+        window.libloki.api.sendBackgroundMessage(
+          this.id,
+          window.textsecure.OutgoingMessage.DebugMessageType.SESSION_RESET
+        );
       }
       await this.createAndStoreEndSessionMessage({
         type: 'incoming',

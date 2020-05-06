@@ -1920,11 +1920,8 @@
       const conversation = ConversationController.get(conversationId);
       const GROUP_TYPES = textsecure.protobuf.GroupContext.Type;
 
-
       if (this.shouldIgnoreBlockedGroup(initialMessage, source)) {
-        window.log.warn(
-          `Message ignored; destined for blocked group`
-        );
+        window.log.warn(`Message ignored; destined for blocked group`);
         confirm();
         return true;
       }
@@ -1947,13 +1944,15 @@
           return true;
         }
       }
-      if (initialMessage.group.type === GROUP_TYPES.REQUEST_INFO &&
-        !newGroup) {
-          conversation.sendGroupInfo([source]);
-          return true;
+      if (initialMessage.group.type === GROUP_TYPES.REQUEST_INFO && !newGroup) {
+        conversation.sendGroupInfo([source]);
+        return true;
       }
 
-      if (initialMessage.group.members && initialMessage.group.type === GROUP_TYPES.UPDATE) {
+      if (
+        initialMessage.group.members &&
+        initialMessage.group.type === GROUP_TYPES.UPDATE
+      ) {
         if (newGroup) {
           conversation.updateGroupAdmins(initialMessage.group.admins);
 
@@ -2003,9 +2002,7 @@
         );
       } else if (newGroup) {
         // We have an unknown group, we should request info from the sender
-        textsecure.messaging.requestGroupInfo(conversationId, [
-          primarySource,
-        ]);
+        textsecure.messaging.requestGroupInfo(conversationId, [primarySource]);
       }
       return false;
     },
@@ -2013,16 +2010,20 @@
     async handleSessionRequest(source, primarySource, confirm) {
       // Check if the contact is a member in one of our private groups:
       const groupMember = window
-      .getConversations()
-      .models.filter(c => c.get('members'))
-      .reduce((acc, x) => window.Lodash.concat(acc, x.get('members')), [])
-      .includes(primarySource);
+        .getConversations()
+        .models.filter(c => c.get('members'))
+        .reduce((acc, x) => window.Lodash.concat(acc, x.get('members')), [])
+        .includes(primarySource);
 
       if (groupMember) {
         window.log.info(
           `Auto accepting a 'group' session request for a known group member: ${primarySource}`
         );
-        window.libloki.api.sendBackgroundMessage(source, window.textsecure.OutgoingMessage.DebugMessageType.SESSION_REQUEST_ACCEPT);
+        window.libloki.api.sendBackgroundMessage(
+          source,
+          window.textsecure.OutgoingMessage.DebugMessageType
+            .SESSION_REQUEST_ACCEPT
+        );
 
         confirm();
       }
@@ -2035,14 +2036,15 @@
       const isBlocked = this.isGroupBlocked(groupId);
       const isLeavingGroup = Boolean(
         message.group &&
-        message.group.type === textsecure.protobuf.GroupContext.Type.QUIT
+          message.group.type === textsecure.protobuf.GroupContext.Type.QUIT
       );
 
       const primaryDevicePubKey = window.storage.get('primaryDevicePubKey');
-      const isMe = senderPubKey === textsecure.storage.user.getNumber() ||
+      const isMe =
+        senderPubKey === textsecure.storage.user.getNumber() ||
         senderPubKey === primaryDevicePubKey;
 
-      return (groupId && isBlocked && !(isMe && isLeavingGroup));
+      return groupId && isBlocked && !(isMe && isLeavingGroup);
     },
 
     async handleFriendRequestMessage(source, ourPubKey, conversation, confirm) {
@@ -2065,13 +2067,15 @@
           );
           // sending a message back = accepting friend request
 
-          window.libloki.api.sendBackgroundMessage(source, window.textsecure.OutgoingMessage.AUTO_FR_ACCEPT);
+          window.libloki.api.sendBackgroundMessage(
+            source,
+            window.textsecure.OutgoingMessage.AUTO_FR_ACCEPT
+          );
           confirm();
           return true;
         }
       }
       return false;
-
     },
 
     async handleDataMessage(initialMessage, confirm) {
@@ -2096,7 +2100,12 @@
            dropping an admin only update from a non admin, ...
          */
         conversationId = initialMessage.group.id;
-        const shouldReturn = this.handleGroupMessage(source, initialMessage, primarySource, confirm);
+        const shouldReturn = this.handleGroupMessage(
+          source,
+          initialMessage,
+          primarySource,
+          confirm
+        );
 
         // handleGroupMessage can process fully a message in some cases
         // so we need to return early if that's the case
@@ -2132,8 +2141,16 @@
       // Also, if you recover your account from mnemonic for instance,
       // people will know you as a friend but you won't have that information.
       // so they will send basic messages, but for us, it needs to be handled an FR.
-      if (message.isFriendRequest() || (!isGroupMessage && !conversation.isFriend())) {
-        const shouldReturn = await this.handleFriendRequestMessage(source, ourNumber, conversation, confirm)
+      if (
+        message.isFriendRequest() ||
+        (!isGroupMessage && !conversation.isFriend())
+      ) {
+        const shouldReturn = await this.handleFriendRequestMessage(
+          source,
+          ourNumber,
+          conversation,
+          confirm
+        );
         // handleFriendRequestMessage can process fully a message in some cases
         // so we need to return early if that's the case
         if (shouldReturn) {

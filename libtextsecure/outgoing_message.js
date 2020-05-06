@@ -406,7 +406,8 @@ OutgoingMessage.prototype = {
 
     const ourPubKey = textsecure.storage.user.getNumber();
     const ourPrimaryPubkey = window.storage.get('primaryDevicePubKey');
-    const secondaryPubKeys = await window.libloki.storage.getSecondaryDevicesFor(ourPubKey) || [];
+    const secondaryPubKeys =
+      (await window.libloki.storage.getSecondaryDevicesFor(ourPubKey)) || [];
     let aliasedPubkey = devicePubKey;
     if (devicePubKey === ourPubKey) {
       aliasedPubkey = 'OUR_PUBKEY'; // should not happen
@@ -415,7 +416,9 @@ OutgoingMessage.prototype = {
     } else if (secondaryPubKeys.includes(devicePubKey)) {
       aliasedPubkey = 'OUR SECONDARY PUBKEY';
     }
-    libloki.api.debug.logSessionMessageSending(`sending ${messageTypeStr} message to ${aliasedPubkey} details:`, logDetails
+    libloki.api.debug.logSessionMessageSending(
+      `sending ${messageTypeStr} message to ${aliasedPubkey} details:`,
+      logDetails
     );
 
     const plaintext = this.getPlaintext(messageBuffer);
@@ -660,7 +663,10 @@ OutgoingMessage.buildAutoFriendRequestMessage = function buildAutoFriendRequestM
     dataMessage,
   });
 
-  const options = { messageType: 'onlineBroadcast', debugMessageType: DebugMessageType.AUTO_FR_REQUEST };
+  const options = {
+    messageType: 'onlineBroadcast',
+    debugMessageType: DebugMessageType.AUTO_FR_REQUEST,
+  };
   // Send a empty message with information about how to contact us directly
   return new OutgoingMessage(
     null, // server
@@ -687,7 +693,9 @@ OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage
   });
 
   const options = {
-    messageType: 'friend-request', debugMessageType: DebugMessageType.SESSION_REQUEST };
+    messageType: 'friend-request',
+    debugMessageType: DebugMessageType.SESSION_REQUEST,
+  };
   // Send a empty message with information about how to contact us directly
   return new OutgoingMessage(
     null, // server
@@ -732,9 +740,7 @@ OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
   );
 };
 
-OutgoingMessage.buildUnpairingMessage = function buildUnpairingMessage(
-  pubKey
-) {
+OutgoingMessage.buildUnpairingMessage = function buildUnpairingMessage(pubKey) {
   const flags = textsecure.protobuf.DataMessage.Flags.UNPAIRING_REQUEST;
   const dataMessage = new textsecure.protobuf.DataMessage({
     flags,
@@ -764,7 +770,6 @@ OutgoingMessage.buildPairingRequestMessage = function buildPairingRequestMessage
   pairingAuthorisation,
   callback
 ) {
-
   const content = new textsecure.protobuf.Content({
     pairingAuthorisation,
   });
