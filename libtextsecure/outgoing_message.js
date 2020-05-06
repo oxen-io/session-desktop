@@ -30,6 +30,28 @@ const getTTLForType = type => {
   }
 };
 
+const DebugMessageType = {
+  AUTO_FR_REQUEST: 'auto-friend-request',
+  AUTO_FR_ACCEPT: 'auto-friend-accept',
+
+  SESSION_REQUEST: 'session-request',
+  SESSION_REQUEST_ACCEPT: 'session-request-accepted',
+
+  SESSION_RESET: 'session-reset',
+  SESSION_RESET_RECV: 'session-reset-received',
+
+  OUTGOING_FR_ACCEPTED: 'outgoing-friend-request-accepted',
+  INCOMING_FR_ACCEPTED: 'incoming-friend-request-accept',
+
+  REQUEST_SYNC_SEND: 'request-sync-send',
+  CONTACT_SYNC_SEND: 'contact-sync-send',
+  CLOSED_GROUP_SYNC_SEND: 'closed-group-sync-send',
+  OPEN_GROUP_SYNC_SEND: 'open-group-sync-send',
+
+  DEVICE_UNPAIRING_SEND: 'device-unpairing-send',
+  PAIRING_REQUEST_SEND: 'pairing-request',
+};
+
 function OutgoingMessage(
   server,
   timestamp,
@@ -66,6 +88,7 @@ function OutgoingMessage(
     messageType,
     isPublic,
     publicSendData,
+    debugMessageType,
   } =
     options || {};
   this.numberInfo = numberInfo;
@@ -79,6 +102,7 @@ function OutgoingMessage(
   this.senderCertificate = senderCertificate;
   this.online = online;
   this.messageType = messageType || 'outgoing';
+  this.debugMessageType = debugMessageType;
 }
 
 OutgoingMessage.prototype = {
@@ -371,22 +395,27 @@ OutgoingMessage.prototype = {
       messageBuffer = tempMessage.toArrayBuffer();
       logDetails = {
         tempMessage,
-        isFriendRequest: enableFallBackEncryption,
-        isSessionRequest,
       };
     } else {
       messageBuffer = this.message.toArrayBuffer();
       logDetails = {
         message: this.message,
-        isFriendRequest: enableFallBackEncryption,
-        isSessionRequest,
       };
     }
-    libloki.api.debug.logSessionMessageSending(
-      'sending session message to',
-      devicePubKey,
-      ' details:',
-      logDetails
+    const messageTypeStr = this.debugMessageType;
+
+    const ourPubKey = textsecure.storage.user.getNumber();
+    const ourPrimaryPubkey = window.storage.get('primaryDevicePubKey');
+    const secondaryPubKeys = await window.libloki.storage.getSecondaryDevicesFor(ourPubKey) || [];
+    let aliasedPubkey = devicePubKey;
+    if (devicePubKey === ourPubKey) {
+      aliasedPubkey = 'OUR_PUBKEY'; // should not happen
+    } else if (devicePubKey === ourPrimaryPubkey) {
+      aliasedPubkey = 'OUR_PRIMARY_PUBKEY';
+    } else if (secondaryPubKeys.includes(devicePubKey)) {
+      aliasedPubkey = 'OUR SECONDARY PUBKEY';
+    }
+    libloki.api.debug.logSessionMessageSending(`sending ${messageTypeStr} message to ${aliasedPubkey} details:`, logDetails
     );
 
     const plaintext = this.getPlaintext(messageBuffer);
@@ -631,7 +660,7 @@ OutgoingMessage.buildAutoFriendRequestMessage = function buildAutoFriendRequestM
     dataMessage,
   });
 
-  const options = { messageType: 'onlineBroadcast' };
+  const options = { messageType: 'onlineBroadcast', debugMessageType: DebugMessageType.AUTO_FR_REQUEST };
   // Send a empty message with information about how to contact us directly
   return new OutgoingMessage(
     null, // server
@@ -657,7 +686,8 @@ OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage
     dataMessage,
   });
 
-  const options = { messageType: 'friend-request' };
+  const options = {
+    messageType: 'friend-request', debugMessageType: DebugMessageType.SESSION_REQUEST };
   // Send a empty message with information about how to contact us directly
   return new OutgoingMessage(
     null, // server
@@ -671,7 +701,8 @@ OutgoingMessage.buildSessionRequestMessage = function buildSessionRequestMessage
 };
 
 OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
-  pubKey
+  pubKey,
+  debugMessageType
 ) {
   const p2pAddress = null;
   const p2pPort = null;
@@ -688,7 +719,7 @@ OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
   });
   const content = new textsecure.protobuf.Content({ lokiAddressMessage });
 
-  const options = { messageType: 'onlineBroadcast' };
+  const options = { messageType: 'onlineBroadcast', debugMessageType };
   // Send a empty message with information about how to contact us directly
   return new OutgoingMessage(
     null, // server
@@ -700,6 +731,77 @@ OutgoingMessage.buildBackgroundMessage = function buildBackgroundMessage(
     options
   );
 };
+
+OutgoingMessage.buildUnpairingMessage = function buildUnpairingMessage(
+  pubKey
+) {
+  const flags = textsecure.protobuf.DataMessage.Flags.UNPAIRING_REQUEST;
+  const dataMessage = new textsecure.protobuf.DataMessage({
+    flags,
+  });
+  const content = new textsecure.protobuf.Content({
+    dataMessage,
+  });
+  const debugMessageType = DebugMessageType.DEVICE_UNPAIRING_SEND;
+  const options = { messageType: 'device-unpairing', debugMessageType };
+  const outgoingMessage = new textsecure.OutgoingMessage(
+    null, // server
+    Date.now(), // timestamp,
+    [pubKey], // numbers
+    content, // message
+    true, // silent
+    () => null, // callback
+    options
+  );
+  return outgoingMessage;
+};
+
+OutgoingMessage.buildPairingRequestMessage = function buildPairingRequestMessage(
+  pubKey,
+  ourNumber,
+  ourConversation,
+  authorisation,
+  pairingAuthorisation,
+  callback
+) {
+
+  const content = new textsecure.protobuf.Content({
+    pairingAuthorisation,
+  });
+  const isGrant = authorisation.primaryDevicePubKey === ourNumber;
+  if (isGrant) {
+    // Send profile name to secondary device
+    const lokiProfile = ourConversation.getLokiProfile();
+    // profile.avatar is the path to the local image
+    // replace with the avatar URL
+    const avatarPointer = ourConversation.get('avatarPointer');
+    lokiProfile.avatar = avatarPointer;
+    const profile = new textsecure.protobuf.DataMessage.LokiProfile(
+      lokiProfile
+    );
+    const profileKey = window.storage.get('profileKey');
+    const dataMessage = new textsecure.protobuf.DataMessage({
+      profile,
+      profileKey,
+    });
+    content.dataMessage = dataMessage;
+  }
+
+  const debugMessageType = DebugMessageType.PAIRING_REQUEST_SEND;
+  const options = { messageType: 'pairing-request', debugMessageType };
+  const outgoingMessage = new textsecure.OutgoingMessage(
+    null, // server
+    Date.now(), // timestamp,
+    [pubKey], // numbers
+    content, // message
+    true, // silent
+    callback, // callback
+    options
+  );
+  return outgoingMessage;
+};
+
+OutgoingMessage.DebugMessageType = DebugMessageType;
 
 window.textsecure = window.textsecure || {};
 window.textsecure.OutgoingMessage = OutgoingMessage;

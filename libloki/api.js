@@ -75,20 +75,16 @@
     return authorisation ? authorisation.primaryDevicePubKey : pubKey;
   }
 
-  async function sendBackgroundMessage(pubKey) {
+  async function sendBackgroundMessage(pubKey, debugMessageType) {
     const primaryPubKey = await getPrimaryDevicePubkey(pubKey);
     if (primaryPubKey !== pubKey) {
       // if we got the secondary device pubkey first,
       // call ourself again with the primary device pubkey
-      await sendBackgroundMessage(primaryPubKey);
+      await sendBackgroundMessage(primaryPubKey, debugMessageType);
       return;
     }
 
-    const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage();
-    window.libloki.api.debug.logBackgroundMessage(
-      'Sending background message to',
-      pubKey
-    );
+    const backgroundMessage = textsecure.OutgoingMessage.buildBackgroundMessage(pubKey, debugMessageType);
     await backgroundMessage.sendToNumber(pubKey);
   }
 
@@ -101,11 +97,7 @@
       return;
     }
 
-    const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage();
-    window.libloki.api.debug.logAutoFriendRequest(
-      'Sending auto Friend request to',
-      pubKey
-    );
+    const autoFrMessage = textsecure.OutgoingMessage.buildAutoFriendRequestMessage(pubKey);
     await autoFrMessage.sendToNumber(pubKey);
   }
 
@@ -139,24 +131,8 @@
   }
 
   function sendUnpairingMessageToSecondary(pubKey) {
-    const flags = textsecure.protobuf.DataMessage.Flags.UNPAIRING_REQUEST;
-    const dataMessage = new textsecure.protobuf.DataMessage({
-      flags,
-    });
-    const content = new textsecure.protobuf.Content({
-      dataMessage,
-    });
-    const options = { messageType: 'device-unpairing' };
-    const outgoingMessage = new textsecure.OutgoingMessage(
-      null, // server
-      Date.now(), // timestamp,
-      [pubKey], // numbers
-      content, // message
-      true, // silent
-      () => null, // callback
-      options
-    );
-    return outgoingMessage.sendToNumber(pubKey);
+    const unpairingMessage = textsecure.OutgoingMessage.buildUnpairingMessage(pubKey);
+    return unpairingMessage.sendToNumber(pubKey);
   }
   // Serialise as <Element0.length><Element0><Element1.length><Element1>...
   // This is an implementation of the reciprocal of contacts_parser.js
@@ -278,49 +254,19 @@
       ourNumber,
       'private'
     );
-    const content = new textsecure.protobuf.Content({
-      pairingAuthorisation,
-    });
-    const isGrant = authorisation.primaryDevicePubKey === ourNumber;
-    if (isGrant) {
-      // Send profile name to secondary device
-      const lokiProfile = ourConversation.getLokiProfile();
-      // profile.avatar is the path to the local image
-      // replace with the avatar URL
-      const avatarPointer = ourConversation.get('avatarPointer');
-      lokiProfile.avatar = avatarPointer;
-      const profile = new textsecure.protobuf.DataMessage.LokiProfile(
-        lokiProfile
-      );
-      const profileKey = window.storage.get('profileKey');
-      const dataMessage = new textsecure.protobuf.DataMessage({
-        profile,
-        profileKey,
-      });
-      content.dataMessage = dataMessage;
-    }
     // Send
-    const options = { messageType: 'pairing-request' };
     const p = new Promise((resolve, reject) => {
-      const timestamp = Date.now();
+      const callback = result => {
+        // callback
+        if (result.errors.length > 0) {
+          reject(result.errors[0]);
+        } else {
+          resolve();
+        }
+      };
+      const pairingRequestMessage = textsecure.OutgoingMessage.buildPairingRequestMessage(recipientPubKey, ourNumber, ourConversation, authorisation, pairingAuthorisation, callback);
 
-      const outgoingMessage = new textsecure.OutgoingMessage(
-        null, // server
-        timestamp,
-        [recipientPubKey], // numbers
-        content, // message
-        true, // silent
-        result => {
-          // callback
-          if (result.errors.length > 0) {
-            reject(result.errors[0]);
-          } else {
-            resolve();
-          }
-        },
-        options
-      );
-      outgoingMessage.sendToNumber(recipientPubKey);
+      pairingRequestMessage.sendToNumber(recipientPubKey);
     });
     return p;
   }
@@ -338,11 +284,7 @@
         // eslint-disable-next-line more/no-then
         ConversationController.getOrCreateAndWait(memberPubKey, 'private').then(
           () => {
-            const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
-            window.libloki.api.debug.logSessionRequest(
-              'Sending session request to',
-              memberPubKey
-            );
+            const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage(memberPubKey);
             sessionRequestMessage.sendToNumber(memberPubKey);
           }
         );

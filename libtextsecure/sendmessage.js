@@ -398,15 +398,10 @@ MessageSender.prototype = {
         timestamp
       );
     }
-
-    const outgoing = new OutgoingMessage(
-      this.server,
-      timestamp,
-      numbers,
-      message,
-      silent,
-      callback,
-      options
+    const isGroupMessage = !!(
+      message &&
+      message.dataMessage &&
+      message.dataMessage.group
     );
 
     const ourNumber = textsecure.storage.user.getNumber();
@@ -451,16 +446,21 @@ MessageSender.prototype = {
         options.isPublic ||
         options.messageType === 'friend-request'
       ) {
+        const outgoing = new OutgoingMessage(
+          this.server,
+          timestamp,
+          numbers,
+          message,
+          silent,
+          callback,
+          options
+        );
         this.queueJobForNumber(number, () => outgoing.sendToNumber(number));
       } else {
         window.log.error(`No session for number: ${number}`);
         // If it was a message to a group then we need to send a session request
-        if (outgoing.isGroup) {
-          const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage();
-          window.libloki.api.debug.logSessionRequest(
-            'Sending session request to',
-            number
-          );
+        if (isGroupMessage) {
+          const sessionRequestMessage = textsecure.OutgoingMessage.buildSessionRequestMessage(number);
           sessionRequestMessage.sendToNumber(number);
         }
       }
@@ -639,17 +639,14 @@ MessageSender.prototype = {
       contentMessage.syncMessage = syncMessage;
 
       const silent = true;
-      libloki.api.debug.logGroupSync(
-        'Sending group sync request with content',
-        contentMessage
-      );
+      const debugMessageType = window.textsecure.OutgoingMessage.DebugMessageType.REQUEST_SYNC_SEND;
 
       return this.sendIndividualProto(
         myNumber,
         contentMessage,
         Date.now(),
         silent,
-        options
+        {...options, debugMessageType}
       );
     }
 
@@ -680,17 +677,15 @@ MessageSender.prototype = {
         contentMessage.syncMessage = syncMessage;
 
         const silent = true;
-        libloki.api.debug.logGroupSync(
-          'Sending contact sync message with content',
-          contentMessage
-        );
+
+        const debugMessageType = window.textsecure.OutgoingMessage.DebugMessageType.CONTACT_SYNC_SEND;
 
         return this.sendIndividualProto(
           primaryDeviceKey,
           contentMessage,
           Date.now(),
           silent,
-          {} // options
+          {debugMessageType} // options
         );
       });
 
@@ -724,12 +719,14 @@ MessageSender.prototype = {
         contentMessage.syncMessage = syncMessage;
 
         const silent = true;
+        const debugMessageType = window.textsecure.OutgoingMessage.DebugMessageType.CLOSED_GROUP_SYNC_SEND;
+
         return this.sendIndividualProto(
           primaryDeviceKey,
           contentMessage,
           Date.now(),
           silent,
-          {} // options
+          {debugMessageType} // options
         );
       });
 
@@ -759,12 +756,14 @@ MessageSender.prototype = {
     contentMessage.syncMessage = openGroupsSyncMessage;
 
     const silent = true;
+    const debugMessageType = window.textsecure.OutgoingMessage.DebugMessageType.OPEN_GROUP_SYNC_SEND;
+
     return this.sendIndividualProto(
       primaryDeviceKey,
       contentMessage,
       Date.now(),
       silent,
-      {} // options
+      {debugMessageType} // options
     );
   },
 
