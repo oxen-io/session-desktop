@@ -968,40 +968,6 @@ MessageReceiver.prototype.extend({
       await this.removeFromCache(envelope);
     }
   },
-  async sendFriendRequestsToSyncContacts(contacts) {
-    const attachmentPointer = await this.handleAttachment(contacts);
-    const contactBuffer = new ContactBuffer(attachmentPointer.data);
-    let contactDetails = contactBuffer.next();
-    // Extract just the pubkeys
-    const friendPubKeys = [];
-    while (contactDetails !== undefined) {
-      friendPubKeys.push(contactDetails.number);
-      contactDetails = contactBuffer.next();
-    }
-    return Promise.all(
-      friendPubKeys.map(async pubKey => {
-        const c = await window.ConversationController.getOrCreateAndWait(
-          pubKey,
-          'private'
-        );
-        if (!c) {
-          return null;
-        }
-        const attachments = [];
-        const quote = null;
-        const linkPreview = null;
-        // Send an empty message, the underlying logic will know
-        // it should send a friend request
-        return c.sendMessage('', attachments, quote, linkPreview);
-      })
-    );
-  },
-  async handleAuthorisationForContact(envelope) {
-    window.log.error(
-      'Unexpected pairing request/authorisation received, ignoring.'
-    );
-    return this.removeFromCache(envelope);
-  },
   async handlePairingAuthorisationMessage(envelope, content) {
     const { pairingAuthorisation } = content;
     const { secondaryDevicePubKey, grantSignature } = pairingAuthorisation;
