@@ -12,6 +12,7 @@
   Whisper,
   clipboard,
   libloki,
+  lokiFileServerAPI,
 */
 
 /* eslint-disable more/no-then */
@@ -1446,7 +1447,7 @@
           });
 
           this.trigger('sent', this);
-          if (this.get('type') !== 'friend-request') {
+          if (!this.isFriendRequest()) {
             const c = this.getConversation();
             // Don't bother sending sync messages to public chats
             if (c && !c.isPublic()) {
@@ -1911,6 +1912,47 @@
       return message;
     },
 
+    async handleSecondaryDeviceFriendRequest(pubKey) {
+      // fetch the device mapping from the server
+      const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(pubKey);
+      if (!deviceMapping) {
+        return false;
+      }
+      // Only handle secondary pubkeys
+      if (deviceMapping.isPrimary === '1' || !deviceMapping.authorisations) {
+        return false;
+      }
+      const { authorisations } = deviceMapping;
+      // Secondary devices should only have 1 authorisation from a primary device
+      if (authorisations.length !== 1) {
+        return false;
+      }
+      const authorisation = authorisations[0];
+      if (!authorisation) {
+        return false;
+      }
+      if (!authorisation.grantSignature) {
+        return false;
+      }
+      const isValid = await libloki.crypto.validateAuthorisation(authorisation);
+      if (!isValid) {
+        return false;
+      }
+      const correctSender = pubKey === authorisation.secondaryDevicePubKey;
+      if (!correctSender) {
+        return false;
+      }
+      const { primaryDevicePubKey } = authorisation;
+      // ensure the primary device is a friend
+      const c = window.ConversationController.get(primaryDevicePubKey);
+      if (!c || !c.isFriendWithAnyDevice()) {
+        return false;
+      }
+      await libloki.storage.savePairingAuthorisation(authorisation);
+
+      return true;
+    },
+
     /**
      * Returns true if the message is already completely handled and confirmed
      * and the processing of this message must stop.
@@ -2047,7 +2089,7 @@
       return groupId && isBlocked && !(isMe && isLeavingGroup);
     },
 
-    async handleFriendRequestMessage(source, ourPubKey, conversation, confirm) {
+    async handleAutoFriendRequestMessage(source, ourPubKey, conversation, confirm) {
       const isMe = source === ourPubKey;
       // If we got a friend request message (session request excluded) or
       // if we're not friends with the current user that sent this private message
@@ -2069,9 +2111,10 @@
 
           window.libloki.api.sendBackgroundMessage(
             source,
-            window.textsecure.OutgoingMessage.AUTO_FR_ACCEPT
+            window.textsecure.OutgoingMessage.DebugMessageType.AUTO_FR_ACCEPT
           );
           confirm();
+          // return true to notify the message is fully processed
           return true;
         }
       }
@@ -2095,7 +2138,7 @@
         (authorisation && authorisation.primaryDevicePubKey) || source;
       const isGroupMessage = !!initialMessage.group;
       if (isGroupMessage) {
-        /* handle one part of the group logic here
+        /* handle one part of the group logic here:
            handle requesting info of a new group,
            dropping an admin only update from a non admin, ...
          */
@@ -2107,7 +2150,7 @@
           confirm
         );
 
-        // handleGroupMessage can process fully a message in some cases
+        // handleGroupMessage() can process fully a message in some cases
         // so we need to return early if that's the case
         if (shouldReturn) {
           return null;
@@ -2117,7 +2160,10 @@
         conversationId = authorisation.primaryDevicePubKey;
       }
 
-      const conversation = ConversationController.get(conversationId);
+      // the conversation with the primary device of that source (can be the same as conversationOrigin)
+      const conversationPrimary = ConversationController.get(conversationId);
+      // the conversation with this real device
+      const conversationOrigin = ConversationController.get(source);
 
       if (
         // eslint-disable-next-line no-bitwise
@@ -2137,26 +2183,27 @@
       }
 
       // Session request have been dealt with before, so a friend request here is
-      // not a session request message.
-      // Also, if you recover your account from mnemonic for instance,
+      // not a session request message. Also, handleAutoFriendRequestMessage() only handles the autoAccept logic of an auto friend request.
+      // FIXME audric: is that correct? Also, if you recover your account from mnemonic for instance,
       // people will know you as a friend but you won't have that information.
-      // so they will send basic messages, but for us, it needs to be handled an FR.
+      // so they will send basic messages, but for us, it needs to be handled as an FR.
       if (
         message.isFriendRequest() ||
-        (!isGroupMessage && !conversation.isFriend())
+        (!isGroupMessage && !conversationOrigin.isFriend())
       ) {
-        const shouldReturn = await this.handleFriendRequestMessage(
+        const shouldReturn = await this.handleAutoFriendRequestMessage(
           source,
           ourNumber,
-          conversation,
+          conversationOrigin,
           confirm
         );
-        // handleFriendRequestMessage can process fully a message in some cases
+        // handleAutoFriendRequestMessage can process fully a message in some cases
         // so we need to return early if that's the case
         if (shouldReturn) {
           return null;
         }
       }
+      const conversation = conversationPrimary;
 
       return conversation.queueJob(async () => {
         window.log.info(
@@ -2356,7 +2403,7 @@
               : 'done';
             this.set({ endSessionType });
           }
-          if (type === 'incoming' || type === 'friend-request') {
+          if (type === 'incoming' || message.isFriendRequest()) {
             const readSync = Whisper.ReadSyncs.forMessage(message);
             if (readSync) {
               if (
@@ -2445,7 +2492,9 @@
           let autoAccept = false;
           // Make sure friend request logic doesn't trigger on messages aimed at groups
           if (!isGroupMessage) {
-            if (message.get('type') === 'friend-request') {
+            // We already handled (and returned) session request and auto Friend Request before,
+            // so that can only be a normal Friend Request
+            if (message.isFriendRequest()) {
               /*
               Here is the before and after state diagram for the operation before.
 

@@ -988,47 +988,6 @@ MessageReceiver.prototype.extend({
     return this.handlePairingRequest(envelope, pairingAuthorisation);
   },
 
-  async handleSecondaryDeviceFriendRequest(pubKey) {
-    // fetch the device mapping from the server
-    const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(pubKey);
-    if (!deviceMapping) {
-      return false;
-    }
-    // Only handle secondary pubkeys
-    if (deviceMapping.isPrimary === '1' || !deviceMapping.authorisations) {
-      return false;
-    }
-    const { authorisations } = deviceMapping;
-    // Secondary devices should only have 1 authorisation from a primary device
-    if (authorisations.length !== 1) {
-      return false;
-    }
-    const authorisation = authorisations[0];
-    if (!authorisation) {
-      return false;
-    }
-    if (!authorisation.grantSignature) {
-      return false;
-    }
-    const isValid = await libloki.crypto.validateAuthorisation(authorisation);
-    if (!isValid) {
-      return false;
-    }
-    const correctSender = pubKey === authorisation.secondaryDevicePubKey;
-    if (!correctSender) {
-      return false;
-    }
-    const { primaryDevicePubKey } = authorisation;
-    // ensure the primary device is a friend
-    const c = window.ConversationController.get(primaryDevicePubKey);
-    if (!c || !c.isFriendWithAnyDevice()) {
-      return false;
-    }
-    await libloki.storage.savePairingAuthorisation(authorisation);
-
-    return true;
-  },
-
   async updateProfile(conversation, profile, profileKey) {
     // Retain old values unless changed:
     const newProfile = conversation.get('profile') || {};
@@ -1180,6 +1139,7 @@ MessageReceiver.prototype.extend({
           );
         }
 
+        // Build a 'message' event i.e. a received message event
         const ev = new Event('message');
         ev.confirm = this.removeFromCache.bind(this, envelope);
         ev.data = {
