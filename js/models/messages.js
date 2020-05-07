@@ -1914,7 +1914,9 @@
 
     async handleSecondaryDeviceFriendRequest(pubKey) {
       // fetch the device mapping from the server
-      const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(pubKey);
+      const deviceMapping = await lokiFileServerAPI.getUserDeviceMapping(
+        pubKey
+      );
       if (!deviceMapping) {
         return false;
       }
@@ -2098,7 +2100,12 @@
       return groupId && isBlocked && !(isMe && isLeavingGroup);
     },
 
-    async handleAutoFriendRequestMessage(source, ourPubKey, conversation, confirm) {
+    async handleAutoFriendRequestMessage(
+      source,
+      ourPubKey,
+      conversation,
+      confirm
+    ) {
       const isMe = source === ourPubKey;
       // If we got a friend request message (session request excluded) or
       // if we're not friends with the current user that sent this private message

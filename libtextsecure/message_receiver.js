@@ -1439,8 +1439,10 @@ MessageReceiver.prototype.extend({
     });
   },
   handleOpenGroups(envelope, openGroups) {
-    const groupsArray = openGroups.map(openGroup => openGroup.url)
-    libloki.api.debug.logGroupSync(`Received GROUP_SYNC with open groups: [${groupsArray}]`)
+    const groupsArray = openGroups.map(openGroup => openGroup.url);
+    libloki.api.debug.logGroupSync(
+      `Received GROUP_SYNC with open groups: [${groupsArray}]`
+    );
     openGroups.forEach(({ url, channelId }) => {
       window.attemptConnection(url, channelId);
     });

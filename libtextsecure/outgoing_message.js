@@ -417,7 +417,9 @@ OutgoingMessage.prototype = {
       aliasedPubkey = 'OUR SECONDARY PUBKEY';
     }
     libloki.api.debug.logSessionMessageSending(
-      `Sending ${messageTypeStr}:${this.messageType} message to ${aliasedPubkey} details:`,
+      `Sending ${messageTypeStr}:${
+        this.messageType
+      } message to ${aliasedPubkey} details:`,
       logDetails
     );
 
