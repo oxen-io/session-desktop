@@ -1243,6 +1243,9 @@ MessageSender.prototype = {
     proto.group = new textsecure.protobuf.GroupContext();
     proto.group.id = stringToArrayBuffer(groupId);
     proto.group.type = textsecure.protobuf.GroupContext.Type.REQUEST_INFO;
+    libloki.api.debug.logGroupRequestInfo(
+      `Sending GROUP_TYPES.REQUEST_INFO to: ${groupNumbers}, about groupId ${groupId}.`
+    );
     return this.sendGroupProto(groupNumbers, proto, Date.now(), options);
   },
 

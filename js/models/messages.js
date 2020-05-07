@@ -1987,7 +1987,12 @@
         }
       }
       if (initialMessage.group.type === GROUP_TYPES.REQUEST_INFO && !newGroup) {
+        libloki.api.debug.logGroupRequestInfo(
+          `Received GROUP_TYPES.REQUEST_INFO from source: ${source}, primarySource: ${primarySource}, sending back group info.`
+        );
         conversation.sendGroupInfo([source]);
+        // FIXME audric, why is there no confirm() here ?
+
         return true;
       }
 
@@ -2051,13 +2056,17 @@
 
     async handleSessionRequest(source, primarySource, confirm) {
       // Check if the contact is a member in one of our private groups:
-      const groupMember = window
+      const isKnownClosedGroupMember = window
         .getConversations()
         .models.filter(c => c.get('members'))
         .reduce((acc, x) => window.Lodash.concat(acc, x.get('members')), [])
         .includes(primarySource);
 
-      if (groupMember) {
+      libloki.api.debug.logSessionRequest(
+        `Received SESSION_REQUEST from source: ${source}, primarySource: ${primarySource}, is one of our private groups: ${isKnownClosedGroupMember}`
+      );
+
+      if (isKnownClosedGroupMember) {
         window.log.info(
           `Auto accepting a 'group' session request for a known group member: ${primarySource}`
         );
@@ -2103,6 +2112,9 @@
           source
         );
         if (shouldAutoAcceptFR) {
+          libloki.api.debug.logAutoFriendRequest(
+            `Received AUTO_FRIEND_REQUEST from source: ${source}`
+          );
           // Directly setting friend request status to skip the pending state
           await conversation.setFriendRequestStatus(
             window.friends.friendRequestStatusEnum.friends
@@ -2518,6 +2530,10 @@
               if (autoAccept) {
                 message.set({ friendStatus: 'accepted' });
               }
+
+              libloki.api.debug.logNormalFriendRequest(
+                `Received a NORMAL_FRIEND_REQUEST from source: ${source}, primarySource: ${primarySource}, isAlreadyFriend: ${isFriend}, didWeAlreadySentFR: ${hasSentFriendRequest}`
+              );
 
               if (isFriend) {
                 window.Whisper.events.trigger('endSession', source);
