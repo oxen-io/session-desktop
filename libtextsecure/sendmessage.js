@@ -663,7 +663,7 @@ MessageSender.prototype = {
     if (!primaryDeviceKey) {
       return Promise.resolve();
     }
-
+    // Extract required contacts information out of conversations
     const sessionContacts = conversations.filter(
       c => c.isPrivate() && !c.isSecondaryDevice() && c.isFriend()
     );

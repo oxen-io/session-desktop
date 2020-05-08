@@ -29,7 +29,7 @@
 
   // feel free to change this to window.console.warn to have a stack with all those logs
   // disable loki logs
-  const debugLogFn = window.console.warn; // ;
+  const debugLogFn = undefined; // window.console.warn
 
   function logSessionMessageSending(...args) {
     if (debugFlags | DebugFlagsEnum.SESSION_MESSAGE_SENDING && debugLogFn) {
@@ -175,7 +175,6 @@
     return result;
   }
   async function createContactSyncProtoMessage(sessionContacts) {
-    // Extract required contacts information out of conversations
 
     if (sessionContacts.length === 0) {
       return null;
