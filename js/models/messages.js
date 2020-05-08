@@ -1993,8 +1993,7 @@
           `Received GROUP_TYPES.REQUEST_INFO from source: ${source}, primarySource: ${primarySource}, sending back group info.`
         );
         conversation.sendGroupInfo([source]);
-        // FIXME audric, why is there no confirm() here ?
-
+        confirm();
         return true;
       }
 
@@ -2203,9 +2202,6 @@
 
       // Session request have been dealt with before, so a friend request here is
       // not a session request message. Also, handleAutoFriendRequestMessage() only handles the autoAccept logic of an auto friend request.
-      // FIXME audric: is that correct? Also, if you recover your account from mnemonic for instance,
-      // people will know you as a friend but you won't have that information.
-      // so they will send basic messages, but for us, it needs to be handled as an FR.
       if (
         message.isFriendRequest() ||
         (!isGroupMessage && !conversationOrigin.isFriend())

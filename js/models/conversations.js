@@ -782,6 +782,13 @@
     isFriendRequestStatusNone() {
       return this.get('friendRequestStatus') === FriendRequestStatusEnum.none;
     },
+    isFriendRequestStatusNoneOrExpired() {
+      const status = this.get('friendRequestStatus');
+      return (
+        status === FriendRequestStatusEnum.none ||
+        status === FriendRequestStatusEnum.requestExpired
+      );
+    },
     isPendingFriendRequest() {
       const status = this.get('friendRequestStatus');
       return (

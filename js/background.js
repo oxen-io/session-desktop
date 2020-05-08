@@ -1755,7 +1755,7 @@
         await conversation.setSecondaryStatus(true, ourPrimaryKey);
       }
 
-      if (conversation.isFriendRequestStatusNone()) {
+      if (conversation.isFriendRequestStatusNoneOrExpired()) {
         libloki.api.sendAutoFriendRequestMessage(conversation.id);
       } else {
         // Accept any pending friend requests if there are any

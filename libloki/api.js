@@ -14,50 +14,43 @@
     SESSION_BACKGROUND_MESSAGE: 32,
     GROUP_REQUEST_INFO: 64,
     NORMAL_FRIEND_REQUEST_MESSAGES: 128,
-    // If you add anything, be sure it is bitwise safe! (unique and 2 multiples)
+    // If you add any new flag, be sure it is bitwise safe! (unique and 2 multiples)
+    ALL: 65535,
   };
 
-  const debugFlags =
-    DebugFlagsEnum.GROUP_SYNC_MESSAGES |
-    DebugFlagsEnum.CONTACT_SYNC_MESSAGES |
-    DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES |
-    DebugFlagsEnum.SESSION_REQUEST_MESSAGES |
-    DebugFlagsEnum.SESSION_MESSAGE_SENDING |
-    DebugFlagsEnum.SESSION_BACKGROUND_MESSAGE |
-    DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES |
-    DebugFlagsEnum.GROUP_REQUEST_INFO;
+  const debugFlags = DebugFlagsEnum.ALL;
 
   // feel free to change this to window.console.warn to have a stack with all those logs
   // disable loki logs
   const debugLogFn = undefined; // window.console.warn
 
   function logSessionMessageSending(...args) {
-    if (debugFlags | DebugFlagsEnum.SESSION_MESSAGE_SENDING && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_MESSAGE_SENDING && debugLogFn) {
       debugLogFn(...args);
     }
   }
 
   function logGroupSync(...args) {
-    if (debugFlags | DebugFlagsEnum.GROUP_SYNC_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_SYNC_MESSAGES && debugLogFn) {
       debugLogFn(...args);
     }
   }
 
   function logGroupRequestInfo(...args) {
-    if (debugFlags | DebugFlagsEnum.GROUP_REQUEST_INFO && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_REQUEST_INFO && debugLogFn) {
       debugLogFn(...args);
     }
   }
 
   function logContactSync(...args) {
-    if (debugFlags | DebugFlagsEnum.GROUP_CONTACT_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_CONTACT_MESSAGES && debugLogFn) {
       debugLogFn(...args);
     }
   }
 
   function logAutoFriendRequest(...args) {
     if (
-      debugFlags | DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES &&
+      debugFlags & DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES &&
       debugLogFn
     ) {
       debugLogFn(...args);
@@ -66,7 +59,7 @@
 
   function logNormalFriendRequest(...args) {
     if (
-      debugFlags | DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES &&
+      debugFlags & DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES &&
       debugLogFn
     ) {
       debugLogFn(...args);
@@ -74,13 +67,13 @@
   }
 
   function logSessionRequest(...args) {
-    if (debugFlags | DebugFlagsEnum.SESSION_REQUEST_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_REQUEST_MESSAGES && debugLogFn) {
       debugLogFn(...args);
     }
   }
 
   function logBackgroundMessage(...args) {
-    if (debugFlags | DebugFlagsEnum.SESSION_BACKGROUND_MESSAGE && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_BACKGROUND_MESSAGE && debugLogFn) {
       debugLogFn(...args);
     }
   }
@@ -175,7 +168,6 @@
     return result;
   }
   async function createContactSyncProtoMessage(sessionContacts) {
-
     if (sessionContacts.length === 0) {
       return null;
     }

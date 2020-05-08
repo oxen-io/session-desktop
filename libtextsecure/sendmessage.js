@@ -667,6 +667,9 @@ MessageSender.prototype = {
     const sessionContacts = conversations.filter(
       c => c.isPrivate() && !c.isSecondaryDevice() && c.isFriend()
     );
+    if (sessionContacts.length === 0) {
+      return Promise.resolve();
+    }
     // We need to sync across 3 contacts at a time
     // This is to avoid hitting storage server limit
     const chunked = _.chunk(sessionContacts, 3);
