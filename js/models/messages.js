@@ -161,9 +161,9 @@
       }
     },
     isEndSession() {
-      const flag = textsecure.protobuf.DataMessage.Flags.END_SESSION;
+      const endSessionFlag = textsecure.protobuf.DataMessage.Flags.END_SESSION;
       // eslint-disable-next-line no-bitwise
-      return !!(this.get('flags') & flag);
+      return !!(this.get('flags') & endSessionFlag);
     },
     getEndSessionTranslationKey() {
       const sessionType = this.get('endSessionType');
@@ -175,10 +175,10 @@
       return 'sessionEnded';
     },
     isExpirationTimerUpdate() {
-      const flag =
+      const expirationTimerFlag =
         textsecure.protobuf.DataMessage.Flags.EXPIRATION_TIMER_UPDATE;
       // eslint-disable-next-line no-bitwise
-      return !!(this.get('flags') & flag);
+      return !!(this.get('flags') & expirationTimerFlag);
     },
     isGroupUpdate() {
       return !!this.get('group_update');
@@ -291,11 +291,14 @@
       return !!this.get('groupInvitation');
     },
     isSessionRestoration() {
-      const flag = textsecure.protobuf.DataMessage.Flags.SESSION_RESTORE;
-      // eslint-disable-next-line no-bitwise
-      const sessionRestoreFlag = !!(this.get('flags') & flag);
-
-      return !!this.get('sessionRestoration') || sessionRestoreFlag;
+      const sessionRestoreFlag =
+        textsecure.protobuf.DataMessage.Flags.SESSION_RESTORE;
+      /* eslint-disable no-bitwise */
+      return (
+        !!this.get('sessionRestoration') ||
+        !!(this.get('flags') & sessionRestoreFlag)
+      );
+      /* eslint-enable no-bitwise */
     },
     getNotificationText() {
       const description = this.getDescription();
@@ -2186,15 +2189,20 @@
        * A session request message is a friend-request message with the flag
        * SESSION_REQUEST set to true.
        */
-      const flag = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
-      // eslint-disable-next-line no-bitwise
-      if (message.isFriendRequest() && !!(initialMessage.flags & flag)) {
+      const sessionRequestFlag =
+        textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
+      /* eslint-disable no-bitwise */
+      if (
+        message.isFriendRequest() &&
+        !!(initialMessage.flags & sessionRequestFlag)
+      ) {
         await this.handleSessionRequest(source, primarySource, confirm);
 
         // Wether or not we accepted the FR, we exit early so session requests
         // cannot be used for establishing regular private conversations
         return null;
       }
+      /* eslint-enable no-bitwise */
 
       // Session request have been dealt with before, so a friend request here is
       // not a session request message. Also, handleAutoFriendRequestMessage() only handles the autoAccept logic of an auto friend request.
