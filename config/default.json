@@ -23,7 +23,7 @@
     }
   ],
   "updatesEnabled": false,
-  "openDevTools": false,
+  "openDevTools": true,
   "buildExpiration": 0,
   "commitHash": "",
   "certificateAuthority":

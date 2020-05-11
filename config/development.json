@@ -9,6 +9,5 @@
       "port": "38157"
     }
   ],
-  "openDevTools": true,
   "defaultPublicChatServer": "https://chat-dev.lokinet.org/"
 }

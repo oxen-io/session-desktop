@@ -1,3 +1,4 @@
 {
-  "updatesEnabled": true
+  "updatesEnabled": true,
+  "openDevTools": false
 }

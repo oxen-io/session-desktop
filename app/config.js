@@ -19,16 +19,12 @@ process.env.NODE_CONFIG_DIR = path.join(__dirname, '..', 'config');
 if (environment === 'production') {
   // harden production config against the local env
   process.env.NODE_CONFIG = '';
-  process.env.NODE_CONFIG_STRICT_MODE = !isDevelopment;
+  process.env.NODE_CONFIG_STRICT_MODE = true;
   process.env.HOSTNAME = '';
   process.env.ALLOW_CONFIG_MUTATIONS = '';
   process.env.SUPPRESS_NO_CONFIG_WARNING = '';
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '';
-
-  // We could be running againt production but still be in dev mode, we need to handle that
-  if (!isDevelopment) {
-    process.env.NODE_APP_INSTANCE = '';
-  }
+  process.env.NODE_APP_INSTANCE = '';
 }
 
 // We load config after we've made our modifications to NODE_ENV
