@@ -20,38 +20,39 @@
 
   const debugFlags = DebugFlagsEnum.ALL;
 
-  // feel free to change this to window.console.warn to have a stack with all those logs
-  // disable loki logs
-  const debugLogFn = undefined; // window.console.warn
+
+  const debugLogFn = () => { };
+  // const debugLogFn = (...args) => {
+  //   window.console.warn(...args);
+  // };
 
   function logSessionMessageSending(...args) {
-    if (debugFlags & DebugFlagsEnum.SESSION_MESSAGE_SENDING && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_MESSAGE_SENDING) {
       debugLogFn(...args);
     }
   }
 
   function logGroupSync(...args) {
-    if (debugFlags & DebugFlagsEnum.GROUP_SYNC_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_SYNC_MESSAGES) {
       debugLogFn(...args);
     }
   }
 
   function logGroupRequestInfo(...args) {
-    if (debugFlags & DebugFlagsEnum.GROUP_REQUEST_INFO && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_REQUEST_INFO) {
       debugLogFn(...args);
     }
   }
 
   function logContactSync(...args) {
-    if (debugFlags & DebugFlagsEnum.GROUP_CONTACT_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.GROUP_CONTACT_MESSAGES) {
       debugLogFn(...args);
     }
   }
 
   function logAutoFriendRequest(...args) {
     if (
-      debugFlags & DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES &&
-      debugLogFn
+      debugFlags & DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES
     ) {
       debugLogFn(...args);
     }
@@ -59,21 +60,20 @@
 
   function logNormalFriendRequest(...args) {
     if (
-      debugFlags & DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES &&
-      debugLogFn
+      debugFlags & DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES
     ) {
       debugLogFn(...args);
     }
   }
 
   function logSessionRequest(...args) {
-    if (debugFlags & DebugFlagsEnum.SESSION_REQUEST_MESSAGES && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_REQUEST_MESSAGES) {
       debugLogFn(...args);
     }
   }
 
   function logBackgroundMessage(...args) {
-    if (debugFlags & DebugFlagsEnum.SESSION_BACKGROUND_MESSAGE && debugLogFn) {
+    if (debugFlags & DebugFlagsEnum.SESSION_BACKGROUND_MESSAGE) {
       debugLogFn(...args);
     }
   }
