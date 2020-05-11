@@ -287,15 +287,6 @@
       // FIXME exclude session request to be seen as a session request
       return this.get('type') === 'friend-request';
     },
-    /**
-     * A session request message is a friend-request message with the flag
-     * SESSION_REQUEST set to true.
-     */
-    isSessionRequest() {
-      const flag = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
-      // eslint-disable-next-line no-bitwise
-      return this.isFriendRequest() && !!(this.get('flags') & flag);
-    },
     isGroupInvitation() {
       return !!this.get('groupInvitation');
     },
@@ -2191,8 +2182,12 @@
         // Show that the session reset is "in progress" even though we had a valid session
         this.set({ endSessionType: 'ongoing' });
       }
-
-      if (message.isSessionRequest()) {
+      /**
+       * A session request message is a friend-request message with the flag
+       * SESSION_REQUEST set to true.
+       */
+      const flag = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
+      if (message.isFriendRequest() && !!(initialMessage.flags & flag)) {
         await this.handleSessionRequest(source, primarySource, confirm);
 
         // Wether or not we accepted the FR, we exit early so session requests
