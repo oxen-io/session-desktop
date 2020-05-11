@@ -20,11 +20,12 @@
 
   const debugFlags = DebugFlagsEnum.ALL;
 
-
-  const debugLogFn = () => { };
-  // const debugLogFn = (...args) => {
-  //   window.console.warn(...args);
-  // };
+  const debugLogFn = (...args) => {
+    if (true) {
+      // process.env.NODE_ENV.includes('test-integration') ||
+      window.console.warn(...args);
+    }
+  };
 
   function logSessionMessageSending(...args) {
     if (debugFlags & DebugFlagsEnum.SESSION_MESSAGE_SENDING) {
@@ -51,17 +52,13 @@
   }
 
   function logAutoFriendRequest(...args) {
-    if (
-      debugFlags & DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES
-    ) {
+    if (debugFlags & DebugFlagsEnum.AUTO_FRIEND_REQUEST_MESSAGES) {
       debugLogFn(...args);
     }
   }
 
   function logNormalFriendRequest(...args) {
-    if (
-      debugFlags & DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES
-    ) {
+    if (debugFlags & DebugFlagsEnum.NORMAL_FRIEND_REQUEST_MESSAGES) {
       debugLogFn(...args);
     }
   }

@@ -2187,6 +2187,7 @@
        * SESSION_REQUEST set to true.
        */
       const flag = textsecure.protobuf.DataMessage.Flags.SESSION_REQUEST;
+      // eslint-disable-next-line no-bitwise
       if (message.isFriendRequest() && !!(initialMessage.flags & flag)) {
         await this.handleSessionRequest(source, primarySource, confirm);
 
