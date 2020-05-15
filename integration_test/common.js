@@ -29,19 +29,19 @@ module.exports = {
     'faxed mechanic mocked agony unrest loincloth pencil eccentric boyfriend oasis speedy ribbon faxed',
   TEST_PUBKEY1:
     '0552b85a43fb992f6bdb122a5a379505a0b99a16f0628ab8840249e2a60e12a413',
-  TEST_DISPLAY_NAME1: 'integration_tester_1',
+  TEST_DISPLAY_NAME1: 'tester_Alice',
 
   TEST_MNEMONIC2:
     'guide inbound jerseys bays nouns basin sulking awkward stockpile ostrich ascend pylons ascend',
   TEST_PUBKEY2:
     '054e1ca8681082dbd9aad1cf6fc89a32254e15cba50c75b5a73ac10a0b96bcbd2a',
-  TEST_DISPLAY_NAME2: 'integration_tester_2',
+  TEST_DISPLAY_NAME2: 'tester_Bob',
 
   TEST_MNEMONIC3:
     'alpine lukewarm oncoming blender kiwi fuel lobster upkeep vogue simplest gasp fully simplest',
   TEST_PUBKEY3:
     '05f8662b6e83da5a31007cc3ded44c601f191e07999acb6db2314a896048d9036c',
-  TEST_DISPLAY_NAME3: 'integration_tester_3',
+  TEST_DISPLAY_NAME3: 'tester_Charlie',
 
   /* **************  OPEN GROUPS  ****************** */
   VALID_GROUP_URL: 'https://chat.getsession.org',
@@ -311,6 +311,9 @@ module.exports = {
   },
 
   async addFriendToNewClosedGroup(app, app2) {
+    await app.client.element(ConversationPage.globeButtonSection).click();
+    await app.client.element(ConversationPage.createClosedGroupButton).click();
+
     await this.setValueWrapper(
       app,
       ConversationPage.closedGroupNameTextarea,
@@ -386,7 +389,7 @@ module.exports = {
       .click();
   },
 
-  async linkApp2ToApp(app1, app2) {
+  async linkApp2ToApp(app1, app2, app1Pubkey) {
     // app needs to be logged in as user1 and app2 needs to be logged out
     // start the pairing dialog for the first app
     await app1.client.element(SettingsPage.settingsButtonSection).click();
@@ -411,20 +414,19 @@ module.exports = {
     await this.setValueWrapper(
       app2,
       RegistrationPage.textareaLinkDevicePubkey,
-      this.TEST_PUBKEY1
+      app1Pubkey
     );
     await app2.client.element(RegistrationPage.linkDeviceTriggerButton).click();
-    await app1.client.waitForExist(RegistrationPage.toastWrapper, 7000);
-    let secretWordsapp1 = await app1.client
-      .element(RegistrationPage.secretToastDescription)
+    await app1.client.waitForExist(SettingsPage.secretWordsTextInDialog, 7000);
+    const secretWordsapp1 = await app1.client
+      .element(SettingsPage.secretWordsTextInDialog)
       .getText();
-    secretWordsapp1 = secretWordsapp1.split(': ')[1];
-
     await app2.client.waitForExist(RegistrationPage.toastWrapper, 6000);
     await app2.client
       .element(RegistrationPage.secretToastDescription)
       .getText()
       .should.eventually.be.equal(secretWordsapp1);
+
     await app1.client.element(ConversationPage.allowPairingButton).click();
     await app1.client.element(ConversationPage.okButton).click();
     // validate device paired in settings list with correct secrets
@@ -447,7 +449,7 @@ module.exports = {
     // validate primary pubkey of app2 is the same that in app1
     await app2.webContents
       .executeJavaScript("window.storage.get('primaryDevicePubKey')")
-      .should.eventually.be.equal(this.TEST_PUBKEY1);
+      .should.eventually.be.equal(app1Pubkey);
   },
 
   async triggerUnlinkApp2FromApp(app1, app2) {
@@ -455,9 +457,9 @@ module.exports = {
     await app2.client.isExisting(RegistrationPage.conversationListContainer)
       .should.eventually.be.true;
 
-    await app1.client.element(ConversationPage.settingsButtonSection).click();
+    await app1.client.element(SettingsPage.settingsButtonSection).click();
     await app1.client
-      .element(ConversationPage.settingsRowWithText('Devices'))
+      .element(SettingsPage.settingsRowWithText('Devices'))
       .click();
     await app1.client.isExisting(ConversationPage.linkDeviceButtonDisabled)
       .should.eventually.be.true;
@@ -564,6 +566,40 @@ module.exports = {
     } else {
       this.messages = {};
     }
+  },
+
+  async joinOpenGroup(app, openGroupUrl, name) {
+    await app.client.element(ConversationPage.globeButtonSection).click();
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+
+    await this.setValueWrapper(
+      app,
+      ConversationPage.openGroupInputUrl,
+      openGroupUrl
+    );
+    await app.client
+      .element(ConversationPage.openGroupInputUrl)
+      .getValue()
+      .should.eventually.equal(openGroupUrl);
+    await app.client.element(ConversationPage.joinOpenGroupButton).click();
+
+    // validate session loader is shown
+    await app.client.isExisting(ConversationPage.sessionLoader).should
+      .eventually.be.true;
+    // account for slow home internet connection delays...
+    await app.client.waitForExist(
+      ConversationPage.sessionToastJoinOpenGroupSuccess,
+      60 * 1000
+    );
+
+    // validate overlay is closed
+    await app.client.isExisting(ConversationPage.leftPaneOverlay).should
+      .eventually.be.false;
+
+    // validate open chat has been added
+    await app.client.isExisting(
+      ConversationPage.rowOpenGroupConversationName(name)
+    ).should.eventually.be.true;
   },
 
   async stopStubSnodeServer() {

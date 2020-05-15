@@ -59,7 +59,7 @@ function MessageReceiver(username, password, signalingKey, options = {}) {
       openGroupBound = true;
     }
   } else {
-    window.log.error('Can not handle open group data, API is not available');
+    window.log.warn('Can not handle open group data, API is not available');
   }
 }
 
@@ -1501,7 +1501,7 @@ MessageReceiver.prototype.extend({
     const ourNumber = textsecure.storage.user.getNumber();
     const ourPrimaryNumber = window.storage.get('primaryDevicePubKey');
     const ourOtherDevices = await libloki.storage.getAllDevicePubKeysForPrimaryPubKey(
-      window.storage.get('primaryDevicePubKey')
+      ourPrimaryNumber
     );
     const ourDevices = new Set([
       ourNumber,
@@ -1687,6 +1687,7 @@ MessageReceiver.prototype.extend({
   isBlocked(number) {
     return textsecure.storage.get('blocked', []).indexOf(number) >= 0;
   },
+
   cleanAttachment(attachment) {
     return {
       ..._.omit(attachment, 'thumbnail'),
