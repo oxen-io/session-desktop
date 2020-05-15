@@ -18,18 +18,16 @@ describe('Add friends', function() {
     const app1Props = {
       mnemonic: common.TEST_MNEMONIC1,
       displayName: common.TEST_DISPLAY_NAME1,
-      stubSnode: true,
     };
 
     const app2Props = {
       mnemonic: common.TEST_MNEMONIC2,
       displayName: common.TEST_DISPLAY_NAME2,
-      stubSnode: true,
     };
 
     [app, app2] = await Promise.all([
       common.startAndStub(app1Props),
-      common.startAndStub2(app2Props),
+      common.startAndStubN(app2Props, 2),
     ]);
   });
 

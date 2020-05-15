@@ -184,20 +184,11 @@ module.exports = {
   async startAndStub({
     mnemonic,
     displayName,
-    stubSnode = false,
-    stubOpenGroups = false,
     env = 'test-integration-session',
   }) {
     const app = await this.startAndAssureCleanedApp(env);
 
-    if (stubSnode) {
-      await this.startStubSnodeServer();
-      this.stubSnodeCalls(app);
-    }
-
-    if (stubOpenGroups) {
-      this.stubOpenGroupsCalls(app);
-    }
+    await this.startStubSnodeServer();
 
     if (mnemonic && displayName) {
       await this.restoreFromMnemonic(app, mnemonic, displayName);
@@ -246,13 +237,11 @@ module.exports = {
     const app1Props = {
       mnemonic: this.TEST_MNEMONIC1,
       displayName: this.TEST_DISPLAY_NAME1,
-      stubSnode: true,
     };
 
     const app2Props = {
       mnemonic: this.TEST_MNEMONIC2,
       displayName: this.TEST_DISPLAY_NAME2,
-      stubSnode: true,
     };
 
     const [app1, app2] = await Promise.all([
@@ -532,23 +521,6 @@ module.exports = {
 
   generateSendMessageText: () =>
     `Test message from integration tests ${Date.now()}`,
-
-  stubOpenGroupsCalls: app1 => {
-    app1.webContents.executeJavaScript(
-      'window.LokiAppDotNetServerAPI = window.StubAppDotNetAPI;'
-    );
-  },
-
-  stubSnodeCalls(app1) {
-    app1.webContents.executeJavaScript(
-      'window.LokiMessageAPI = window.StubMessageAPI;'
-    );
-  },
-
-  logsContainsString: async (app1, str) => {
-    const logs = JSON.stringify(await app1.client.getRenderProcessLogs());
-    return logs.includes(str);
-  },
 
   async startStubSnodeServer() {
     if (!this.stubSnode) {

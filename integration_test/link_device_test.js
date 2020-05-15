@@ -18,12 +18,9 @@ describe('Link Device', function() {
     const app1Props = {
       mnemonic: common.TEST_MNEMONIC1,
       displayName: common.TEST_DISPLAY_NAME1,
-      stubSnode: true,
     };
 
-    const app2Props = {
-      stubSnode: true,
-    };
+    const app2Props = {};
 
     [app, app2] = await Promise.all([
       common.startAndStub(app1Props),

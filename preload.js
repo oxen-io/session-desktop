@@ -151,7 +151,7 @@ window.open = () => null;
 window.eval = global.eval = () => null;
 
 window.drawAttention = () => {
-  // window.log.info('draw attention');
+  // window.log.debug('draw attention');
   ipc.send('draw-attention');
 };
 window.showWindow = () => {
@@ -324,15 +324,30 @@ window.lokiSnodeAPI = new LokiSnodeAPI({
   localUrl: config.localUrl,
 });
 
-window.LokiMessageAPI = require('./js/modules/loki_message_api');
-
 if (process.env.USE_STUBBED_NETWORK) {
-  window.StubMessageAPI = require('./integration_test/stubs/stub_message_api');
-  window.StubAppDotNetApi = require('./integration_test/stubs/stub_app_dot_net_api');
+  const StubMessageAPI = require('./integration_test/stubs/stub_message_api');
+  window.LokiMessageAPI = StubMessageAPI;
+
+  const StubAppDotNetAPI = require('./integration_test/stubs/stub_app_dot_net_api');
+  window.LokiAppDotNetServerAPI = StubAppDotNetAPI;
+
+  const StubSnodeAPI = require('./integration_test/stubs/stub_snode_api');
+
+  window.lokiSnodeAPI = new StubSnodeAPI({
+    serverUrl: config.serverUrl,
+    localUrl: config.localUrl,
+  });
+} else {
+  window.lokiSnodeAPI = new LokiSnodeAPI({
+    serverUrl: config.serverUrl,
+    localUrl: config.localUrl,
+  });
+
+  window.LokiMessageAPI = require('./js/modules/loki_message_api');
+
+  window.LokiAppDotNetServerAPI = require('./js/modules/loki_app_dot_net_api');
 }
 window.LokiPublicChatAPI = require('./js/modules/loki_public_chat_api');
-
-window.LokiAppDotNetServerAPI = require('./js/modules/loki_app_dot_net_api');
 
 window.LokiFileServerAPI = require('./js/modules/loki_file_server_api');
 
@@ -427,7 +442,8 @@ Promise.prototype.ignore = function() {
 
 if (
   config.environment.includes('test') &&
-  !config.environment.includes('swarm-testing')
+  !config.environment.includes('swarm-testing') &&
+  !config.environment.includes('test-integration')
 ) {
   const isWindows = process.platform === 'win32';
   /* eslint-disable global-require, import/no-extraneous-dependencies */
@@ -449,5 +465,6 @@ if (config.environment.includes('test-integration')) {
     multiDeviceUnpairing: true,
     privateGroupChats: true,
     useSnodeProxy: !process.env.USE_STUBBED_NETWORK,
+    useOnionRequests: false,
   };
 }
