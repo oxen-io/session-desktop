@@ -560,7 +560,7 @@ module.exports = {
         if (pubkey) {
           if (request.method === 'POST') {
             if (ENABLE_LOG) {
-              console.warn('POST', [data, timestamp]);
+              console.warn('POST for', pubkey, [data, timestamp]);
             }
 
             let ori = this.messages[pubkey];
@@ -570,18 +570,19 @@ module.exports = {
 
             this.messages[pubkey] = [...ori, { data, timestamp }];
 
-            response.writeHead(200, { 'Content-Type': 'text/html' });
+            response.writeHead(200, { 'Content-Type': 'application/json' });
             response.end();
           } else {
-            const retrievedMessages = { messages: this.messages[pubkey] };
+            const messages = this.messages[pubkey] || [];
+            const retrievedMessages = { messages };
             if (ENABLE_LOG) {
-              console.warn('GET', pubkey, retrievedMessages);
+              console.warn('GET for', pubkey, retrievedMessages);
             }
-            if (this.messages[pubkey]) {
-              response.writeHead(200, { 'Content-Type': 'application/json' });
-              response.write(JSON.stringify(retrievedMessages));
-              this.messages[pubkey] = [];
-            }
+            response.writeHead(200, { 'Content-Type': 'application/json' });
+
+            response.write(JSON.stringify(retrievedMessages));
+            this.messages[pubkey] = [];
+
             response.end();
           }
         }
@@ -597,6 +598,32 @@ module.exports = {
     if (this.stubSnode) {
       this.stubSnode.close();
       this.stubSnode = null;
+    }
+  },
+
+  /**
+   * Search for a string in logs
+   * @param {*} app the render logs to search in
+   * @param {*} str the string to search (not regex)
+   * Note: getRenderProcessLogs() clears the app logs each calls.
+   */
+  async logsContains(renderLogs, str, count = undefined) {
+    const foundLines = renderLogs.filter(log => log.message.includes(str));
+
+    // eslint-disable-next-line no-unused-expressions
+    chai.expect(
+      foundLines.length > 0,
+      `'${str}' not found in logs but was expected`
+    ).to.be.true;
+
+    if (count) {
+      // eslint-disable-next-line no-unused-expressions
+      chai
+        .expect(
+          foundLines.length,
+          `'${str}' found but not the correct number of times`
+        )
+        .to.be.equal(count);
     }
   },
 
