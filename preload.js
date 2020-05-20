@@ -151,7 +151,7 @@ window.open = () => null;
 window.eval = global.eval = () => null;
 
 window.drawAttention = () => {
-  window.log.info('draw attention');
+  // window.log.info('draw attention');
   ipc.send('draw-attention');
 };
 window.showWindow = () => {
@@ -316,6 +316,8 @@ window.WebAPI = initializeWebAPI();
 
 window.seedNodeList = JSON.parse(config.seedNodeList);
 const LokiSnodeAPI = require('./js/modules/loki_snode_api');
+
+window.SenderKeyAPI = require('./js/modules/loki_sender_key_api');
 
 window.lokiSnodeAPI = new LokiSnodeAPI({
   serverUrl: config.serverUrl,
