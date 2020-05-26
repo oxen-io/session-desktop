@@ -1,5 +1,5 @@
 import { MessageQueueInterface } from './MessageQueueInterface';
-import { OpenGroupMessage, OutgoingContentMessage } from '../messages/outgoing';
+import { ContentMessage, OpenGroupMessage } from '../messages/outgoing';
 import { JobQueue } from '../utils/JobQueue';
 import { PendingMessageCache } from './PendingMessageCache';
 
@@ -12,20 +12,32 @@ export class MessageQueue implements MessageQueueInterface {
     this.processAllPending();
   }
 
-  public sendUsingMultiDevice(user: string, message: OutgoingContentMessage) {
+  public sendUsingMultiDevice(user: string, message: ContentMessage) {
     throw new Error('Method not implemented.');
   }
-  public send(device: string, message: OutgoingContentMessage) {
-    throw new Error('Method not implemented.');
+  // public send(device: string, message: ContentMessage) {
+  // Changed message type for testing
+  public send(device: string, message: any) {
+    // throw new Error('Method not implemented.');
+
+    // Validation; early exists?
+
+    // TESTING
+    this.queue(device, message);
+
+    // Add it to the queue!
   }
-  public sendToGroup(message: OutgoingContentMessage | OpenGroupMessage) {
+  public sendToGroup(message: ContentMessage | OpenGroupMessage) {
     throw new Error('Method not implemented.');
+
+    // If you see an open group message just call
+    // MessageSender.sendToOpenGroup directly.
   }
-  public sendSyncMessage(message: OutgoingContentMessage) {
+  public sendSyncMessage(message: ContentMessagWWe) {
     throw new Error('Method not implemented.');
   }
 
-  public processPending(device: string) {
+  public async processPending(device: string) {
     // TODO: implement
   }
 
@@ -33,8 +45,26 @@ export class MessageQueue implements MessageQueueInterface {
     // TODO: Get all devices which are pending here
   }
 
-  private queue(device: string, message: OutgoingContentMessage) {
+  private queue(device: string, message: ContentMessage) {
     // TODO: implement
+
+    // Add the item to the queue
+    const pubKey = window.textsecure.storage.user.getNumber();
+
+    const queue = this.getJobQueue(pubKey);
+
+    const job = new Promise(resolve => {
+      setTimeout(() => {
+        console.log('[vince] FINISHED!!:');
+        resolve();
+      }, 8000);
+    });
+
+    // tslint:disable-next-line: no-floating-promises
+    queue.add(async () => job);
+
+
+    
   }
 
   private queueOpenGroupMessage(message: OpenGroupMessage) {

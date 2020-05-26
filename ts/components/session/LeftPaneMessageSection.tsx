@@ -27,6 +27,10 @@ import {
 import { SessionSpinner } from './SessionSpinner';
 import { joinChannelStateManager } from './LeftPaneChannelSection';
 
+// HIJACKING BUTTON FOR TESTING
+import { MessageQueue } from '../../session/sending';
+import { ContentMessage } from '../../session/messages/outgoing';
+
 export interface Props {
   searchTerm: string;
   isSecondaryDevice: boolean;
@@ -44,6 +48,8 @@ export interface Props {
 export class LeftPaneMessageSection extends React.Component<Props, any> {
   private readonly updateSearchBound: (searchedString: string) => void;
   private readonly debouncedSearch: (searchTerm: string) => void;
+
+  private readonly messageQueue: any;
 
   public constructor(props: Props) {
     super(props);
@@ -82,6 +88,12 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
     this.handleOnPasteSessionID = this.handleOnPasteSessionID.bind(this);
     this.handleMessageButtonClick = this.handleMessageButtonClick.bind(this);
     this.debouncedSearch = debounce(this.search.bind(this), 20);
+
+    
+    // HIJACKING FOR TESTING
+    this.messageQueue = new MessageQueue();
+
+
   }
 
   public componentWillUnmount() {
@@ -362,11 +374,18 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
   }
 
   private handleToggleOverlay() {
-    this.setState((state: any) => {
-      return { showComposeView: !state.showComposeView };
-    });
-    // empty our generalized searchedString (one for the whole app)
-    this.updateSearch('');
+    // HIJACKING BUTTON FOR TESTING
+    const pubkey = window.textsecure.storage.user.getNumber();
+
+    this.messageQueue.send(pubkey);
+    console.log('[vince] this.messageQueue:', this.messageQueue);
+
+    
+    // this.setState((state: any) => {
+    //   return { showComposeView: !state.showComposeView };
+    // });
+    // // empty our generalized searchedString (one for the whole app)
+    // this.updateSearch('');
   }
 
   private handleOnPasteSessionID(value: string) {
