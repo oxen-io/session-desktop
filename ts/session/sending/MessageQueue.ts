@@ -1,19 +1,23 @@
-import { MessageQueueInterface } from './MessageQueueInterface';
+import { EventEmitter } from 'events';
+import {
+  MessageQueueInterface,
+  MessageQueueInterfaceEvents,
+} from './MessageQueueInterface';
 import { ContentMessage, OpenGroupMessage } from '../messages/outgoing';
-import { JobQueue } from '../utils/JobQueue';
 import { PendingMessageCache } from './PendingMessageCache';
+import { JobQueue, TypedEventEmitter } from '../utils';
 
 
 // Used for ExampleMessage
 import { v4 as uuid } from 'uuid';
 import { SignalService } from '../../protobuf';
 
-const timestamp = Date.now();
-const identifier = uuid();
-
 export class ExampleMessage extends ContentMessage {
   constructor() {
-    super({timestamp, identifier});
+    super({
+      timestamp: Math.floor(Math.random() * 10000000000000),
+      identifier: uuid(),
+    });
   }
 
   public ttl(): number {
@@ -32,10 +36,12 @@ export class ExampleMessage extends ContentMessage {
 }
 
 export class MessageQueue implements MessageQueueInterface {
+  public readonly events: TypedEventEmitter<MessageQueueInterfaceEvents>;
   private readonly jobQueues: Map<string, JobQueue> = new Map();
   private readonly cache: PendingMessageCache;
 
   constructor() {
+    this.events = new EventEmitter();
     this.cache = new PendingMessageCache();
     this.processAllPending();
   }

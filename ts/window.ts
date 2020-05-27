@@ -12,6 +12,9 @@ declare global {
     LokiAppDotNetServerAPI: any;
     LokiFileServerAPI: any;
     LokiRssAPI: any;
+
+    // TODO: Extend from global.d.ts
+    storage: any;
   }
 }
 

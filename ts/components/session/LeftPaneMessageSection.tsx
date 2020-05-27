@@ -51,7 +51,9 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
   private readonly updateSearchBound: (searchedString: string) => void;
   private readonly debouncedSearch: (searchTerm: string) => void;
 
+  // HIJACKED FOR TESTING
   private readonly messageQueue: any;
+  private readonly pendingMessageCache: any;
 
   public constructor(props: Props) {
     super(props);
@@ -91,11 +93,10 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
     this.handleMessageButtonClick = this.handleMessageButtonClick.bind(this);
     this.debouncedSearch = debounce(this.search.bind(this), 20);
 
-    
+
     // HIJACKING FOR TESTING
     this.messageQueue = new MessageQueue();
-
-
+    this.pendingMessageCache = new PendingMessageCache();
   }
 
   public componentWillUnmount() {
@@ -377,19 +378,19 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
 
   private async handleToggleOverlay() {
     // HIJACKING BUTTON FOR TESTING
-    const pendingMessageCache = new PendingMessageCache();
-    const pendingMessagesFromLeftPane = await pendingMessageCache.getPendingMessages();
+    const pendingMessagesFromLeftPane = 5;
 
-    
+    console.log('[vince] pendingMessageCache:', this.pendingMessageCache);
 
     const pubkey = window.textsecure.storage.user.getNumber();
 
     const exampleMessage = new ExampleMessage();
-    this.messageQueue.send(pubkey, exampleMessage);
 
-    console.log('[vince] this.messageQueue:', this.messageQueue);
+    console.log('[vince] exampleMessage:', exampleMessage);
 
-    
+    this.pendingMessageCache.addPendingMessage(pubkey, exampleMessage);
+
+
     // this.setState((state: any) => {
     //   return { showComposeView: !state.showComposeView };
     // });

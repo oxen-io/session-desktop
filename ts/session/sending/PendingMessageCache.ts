@@ -1,7 +1,9 @@
 import { RawMessage } from '../types/RawMessage';
 import { ContentMessage } from '../messages/outgoing';
+import { EncryptionType } from '../types/EncryptionType';
 
 import { storage } from '../../window';
+import { createOrUpdatePairingAuthorisation } from '../../../js/modules/data';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
 
@@ -17,23 +19,61 @@ export class PendingMessageCache {
   private readonly cachedMessages: Array<RawMessage> = [];
 
   constructor() {
-    // TODO: We should load pending messages from db here
-    this.cachedMessages = this.getPendingMessages();
+    // Load pending messages from the database
+    this.getPendingMessagesFromStorage().then(messages => {
+      this.cachedMessages.push(...messages);
+
+      console.log('[vince] this.cachedMessages:', this.cachedMessages);
+    }).catch();
+    
   }
 
   public addPendingMessage(
     device: string,
     message: ContentMessage
   ): RawMessage {
-    // TODO: Maybe have a util for converting OutgoingContentMessage to RawMessage?
+    // TODO: Maybe have a util for converting ContentMessage to RawMessage?
     // TODO: Raw message has uuid, how are we going to set that? maybe use a different identifier?
     // One could be device + timestamp would make a unique identifier
     // TODO: Return previous pending message if it exists
-    return {} as RawMessage;
+    
+    const rawMessage = this.toRawMessage(device, message);
+
+    const pendingForDevice = this.getPendingMessagesForDevice(device);
+    const previousPendingMessage = pendingForDevice.length
+      // TODO; ensure this is the most recent message with timestamp
+      ? pendingForDevice[0]
+      : {} as RawMessage;
+
+    // Does it exist in cache already?
+    if (this.cachedMessages.find(m => m.identifier === rawMessage.identifier)) {
+      return previousPendingMessage;
+    }
+
+    this.cachedMessages.push(rawMessage);
+    this.syncCacheWithDB();
+
+    return previousPendingMessage;
   }
 
-  public removePendingMessage(message: RawMessage) {
-    // TODO: implement
+  public removePendingMessage(message: RawMessage): Boolean {
+    // Return false if message doesn't exist in cache
+    if (this.cachedMessages.find(m => m.identifier === message.identifier)) {
+      return false;
+    }
+
+    // Rewrite cache with message removed
+    const updatedCache = this.cachedMessages.filter(m => m.identifier !== message.identifier);
+    this.cachedMessages.length = 0;
+    this.cachedMessages.push(...updatedCache);
+
+    this.syncCacheWithDB();
+
+    return true;
+  }
+
+  public removePendingMessageByIdentifier(identifier: string) {
+    return;
   }
 
   public getPendingDevices(): Array<String> {
@@ -41,9 +81,9 @@ export class PendingMessageCache {
     return [];
   }
 
-  public async getPendingMessages(): Promise<Array<RawMessage>> {
+  public async getPendingMessagesFromStorage(): Promise<Array<RawMessage>> {
     // tslint:disable-next-line: no-backbone-get-set-outside-model
-    const encodedPendingMessages = storage.get('pendingMessages');
+    const encodedPendingMessages = await window.storage.get('pendingMessages');
 
     // tslint:disable-next-line: no-unnecessary-local-variable
     const pendingMessages = encodedPendingMessages
@@ -54,11 +94,42 @@ export class PendingMessageCache {
   }
 
   public getPendingMessagesForDevice(device: string): Array<RawMessage> {
+    const cachedMessages = this.cachedMessages;
+
+    cachedMessages
+
+
     return [];
   }
 
-  private syncPendingMessages() {
-    // Sync cache with db
-    return;
+  public toRawMessage(device: string, message: ContentMessage): RawMessage {
+    // const plainTextBuffer = new Uint8Array();
+    const timestamp = message.ttl();
+    const plainTextBuffer = message.plainTextBuffer();
+
+    // tslint:disable-next-line: no-unnecessary-local-variable
+    const rawMessage: RawMessage = {
+      identifier: 'dfgdrgsdf',
+      plainTextBuffer,
+      timestamp,
+      device,
+      ttl: 345345345,
+      encryption: EncryptionType.Signal,
+    };
+
+    return rawMessage;
+  }
+
+  private async syncCacheWithDB() {
+    // Only call when adding / removing from cache.
+    const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
+    await window.storage.put('pendingMessages', encodedPendingMessages);
+
+    // testing
+    // tslint:disable-next-line: no-backbone-get-set-outside-model
+    const db = await window.storage.get('pendingMessages');
+    console.log('[vince] Updated storage:', db);
+
+    // TOOD: Is there any way this can fail? If so, make it return Boolean to catch
   }
 }
