@@ -28,8 +28,10 @@ import { SessionSpinner } from './SessionSpinner';
 import { joinChannelStateManager } from './LeftPaneChannelSection';
 
 // HIJACKING BUTTON FOR TESTING
+import { PendingMessageCache } from '../../session/sending/PendingMessageCache';
 import { MessageQueue } from '../../session/sending';
-import { ContentMessage } from '../../session/messages/outgoing';
+import { ExampleMessage } from '../../session/sending/MessageQueue';
+
 
 export interface Props {
   searchTerm: string;
@@ -373,11 +375,18 @@ export class LeftPaneMessageSection extends React.Component<Props, any> {
     );
   }
 
-  private handleToggleOverlay() {
+  private async handleToggleOverlay() {
     // HIJACKING BUTTON FOR TESTING
+    const pendingMessageCache = new PendingMessageCache();
+    const pendingMessagesFromLeftPane = await pendingMessageCache.getPendingMessages();
+
+    
+
     const pubkey = window.textsecure.storage.user.getNumber();
 
-    this.messageQueue.send(pubkey);
+    const exampleMessage = new ExampleMessage();
+    this.messageQueue.send(pubkey, exampleMessage);
+
     console.log('[vince] this.messageQueue:', this.messageQueue);
 
     

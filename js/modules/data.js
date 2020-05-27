@@ -1253,6 +1253,10 @@ async function callChannel(name) {
 
 // Functions below here return plain JSON instead of Backbone Models
 
+async function getPendingMessagesCache(){
+  
+}
+
 async function getLegacyMessagesNeedingUpgrade(
   limit,
   { maxVersion = MessageType.CURRENT_SCHEMA_VERSION }
