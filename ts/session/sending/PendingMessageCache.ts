@@ -23,9 +23,9 @@ export class PendingMessageCache {
     this.getPendingMessagesFromStorage().then(messages => {
       this.cachedMessages.push(...messages);
 
-      console.log('[vince] this.cachedMessages:', this.cachedMessages);
+      console.log('[vince] Cached from storage:', this.cachedMessages);
     }).catch();
-    
+
   }
 
   public addPendingMessage(
@@ -57,8 +57,10 @@ export class PendingMessageCache {
   }
 
   public removePendingMessage(message: RawMessage): Boolean {
+    // Should only be called after message is processed
+
     // Return false if message doesn't exist in cache
-    if (this.cachedMessages.find(m => m.identifier === message.identifier)) {
+    if (this.cachedMessages.find(m => m.identifier !== message.identifier)) {
       return false;
     }
 
@@ -66,69 +68,71 @@ export class PendingMessageCache {
     const updatedCache = this.cachedMessages.filter(m => m.identifier !== message.identifier);
     this.cachedMessages.length = 0;
     this.cachedMessages.push(...updatedCache);
-
     this.syncCacheWithDB();
 
     return true;
   }
 
   public removePendingMessageByIdentifier(identifier: string) {
-    return;
+    const message = this.cachedMessages.find(m => m.identifier === identifier);
+
+    return message
+      ? this.removePendingMessage(message)
+      : false;
   }
 
   public getPendingDevices(): Array<String> {
-    // TODO: this should return all devices which have pending messages
-    return [];
+    // Gets all devices with pending messages
+    return [...new Set(this.cachedMessages.map(m => m.device))];
   }
 
   public async getPendingMessagesFromStorage(): Promise<Array<RawMessage>> {
     // tslint:disable-next-line: no-backbone-get-set-outside-model
-    const encodedPendingMessages = await window.storage.get('pendingMessages');
+    const pendingMessagesJSON = await window.storage.get('pendingMessages');
 
     // tslint:disable-next-line: no-unnecessary-local-variable
-    const pendingMessages = encodedPendingMessages
-      ? JSON.parse(encodedPendingMessages)
+    const encodedPendingMessages = pendingMessagesJSON
+      ? JSON.parse(pendingMessagesJSON)
       : [];
+    
+    // Set encryption type
+    
 
-    return pendingMessages;
+
+    // TODO:
+    //    Construct encryption key to match EncryptionType
+    //    Build up Uint8Array from painTextBuffer in JSON
+    return encodedPendingMessages;
   }
 
   public getPendingMessagesForDevice(device: string): Array<RawMessage> {
-    const cachedMessages = this.cachedMessages;
-
-    cachedMessages
-
-
-    return [];
+    // TODO: Any cases in which this will break?
+    return this.cachedMessages.filter(m => m.device === device);
   }
 
   public toRawMessage(device: string, message: ContentMessage): RawMessage {
     // const plainTextBuffer = new Uint8Array();
-    const timestamp = message.ttl();
+    const ttl = message.ttl();
+    const timestamp = message.timestamp;
     const plainTextBuffer = message.plainTextBuffer();
 
     // tslint:disable-next-line: no-unnecessary-local-variable
     const rawMessage: RawMessage = {
-      identifier: 'dfgdrgsdf',
+      identifier: message.identifier,
       plainTextBuffer,
       timestamp,
       device,
-      ttl: 345345345,
+      ttl,
       encryption: EncryptionType.Signal,
     };
 
     return rawMessage;
   }
 
-  private async syncCacheWithDB() {
+  private syncCacheWithDB() {
     // Only call when adding / removing from cache.
     const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
-    await window.storage.put('pendingMessages', encodedPendingMessages);
-
-    // testing
-    // tslint:disable-next-line: no-backbone-get-set-outside-model
-    const db = await window.storage.get('pendingMessages');
-    console.log('[vince] Updated storage:', db);
+    window.storage.put('pendingMessages', encodedPendingMessages);
 
     // TOOD: Is there any way this can fail? If so, make it return Boolean to catch
   }

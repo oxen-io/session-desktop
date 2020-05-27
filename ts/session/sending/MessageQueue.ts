@@ -27,8 +27,8 @@ export class ExampleMessage extends ContentMessage {
 
   protected contentProto(): SignalService.Content {
     // throw new Error("Method not implemented.");
-    console.log(`[vince] contentProto: `);
 
+    // TODO - get actual content
     const content = SignalService.Content.create();
 
     return content;
@@ -54,9 +54,6 @@ export class MessageQueue implements MessageQueueInterface {
     const userDevices = [...pairedDevices, user];
 
     console.log('[vince] userDevices:', userDevices);
-
-    // sendMessageToDevices(userDevices, message);1
-
 
   }
   public send(device: string, message: ContentMessage) {
