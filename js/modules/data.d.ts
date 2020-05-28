@@ -7,6 +7,7 @@ type IdentityKey = {
   firstUse: boolean;
   verified: number;
   nonblockingApproval: boolean;
+<<<<<<< HEAD
 } | null;
 
 type PreKey = {
@@ -15,10 +16,47 @@ type PreKey = {
   privateKey: string;
   recipient: string;
 } | null;
+=======
+};
+
+type PreKey = {
+  id: number;
+  publicKey: ArrayBuffer;
+  privateKey: ArrayBuffer;
+  recipient: string;
+};
+
+type SignedPreKey = {
+  id: number;
+  publicKey: ArrayBuffer;
+  privateKey: ArrayBuffer;
+  created_at: number;
+  confirmed: boolean;
+  signature: ArrayBuffer;
+};
+
+type ContactPreKey = {
+  id: number;
+  identityKeyString: string;
+  publicKey: ArrayBuffer;
+  keyId: number;
+};
+
+type ContactSignedPreKey = {
+  id: number;
+  identityKeyString: string;
+  publicKey: ArrayBuffer;
+  keyId: number;
+  signature: ArrayBuffer;
+  created_at: number;
+  confirmed: boolean;
+};
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 
 type PairingAuthorisation = {
   primaryDevicePubKey: string;
   secondaryDevicePubKey: string;
+<<<<<<< HEAD
   requestSignature: string;
   grantSignature: string | null;
 } | null;
@@ -26,6 +64,10 @@ type PairingAuthorisation = {
 type PairingAuthorisationInit = {
   requestSignature: string;
   grantSignature: string;
+=======
+  requestSignature: ArrayBuffer;
+  grantSignature: ArrayBuffer | null;
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 };
 
 type GuardNode = {
@@ -67,14 +109,20 @@ export function removeIndexedDBFiles(): Promise<void>;
 export function getPasswordHash(): Promise<string | null>;
 
 // Identity Keys
+<<<<<<< HEAD
 export function createOrUpdateIdentityKey(data: any): Promise<void>;
 export function getIdentityKeyById(id: string): Promise<IdentityKey>;
+=======
+export function createOrUpdateIdentityKey(data: IdentityKey): Promise<void>;
+export function getIdentityKeyById(id: string): Promise<IdentityKey | null>;
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 export function bulkAddIdentityKeys(array: Array<IdentityKey>): Promise<void>;
 export function removeIdentityKeyById(id: string): Promise<void>;
 export function removeAllIdentityKeys(): Promise<void>;
 
 // Pre Keys
 export function createOrUpdatePreKey(data: PreKey): Promise<void>;
+<<<<<<< HEAD
 export function getPreKeyById(id: string): Promise<PreKey>;
 export function getPreKeyByRecipient(recipient: string): Promise<PreKey>;
 export function bulkAddPreKeys(data: Array<PreKey>): Promise<void>;
@@ -114,6 +162,55 @@ export function getContactSignedPreKeys(
 ): Promise<Array<PreKey>>;
 export function bulkAddContactSignedPreKeys(
   array: Array<PreKey>
+=======
+export function getPreKeyById(id: number): Promise<PreKey | null>;
+export function getPreKeyByRecipient(recipient: string): Promise<PreKey | null>;
+export function bulkAddPreKeys(data: Array<PreKey>): Promise<void>;
+export function removePreKeyById(id: number): Promise<void>;
+export function getAllPreKeys(): Promise<Array<PreKey>>;
+
+// Signed Pre Keys
+export function createOrUpdateSignedPreKey(data: SignedPreKey): Promise<void>;
+export function getSignedPreKeyById(id: number): Promise<SignedPreKey | null>;
+export function getAllSignedPreKeys(): Promise<SignedPreKey | null>;
+export function bulkAddSignedPreKeys(array: Array<SignedPreKey>): Promise<void>;
+export function removeSignedPreKeyById(id: number): Promise<void>;
+export function removeAllSignedPreKeys(): Promise<void>;
+
+// Contact Pre Key
+export function createOrUpdateContactPreKey(data: ContactPreKey): Promise<void>;
+export function getContactPreKeyById(id: number): Promise<ContactPreKey | null>;
+export function getContactPreKeyByIdentityKey(
+  key: string
+): Promise<ContactPreKey | null>;
+export function getContactPreKeys(
+  keyId: number,
+  identityKeyString: string
+): Promise<Array<ContactPreKey>>;
+export function getAllContactPreKeys(): Promise<Array<ContactPreKey>>;
+export function bulkAddContactPreKeys(
+  array: Array<ContactPreKey>
+): Promise<void>;
+export function removeContactPreKeyByIdentityKey(id: number): Promise<void>;
+export function removeAllContactPreKeys(): Promise<void>;
+
+// Contact Signed Pre Key
+export function createOrUpdateContactSignedPreKey(
+  data: ContactSignedPreKey
+): Promise<void>;
+export function getContactSignedPreKeyById(
+  id: number
+): Promise<ContactSignedPreKey | null>;
+export function getContactSignedPreKeyByIdentityKey(
+  key: string
+): Promise<ContactSignedPreKey | null>;
+export function getContactSignedPreKeys(
+  keyId: number,
+  identityKeyString: string
+): Promise<Array<ContactSignedPreKey>>;
+export function bulkAddContactSignedPreKeys(
+  array: Array<ContactSignedPreKey>
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 ): Promise<void>;
 export function removeContactSignedPreKeyByIdentityKey(
   id: string
@@ -122,8 +219,13 @@ export function removeAllContactSignedPreKeys(): Promise<void>;
 
 // Authorisations & Linking
 export function createOrUpdatePairingAuthorisation(
+<<<<<<< HEAD
   data: PairingAuthorisationInit
 ): Promise<PairingAuthorisation>;
+=======
+  data: PairingAuthorisation
+): Promise<void>;
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 export function removePairingAuthorisationForSecondaryPubKey(
   pubKey: string
 ): Promise<void>;
@@ -132,6 +234,7 @@ export function getGrantAuthorisationsForPrimaryPubKey(
 ): Promise<Array<PairingAuthorisation>>;
 export function getGrantAuthorisationForSecondaryPubKey(
   pubKey: string
+<<<<<<< HEAD
 ): Promise<PairingAuthorisation>;
 export function getAuthorisationForSecondaryPubKey(
   pubKey: string
@@ -143,6 +246,19 @@ export function getPrimaryDeviceFor(
   secondaryDevicePubKey: string
 ): string | null;
 export function getPairedDevicesFor(pubKey: string): Array<string>;
+=======
+): Promise<PairingAuthorisation | null>;
+export function getAuthorisationForSecondaryPubKey(
+  pubKey: string
+): Promise<PairingAuthorisation | null>;
+export function getSecondaryDevicesFor(
+  primaryDevicePubKey: string
+): Promise<Array<string>>;
+export function getPrimaryDeviceFor(
+  secondaryDevicePubKey: string
+): Promise<string | null>;
+export function getPairedDevicesFor(pubKey: string): Promise<Array<string>>;
+>>>>>>> 571169dcf31327f4c0ece0c78032c2688d85d5d0
 
 // Guard Nodes
 export function getGuardNodes(): Promise<GuardNode>;
