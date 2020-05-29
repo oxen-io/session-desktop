@@ -4,7 +4,6 @@ import { MessageUtils } from '../utils';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
 
-
 // This is an abstraction for storing pending messages.
 // Ideally we want to store pending messages in the database so that
 // on next launch we can re-send the pending messages, but we don't want
@@ -20,18 +19,11 @@ export class PendingMessageCache {
     this.load();
   }
 
-  public add(
-    device: string,
-    message: ContentMessage
-  ): RawMessage {
-    // TODO: Maybe have a util for converting ContentMessage to RawMessage?
-    // TODO: Raw message has uuid, how are we going to set that? maybe use a different identifier?
-    // One could be device + timestamp would make a unique identifier
-    
+  public add(device: string, message: ContentMessage): RawMessage {
     const rawMessage = MessageUtils.toRawMessage(device, message);
 
     // Does it exist in cache already?
-    if(this.find(rawMessage)) {
+    if (this.find(rawMessage)) {
       return rawMessage;
     }
 
@@ -42,12 +34,10 @@ export class PendingMessageCache {
   }
 
   public find(message: RawMessage): RawMessage | undefined {
-    // Find a message from the cache
-    if (this.cachedMessages.find(m => m.device === message.device && m.timestamp === message.timestamp)) {
-      return message;
-    }
-
-    return;
+    // Find a message in the cache
+    return this.cachedMessages.find(
+      (m) => m.device === message.device && m.timestamp === message.timestamp
+    );
   }
 
   public remove(message: RawMessage): Array<RawMessage> | undefined {
@@ -58,8 +48,10 @@ export class PendingMessageCache {
       return;
     }
 
-    // Rewrite cache with message removed
-    const updatedCache = this.cachedMessages.filter(m => m.identifier !== message.identifier);
+    // Remove item from cache and sync with database
+    const updatedCache = this.cachedMessages.filter(
+      (m) => m.identifier !== message.identifier
+    );
     this.cachedMessages = updatedCache;
     this.syncCacheWithDB();
 
@@ -68,7 +60,7 @@ export class PendingMessageCache {
 
   public getDevices(): Array<String> {
     // Gets all devices with pending messages
-    return [...new Set(this.cachedMessages.map(m => m.device))];
+    return [...new Set(this.cachedMessages.map((m) => m.device))];
   }
 
   public async getFromStorage(): Promise<Array<RawMessage>> {
@@ -79,10 +71,8 @@ export class PendingMessageCache {
     const encodedPendingMessages = pendingMessagesJSON
       ? JSON.parse(pendingMessagesJSON)
       : [];
-    
-    // Set encryption type
-    
 
+    // Set encryption type
 
     // TODO:
     //    Construct encryption key to match EncryptionType
@@ -92,7 +82,7 @@ export class PendingMessageCache {
 
   public getForDevice(device: string): Array<RawMessage> {
     // TODO: Any cases in which this will break?
-    return this.cachedMessages.filter(m => m.device === device);
+    return this.cachedMessages.filter((m) => m.device === device);
   }
 
   private async load() {
