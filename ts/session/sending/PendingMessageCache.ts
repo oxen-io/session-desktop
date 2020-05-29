@@ -27,33 +27,35 @@ export class PendingMessageCache {
     // TODO: Maybe have a util for converting ContentMessage to RawMessage?
     // TODO: Raw message has uuid, how are we going to set that? maybe use a different identifier?
     // One could be device + timestamp would make a unique identifier
-    // TODO: Return previous pending message if it exists
     
     const rawMessage = MessageUtils.toRawMessage(device, message);
 
-    const pendingForDevice = this.getForDevice(device);
-    const previousPendingMessage = pendingForDevice.length
-      // TODO; ensure this is the most recent message with timestamp
-      ? pendingForDevice[0]
-      : {} as RawMessage;
-
     // Does it exist in cache already?
-    if (this.cachedMessages.find(m => m.identifier === rawMessage.identifier)) {
-      return previousPendingMessage;
+    if(this.find(rawMessage)) {
+      return rawMessage;
     }
 
     this.cachedMessages.push(rawMessage);
     this.syncCacheWithDB();
 
-    return previousPendingMessage;
+    return rawMessage;
   }
 
-  public remove(message: RawMessage): Boolean {
+  public find(message: RawMessage): RawMessage | undefined {
+    // Find a message from the cache
+    if (this.cachedMessages.find(m => m.device === message.device && m.timestamp === message.timestamp)) {
+      return message;
+    }
+
+    return;
+  }
+
+  public remove(message: RawMessage): Array<RawMessage> | undefined {
     // Should only be called after message is processed
 
-    // Return false if message doesn't exist in cache
-    if (this.cachedMessages.find(m => m.identifier !== message.identifier)) {
-      return false;
+    // Return if message doesn't exist in cache
+    if (!this.find(message)) {
+      return;
     }
 
     // Rewrite cache with message removed
@@ -61,15 +63,15 @@ export class PendingMessageCache {
     this.cachedMessages = updatedCache;
     this.syncCacheWithDB();
 
-    return true;
+    return updatedCache;
   }
 
-  public getPendingDevices(): Array<String> {
+  public getDevices(): Array<String> {
     // Gets all devices with pending messages
     return [...new Set(this.cachedMessages.map(m => m.device))];
   }
 
-  public async getPendingMessagesFromStorage(): Promise<Array<RawMessage>> {
+  public async getFromStorage(): Promise<Array<RawMessage>> {
     // tslint:disable-next-line: no-backbone-get-set-outside-model
     const pendingMessagesJSON = await window.storage.get('pendingMessages');
 
@@ -93,10 +95,8 @@ export class PendingMessageCache {
     return this.cachedMessages.filter(m => m.device === device);
   }
 
-
-
   private async load() {
-    const messages = await this.getPendingMessagesFromStorage();
+    const messages = await this.getFromStorage();
     this.cachedMessages = messages;
   }
 
