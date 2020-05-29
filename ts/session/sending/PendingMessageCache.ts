@@ -1,8 +1,6 @@
 import { RawMessage } from '../types/RawMessage';
 import { ContentMessage } from '../messages/outgoing';
-import { EncryptionType } from '../types/EncryptionType';
-
-import { createOrUpdatePairingAuthorisation } from '../../../js/modules/data';
+import { MessageUtils } from '../utils';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
 
@@ -15,16 +13,11 @@ import { createOrUpdatePairingAuthorisation } from '../../../js/modules/data';
 // memory and sync its state with the database on modification (add or remove).
 
 export class PendingMessageCache {
-  private readonly cachedMessages: Array<RawMessage> = [];
+  private cachedMessages: Array<RawMessage> = [];
 
   constructor() {
     // Load pending messages from the database
-    this.getPendingMessagesFromStorage().then(messages => {
-      this.cachedMessages.push(...messages);
-
-      console.log('[vince] Cached from storage:', this.cachedMessages);
-    }).catch();
-
+    this.load();
   }
 
   public add(
@@ -36,7 +29,7 @@ export class PendingMessageCache {
     // One could be device + timestamp would make a unique identifier
     // TODO: Return previous pending message if it exists
     
-    const rawMessage = this.toRawMessage(device, message);
+    const rawMessage = MessageUtils.toRawMessage(device, message);
 
     const pendingForDevice = this.getForDevice(device);
     const previousPendingMessage = pendingForDevice.length
@@ -65,19 +58,10 @@ export class PendingMessageCache {
 
     // Rewrite cache with message removed
     const updatedCache = this.cachedMessages.filter(m => m.identifier !== message.identifier);
-    this.cachedMessages.length = 0;
-    this.cachedMessages.push(...updatedCache);
+    this.cachedMessages = updatedCache;
     this.syncCacheWithDB();
 
     return true;
-  }
-
-  public removePendingMessageByIdentifier(identifier: string) {
-    const message = this.cachedMessages.find(m => m.identifier === identifier);
-
-    return message
-      ? this.remove(message)
-      : false;
   }
 
   public getPendingDevices(): Array<String> {
@@ -109,23 +93,11 @@ export class PendingMessageCache {
     return this.cachedMessages.filter(m => m.device === device);
   }
 
-  public toRawMessage(device: string, message: ContentMessage): RawMessage {
-    // const plainTextBuffer = new Uint8Array();
-    const ttl = message.ttl();
-    const timestamp = message.timestamp;
-    const plainTextBuffer = message.plainTextBuffer();
 
-    // tslint:disable-next-line: no-unnecessary-local-variable
-    const rawMessage: RawMessage = {
-      identifier: message.identifier,
-      plainTextBuffer,
-      timestamp,
-      device,
-      ttl,
-      encryption: EncryptionType.Signal,
-    };
 
-    return rawMessage;
+  private async load() {
+    const messages = await this.getPendingMessagesFromStorage();
+    this.cachedMessages = messages;
   }
 
   private syncCacheWithDB() {
