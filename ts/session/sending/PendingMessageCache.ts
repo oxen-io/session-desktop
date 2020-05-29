@@ -2,7 +2,6 @@ import { RawMessage } from '../types/RawMessage';
 import { ContentMessage } from '../messages/outgoing';
 import { EncryptionType } from '../types/EncryptionType';
 
-import { storage } from '../../window';
 import { createOrUpdatePairingAuthorisation } from '../../../js/modules/data';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
@@ -28,7 +27,7 @@ export class PendingMessageCache {
 
   }
 
-  public addPendingMessage(
+  public add(
     device: string,
     message: ContentMessage
   ): RawMessage {
@@ -39,7 +38,7 @@ export class PendingMessageCache {
     
     const rawMessage = this.toRawMessage(device, message);
 
-    const pendingForDevice = this.getPendingMessagesForDevice(device);
+    const pendingForDevice = this.getForDevice(device);
     const previousPendingMessage = pendingForDevice.length
       // TODO; ensure this is the most recent message with timestamp
       ? pendingForDevice[0]
@@ -56,7 +55,7 @@ export class PendingMessageCache {
     return previousPendingMessage;
   }
 
-  public removePendingMessage(message: RawMessage): Boolean {
+  public remove(message: RawMessage): Boolean {
     // Should only be called after message is processed
 
     // Return false if message doesn't exist in cache
@@ -77,7 +76,7 @@ export class PendingMessageCache {
     const message = this.cachedMessages.find(m => m.identifier === identifier);
 
     return message
-      ? this.removePendingMessage(message)
+      ? this.remove(message)
       : false;
   }
 
@@ -105,7 +104,7 @@ export class PendingMessageCache {
     return encodedPendingMessages;
   }
 
-  public getPendingMessagesForDevice(device: string): Array<RawMessage> {
+  public getForDevice(device: string): Array<RawMessage> {
     // TODO: Any cases in which this will break?
     return this.cachedMessages.filter(m => m.device === device);
   }

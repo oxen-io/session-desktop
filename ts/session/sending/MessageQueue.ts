@@ -1,3 +1,4 @@
+import * as Data from '../../../js/modules/data';
 import { EventEmitter } from 'events';
 import {
   MessageQueueInterface,
@@ -46,11 +47,11 @@ export class MessageQueue implements MessageQueueInterface {
     this.processAllPending();
   }
 
-  public sendUsingMultiDevice(user: string, message: ContentMessage) {
+  public async sendUsingMultiDevice(user: string, message: ContentMessage) {
     // throw new Error('Method not implemented.');
 
     // Update from TS Globals
-    const pairedDevices = window.Signal.Data.getPairedDevicesFor(user);
+    const pairedDevices = await Data.getPairedDevicesFor(user);
     const userDevices = [...pairedDevices, user];
 
     console.log('[vince] userDevices:', userDevices);
@@ -65,17 +66,6 @@ export class MessageQueue implements MessageQueueInterface {
     console.log(`[vince] send: Queueing message`, message);
     this.queue(device, message);
 
-    // call message sender
-
-    // Want to be able to distinguish between retryable and fatal errors in the API.
-    // This is what the MessageSender Add it to the queue!
-
-    // if (shouldSendToMultiDevice) {
-    //   this.sendUsingmUltiDevice(user, message)
-    //   return
-    // }
-    //
-    // sendMessageToDevices([device], message)
   }
   public sendToGroup(message: ContentMessage | OpenGroupMessage) {
     throw new Error('Method not implemented.');
@@ -86,8 +76,9 @@ export class MessageQueue implements MessageQueueInterface {
   public sendSyncMessage(message: ContentMessage) {
     // PSEDUOCODE
     // if message is undefined
-    //   return
+    //   returnt
 
+    
     // for each of our device excluding current device:
     //     queue(device, syncMessage)
     
@@ -140,7 +131,6 @@ export class MessageQueue implements MessageQueueInterface {
     
     // Add the item to the queue
     const queue = this.getJobQueue(device);
-
     const job = new Promise(resolve => {
       setTimeout(() => {
         resolve();
