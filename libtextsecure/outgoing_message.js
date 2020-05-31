@@ -167,7 +167,9 @@ function OutgoingMessage(
     isMediumGroup,
     publicSendData,
     debugMessageType,
-  } = options || {};
+    autoSession,
+  } =
+    options || {};
   this.numberInfo = numberInfo;
   this.isPublic = isPublic;
   this.isMediumGroup = !!isMediumGroup;
@@ -181,6 +183,7 @@ function OutgoingMessage(
   this.online = online;
   this.messageType = messageType || 'outgoing';
   this.debugMessageType = debugMessageType;
+  this.autoSession = autoSession || false;
 }
 
 OutgoingMessage.prototype = {
@@ -318,6 +321,7 @@ OutgoingMessage.prototype = {
   // Default ttl to 24 hours if no value provided
   async transmitMessage(number, data, timestamp, ttl = 24 * 60 * 60 * 1000) {
     const pubKey = number;
+
     try {
       // TODO: Make NUM_CONCURRENT_CONNECTIONS a global constant
       const options = {
@@ -644,6 +648,7 @@ OutgoingMessage.prototype = {
           this.timestamp,
           ttl
         );
+
         if (!this.isGroup && isFriendRequest && !isSessionRequest) {
           const conversation = ConversationController.get(destination);
           if (conversation) {
@@ -657,16 +662,10 @@ OutgoingMessage.prototype = {
         this.errors.push(e);
       }
     });
-    await Promise.all(promises);
-    // TODO: the retrySend should only send to the devices
-    // for which the transmission failed.
 
-    // ensure numberCompleted() will execute the callback
-    this.numbersCompleted += this.errors.length + this.successfulNumbers.length;
-    // Absorb errors if message sent to at least 1 device
-    if (this.successfulNumbers.length > 0) {
-      this.errors = [];
-    }
+    await Promise.all(promises);
+
+    this.numbersCompleted += this.successfulNumbers.length;
     this.numberCompleted();
   },
   async buildAndEncrypt(devicePubKey) {
