@@ -463,9 +463,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
     const ciphertext = await response.text();
     log.warn(
       `lokiRpc:::sendToProxy -`,
-      `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${
-        targetNode.port
-      }`,
+      `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${targetNode.port}`,
       `snode is decom or dereg: `,
       ciphertext,
       // `marking random snode bad ${randomPoolRemainingCount} remaining`
@@ -510,9 +508,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
     const ciphertext = await response.text();
     log.warn(
       `lokiRpc:::sendToProxy -`,
-      `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${
-        targetNode.port
-      }`,
+      `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${targetNode.port}`,
       `code ${response.status} error`,
       ciphertext,
       // `marking random snode bad ${randomPoolRemainingCount} remaining`
@@ -527,9 +523,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
       // lets mark the target node bad for now
       // we'll just rotate it back in if it's a net problem
       log.warn(
-        `lokiRpc:::sendToProxy - Failing ${targetNode.ip}:${
-          targetNode.port
-        } after 5 retries`
+        `lokiRpc:::sendToProxy - Failing ${targetNode.ip}:${targetNode.port} after 5 retries`
       );
       if (options.ourPubKey) {
         lokiSnodeAPI.unreachableNode(options.ourPubKey, targetNode);
@@ -555,9 +549,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
     log.warn(
       'lokiRpc:::sendToProxy - fetch non-200 statusCode',
       response.status,
-      `from snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${
-        targetNode.port
-      }`
+      `from snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${targetNode.port}`
     );
     return false;
   }
@@ -595,9 +587,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
       'lokiRpc:::sendToProxy - decode error',
       e.code,
       e.message,
-      `from ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${
-        targetNode.port
-      } ciphertext:`,
+      `from ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${targetNode.port} ciphertext:`,
       ciphertext
     );
     if (ciphertextBuffer) {
@@ -633,9 +623,7 @@ const sendToProxy = async (options = {}, targetNode, retryNumber = 0) => {
     if (retryNumber) {
       log.debug(
         `lokiRpc:::sendToProxy - request succeeded,`,
-        `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${
-          targetNode.port
-        }`,
+        `snode ${randSnode.ip}:${randSnode.port} to ${targetNode.ip}:${targetNode.port}`,
         `on retry #${retryNumber}`
       );
     }

@@ -190,12 +190,12 @@ export const _getLeftPaneLists = (
   };
 
   const friends: Array<ConversationType> = filterToPrimary(allFriends);
-  const receivedFriendsRequest: Array<
-    ConversationListItemPropsType
-  > = filterToPrimary(allReceivedFriendsRequest);
-  const sentFriendsRequest: Array<
-    ConversationListItemPropsType
-  > = filterToPrimary(allSentFriendsRequest);
+  const receivedFriendsRequest: Array<ConversationListItemPropsType> = filterToPrimary(
+    allReceivedFriendsRequest
+  );
+  const sentFriendsRequest: Array<ConversationListItemPropsType> = filterToPrimary(
+    allSentFriendsRequest
+  );
 
   return {
     conversations,
