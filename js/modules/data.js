@@ -38,16 +38,45 @@ let _shutdownPromise = null;
 
 const channels = {};
 
-function initIpc() {
+function init() {
   // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
-  // any warnings that might be sent to the console in that case.
-  // ipcRenderer.setMaxListeners(0);
-  console.log('[vince] ipcRenderer Data:', ipcRenderer);
+  //   any warnings that might be sent to the console in that case.
+  ipcRenderer.setMaxListeners(0);
+
+  forEach(module.exports, fn => {
+    if (isFunction(fn) && fn.name !== 'init') {
+      makeChannel(fn.name);
+    }
+  });
+
+  ipcRenderer.on(
+    `${SQL_CHANNEL_KEY}-done`,
+    (event, jobId, errorForDisplay, result) => {
+      const job = _getJob(jobId);
+      if (!job) {
+        throw new Error(
+          `Received SQL channel reply to job ${jobId}, but did not have it in our registry!`
+        );
+      }
+
+      const { resolve, reject, fnName } = job;
+
+      if (errorForDisplay) {
+        return reject(
+          new Error(
+            `Error received from SQL channel job ${jobId} (${fnName}): ${errorForDisplay}`
+          )
+        );
+      }
+
+      return resolve(result);
+    }
+  );
 }
 
-initIpc();
-
 module.exports = {
+  init,
+
   _jobs,
   _cleanData,
 
@@ -356,30 +385,6 @@ function _getJob(id) {
   return _jobs[id];
 }
 
-ipcRenderer.on(
-  `${SQL_CHANNEL_KEY}-done`,
-  (event, jobId, errorForDisplay, result) => {
-    const job = _getJob(jobId);
-    if (!job) {
-      throw new Error(
-        `Received SQL channel reply to job ${jobId}, but did not have it in our registry!`
-      );
-    }
-
-    const { resolve, reject, fnName } = job;
-
-    if (errorForDisplay) {
-      return reject(
-        new Error(
-          `Error received from SQL channel job ${jobId} (${fnName}): ${errorForDisplay}`
-        )
-      );
-    }
-
-    return resolve(result);
-  }
-);
-
 function makeChannel(fnName) {
   channels[fnName] = (...args) => {
     const jobId = _makeJob(fnName);
@@ -401,12 +406,6 @@ function makeChannel(fnName) {
     });
   };
 }
-
-forEach(module.exports, fn => {
-  if (isFunction(fn)) {
-    makeChannel(fn.name);
-  }
-});
 
 function keysToArrayBuffer(keys, data) {
   const updated = cloneDeep(data);

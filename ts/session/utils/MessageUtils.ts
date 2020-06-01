@@ -5,7 +5,6 @@ import { EncryptionType } from '../types/EncryptionType';
 
 
 function toRawMessage(device: string, message: ContentMessage): RawMessage {
-  // const plainTextBuffer = new Uint8Array();
   const ttl = message.ttl();
   const timestamp = message.timestamp;
   const plainTextBuffer = message.plainTextBuffer();
@@ -26,8 +25,6 @@ function toRawMessage(device: string, message: ContentMessage): RawMessage {
   //   SessionReset,
   //   MediumGroup,
   // }
-  
-
 
   const rawMessage: RawMessage = {
     identifier: message.identifier,
