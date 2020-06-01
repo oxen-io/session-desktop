@@ -4,7 +4,7 @@ import {
   MessageQueueInterface,
   MessageQueueInterfaceEvents,
 } from './MessageQueueInterface';
-import { ContentMessage, OpenGroupMessage } from '../messages/outgoing';
+import { ContentMessage, OpenGroupMessage, SessionResetMessage } from '../messages/outgoing';
 import { PendingMessageCache } from './PendingMessageCache';
 import { JobQueue, TypedEventEmitter } from '../utils';
 
@@ -61,6 +61,7 @@ export class MessageQueue implements MessageQueueInterface {
     // throw new Error('Method not implemented.');
 
     // Validation; early exists?
+    
 
     // TESTING
     console.log(`[vince] send: Queueing message`, message);
@@ -126,6 +127,12 @@ export class MessageQueue implements MessageQueueInterface {
 
       // PendingMessageCache.addPendingMessage(device, message)
       // processPending(device)
+    
+    if (message instanceof SessionResetMessage) {
+      return;
+    }
+
+
 
     console.log(`[vince] queue: Message added to the queue`, message);
     

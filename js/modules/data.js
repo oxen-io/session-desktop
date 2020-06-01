@@ -16,19 +16,14 @@ const {
   isArrayBuffer,
 } = require('lodash');
 
+
 const _ = require('lodash');
+const { ipcRenderer } = electron;
 
 const { base64ToArrayBuffer, arrayBufferToBase64 } = require('./crypto');
 const MessageType = require('./types/message');
 
-const { ipcRenderer } = electron;
-
-// We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
-//   any warnings that might be sent to the console in that case.
-ipcRenderer.setMaxListeners(0);
-
 const DATABASE_UPDATE_TIMEOUT = 2 * 60 * 1000; // two minutes
-
 const SQL_CHANNEL_KEY = 'sql-channel';
 const ERASE_SQL_KEY = 'erase-sql-key';
 const ERASE_ATTACHMENTS_KEY = 'erase-attachments';
@@ -42,6 +37,15 @@ let _shutdownCallback = null;
 let _shutdownPromise = null;
 
 const channels = {};
+
+function initIpc() {
+  // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
+  // any warnings that might be sent to the console in that case.
+  // ipcRenderer.setMaxListeners(0);
+  console.log('[vince] ipcRenderer Data:', ipcRenderer);
+}
+
+initIpc();
 
 module.exports = {
   _jobs,

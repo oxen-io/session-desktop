@@ -1,106 +1,78 @@
 import { expect } from 'chai';
 
-import { v4 as uuid } from 'uuid';
-import { SignalService } from '../../../protobuf';
-import { ContentMessage, TypingMessage } from '../../../session/messages/outgoing';
-import { TextEncoder } from 'util';
+import sinon from 'sinon';
+import electron from 'electron';
 
 
-export class ExampleMessage extends ContentMessage {
-  constructor() {
-    super({
-      timestamp: Math.floor(Math.random() * 10000000000000),
-      identifier: uuid(),
-    });
-  }
+import { ChatMessage } from '../../../session/messages/outgoing';
+import { MessageUtils } from '../../../session/utils';
+import { PendingMessageCache } from '../../../session/sending/PendingMessageCache';
 
-  public ttl(): number {
-    // throw new Error("Method not implemented.");
-    return 5;
-  }
+const sandbox = sinon.sandbox.create();
+const ipcRenderer = electron.ipcRenderer;
 
-  protected contentProto(): SignalService.Content {
-    // throw new Error("Method not implemented.");
+describe('PendingMessageCache', () => {
+  let pendingMessageCache;
 
-    // TODO - get actual content
-    const content = SignalService.Content.create();
+  beforeEach(() => {
+    sandbox.stub(ipcRenderer, 'setMaxListeners');
 
-    return content;
-  }
-}
+    // pendingMessageCache = new PendingMessageCache();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  // Add to cache
+  it('can add to cache', async () => {
+
+    // Will this work?
+    ipcRenderer.setMaxListeners(0);
+
+
+    // const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
+    // const message = new ChatMessage({
+    //   body: "This is the message content",
+    //   identifier: '1234567890',
+    //   timestamp: Date.now(),
+    //   attachments: undefined,
+    //   quote: undefined,
+    //   expireTimer: undefined,
+    //   lokiProfile: undefined,
+    //   preview: undefined,
+    // });
+
+    // const rawMessage = MessageUtils.toRawMessage(device, message);
+
+    // const initialCache = pendingMessageCache.get();
+    // expect(initialCache).to.be.equal([]);
+
+    // await pendingMessageCache.add(device, message);
+    // const cache = pendingMessageCache.get();
+    // expect(cache).to.be.equal([rawMessage]);
+
+  });
+    
+
+    // Get from storage working?
+
+    // Get for device working?
+
+    // Find in cache when something is there
+    // Find in cache when there's nothing there
+
+    
+    // Clear cache working?
+
+    // Remove from cache
+
+    // Get devices working? 
+    // Get for device working?
+
+    // Sync with DB working?
 
 
 
 
-describe('TypingMessage', () => {
-    it('has Action.STARTED if isTyping = true', () => {
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: true,
-        });
-        const plainText = message.plainTextBuffer();
-        const decoded = SignalService.Content.toObject(SignalService.Content.decode(plainText));
-        expect(decoded.typingMessage).to.have.property('action', SignalService.TypingMessage.Action.STARTED);
-    });
-
-    it('has Action.STOPPED if isTyping = false', () => {
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: false,
-        });
-        const plainText = message.plainTextBuffer();
-        const decoded = SignalService.Content.toObject(SignalService.Content.decode(plainText));
-        expect(decoded.typingMessage).to.have.property('action', SignalService.TypingMessage.Action.STOPPED);
-    });
-
-    it('has typingTimestamp set if value passed', () => {
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: true,
-            typingTimestamp: 111111111,
-        });
-        const plainText = message.plainTextBuffer();
-        const decoded = SignalService.Content.toObject(SignalService.Content.decode(plainText));
-        const typingTimestamp = decoded.typingMessage.timestamp.toNumber();
-        expect(typingTimestamp).to.be.equal(111111111);
-    });
-
-    it('has typingTimestamp set with Date.now() if value not passed', () => {
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: true,
-        });
-        const plainText = message.plainTextBuffer();
-        const decoded = SignalService.Content.toObject(SignalService.Content.decode(plainText));
-        const typingTimestamp = decoded.typingMessage.timestamp.toNumber();
-        expect(typingTimestamp).to.be.equal(Date.now());
-    });
-
-    it('has groupId set if a value given', () => {
-        const groupId = '6666666666';
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: true,
-            groupId,
-        });
-        const plainText = message.plainTextBuffer();
-        const decoded = SignalService.Content.toObject(SignalService.Content.decode(plainText));
-        const manuallyEncodedGroupId = new TextEncoder().encode(groupId);
-
-        expect(decoded.typingMessage.groupId).to.be.deep.equal(manuallyEncodedGroupId);
-    });
-
-    it('ttl of 1 minute', () => {
-        const message = new TypingMessage({
-            timestamp: Date.now(),
-            identifier: '123456',
-            isTyping: true,
-        });
-        expect(message.ttl()).to.equal(60 * 1000);
-    });
 });

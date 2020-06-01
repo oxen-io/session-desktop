@@ -1,3 +1,4 @@
+import * as Data from '../../../js/modules/data';
 import { RawMessage } from '../types/RawMessage';
 import { ContentMessage } from '../messages/outgoing';
 import { MessageUtils } from '../utils';
@@ -19,7 +20,7 @@ export class PendingMessageCache {
     this.load();
   }
 
-  public add(device: string, message: ContentMessage): RawMessage {
+  public async add(device: string, message: ContentMessage): Promise<RawMessage> {
     const rawMessage = MessageUtils.toRawMessage(device, message);
 
     // Does it exist in cache already?
@@ -28,19 +29,12 @@ export class PendingMessageCache {
     }
 
     this.cachedMessages.push(rawMessage);
-    this.syncCacheWithDB();
+    await this.syncCacheWithDB();
 
     return rawMessage;
   }
 
-  public find(message: RawMessage): RawMessage | undefined {
-    // Find a message in the cache
-    return this.cachedMessages.find(
-      (m) => m.device === message.device && m.timestamp === message.timestamp
-    );
-  }
-
-  public remove(message: RawMessage): Array<RawMessage> | undefined {
+  public async remove(message: RawMessage): Promise<Array<RawMessage> | undefined> {
     // Should only be called after message is processed
 
     // Return if message doesn't exist in cache
@@ -53,9 +47,27 @@ export class PendingMessageCache {
       (m) => m.identifier !== message.identifier
     );
     this.cachedMessages = updatedCache;
-    this.syncCacheWithDB();
+    await this.syncCacheWithDB();
 
     return updatedCache;
+  }
+
+  public find(message: RawMessage): RawMessage | undefined {
+    // Find a message in the cache
+    return this.cachedMessages.find(
+      (m) => m.device === message.device && m.timestamp === message.timestamp
+    );
+  }
+
+  public get() {
+    // Gets all pending messages in cache
+    return this.cachedMessages;
+  }
+
+  public async clear() {
+    // Clears the cache and syncs to DB
+    this.cachedMessages = [];
+    await this.syncCacheWithDB();
   }
 
   public getDevices(): Array<String> {
@@ -65,8 +77,12 @@ export class PendingMessageCache {
 
   public async getFromStorage(): Promise<Array<RawMessage>> {
     // tslint:disable-next-line: no-backbone-get-set-outside-model
-    const pendingMessagesJSON = await window.storage.get('pendingMessages');
+    const pendingMessagesData = await Data.getItemById('pendingMessages');
+    const pendingMessagesJSON = String(pendingMessagesData.value);
 
+    console.log('[vince] pendingMessagesData:', pendingMessagesData);
+    console.log('[vince] pendingMessagesJSON:', pendingMessagesJSON);
+    
     // tslint:disable-next-line: no-unnecessary-local-variable
     const encodedPendingMessages = pendingMessagesJSON
       ? JSON.parse(pendingMessagesJSON)
@@ -90,11 +106,9 @@ export class PendingMessageCache {
     this.cachedMessages = messages;
   }
 
-  private syncCacheWithDB() {
+  private async syncCacheWithDB() {
     // Only call when adding / removing from cache.
     const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
-    window.storage.put('pendingMessages', encodedPendingMessages);
-
-    // TOOD: Is there any way this can fail? If so, make it return Boolean to catch
+    await Data.createOrUpdateItem({id: 'pendingMessages', value: encodedPendingMessages})
   }
 }

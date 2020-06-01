@@ -106,6 +106,8 @@ window.versionInfo = {
 window.wrapDeferred = deferredToPromise;
 
 const ipc = electron.ipcRenderer;
+ipc.setMaxListeners(0);
+
 const localeMessages = ipc.sendSync('locale-data');
 
 window.blake2b = input =>
