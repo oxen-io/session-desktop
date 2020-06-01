@@ -1,4 +1,4 @@
-import { SignalProtocolAddress } from "../../../../libtextsecure/libsignal-protocol";
+import { SignalProtocolAddress } from '../../../window/types/libsignal-protocol';
 
 export class SignalProtocolAddressStub extends SignalProtocolAddress {
   private readonly hexEncodedPublicKey: string;

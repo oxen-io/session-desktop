@@ -4,12 +4,17 @@ import * as sinon from 'sinon';
 import * as window from '../../../window';
 import { MessageEncrypter } from '../../../session/crypto';
 import { EncryptionType } from '../../../session/types/EncryptionType';
+import { SignalProtocolAddressStub } from '../../utils/stubs';
 
 describe('MessageEncrypter', () => {
   const sandbox = sinon.sandbox.create();
 
+  const libSignalStub = {
+    SignalProtocolAddress: typeof SignalProtocolAddressStub,
+  };
+
   beforeEach(() => {
-    sandbox.stub(window);
+    sandbox.stub(window, 'libsignal').returnValue(libSignalStub);
   });
 
   afterEach(() => {
