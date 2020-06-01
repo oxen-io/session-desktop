@@ -46,8 +46,8 @@ describe('PendingMessageCache', () => {
     const cache = pendingMessageCache.get();
     expect(cache).to.be.equal([rawMessage]);
 
-    console.log(initialCache);
-    console.log(cache);
+    console.log('[vince] initialCache:', initialCache);
+    console.log('[vince] cache:', cache);
   });
     
 

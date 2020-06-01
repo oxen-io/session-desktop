@@ -1,6 +1,7 @@
 /* global window, setTimeout, clearTimeout, IDBKeyRange, dcodeIO */
-
 const electron = require('electron');
+
+const { ipcRenderer } = electron;
 
 // TODO: this results in poor readability, would be
 // much better to explicitly call with `_`.
@@ -18,7 +19,6 @@ const {
 
 
 const _ = require('lodash');
-const { ipcRenderer } = electron;
 
 const { base64ToArrayBuffer, arrayBufferToBase64 } = require('./crypto');
 const MessageType = require('./types/message');
@@ -76,7 +76,6 @@ function init() {
 
 module.exports = {
   init,
-
   _jobs,
   _cleanData,
 
@@ -244,6 +243,42 @@ module.exports = {
   getSenderKeys,
   createOrUpdateSenderKeys,
 };
+
+function init() {
+  // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
+  //   any warnings that might be sent to the console in that case.
+  ipcRenderer.setMaxListeners(0);
+
+  forEach(module.exports, fn => {
+    if (isFunction(fn) && fn.name !== 'init') {
+      makeChannel(fn.name);
+    }
+  });
+
+  ipcRenderer.on(
+    `${SQL_CHANNEL_KEY}-done`,
+    (event, jobId, errorForDisplay, result) => {
+      const job = _getJob(jobId);
+      if (!job) {
+        throw new Error(
+          `Received SQL channel reply to job ${jobId}, but did not have it in our registry!`
+        );
+      }
+
+      const { resolve, reject, fnName } = job;
+
+      if (errorForDisplay) {
+        return reject(
+          new Error(
+            `Error received from SQL channel job ${jobId} (${fnName}): ${errorForDisplay}`
+          )
+        );
+      }
+
+      return resolve(result);
+    }
+  );
+}
 
 // When IPC arguments are prepared for the cross-process send, they are JSON.stringified.
 // We can't send ArrayBuffers or BigNumbers (what we get from proto library for dates).
