@@ -2613,5 +2613,8 @@
         "example": "10"
       }
     }
+  },
+  "useSenderKeys": {
+    "message": "Use Sender Keys"
   }
 }
