@@ -46,10 +46,10 @@ export enum PubKeyType {
 }
 
 export class PubKey {
-  public readonly key: string;
-  public type?: PubKeyType
-
   private static readonly regex: string = '^0[0-9a-fA-F]{65}$';
+  public readonly key: string;
+  public type?: PubKeyType;
+
 
   constructor(pubkeyString: string, type: PubKeyType | undefined = undefined) {
     PubKey.validate(pubkeyString);
