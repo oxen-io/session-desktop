@@ -15,19 +15,24 @@ describe('PendingMessageCache', () => {
   const sandbox = sinon.createSandbox();
   let pendingMessageCacheStub: PendingMessageCache;
 
-  beforeEach(() => {
-    // tslint:disable-next-line: promise-function-async
-    const wrapInPromise = (value: any) => new Promise(r => {
-      r(value);
-    });
+  // tslint:disable-next-line: promise-function-async
+  const wrapInPromise = (value: any) => new Promise(r => {
+    r(value);
+  });
 
+  beforeEach(async () => {
     const mockStorageObject = wrapInPromise([] as Array<RawMessage>);
     const voidPromise = wrapInPromise(undefined);
 
+    // Stub out methods which touch the database.
     sandbox.stub(PendingMessageCache.prototype, 'getFromStorage').returns(mockStorageObject);
     sandbox.stub(PendingMessageCache.prototype, 'syncCacheWithDB').returns(voidPromise);
 
     pendingMessageCacheStub = new PendingMessageCache();
+    await pendingMessageCacheStub.init();
+
+    const fromBeforeEachStorage = pendingMessageCacheStub.getFromStorage();
+    console.log('[vince] fromBeforeEachStorage:', fromBeforeEachStorage);
   });
 
   afterEach(() => {
@@ -36,21 +41,25 @@ describe('PendingMessageCache', () => {
 
   // Add to cache
   it('can add to cache', async () => {
-    const messages = pendingMessageCacheStub.get();
-    console.log('[vince] messages:', messages);
+    const initialCache = pendingMessageCacheStub.cache;
+    expect(initialCache).to.be.equal([]);
 
-    console.log('[vince] pendingMessageCacheStub:', pendingMessageCacheStub);
+    const fromStorage = pendingMessageCacheStub.getFromStorage();
+    expect(fromStorage).should.eventually.equal([]);
 
-    const v1 = await pendingMessageCacheStub.syncCacheWithDB();
-    const v2 = await pendingMessageCacheStub.getFromStorage();
-    const v3 = pendingMessageCacheStub.sayHi();
-
-    console.log('[vince] v1:', v1);
-    console.log('[vince] v2:', v2);
-    console.log('[vince] v3:', v3);
 
     const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
-    const message = new ChatMessage({
+    const message_1 = new ChatMessage({
+      body: 'This is the message content',
+      identifier: '1234567890',
+      timestamp: Date.now(),
+      attachments: undefined,
+      quote: undefined,
+      expireTimer: undefined,
+      lokiProfile: undefined,
+      preview: undefined,
+    });
+    const message_2 = new ChatMessage({
       body: 'This is the message content',
       identifier: '1234567890',
       timestamp: Date.now(),
@@ -61,21 +70,16 @@ describe('PendingMessageCache', () => {
       preview: undefined,
     });
 
-    const rawMessage = MessageUtils.toRawMessage(device, message);
+    const rawMessage = MessageUtils.toRawMessage(device, message_1);
 
-    const initialCache = pendingMessageCacheStub.get();
-    console.log('[vince] initialCache:', initialCache);
+    await pendingMessageCacheStub.add(device, message_1);
+    await pendingMessageCacheStub.add(device, message_2);
 
-    // expect(initialCache).to.be.equal([]);
+    const finalCache = pendingMessageCacheStub.cache;
+    console.log('[vince] finalCache:', finalCache);
 
-    const addedMessage = await pendingMessageCacheStub.add(device, message);
-    console.log('[vince] addedMessage:', addedMessage);
 
-    const cache = pendingMessageCacheStub.get();
-    console.log('[vince] cache:', cache);
-
-    // expect(cache).to.be.equal([rawMessage]);
-    
+    // expect(finalCache).to.be.equal([rawMessage]);
 
   });
     

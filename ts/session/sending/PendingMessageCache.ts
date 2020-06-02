@@ -13,27 +13,16 @@ import { MessageUtils } from '../utils';
 // memory and sync its state with the database on modification (add or remove).
 
 export class PendingMessageCache {
-  private cachedMessages: Array<RawMessage>;
+  public cache: Array<RawMessage>;
 
   constructor() {
     // Load pending messages from the database
-    // void this.load();
+    // You must call init() on this class in order to load from DB.
+    //    const pendingMessageCache = new PendingMessageCache();
+    //    await pendingMessageCache.init()
+    //    >> do stuff
 
-    const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
-    const message = new ChatMessage({
-      body: 'This is the message content',
-      identifier: '1234567890',
-      timestamp: Date.now(),
-      attachments: undefined,
-      quote: undefined,
-      expireTimer: undefined,
-      lokiProfile: undefined,
-      preview: undefined,
-    });
-
-    const rawMessage = MessageUtils.toRawMessage(device, message);
-
-    this.cachedMessages = [rawMessage];
+    this.cache = [];
   }
 
   public async add(device: string, message: ContentMessage): Promise<RawMessage> {
@@ -44,7 +33,7 @@ export class PendingMessageCache {
       return rawMessage;
     }
 
-    this.cachedMessages.push(rawMessage);
+    this.cache.push(rawMessage);
     await this.syncCacheWithDB();
 
     return rawMessage;
@@ -59,10 +48,10 @@ export class PendingMessageCache {
     }
 
     // Remove item from cache and sync with database
-    const updatedCache = this.cachedMessages.filter(
-      (m) => m.identifier !== message.identifier
+    const updatedCache = this.cache.filter(
+      m => m.identifier !== message.identifier
     );
-    this.cachedMessages = updatedCache;
+    this.cache = updatedCache;
     await this.syncCacheWithDB();
 
     return updatedCache;
@@ -70,30 +59,30 @@ export class PendingMessageCache {
 
   public find(message: RawMessage): RawMessage | undefined {
     // Find a message in the cache
-    return this.cachedMessages.find(
-      (m) => m.device === message.device && m.timestamp === message.timestamp
+    return this.cache.find(
+      m => m.device === message.device && m.timestamp === message.timestamp
     );
-  }
-
-  public get() {
-    // Gets all pending messages in cache
-    return this.cachedMessages;
   }
 
   public getForDevice(device: string): Array<RawMessage> {
     // TODO: Any cases in which this will break?
-    return this.cachedMessages.filter((m) => m.device === device);
+    return this.cache.filter(m => m.device === device);
   }
 
   public async clear() {
     // Clears the cache and syncs to DB
-    this.cachedMessages = [];
+    this.cache = [];
     await this.syncCacheWithDB();
   }
 
   public getDevices(): Array<String> {
     // Gets all devices with pending messages
-    return [...new Set(this.cachedMessages.map((m) => m.device))];
+    return [...new Set(this.cache.map((m) => m.device))];
+  }
+
+  public async init() {
+    const messages = await this.getFromStorage();
+    this.cache = messages;
   }
 
   public async getFromStorage(): Promise<Array<RawMessage>> {
@@ -102,10 +91,7 @@ export class PendingMessageCache {
     const pendingMessagesJSON = pendingMessagesData
       ? String(pendingMessagesData.value)
       : '';
-
-    console.log('[vince] pendingMessagesData:', pendingMessagesData);
-    console.log('[vince] pendingMessagesJSON:', pendingMessagesJSON);
-    
+ 
     // tslint:disable-next-line: no-unnecessary-local-variable
     const encodedPendingMessages = pendingMessagesJSON
       ? JSON.parse(pendingMessagesJSON)
@@ -116,18 +102,13 @@ export class PendingMessageCache {
     // TODO:
     //    Construct encryption key to match EncryptionType
     //    Build up Uint8Array from painTextBuffer in JSON
-    return encodedPendingMessages;
+    return [...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages];
   }
 
   public async syncCacheWithDB() {
     // Only call when adding / removing from cache.
-    const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
+    const encodedPendingMessages = JSON.stringify(this.cache) || '';
     await Data.createOrUpdateItem({id: 'pendingMessages', value: encodedPendingMessages});
-  }
-
-  private async load() {
-    const messages = await this.getFromStorage();
-    this.cachedMessages = messages;
   }
 
 }
