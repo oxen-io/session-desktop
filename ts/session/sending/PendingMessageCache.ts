@@ -1,6 +1,6 @@
 import * as Data from '../../../js/modules/data';
 import { RawMessage } from '../types/RawMessage';
-import { ContentMessage } from '../messages/outgoing';
+import { ChatMessage, ContentMessage } from '../messages/outgoing';
 import { MessageUtils } from '../utils';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
@@ -13,11 +13,27 @@ import { MessageUtils } from '../utils';
 // memory and sync its state with the database on modification (add or remove).
 
 export class PendingMessageCache {
-  private cachedMessages: Array<RawMessage> = [];
+  private cachedMessages: Array<RawMessage>;
 
   constructor() {
     // Load pending messages from the database
-    this.load();
+    // void this.load();
+
+    const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
+    const message = new ChatMessage({
+      body: 'This is the message content',
+      identifier: '1234567890',
+      timestamp: Date.now(),
+      attachments: undefined,
+      quote: undefined,
+      expireTimer: undefined,
+      lokiProfile: undefined,
+      preview: undefined,
+    });
+
+    const rawMessage = MessageUtils.toRawMessage(device, message);
+
+    this.cachedMessages = [rawMessage];
   }
 
   public async add(device: string, message: ContentMessage): Promise<RawMessage> {
@@ -32,6 +48,10 @@ export class PendingMessageCache {
     await this.syncCacheWithDB();
 
     return rawMessage;
+  }
+
+  public sayHi(): string {
+    return 'HIIII';
   }
 
   public async remove(message: RawMessage): Promise<Array<RawMessage> | undefined> {
@@ -62,6 +82,11 @@ export class PendingMessageCache {
   public get() {
     // Gets all pending messages in cache
     return this.cachedMessages;
+  }
+
+  public getForDevice(device: string): Array<RawMessage> {
+    // TODO: Any cases in which this will break?
+    return this.cachedMessages.filter((m) => m.device === device);
   }
 
   public async clear() {
@@ -98,9 +123,10 @@ export class PendingMessageCache {
     return encodedPendingMessages;
   }
 
-  public getForDevice(device: string): Array<RawMessage> {
-    // TODO: Any cases in which this will break?
-    return this.cachedMessages.filter((m) => m.device === device);
+  public async syncCacheWithDB() {
+    // Only call when adding / removing from cache.
+    const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
+    await Data.createOrUpdateItem({id: 'pendingMessages', value: encodedPendingMessages});
   }
 
   private async load() {
@@ -108,9 +134,4 @@ export class PendingMessageCache {
     this.cachedMessages = messages;
   }
 
-  private async syncCacheWithDB() {
-    // Only call when adding / removing from cache.
-    const encodedPendingMessages = JSON.stringify(this.cachedMessages) || '';
-    await Data.createOrUpdateItem({id: 'pendingMessages', value: encodedPendingMessages})
-  }
 }
