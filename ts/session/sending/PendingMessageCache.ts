@@ -50,10 +50,6 @@ export class PendingMessageCache {
     return rawMessage;
   }
 
-  public sayHi(): string {
-    return 'HIIII';
-  }
-
   public async remove(message: RawMessage): Promise<Array<RawMessage> | undefined> {
     // Should only be called after message is processed
 
