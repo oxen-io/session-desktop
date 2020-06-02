@@ -42,7 +42,7 @@ describe('PendingMessageCache', () => {
 
     // We expect the cache to initialise as an empty array
     expect(cache).to.be.instanceOf(Array);
-    expect(cache).to.have.length.below(1);
+    expect(cache).to.have.length(0);
   });
 
 
@@ -58,7 +58,7 @@ describe('PendingMessageCache', () => {
 
     const message_1 = new ChatMessage({
       body: 'This is the message content',
-      identifier: '1234567890',
+      identifier: 'message_1',
       timestamp: Date.now(),
       attachments: undefined,
       quote: undefined,
@@ -68,7 +68,7 @@ describe('PendingMessageCache', () => {
     });
     const message_2 = new ChatMessage({
       body: 'This is the message content',
-      identifier: '0987654321',
+      identifier: 'message_2',
       timestamp: Date.now(),
       attachments: undefined,
       quote: undefined,
@@ -86,7 +86,8 @@ describe('PendingMessageCache', () => {
     // Verify that the message is in the cache
     const finalCache = pendingMessageCacheStub.cache;
     console.log('[vince] finalCache:', finalCache);
-    // expect(finalCache).should.eventually.equal([rawMessage_1, rawMessage_2]);
+    // expect(finalCache).to.include.members([rawMessage_1, rawMessage_2]);
+    expect(finalCache).to.have.length(2);
   });
 
 

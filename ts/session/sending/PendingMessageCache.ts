@@ -29,6 +29,10 @@ export class PendingMessageCache {
 
     // Does it exist in cache already?
     if (this.find(rawMessage)) {
+      this.cache.push(rawMessage);
+      this.cache.push(rawMessage);
+      this.cache.push(rawMessage);
+
       return rawMessage;
     }
 
