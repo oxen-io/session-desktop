@@ -78,7 +78,9 @@ export class PendingMessageCache {
   public async getFromStorage(): Promise<Array<RawMessage>> {
     // tslint:disable-next-line: no-backbone-get-set-outside-model
     const pendingMessagesData = await Data.getItemById('pendingMessages');
-    const pendingMessagesJSON = String(pendingMessagesData.value);
+    const pendingMessagesJSON = pendingMessagesData
+      ? String(pendingMessagesData.value)
+      : '';
 
     console.log('[vince] pendingMessagesData:', pendingMessagesData);
     console.log('[vince] pendingMessagesJSON:', pendingMessagesJSON);

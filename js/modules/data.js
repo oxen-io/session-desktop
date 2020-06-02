@@ -38,42 +38,6 @@ let _shutdownPromise = null;
 
 const channels = {};
 
-function init() {
-  // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
-  //   any warnings that might be sent to the console in that case.
-  ipcRenderer.setMaxListeners(0);
-
-  forEach(module.exports, fn => {
-    if (isFunction(fn) && fn.name !== 'init') {
-      makeChannel(fn.name);
-    }
-  });
-
-  ipcRenderer.on(
-    `${SQL_CHANNEL_KEY}-done`,
-    (event, jobId, errorForDisplay, result) => {
-      const job = _getJob(jobId);
-      if (!job) {
-        throw new Error(
-          `Received SQL channel reply to job ${jobId}, but did not have it in our registry!`
-        );
-      }
-
-      const { resolve, reject, fnName } = job;
-
-      if (errorForDisplay) {
-        return reject(
-          new Error(
-            `Error received from SQL channel job ${jobId} (${fnName}): ${errorForDisplay}`
-          )
-        );
-      }
-
-      return resolve(result);
-    }
-  );
-}
-
 module.exports = {
   init,
   _jobs,
@@ -243,6 +207,7 @@ module.exports = {
   getSenderKeys,
   createOrUpdateSenderKeys,
 };
+
 
 function init() {
   // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
