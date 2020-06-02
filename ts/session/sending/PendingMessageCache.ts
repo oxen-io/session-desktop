@@ -21,7 +21,6 @@ export class PendingMessageCache {
     //    const pendingMessageCache = new PendingMessageCache();
     //    await pendingMessageCache.init()
     //    >> do stuff
-
     this.cache = [];
   }
 
@@ -91,7 +90,7 @@ export class PendingMessageCache {
     const pendingMessagesJSON = pendingMessagesData
       ? String(pendingMessagesData.value)
       : '';
- 
+
     // tslint:disable-next-line: no-unnecessary-local-variable
     const encodedPendingMessages = pendingMessagesJSON
       ? JSON.parse(pendingMessagesJSON)

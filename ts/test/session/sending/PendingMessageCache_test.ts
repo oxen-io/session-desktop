@@ -3,7 +3,6 @@ const Data = require('../../../../js/modules/data');
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { ImportMock } from 'ts-mock-imports';
 
 
 import { ChatMessage } from '../../../session/messages/outgoing';
@@ -28,27 +27,35 @@ describe('PendingMessageCache', () => {
     sandbox.stub(PendingMessageCache.prototype, 'getFromStorage').returns(mockStorageObject);
     sandbox.stub(PendingMessageCache.prototype, 'syncCacheWithDB').returns(voidPromise);
 
+    // Initialize new stubbed cache
     pendingMessageCacheStub = new PendingMessageCache();
     await pendingMessageCacheStub.init();
-
-    const fromBeforeEachStorage = pendingMessageCacheStub.getFromStorage();
-    console.log('[vince] fromBeforeEachStorage:', fromBeforeEachStorage);
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  // Add to cache
+
+  it('can initialize cache', async () => {
+    const { cache } = pendingMessageCacheStub;
+
+    // We expect the cache to initialise as an empty array
+    expect(cache).to.be.instanceOf(Array);
+    expect(cache).to.have.length.below(1);
+  });
+
+
   it('can add to cache', async () => {
     const initialCache = pendingMessageCacheStub.cache;
-    expect(initialCache).to.be.equal([]);
+    console.log('[vince] initialCache:', initialCache);
 
     const fromStorage = pendingMessageCacheStub.getFromStorage();
-    expect(fromStorage).should.eventually.equal([]);
-
+    console.log('[vince] fromStorage:', fromStorage);
+    // expect(fromStorage).should.eventually.equal(wrapInPromise([]));
 
     const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
+
     const message_1 = new ChatMessage({
       body: 'This is the message content',
       identifier: '1234567890',
@@ -61,7 +68,7 @@ describe('PendingMessageCache', () => {
     });
     const message_2 = new ChatMessage({
       body: 'This is the message content',
-      identifier: '1234567890',
+      identifier: '0987654321',
       timestamp: Date.now(),
       attachments: undefined,
       quote: undefined,
@@ -70,19 +77,18 @@ describe('PendingMessageCache', () => {
       preview: undefined,
     });
 
-    const rawMessage = MessageUtils.toRawMessage(device, message_1);
+    const rawMessage_1 = MessageUtils.toRawMessage(device, message_1);
+    const rawMessage_2 = MessageUtils.toRawMessage(device, message_2);
 
     await pendingMessageCacheStub.add(device, message_1);
     await pendingMessageCacheStub.add(device, message_2);
 
+    // Verify that the message is in the cache
     const finalCache = pendingMessageCacheStub.cache;
     console.log('[vince] finalCache:', finalCache);
-
-
-    // expect(finalCache).to.be.equal([rawMessage]);
-
+    // expect(finalCache).should.eventually.equal([rawMessage_1, rawMessage_2]);
   });
-    
+
 
     // Get from storage working?
 
