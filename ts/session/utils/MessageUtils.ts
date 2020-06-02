@@ -1,10 +1,10 @@
 import { RawMessage } from '../types/RawMessage';
 import { ContentMessage } from '../messages/outgoing';
 import { EncryptionType } from '../types/EncryptionType';
+import * as crypto from 'crypto';
 
 
-
-function toRawMessage(device: string, message: ContentMessage): RawMessage {
+function toRawMessage(device: PubKey, message: ContentMessage): RawMessage {
   const ttl = message.ttl();
   const timestamp = message.timestamp;
   const plainTextBuffer = message.plainTextBuffer();
@@ -26,11 +26,12 @@ function toRawMessage(device: string, message: ContentMessage): RawMessage {
   //   MediumGroup,
   // }
 
+  // tslint:disable-next-line: no-unnecessary-local-variable
   const rawMessage: RawMessage = {
     identifier: message.identifier,
     plainTextBuffer,
     timestamp,
-    device,
+    device: device.key,
     ttl,
     encryption: EncryptionType.Signal,
   };
@@ -49,7 +50,6 @@ export class PubKey {
   private static readonly regex: string = '^0[0-9a-fA-F]{65}$';
   public readonly key: string;
   public type?: PubKeyType;
-
 
   constructor(pubkeyString: string, type: PubKeyType | undefined = undefined) {
     PubKey.validate(pubkeyString);
@@ -72,6 +72,16 @@ export class PubKey {
     }
 
     throw new Error('Invalid pubkey format');
+  }
+
+  public static generate(): PubKey {
+    // Generates a mock pubkey for testing
+    const PUBKEY_LEN = 66;
+    const numBytes = PUBKEY_LEN / 2;
+    const hexBuffer = crypto.randomBytes(numBytes).toString('hex');
+    const pubkeyString = `0${hexBuffer}`.slice(0, PUBKEY_LEN);
+
+    return new PubKey(pubkeyString);
   }
 }
 

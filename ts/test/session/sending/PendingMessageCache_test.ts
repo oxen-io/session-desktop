@@ -3,12 +3,13 @@ const Data = require('../../../../js/modules/data');
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-
+import uuid from 'uuid';
 
 import { ChatMessage } from '../../../session/messages/outgoing';
-import { MessageUtils } from '../../../session/utils';
+import { MessageUtils, PubKey } from '../../../session/utils';
 import { PendingMessageCache } from '../../../session/sending/PendingMessageCache';
 import { RawMessage } from '../../../session/types/RawMessage';
+import { SignalService } from '../../../protobuf';
 
 describe('PendingMessageCache', () => {
   const sandbox = sinon.createSandbox();
@@ -18,6 +19,19 @@ describe('PendingMessageCache', () => {
   const wrapInPromise = (value: any) => new Promise(r => {
     r(value);
   });
+
+  const generateUniqueMessage = (): ChatMessage => {
+    return new ChatMessage({
+      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      identifier: uuid(),
+      timestamp: Date.now(),
+      attachments: undefined,
+      quote: undefined,
+      expireTimer: undefined,
+      lokiProfile: undefined,
+      preview: undefined,
+    });
+  };
 
   beforeEach(async () => {
     const mockStorageObject = wrapInPromise([] as Array<RawMessage>);
@@ -47,30 +61,25 @@ describe('PendingMessageCache', () => {
 
 
   it('can add to cache', async () => {
-    const device = '0582fe8822c684999663cc6636148328fbd47c0836814c118af4e326bb4f0e1000';
-    const message = new ChatMessage({
-      body: 'This is the message content',
-      identifier: 'message_1',
-      timestamp: Date.now(),
-      attachments: undefined,
-      quote: undefined,
-      expireTimer: undefined,
-      lokiProfile: undefined,
-      preview: undefined,
-    });
+    const device = PubKey.generate();
+    const message = generateUniqueMessage();
 
     const rawMessage = MessageUtils.toRawMessage(device, message);
     await pendingMessageCacheStub.add(device, message);
 
     // Verify that the message is in the cache
     const finalCache = pendingMessageCacheStub.cache;
-    
-    console.log('[vince] finalCache:', finalCache);
 
-    // expect(finalCache).to.include.members([rawMessage]);
-    // expect(finalCache).to.have.length(2);
+    expect(finalCache).to.have.length(1);
+
+    const addedMessage = finalCache[0];
+    expect(addedMessage.device).to.deep.equal(rawMessage.device);
+    expect(addedMessage.timestamp).to.deep.equal(rawMessage.timestamp);
   });
 
+  it('can remove from cache', async() => {
+    //
+  });
 
     // Get from storage working?
 
@@ -81,8 +90,6 @@ describe('PendingMessageCache', () => {
 
     
     // Clear cache working?
-
-    // Remove from cache
 
     // Get devices working? 
     // Get for device working?

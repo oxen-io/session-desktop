@@ -1,7 +1,7 @@
 import * as Data from '../../../js/modules/data';
 import { RawMessage } from '../types/RawMessage';
 import { ChatMessage, ContentMessage } from '../messages/outgoing';
-import { MessageUtils } from '../utils';
+import { MessageUtils, PubKey } from '../utils';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
 
@@ -24,15 +24,11 @@ export class PendingMessageCache {
     this.cache = [];
   }
 
-  public async add(device: string, message: ContentMessage): Promise<RawMessage> {
+  public async add(device: PubKey, message: ContentMessage): Promise<RawMessage> {
     const rawMessage = MessageUtils.toRawMessage(device, message);
 
     // Does it exist in cache already?
     if (this.find(rawMessage)) {
-      this.cache.push(rawMessage);
-      this.cache.push(rawMessage);
-      this.cache.push(rawMessage);
-
       return rawMessage;
     }
 
@@ -102,6 +98,10 @@ export class PendingMessageCache {
 
     // Set encryption type
 
+
+    // Set pubkey from string to PubKey.from()
+
+     
     // TODO:
     //    Construct encryption key to match EncryptionType
     //    Build up Uint8Array from painTextBuffer in JSON
