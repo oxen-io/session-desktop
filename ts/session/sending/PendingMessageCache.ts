@@ -63,9 +63,8 @@ export class PendingMessageCache {
     );
   }
 
-  public getForDevice(device: string): Array<RawMessage> {
-    // TODO: Any cases in which this will break?
-    return this.cache.filter(m => m.device === device);
+  public getForDevice(device: PubKey): Array<RawMessage> {
+    return this.cache.filter(m => m.device === device.key);
   }
 
   public async clear() {
@@ -74,9 +73,11 @@ export class PendingMessageCache {
     await this.syncCacheWithDB();
   }
 
-  public getDevices(): Array<String> {
+  public getDevices(): Array<PubKey> {
     // Gets all devices with pending messages
-    return [...new Set(this.cache.map((m) => m.device))];
+    const pubkeys = [...new Set(this.cache.map(m => m.device))];
+
+    return pubkeys.map(d => PubKey.from(d));
   }
 
   public async init() {
@@ -96,16 +97,12 @@ export class PendingMessageCache {
       ? JSON.parse(pendingMessagesJSON)
       : [];
 
-    // Set encryption type
-
-
     // Set pubkey from string to PubKey.from()
 
      
     // TODO:
-    //    Construct encryption key to match EncryptionType
     //    Build up Uint8Array from painTextBuffer in JSON
-    return [...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages, ...encodedPendingMessages];
+    return encodedPendingMessages;
   }
 
   public async syncCacheWithDB() {
