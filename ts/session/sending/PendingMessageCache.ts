@@ -5,6 +5,7 @@ import { MessageUtils, PubKey } from '../utils';
 
 // TODO: We should be able to import functions straight from the db here without going through the window object
 
+
 // This is an abstraction for storing pending messages.
 // Ideally we want to store pending messages in the database so that
 // on next launch we can re-send the pending messages, but we don't want
@@ -28,7 +29,7 @@ export class PendingMessageCache {
     const rawMessage = MessageUtils.toRawMessage(device, message);
 
     // Does it exist in cache already?
-    if (this.find(rawMessage)) {
+    if(this.find(rawMessage)) {
       return rawMessage;
     }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { SessionButton } from './SessionButton';
-import { SessionIcon, SessionIconSize, SessionIconType } from './icon';
 import {
   NotificationCountSize,
   SessionNotificationCount,
@@ -44,7 +43,6 @@ interface Props {
   labels: Array<string>;
   notificationCount?: number;
   buttonLabel?: string;
-  buttonIcon?: SessionIconType;
   buttonClicked?: any;
 }
 
@@ -67,12 +65,9 @@ export class LeftPaneSectionHeader extends React.Component<Props, State> {
     const {
       labels,
       buttonLabel,
-      buttonIcon,
       buttonClicked,
       notificationCount,
     } = this.props;
-
-    const hasButton = buttonLabel || buttonIcon;
 
     const children = [];
     //loop to create children
@@ -88,19 +83,15 @@ export class LeftPaneSectionHeader extends React.Component<Props, State> {
       );
     }
 
-    if (hasButton && !notificationCount) {
-      const buttonContent = buttonIcon ? (
-        <SessionIcon iconType={buttonIcon} iconSize={SessionIconSize.Small} />
-      ) : (
-        buttonLabel
+    if (buttonLabel && !notificationCount) {
+      children.push(
+        <SessionButton
+          text={buttonLabel}
+          onClick={buttonClicked}
+          key="compose"
+          disabled={false}
+        />
       );
-      const button = (
-        <SessionButton onClick={buttonClicked} key="compose" disabled={false}>
-          {buttonContent}
-        </SessionButton>
-      );
-
-      children.push(button);
     } else if (buttonLabel && notificationCount && notificationCount > 0) {
       children.push(
         <div className="contact-notification-section">
@@ -128,7 +119,7 @@ export class LeftPaneSectionHeader extends React.Component<Props, State> {
       );
     }
 
-    // Create the parent and add the children
+    //Create the parent and add the children
     return <div className="module-left-pane__header">{children}</div>;
   }
 

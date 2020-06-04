@@ -62,7 +62,6 @@ export class LeftPaneSettingSection extends React.Component<Props, State> {
       null,
       undefined,
       undefined,
-      undefined,
       undefined
     );
   }
