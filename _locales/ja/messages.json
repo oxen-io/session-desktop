@@ -1170,7 +1170,7 @@
     }
   },
   "installWelcome": {
-    "message": "Welcome to Session",
+    "message": "Session へようこそ",
     "description": "Welcome title on the install page"
   },
   "installTagline": {
@@ -1182,11 +1182,11 @@
     "description": "Shown on the front page when the application first starst, above the QR code"
   },
   "signalSettings": {
-    "message": "Session Settings",
+    "message": "Session の設定",
     "description": "Used in the guidance to help people find the 'link new device' area of their Signal mobile app"
   },
   "linkedDevices": {
-    "message": "Linked Devices",
+    "message": "リンク済みデバイス",
     "description": "Used in the guidance to help people find the 'link new device' area of their Signal mobile app"
   },
   "plusButton": {
@@ -1435,19 +1435,19 @@
     "description": "Informational text displayed if a sync operation times out."
   },
   "timestamp_s": {
-    "message": "now",
+    "message": "今",
     "description": "Brief timestamp for messages sent less than a minute ago. Displayed in the conversation list and message bubble."
   },
   "timestamp_m": {
-    "message": "1 minute",
+    "message": "1 分",
     "description": "Brief timestamp for messages sent about one minute ago. Displayed in the conversation list and message bubble."
   },
   "timestamp_h": {
-    "message": "1 hour",
+    "message": "1 時間",
     "description": "Brief timestamp for messages sent about one hour ago. Displayed in the conversation list and message bubble."
   },
   "hoursAgoShort": {
-    "message": "$hours$ hr",
+    "message": "$hours$ 時間",
     "description": "Even further contracted form of 'X hours ago' which works both for singular and plural, used in the left pane",
     "placeholders": {
       "hours": {
@@ -1457,7 +1457,7 @@
     }
   },
   "hoursAgo": {
-    "message": "$hours$ hr ago",
+    "message": "$hours$ 時間前",
     "description": "Contracted form of 'X hours ago' which works both for singular and plural",
     "placeholders": {
       "hours": {
@@ -1467,7 +1467,7 @@
     }
   },
   "minutesAgoShort": {
-    "message": "$minutes$ min",
+    "message": "$minutes$ 分",
     "description": "Even further contracted form of 'X minutes ago' which works both for singular and plural, used in the left pane",
     "placeholders": {
       "minutes": {
@@ -1477,7 +1477,7 @@
     }
   },
   "minutesAgo": {
-    "message": "$minutes$ min ago",
+    "message": "$minutes$ 分前",
     "description": "Contracted form of 'X minutes ago' which works both for singular and plural",
     "placeholders": {
       "minutes": {
@@ -1487,7 +1487,7 @@
     }
   },
   "justNow": {
-    "message": "now",
+    "message": "今",
     "description": "Shown if a message is very recent, less than 60 seconds old"
   },
   "timestampFormat_M": {
@@ -1495,7 +1495,7 @@
     "description": "Timestamp format string for displaying month and day (but not the year) of a date within the current year, ex: use 'MMM D' for 'Aug 8', or 'D MMM' for '8 Aug'."
   },
   "messageBodyTooLong": {
-    "message": "Message body is too long.",
+    "message": "メッセージ本体が長すぎます",
     "description": "Shown if the user tries to send more than 64kb of text"
   },
   "unblockToSend": {
@@ -1589,7 +1589,7 @@
     "description": "Label for a selectable option in the message expiration timer menu"
   },
   "disappearingMessages": {
-    "message": "Disappearing messages",
+    "message": "消えるメッセージ",
     "description": "Conversation menu option to enable disappearing messages"
   },
   "changeNickname": {
@@ -1601,59 +1601,59 @@
     "description": "Conversation menu option to clear user nickname"
   },
   "timerOption_0_seconds_abbreviated": {
-    "message": "off",
+    "message": "オフ",
     "description": "Short format indicating current timer setting in the conversation list snippet"
   },
   "timerOption_5_seconds_abbreviated": {
-    "message": "5s",
+    "message": "5 秒",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_10_seconds_abbreviated": {
-    "message": "10s",
+    "message": "10 秒",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_30_seconds_abbreviated": {
-    "message": "30s",
+    "message": "30 秒",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_1_minute_abbreviated": {
-    "message": "1m",
+    "message": "1 分",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_5_minutes_abbreviated": {
-    "message": "5m",
+    "message": "5 分",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_30_minutes_abbreviated": {
-    "message": "30m",
+    "message": "30 分",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_1_hour_abbreviated": {
-    "message": "1h",
+    "message": "1 時間",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_6_hours_abbreviated": {
-    "message": "6h",
+    "message": "6 時間",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_12_hours_abbreviated": {
-    "message": "12h",
+    "message": "12 時間",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_1_day_abbreviated": {
-    "message": "1d",
+    "message": "1 日",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "timerOption_1_week_abbreviated": {
-    "message": "1w",
+    "message": "1 週間",
     "description": "Very short format indicating current timer setting in the conversation header"
   },
   "disappearingMessagesDisabled": {
-    "message": "Disappearing messages disabled",
+    "message": "消えるメッセージが無効です",
     "description": "Displayed in the left pane when the timer is turned off"
   },
   "disabledDisappearingMessages": {
-    "message": "$name$ disabled disappearing messages",
+    "message": "$name$ が消えるメッセージを無効化しました",
     "description": "Displayed in the conversation list when the timer is turned off",
     "placeholders": {
       "name": {
@@ -1663,11 +1663,11 @@
     }
   },
   "youDisabledDisappearingMessages": {
-    "message": "You disabled disappearing messages",
+    "message": "あなたが消えるメッセージを無効化しました",
     "description": "Displayed in the conversation list when the timer is turned off"
   },
   "timerSetTo": {
-    "message": "Timer set to $time$",
+    "message": "タイマーが $time$ に設定されました",
     "description": "Displayed in the conversation list when the timer is updated by some automatic action, or in the left pane",
     "placeholders": {
       "time": {
@@ -1695,7 +1695,7 @@
     }
   },
   "verifyNewNumber": {
-    "message": "Verify Safety Number",
+    "message": "安全番号を検証",
     "description": "Label on button included with safety number change notification in the conversation"
   },
   "yourSafetyNumberWith": {
@@ -1709,11 +1709,11 @@
     }
   },
   "themeLight": {
-    "message": "Light",
+    "message": "ライト",
     "description": "Label text for light theme (normal)"
   },
   "themeDark": {
-    "message": "Dark",
+    "message": "ダーク",
     "description": "Label text for dark theme"
   },
   "themeToggleTitle": {
@@ -1727,11 +1727,11 @@
     "description": "Name for the conversation with your own phone number"
   },
   "hideMenuBarTitle": {
-    "message": "Hide Menu Bar",
+    "message": "メニューバー非表示",
     "description": "Label text for menu bar visibility setting"
   },
   "hideMenuBarDescription": {
-    "message": "Toggle system menu bar visibility",
+    "message": "システムメニューバーの表示の有無を切り替え",
     "description": "Label text for menu bar visibility setting"
   },
   "startConversation": {
@@ -1750,31 +1750,31 @@
     "message": "Relink Session Desktop to your mobile device to continue messaging."
   },
   "unlinked": {
-    "message": "Unlinked"
+    "message": "リンク解除"
   },
   "relink": {
-    "message": "Relink"
+    "message": "再リンク"
   },
   "autoUpdateSettingTitle": {
-    "message": "Auto Update"
+    "message": "自動アップデート"
   },
   "autoUpdateSettingDescription": {
-    "message": "Automatically check for updates on launch"
+    "message": "起動時に自動でアップデートを確認"
   },
   "autoUpdateNewVersionTitle": {
-    "message": "Session update available"
+    "message": "Session のアップデートが利用可能"
   },
   "autoUpdateNewVersionMessage": {
-    "message": "There is a new version of Session available."
+    "message": "Session の新しいバージョンが利用可能になりました。"
   },
   "autoUpdateNewVersionInstructions": {
-    "message": "Press Restart Session to apply the updates."
+    "message": "アップデートを適用するために Session を再起動してください。"
   },
   "autoUpdateRestartButtonLabel": {
-    "message": "Restart Session"
+    "message": "Session を再起動"
   },
   "autoUpdateLaterButtonLabel": {
-    "message": "Later"
+    "message": "後で"
   },
   "autoUpdateDownloadButtonLabel": {
     "message": "ダウンロード"
@@ -1786,7 +1786,7 @@
     "message": "Would you like to download the update?"
   },
   "leftTheGroup": {
-    "message": "$name$ left the group",
+    "message": "$name$ がグループを退出しました",
     "description": "Shown in the conversation history when a single person leaves the group",
     "placeholders": {
       "name": {
@@ -1796,7 +1796,7 @@
     }
   },
   "multipleLeftTheGroup": {
-    "message": "$name$ left the group",
+    "message": "$name$ がグループを退出しました",
     "description": "Shown in the conversation history when multiple people leave the group",
     "placeholders": {
       "name": {
@@ -1806,7 +1806,7 @@
     }
   },
   "updatedTheGroup": {
-    "message": "Group updated",
+    "message": "グループが更新されました",
     "description": "Shown in the conversation history when someone updates the group"
   },
   "titleIsNow": {
@@ -1821,7 +1821,7 @@
     }
   },
   "joinedTheGroup": {
-    "message": "$name$ joined the group",
+    "message": "$name$ がグループに参加しました",
     "description": "Shown in the conversation history when a single person joins the group",
     "placeholders": {
       "name": {
@@ -1831,7 +1831,7 @@
     }
   },
   "multipleJoinedTheGroup": {
-    "message": "$names$ joined the group",
+    "message": "$names$ がグループに参加しました",
     "description": "Shown in the conversation history when more than one person joins the group",
     "placeholders": {
       "names": {
@@ -1841,7 +1841,7 @@
     }
   },
   "kickedFromTheGroup": {
-    "message": "$name$ was removed from the group",
+    "message": "$name$ がグループから削除されました",
     "description": "Shown in the conversation history when a single person is removed from the group",
     "placeholders": {
       "name": {
@@ -1851,7 +1851,7 @@
     }
   },
   "multipleKickedFromTheGroup": {
-    "message": "$names$ were removed from the group",
+    "message": "$names$ がグループから削除されました",
     "description": "Shown in the conversation history when more than one person is removed from the group",
     "placeholders": {
       "names": {
@@ -2407,7 +2407,7 @@
     "message": "デバイスをリンク"
   },
   "restoreSessionID": {
-    "message": "Restore Session ID"
+    "message": "Session ID を復元"
   },
   "restoreUsingSeed": {
     "message": "Restore From Recovery Phrase"
@@ -2449,7 +2449,7 @@
     "message": "Session ID を入力"
   },
   "pasteSessionIDRecipient": {
-    "message": "Enter a Session ID or LNS name"
+    "message": "Session ID または LNS 名を入力"
   },
   "usersCanShareTheir...": {
     "message": "Users can share their Session ID from their account settings, or by sharing their QR code."
@@ -2515,7 +2515,7 @@
     "message": "デバイス"
   },
   "devicesSettingsDescription": {
-    "message": "Manage your linked devices"
+    "message": "リンク済みデバイスの管理"
   },
   "mnemonicEmpty": {
     "message": "Seed is mandatory"
@@ -2584,7 +2584,7 @@
     "message": "次へ"
   },
   "description": {
-    "message": "Description"
+    "message": "説明"
   },
   "filterReceivedRequests": {
     "message": "Filter received requests"
@@ -2631,6 +2631,6 @@
     }
   },
   "useSenderKeys": {
-    "message": "Use Sender Keys"
+    "message": "送信者鍵を使用"
   }
 }
