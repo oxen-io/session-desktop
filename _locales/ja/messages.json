@@ -1905,115 +1905,115 @@
     }
   },
   "blockUser": {
-    "message": "Block User"
+    "message": "ユーザーをブロック"
   },
   "unblockUser": {
-    "message": "Unblock User"
+    "message": "ユーザーのブロックを解除"
   },
   "settingsUnblockHeader": {
-    "message": "Blocked Users",
+    "message": "ブロック済みユーザー",
     "description": "Shown in the settings page as the heading for the blocked user settings"
   },
   "editProfileTitle": {
-    "message": "Change your own display name",
+    "message": "表示名を変更",
     "description": "The title shown when user edits their own profile"
   },
   "editProfileDisplayNameWarning": {
-    "message": "Note: Your display name will be visible to your contacts",
+    "message": "注意: 表示名はあなたの連絡先に表示されます",
     "description": "Shown to the user as a warning about setting display name"
   },
   "copyPublicKey": {
-    "message": "Copy Public Key",
+    "message": "公開鍵をコピー",
     "description": "Button action that the user can click to copy their public keys"
   },
   "banUser": {
-    "message": "Ban User",
+    "message": "ユーザーを BAN",
     "description": "Ban user from open group by public key."
   },
   "banUserConfirm": {
-    "message": "Are you sure you want to ban user?",
+    "message": "本当にユーザーを BAN しますか？",
     "description": "Message shown when confirming user ban."
   },
   "userBanned": {
-    "message": "User banned successfully",
+    "message": "ユーザーの BAN が正常に完了しました",
     "description": "Toast on succesful user ban."
   },
   "userBanFailed": {
-    "message": "Ban failed!",
+    "message": "BAN に失敗しました",
     "description": "Toast on unsuccesful user ban."
   },
   "copyChatId": {
-    "message": "Copy Chat ID"
+    "message": "チャット ID コピー"
   },
   "updateGroup": {
-    "message": "Update Group",
+    "message": "グループを更新",
     "description": "Button action that the user can click to rename the group or add a new member"
   },
   "leaveGroup": {
-    "message": "Leave Group",
+    "message": "グループを退出",
     "description": "Button action that the user can click to leave the group"
   },
   "leaveOpenGroup": {
-    "message": "Leave Open Group",
+    "message": "公開グループを退出",
     "description": "Button action that the user can click to leave the group"
   },
   "leaveClosedGroup": {
-    "message": "Leave Closed Group",
+    "message": "非公開グループを退出",
     "description": "Button action that the user can click to leave the group"
   },
   "leaveClosedGroupConfirmation": {
-    "message": "Leave this Closed Group?",
+    "message": "この非公開グループから退出しますか？",
     "description": "Confirmation dialog text that tells the user what will happen if they leave the closed group."
   },
   "leaveGroupDialogTitle": {
-    "message": "Are you sure you want to leave this group?",
+    "message": "本当にこのグループから退出しますか？",
     "description": "Title shown to the user to confirm they want to leave the group"
   },
   "noContactsForGroup": {
     "message": "You don't have any contacts to start a group with."
   },
   "copiedPublicKey": {
-    "message": "Session ID copied",
+    "message": "Session ID をコピーしました",
     "description": "A toast message telling the user that the key was copied"
   },
   "copiedChatId": {
-    "message": "Copied chat ID",
+    "message": "チャット ID をコピーしました",
     "description": "A toast message telling the user that the key was copied"
   },
   "copyMessage": {
-    "message": "Copy message text",
+    "message": "メッセージをコピー",
     "description": "Button action that the user can click to copy their public keys"
   },
   "selectMessage": {
-    "message": "Select message",
+    "message": "メッセージを選択",
     "description": "Button action that the user can click to select the message"
   },
   "copiedMessage": {
-    "message": "Message text copied",
+    "message": "メッセージをコピーしました",
     "description": "A toast message telling the user that the message text was copied"
   },
   "editProfile": {
-    "message": "Edit Profile",
+    "message": "プロフィールを編集",
     "description": "Button action that the user can click to edit their profile"
   },
   "editGroupNameOrPicture": {
-    "message": "Edit group name or picture",
+    "message": "グループ名または写真を編集",
     "description": "Button action that the user can click to edit a group name (open)"
   },
   "editGroupName": {
-    "message": "Edit group name",
+    "message": "グループ名を編集",
     "description": "Button action that the user can click to edit a group name (closed)"
   },
   "createGroupDialogTitle": {
-    "message": "Creating a Closed Group",
+    "message": "非公開グループを作成中",
     "description": "Title for the dialog box used to create a new private group"
   },
   "updateGroupDialogTitle": {
-    "message": "Updating a Closed Group",
+    "message": "非公開グループを更新中",
     "description": "Title for the dialog box used to update an existing private group"
   },
   "updatePublicGroupDialogTitle": {
-    "message": "Updating a open group Channel",
+    "message": "公開グループチャンネルを更新中",
     "description": "Title for the dialog box used to update an existing open group channel"
   },
   "showSeed": {
@@ -2024,10 +2024,10 @@
     "message": "あなたの Session ID"
   },
   "setStatus": {
-    "message": "Set a status..."
+    "message": "ステータスを設定..."
   },
   "setAccountPasswordTitle": {
-    "message": "Set Account Password",
+    "message": "アカウントパスワードを設定",
     "description": "Prompt for user to set account password in settings view"
   },
   "setAccountPasswordDescription": {
@@ -2035,15 +2035,15 @@
     "description": "Description for set account password setting view"
   },
   "changeAccountPasswordTitle": {
-    "message": "Change Account Password",
+    "message": "アカウントパスワードを設定",
     "description": "Prompt for user to change account password in settings view"
   },
   "changeAccountPasswordDescription": {
-    "message": "Change your password",
+    "message": "アカウントパスワードを設定",
     "description": "Description for change account password setting view"
   },
   "removeAccountPasswordTitle": {
-    "message": "Remove Account Password",
+    "message": "アカウントパスワードを削除",
     "description": "Prompt for user to remove account password in settings view"
   },
   "removeAccountPasswordDescription": {
@@ -2051,17 +2051,17 @@
     "description": "Description for remove account password setting view"
   },
   "enterPassword": {
-    "message": "Please enter your password"
+    "message": "パスワードを入力してください"
   },
   "confirmPassword": {
-    "message": "Confirm password"
+    "message": "パスワードの確認"
   },
   "pasteLongPasswordToastTitle": {
     "message": "The clipboard content exceeds the maximum password length of $max_pwd_len$ characters.",
     "description": "Shown when user pastes a password which is longer than MAX_PASSWORD_LEN"
   },
   "showSeedPasswordRequest": {
-    "message": "Please enter your password",
+    "message": "パスワードを入力してください",
     "description": "Request for user to enter password to show seed."
   },
   "seedSavePromptMain": {
@@ -2073,7 +2073,7 @@
     "description": "Prompt on seed modal requesting user to save their seed. Line two"
   },
   "QRCodeTitle": {
-    "message": "View My QR Code",
+    "message": "QR コードを表示",
     "description": "Title given to QR Code modal"
   },
   "QRCodeDescription": {
@@ -2081,23 +2081,23 @@
     "description": "Description given to QRCode modal"
   },
   "showQRCode": {
-    "message": "Show QR Code",
+    "message": "QR コードを表示",
     "description": "Button action that the user can click to view their QR code"
   },
   "showAddServer": {
-    "message": "Add Public Server",
+    "message": "公開サーバーを追加",
     "description": "Button action that the user can click to connect to a new public server"
   },
   "serverUrl": {
-    "message": "Server URL",
+    "message": "サーバー URL",
     "description": "Placeholder for server URL input"
   },
   "noServerURL": {
-    "message": "Please enter a server URL",
+    "message": "サーバー URL を入力してください",
     "description": "Error message when no server url entered"
   },
   "addServerDialogTitle": {
-    "message": "Connect To New Public Server",
+    "message": "新しい公開サーバーに接続",
     "description": "Title for the dialog box used to connect to a new public server"
   },
   "createPrivateGroup": {
@@ -2117,14 +2117,14 @@
     "description": "A toast message telling the user that their Session ID was copied"
   },
   "passwordViewTitle": {
-    "message": "Type In Your Password",
+    "message": "パスワードを入力",
     "description": "The title shown when user needs to type in a password to unlock the messenger"
   },
   "unlock": {
-    "message": "Unlock"
+    "message": "ロック解除"
   },
   "resetDatabase": {
-    "message": "Reset Database",
+    "message": "データベースをリセット",
     "description": "A button action that the user can click to reset the database"
   },
   "password": {
@@ -2171,13 +2171,13 @@
     "message": "Incorrect password"
   },
   "setPasswordTitle": {
-    "message": "Set Password"
+    "message": "パスワードの設定"
   },
   "changePasswordTitle": {
-    "message": "Changed Password"
+    "message": "パスワードの変更"
   },
   "removePasswordTitle": {
-    "message": "Removed Password"
+    "message": "パスワードの削除"
   },
   "setPasswordToastDescription": {
     "message": "Your password has been set. Please keep it safe."
@@ -2210,10 +2210,10 @@
     "message": "Password set"
   },
   "removePasswordSuccess": {
-    "message": "Password removed"
+    "message": "パスワードを削除しました"
   },
   "changePasswordSuccess": {
-    "message": "Password changed"
+    "message": "パスワードを変更しました"
   },
   "passwordLengthError": {
     "message": "Password must be between 6 and 50 characters long",
@@ -2276,18 +2276,18 @@
     "description": "Indicates that a conversation is not friends with us"
   },
   "emptyGroupNameError": {
-    "message": "Group Name cannot be empty",
+    "message": "グループ名は空欄にできません",
     "description": "Error message displayed on empty group name"
   },
   "emptyProfileNameError": {
-    "message": "Profile name cannot be empty",
+    "message": "プロフィール名は空欄にできません",
     "description": "Error message displayed on empty profile name"
   },
   "nonAdminDeleteMember": {
-    "message": "Only group admin can remove members!"
+    "message": "グループ管理者のみがメンバーを削除できます。"
   },
   "editProfileDialogTitle": {
-    "message": "Editing Profile"
+    "message": "プロフィールの編集"
   },
 
   "editProfileModalTitle": {
@@ -2374,13 +2374,13 @@
     "message": "表示名を入力"
   },
   "optionalPassword": {
-    "message": "Verify Password"
+    "message": "パスワードの確認"
   },
   "enterOptionalPassword": {
     "message": "パスワードを入力 (任意)"
   },
   "verifyPassword": {
-    "message": "Verify Password"
+    "message": "パスワードの確認"
   },
   "devicePairingHeaderReassure": {
     "message": "Linking may take up to one minute to register on your primary device. Please be patient."
@@ -2461,7 +2461,7 @@
     "message": "メッセージ"
   },
   "lists": {
-    "message": "Lists"
+    "message": "一覧"
   },
   "edit": {
     "message": "編集"
@@ -2476,40 +2476,40 @@
     "message": "あなたの Session ID"
   },
   "accept": {
-    "message": "Accept"
+    "message": "受け入れる"
   },
   "decline": {
-    "message": "Decline"
+    "message": "拒否する"
   },
   "appearanceSettingsTitle": {
     "message": "外観"
   },
   "appearanceSettingsDescription": {
-    "message": "Appearance and interface options"
+    "message": "外観とインターフェースを設定"
   },
   "accountSettingsTitle": {
     "message": "アカウント"
   },
   "accountSettingsDescription": {
-    "message": "Manage your account"
+    "message": "あなたのアカウントを管理"
   },
   "permissionSettingsTitle": {
-    "message": "Permissions"
+    "message": "権限"
   },
   "permissionSettingsDescription": {
-    "message": "Set Session's permissions"
+    "message": "Session の権限を設定"
   },
   "privacySettingsTitle": {
     "message": "プライバシー"
   },
   "privacySettingsDescription": {
-    "message": "Manage your privacy settings"
+    "message": "プライバシー設定を管理"
   },
   "notificationSettingsTitle": {
     "message": "通知"
   },
   "notificationSettingsDescription": {
-    "message": "Configure notification options"
+    "message": "通知方法を設定"
   },
   "devicesSettingsTitle": {
     "message": "デバイス"
@@ -2527,7 +2527,7 @@
     "message": "You have friend requests from..."
   },
   "members": {
-    "message": "$count$ members",
+    "message": "$count$ メンバー",
     "placeholders": {
       "count": {
         "content": "$1",
