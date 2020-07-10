@@ -4,11 +4,11 @@
     "description": "Shown in the about box for the link to https://getsession.org/privacy-policy/"
   },
   "copyErrorAndQuit": {
-    "message": "Copy error and quit",
+    "message": "エラーをコピーして終了",
     "description": "Shown in the top-level error popup, allowing user to copy the error text and close the app"
   },
   "unknownGroup": {
-    "message": "Unknown group",
+    "message": "未知のグループ",
     "description": "Shown as the name of a group if we don't have any information about it"
   },
   "databaseError": {
@@ -16,135 +16,135 @@
     "description": "Shown in a popup if the database cannot start up properly"
   },
   "deleteAndRestart": {
-    "message": "Delete all data and restart",
+    "message": "全てのデータを削除して再起動",
     "description": "Shown in a popup if the database cannot start up properly; allows user to dalete database and restart"
   },
   "mainMenuFile": {
-    "message": "&File",
+    "message": "ファイル (&F)",
     "description": "The label that is used for the File menu in the program main menu. The '&' indicates that the following letter will be used as the keyboard 'shortcut letter' for accessing the menu with the Alt-<letter> combination."
   },
   "mainMenuEdit": {
-    "message": "&Edit",
+    "message": "編集 (&E)",
     "description": "The label that is used for the Edit menu in the program main menu. The '&' indicates that the following letter will be used as the keyboard 'shortcut letter' for accessing the menu with the Alt-<letter> combination."
   },
   "mainMenuView": {
-    "message": "&View",
+    "message": "表示 (&V)",
     "description": "The label that is used for the View menu in the program main menu. The '&' indicates that the following letter will be used as the keyboard 'shortcut letter' for accessing the menu with the Alt-<letter> combination."
   },
   "mainMenuWindow": {
-    "message": "&Window",
+    "message": "ウィンドウ (&W)",
     "description": "The label that is used for the Window menu in the program main menu. The '&' indicates that the following letter will be used as the keyboard 'shortcut letter' for accessing the menu with the Alt-<letter> combination."
   },
   "mainMenuHelp": {
-    "message": "&Help",
+    "message": "ヘルプ (&H)",
     "description": "The label that is used for the Help menu in the program main menu. The '&' indicates that the following letter will be used as the keyboard 'shortcut letter' for accessing the menu with the Alt-<letter> combination."
   },
   "mainMenuSettings": {
-    "message": "Preferences…",
+    "message": "設定...",
     "description": "The label that is used for the Preferences menu in the program main menu. This should be consistent with the standard naming for ‘Preferences’ on the operating system."
   },
   "appMenuHide": {
-    "message": "Hide",
+    "message": "最小化",
     "description": "Application menu command to hide the window"
   },
   "appMenuHideOthers": {
-    "message": "Hide Others",
+    "message": "他のウィンドウを隠す",
     "description": "Application menu command to hide all other windows"
   },
   "appMenuUnhide": {
-    "message": "Show All",
+    "message": "全て表示",
     "description": "Application menu command to show all application windows"
   },
   "appMenuQuit": {
-    "message": "Quit Session",
+    "message": "Session を終了",
     "description": "Application menu command to close the application"
   },
   "editMenuUndo": {
-    "message": "Undo",
+    "message": "元に戻す",
     "description": "Edit menu command to remove recently-typed text"
   },
   "editMenuRedo": {
-    "message": "Redo",
+    "message": "やり直す",
     "description": "Edit menu command to restore previously undone typed text"
   },
   "editMenuCut": {
-    "message": "Cut",
+    "message": "切り取り",
     "description": "Edit menu command to remove selected text and add it to clipboard"
   },
   "editMenuCopy": {
-    "message": "Copy",
+    "message": "コピー",
     "description": "Edit menu command to add selected text to clipboard"
   },
   "editMenuPaste": {
-    "message": "Paste",
+    "message": "貼り付け",
     "description": "Edit menu command to insert text from clipboard at cursor location"
   },
   "editMenuPasteAndMatchStyle": {
-    "message": "Paste and Match Style",
+    "message": "貼り付けてスタイルをマッチさせる",
     "description": "Edit menu command to insert text from clipboard at cursor location, taking only text and not style information"
   },
   "editMenuDelete": {
-    "message": "Delete",
+    "message": "削除する",
     "description": "Edit menu command to remove the selected text"
   },
   "editMenuSelectAll": {
-    "message": "Select All",
+    "message": "全て選択",
     "description": "Edit menu comand to select all of the text in selected text box"
   },
   "editMenuStartSpeaking": {
-    "message": "Start speaking",
+    "message": "話し始める",
     "description": "Edit menu item under 'speech' to start dictation"
   },
   "editMenuStopSpeaking": {
-    "message": "Stop speaking",
+    "message": "話し終わる",
     "description": "Edit menu item under 'speech' to stop dictation"
   },
   "windowMenuClose": {
-    "message": "Close Window",
+    "message": "ウィンドウを閉じる",
     "description": "Window menu command to close the current window"
   },
   "windowMenuMinimize": {
-    "message": "Minimize",
+    "message": "最小化する",
     "description": "Window menu command to minimize the current window"
   },
   "windowMenuZoom": {
-    "message": "Zoom",
+    "message": "ズーム",
     "description": "Window menu command to make the current window the size of the whole screen"
   },
   "windowMenuBringAllToFront": {
-    "message": "Bring All to Front",
+    "message": "全てを前面に表示する",
     "description": "Window menu command to bring all windows of current applicatinon to front"
   },
   "viewMenuResetZoom": {
-    "message": "Actual Size",
+    "message": "実サイズ",
     "description": "View menu command to go back to the default zoom"
   },
   "viewMenuZoomIn": {
-    "message": "Zoom In",
+    "message": "ズームインする",
     "description": "View menu command to make everything bigger"
   },
   "viewMenuZoomOut": {
-    "message": "Zoom Out",
+    "message": "ズームアウトする",
     "description": "View menu command to make everything smaller"
   },
   "viewMenuToggleFullScreen": {
-    "message": "Toggle Full Screen",
+    "message": "フルスクリーンを切り替える",
     "description": "View menu command to enter or leave Full Screen mode"
   },
   "viewMenuToggleDevTools": {
-    "message": "Toggle Developer Tools",
+    "message": "開発者ツールを切り替える",
     "description": "View menu command to show or hide the developer tools"
   },
   "menuSetupWithImport": {
-    "message": "Set Up with Import",
+    "message": "インポートデータを使ってセットアップ",
     "description": "When the application is not yet set up, menu option to start up the import sequence"
   },
   "menuSetupAsNewDevice": {
-    "message": "Set Up as New Device",
+    "message": "新しいデバイスとしてセットアップ",
     "description": "When the application is not yet set up, menu option to start up the set up as fresh device"
   },
   "menuSetupAsStandalone": {
-    "message": "Set Up as Standalone Device",
+    "message": "独立したデバイスとして設定",
     "description": "Only available on development modes, menu option to open up the standalone device setup sequence"
   },
   "contextMenuNoSuggestions": {
@@ -152,7 +152,7 @@
     "description": "Shown in the context menu for a misspelled word to indicate that there are no suggestions to replace the misspelled word"
   },
   "connectingLoad": {
-    "message": "Connecting To Server",
+    "message": "サーバーに接続中",
     "description": "Message shown on the as a loading screen while we are connecting to something"
   },
   "loading": {
@@ -160,11 +160,11 @@
     "description": "Message shown on the loading screen before we've loaded any messages"
   },
   "optimizingApplication": {
-    "message": "Optimizing application...",
+    "message": "アプリケーションを最適化しています...",
     "description": "Message shown on the loading screen while we are doing application optimizations"
   },
   "migratingToSQLCipher": {
-    "message": "Optimizing messages... $status$ complete.",
+    "message": "メッセージを最適化中... $status$ 完了しました。",
     "description": "Message shown on the loading screen while we are doing application optimizations",
     "placeholders": {
       "status": {
@@ -174,83 +174,83 @@
     }
   },
   "archivedConversations": {
-    "message": "Archived Conversations",
+    "message": "アーカイブ済みの会話",
     "description": "Shown in place of the search box when showing archived conversation list"
   },
   "archiveHelperText": {
-    "message": "These conversations are archived and will only appear in the Inbox if new messages are received.",
+    "message": "この会話はアーカイブされます。新しいメッセージが届いた場合だけ受信箱に表示されます。",
     "description": "Shown at the top of the archived converations list in the left pane"
   },
   "archiveConversation": {
-    "message": "Archive Conversation",
+    "message": "会話をアーカイブ",
     "description": "Shown in menu for conversation, and moves conversation out of main conversation list"
   },
   "moveConversationToInbox": {
-    "message": "Move Conversation to Inbox",
+    "message": "会話を受信箱へ移動",
     "description": "Undoes Archive Conversation action, and moves archived conversation back to the main conversation list"
   },
   "chooseDirectory": {
-    "message": "Choose folder",
+    "message": "フォルダを選択",
     "description": "Button to allow the user to find a folder on disk"
   },
   "chooseFile": {
-    "message": "Choose file",
+    "message": "ファイルを選択",
     "description": "Button to allow the user to find a file on disk"
   },
   "loadDataHeader": {
-    "message": "Load your data",
+    "message": "データを読み込む",
     "description": "Header shown on the first screen in the data import process"
   },
   "loadDataDescription": {
-    "message": "You've just gone through the export process, and your contacts and messages are waiting patiently on your computer. Select the folder that contains your saved Session data.",
+    "message": "Session の保存データが含まれたフォルダを選択してください。",
     "description": "Introduction to the process of importing messages and contacts from disk"
   },
   "importChooserTitle": {
-    "message": "Choose directory with exported data",
+    "message": "エクスポートされたデータがあるフォルダを選んで下さい。",
     "description": "Title of the popup window used to select data previously exported"
   },
   "importErrorHeader": {
-    "message": "Something went wrong!",
+    "message": "エラーが発生しました。",
     "description": "Header of the error screen after a failed import"
   },
   "importingHeader": {
-    "message": "Loading contacts and messages",
+    "message": "連絡先とメッセージを読み込み中",
     "description": "Header of screen shown as data is import"
   },
   "importErrorFirst": {
-    "message": "Make sure you have chosen the correct directory that contains your saved Session data. Its name should begin with 'Session Export.' You can also save a new copy of your data from the Chrome App.",
+    "message": "正しいディレクトリを選択したか確認してください。ディレクトリ名は Session Export から始まります。",
     "description": "Message shown if the import went wrong; first paragraph"
   },
   "importErrorSecond": {
-    "message": "If these steps don't work for you, please submit a debug log (View -> Debug Log) so that we can help you get migrated!",
+    "message": "もしこれらの方法がうまく作用しない場合、デバッグログを提出していただけると将来的な解決につながります!",
     "description": "Message shown if the import went wrong; second paragraph"
   },
   "importAgain": {
-    "message": "Choose folder and try again",
+    "message": "フォルダを選択して再度お試しください。",
     "description": "Button shown if the user runs into an error during import, allowing them to start over"
   },
   "importCompleteHeader": {
-    "message": "Success!",
+    "message": "成功しました!",
     "description": "Header shown on the screen at the end of a successful import process"
   },
   "importCompleteStartButton": {
-    "message": "Start using Session",
+    "message": "Session を使い始める",
     "description": "Button shown at end of successful import process, nothing left but a restart"
   },
   "importCompleteLinkButton": {
-    "message": "Link this device to your phone",
+    "message": "この端末をモバイル端末とリンクする",
     "description": "Button shown at end of successful 'light' import process, so the standard linking process still needs to happen"
   },
   "selectedLocation": {
-    "message": "your selected location",
+    "message": "選択したフォルダ",
     "description": "Message shown as the export location if we didn't capture the target directory"
   },
   "upgradingDatabase": {
-    "message": "Upgrading database. This may take some time...",
+    "message": "データベースを更新しています。しばらく掛かるかも知れません。",
     "description": "Message shown on the loading screen when we're changing database structure on first run of a new version"
   },
   "loadingMessages": {
-    "message": "Loading messages. $count$ so far...",
+    "message": "メッセージを読み込んでいます。今のところ $count$ 通です。",
     "description": "Message shown on the loading screen when we're catching up on the backlog of messages",
     "placeholders": {
       "count": {
@@ -260,34 +260,34 @@
     }
   },
   "capsLockOn": {
-    "message": "Caps lock is on."
+    "message": "Caps Lock が有効です。"
   },
   "me": {
-    "message": "Me",
+    "message": "あなた",
     "description": "The label for yourself when shown in a group member list"
   },
   "view": {
-    "message": "View",
+    "message": "表示",
     "description": "Used as a label on a button allowing user to see more information"
   },
   "youLeftTheGroup": {
-    "message": "You left the group",
+    "message": "グループを退出しました。",
     "description": "Displayed when a user can't send a message because they have left the group"
   },
   "youGotKickedFromGroup": {
-    "message": "You were removed from the group",
+    "message": "グループから削除されました。",
     "description": "Displayed when a user can't send a message because they have left the group"
   },
   "scrollDown": {
-    "message": "Scroll to bottom of conversation",
+    "message": "一番下までスクロール",
     "description": "Alt text for button to take user down to bottom of conversation, shown when user scrolls up"
   },
   "messageBelow": {
-    "message": "New message below",
+    "message": "新着メッセージ",
     "description": "Alt text for button to take user down to bottom of conversation with a new message out of screen"
   },
   "messagesBelow": {
-    "message": "New messages below",
+    "message": "新着メッセージ",
     "description": "Alt text for button to take user down to bottom of conversation with more than one message out of screen"
   },
   "unreadMessage": {
@@ -305,7 +305,7 @@
     }
   },
   "youMarkedAsVerified": {
-    "message": "You marked your Safety Number with $name$ as verified",
+    "message": "$name$ との安全番号を検証済みにしました",
     "description": "Shown in the conversation history when the user marks a contact as verified.",
     "placeholders": {
       "name": {
@@ -315,7 +315,7 @@
     }
   },
   "youMarkedAsNotVerified": {
-    "message": "You marked your Safety Number with $name$ as not verified",
+    "message": "$name$ との安全番号を未検証にしました",
     "description": "Shown in the conversation history when the user marks a contact as not verified, whether on the Safety Number screen or by dismissing a banner or dialog.",
     "placeholders": {
       "name": {
@@ -325,7 +325,7 @@
     }
   },
   "youMarkedAsVerifiedOtherDevice": {
-    "message": "You marked your Safety Number with $name$ as verified from another device",
+    "message": "$name$ との安全番号を他の端末で検証済みにしました",
     "description": "Shown in the conversation history when we discover that the user marked a contact as verified on another device.",
     "placeholders": {
       "name": {
@@ -335,7 +335,7 @@
     }
   },
   "youMarkedAsNotVerifiedOtherDevice": {
-    "message": "You marked your Safety Number with $name$ as not verified from another device",
+    "message": "$name$ との安全番号を他の端末で未検証にしました",
     "description": "Shown in the conversation history when we discover that the user marked a contact as not verified on another device.",
     "placeholders": {
       "name": {
@@ -345,18 +345,18 @@
     }
   },
   "membersNeedingVerification": {
-    "message": "Your safety numbers with these group members have changed since you last verified. Click a group member to see your new safety number with them.",
+    "message": "このメンバーとの安全番号に変更があります。メンバーをクリックして新しい安全番号を見て下さい。",
     "description": "When there are multiple previously-verified group members with safety number changes, a banner will be shown. The list of contacts with safety number changes is shown, and this text introduces that list."
   },
   "changedSinceVerifiedTitle": {
-    "message": "Safety Number Changed"
+    "message": "安全番号が変更されました"
   },
   "changedSinceVerifiedMultiple": {
-    "message": "Your safety numbers with multiple group members have changed since you last verified. This could mean that someone is trying to intercept your communication or that they have simply reinstalled Session.",
+    "message": "複数のメンバーで安全番号に変更がありました。誰かが通信を傍受しようとしているかも知れませんし、メンバーが Session をインストールし直しただけかも知れません。",
     "description": "Shown on confirmation dialog when user attempts to send a message"
   },
   "changedSinceVerified": {
-    "message": "Your safety number with $name$ has changed since you last verified. This could mean that someone is trying to intercept your communication or that $name$ has simply reinstalled Session.",
+    "message": "$name$ との安全番号に変更があります。誰かが通信を傍受しようとしているかも知れませんし、$name$ が Session をインストールし直しただけかも知れません。",
     "description": "Shown on confirmation dialog when user attempts to send a message",
     "placeholders": {
       "name": {
@@ -366,7 +366,7 @@
     }
   },
   "changedRightAfterVerify": {
-    "message": "The safety number you are trying to verify has changed. Please review your new safety number with $name$. Remember, this change could mean that someone is trying to intercept your communication or that $name$ has simply reinstalled Session.",
+    "message": "検証しようとしている安全番号に変更がありました。$name$ との安全番号を再確認してください。誰かが通信を傍受しようとしているかも知れませんし、$name$ が Session をインストールし直しただけかも知れません。",
     "description": "Shown on the safety number screen when the user has selected to verify/unverify a contact's safety number, and we immediately discover a safety number change",
     "placeholders": {
       "name": {
@@ -376,11 +376,11 @@
     }
   },
   "changedRecentlyMultiple": {
-    "message": "Your safety numbers with multiple group members have changed recently. This could mean that someone is trying to intercept your communication or that they have simply reinstalled Session.",
+    "message": "安全番号の変更が複数のメンバーで最近ありました。誰かが通信を傍受しようとしているかも知れませんし、メンバーが Session をインストールし直しただけかも知れません。",
     "description": "Shown on confirmation dialog when user attempts to send a message"
   },
   "changedRecently": {
-    "message": "Your safety number with $name$ has changed recently. This could mean that someone is trying to intercept your communication or that $name$ has simply reinstalled Session.",
+    "message": "$name$ との安全番号が最近変わりました。誰かが通信を傍受しているかも知れませんし、$name$ が Session をインストールし直しただけかも知れません。",
     "description": "Shown on confirmation dialog when user attempts to send a message",
     "placeholders": {
       "name": {
@@ -390,7 +390,7 @@
     }
   },
   "identityKeyErrorOnSend": {
-    "message": "Your safety number with $name$ has changed. This could either mean that someone is trying to intercept your communication or that $name$ has simply reinstalled Session. You may wish to verify your saftey number with this contact.",
+    "message": "$name$ との安全番号に変更がありました。誰かが通信を傍受しようとしているかも知れませんし、$name$ が Session をインストールし直しただけかも知れません。この相手との安全番号を検証することをお勧めします。",
     "description": "Shown when user clicks on a failed recipient in the message detail view after an identity key change",
     "placeholders": {
       "name": {
@@ -400,11 +400,11 @@
     }
   },
   "sendAnyway": {
-    "message": "Send Anyway",
+    "message": "とにかく送信する",
     "description": "Used on a warning dialog to make it clear that it might be risky to send the message."
   },
   "noLongerVerified": {
-    "message": "Your safety number with $name$ has changed and is no longer verified. Click to show.",
+    "message": "$name$ との安全番号に変更があり、未検証です。クリックして表示してください。",
     "description": "Shown in converation banner when user's safety number has changed, but they were previously verified.",
     "placeholders": {
       "name": {
@@ -414,38 +414,38 @@
     }
   },
   "multipleNoLongerVerified": {
-    "message": "Your safety numbers with multiple members of this group have changed and are no longer verified. Click to show.",
+    "message": "複数のメンバーとの安全番号に変更があり、未検証です。クリックして表示してください。",
     "description": "Shown in conversation banner when more than one group member's safety number has changed, but they were previously verified."
   },
   "debugLogExplanation": {
-    "message": "This log will be posted publicly online for contributors to view. You may examine and edit it before submitting."
+    "message": "このログはネット上に公開され、開発者が閲覧します。提出前に編集することができます。"
   },
   "debugLogError": {
-    "message": "Something went wrong with the upload! Please consider manually adding your log to the bug you file."
+    "message": "アップロードに失敗しました。手入力でログをバグ報告に付けることを考慮して下さい。"
   },
   "reportIssue": {
-    "message": "Report an issue",
+    "message": "問題を報告",
     "description": "Link to open the issue tracker"
   },
   "gotIt": {
-    "message": "Got it!",
+    "message": "了解",
     "description": "Label for a button that dismisses a dialog. The user clicks it to confirm that they understand the message in the dialog."
   },
   "submit": {
-    "message": "Submit"
+    "message": "提出"
   },
   "acceptNewKey": {
-    "message": "Accept",
+    "message": "受け入れる",
     "description": "Label for a button to accept a new safety number"
   },
   "verify": {
-    "message": "Mark as verified"
+    "message": "検証済みにする"
   },
   "unverify": {
-    "message": "Mark as not verified"
+    "message": "未検証にする"
   },
   "isVerified": {
-    "message": "You have verified your safety number with $name$.",
+    "message": "$name$ との安全番号を検証しました",
     "description": "Summary state shown at top of the safety number screen if user has verified contact.",
     "placeholders": {
       "name": {
@@ -455,7 +455,7 @@
     }
   },
   "isNotVerified": {
-    "message": "You have not verified your safety number with $name$.",
+    "message": "$name$ との安全番号が未検証です",
     "description": "Summary state shown at top of the safety number screen if user has not verified contact.",
     "placeholders": {
       "name": {
@@ -465,32 +465,32 @@
     }
   },
   "verified": {
-    "message": "Verified"
+    "message": "検証済み"
   },
   "newIdentity": {
-    "message": "New safety number",
+    "message": "新しい安全番号",
     "description": "Header for a key change dialog"
   },
   "identityChanged": {
-    "message": "Your safety number with this contact has changed. This could either mean that someone is trying to intercept your communication, or this contact simply reinstalled Session. You may wish to verify the new safety number below."
+    "message": "この連絡先との安全番号が変わりました。誰かが通信を傍受しようとしているかも知れませんし、連絡先がただ Session をインストールし直しただけかもしれません。以下の安全番号を確認してください。"
   },
   "incomingError": {
-    "message": "Error handling incoming message"
+    "message": "受信中にエラー"
   },
   "media": {
-    "message": "Media",
+    "message": "メディア",
     "description": "Header of the default pane in the media gallery, showing images and videos"
   },
   "mediaEmptyState": {
-    "message": "You don’t have any media in this conversation",
+    "message": "この会話にはメディアがありません",
     "description": "Message shown to user in the media gallery when there are no messages with media attachments (images or video)"
   },
   "documents": {
-    "message": "Documents",
+    "message": "ドキュメント",
     "description": "Header of the secondary pane in the media gallery, showing every non-media attachment"
   },
   "documentsEmptyState": {
-    "message": "You don’t have any documents in this conversation",
+    "message": "この会話にはドキュメントがありません",
     "description": "Message shown to user in the media gallery when there are no messages with document attachments (anything other than images or video)"
   },
   "today": {
@@ -510,15 +510,15 @@
     "description": "Section header in the media gallery"
   },
   "unsupportedAttachment": {
-    "message": "Unsupported attachment type. Click to save.",
+    "message": "サポートされていない種類の添付ファイルです。クリックして保存してください。",
     "description": "Displayed for incoming unsupported attachment"
   },
   "clickToSave": {
-    "message": "Click to save",
+    "message": "クリックして保存",
     "description": "Hover text for attachment filenames"
   },
   "unnamedFile": {
-    "message": "Unnamed File",
+    "message": "無名のファイル",
     "description": "Hover text for attachment filenames"
   },
   "voiceMessage": {
@@ -526,7 +526,7 @@
     "description": "Name for a voice message attachment"
   },
   "dangerousFileType": {
-    "message": "For security reasons, this file type cannot be sent",
+    "message": "セキュリティ上の理由で許可されていない種類の添付ファイルです",
     "description": "Shown in toast when user attempts to send .exe file, for example"
   },
   "loadingPreview": {
@@ -534,7 +534,7 @@
     "description": "Shown while Session Desktop is fetching metadata for a url in composition area"
   },
   "stagedPreviewThumbnail": {
-    "message": "Draft thumbnail link preview for $domain$",
+    "message": "$domain$ のリンクプレビューのサムネイルの下書き",
     "description": "Shown while Session Desktop is fetching metadata for a url in composition area",
     "placeholders": {
       "path": {
@@ -544,7 +544,7 @@
     }
   },
   "previewThumbnail": {
-    "message": "Thumbnail link preview for $domain$",
+    "message": "$domain$ のリンクプレビューのサムネイル",
     "description": "Shown while Session Desktop is fetching metadata for a url in composition area",
     "placeholders": {
       "path": {
@@ -554,7 +554,7 @@
     }
   },
   "stagedImageAttachment": {
-    "message": "Draft image attachment: $path$",
+    "message": "添付画像の下書き: $path$",
     "description": "Alt text for staged attachments",
     "placeholders": {
       "path": {
@@ -582,10 +582,10 @@
     "message": "Unable to load attachment."
   },
   "connect": {
-    "message": "Connect"
+    "message": "接続"
   },
   "disconnected": {
-    "message": "Disconnected",
+    "message": "切断",
     "description": "Displayed when the desktop client cannot connect to the server."
   },
   "connecting": {
