@@ -817,14 +817,14 @@
     "description": "Shown if a general error happened while trying to install update package"
   },
   "readOnlyVolume": {
-    "message": "Session Desktop is likely in a macOS quarantine, and will not be able to auto-update. Please try moving Session.app to /Applications with Finder.",
+    "message": "Session Desktop は macOS によって隔離されていると思われ、自動アップデートを行うことができません。Finder で Session.app を /Applications に移動してみてください。",
     "description": "Shown on MacOS if running on a read-only volume and we cannot update"
   },
   "ok": {
     "message": "OK"
   },
   "enter": {
-    "message": "Enter"
+    "message": "参加"
   },
   "yes": {
     "message": "はい"
@@ -848,37 +848,37 @@
     "message": "必要ありません"
   },
   "noMessagesTitle": {
-    "message": "You don't have any messages, yet."
+    "message": "まだ、メッセージはありません。"
   },
   "noMessagesSubtitle": {
-    "message": "Would you like to join Session's open group?"
+    "message": "Session の公開グループに参加してよろしいですか？"
   },
   "pairNewDevice": {
-    "message": "Pair New Device"
+    "message": "新しいデバイスをリンク"
   },
   "devicePairingAccepted": {
-    "message": "Device Linking Accepted"
+    "message": "デバイスのリンクが許可されました"
   },
   "devicePairingReceived": {
-    "message": "Device Linking Received"
+    "message": "デバイスのリンクが受信されました"
   },
   "devicePairingRequestReceivedLimitTitle": {
-    "message": "Device linking limit reached."
+    "message": "デバイスのリンクの制限に達しました。"
   },
   "devicePairingRequestReceivedLimitDescription": {
-    "message": "To change your linked devices, please unlink a device first."
+    "message": "リンク先のデバイスを変更するには、まずデバイスのリンクを解除してください。"
   },
   "devicePairingRequestReceivedNoListenerTitle": {
-    "message": "Device linking request received."
+    "message": "デバイスのリンク要求を受信しました。"
   },
   "devicePairingRequestReceivedNoListenerDescription": {
-    "message": "Device linking request received but you are not on the device linking screen. \nGo to Settings > Device > Link New Device."
+    "message": "デバイスリンク要求を受信しましたが、デバイスリンク画面には出ていません。\n「設定 > デバイス > 新しいデバイスをリンク」を開いてください。"
   },
   "waitingForDeviceToRegister": {
-    "message": "Waiting for device to register..."
+    "message": "デバイスの登録を待機しています..."
   },
   "pairNewDevicePrompt": {
-    "message": "Scan the QR Code on your secondary device"
+    "message": "あなたの2つ目のデバイスで QR コードをスキャンしてください"
   },
   "pairedDevices": {
     "message": "リンク済みのデバイス"
@@ -887,45 +887,45 @@
     "message": "リンク済みのデバイスがありません"
   },
   "deviceIsSecondaryNoPairing": {
-    "message": "This device is a secondary device and so cannot be linked."
+    "message": "このデバイスはセカンダリデバイスのため、リンクすることはできません。"
   },
   "pairingOngoing": {
-    "message": "A pairing request is already ongoing. Restart the app if it takes too long."
+    "message": "すでにリンク要求が進行中です。時間がかかりすぎる場合は、アプリを再起動してください。"
   },
   "allowPairing": {
-    "message": "Allow Linking"
+    "message": "リンクを許可"
   },
   "allowPairingWithDevice": {
-    "message": "Allow linking with this device?"
+    "message": "このデバイスとのリンクを許可しますか？"
   },
   "provideDeviceAlias": {
-    "message": "Please provide an alias for this linked device"
+    "message": "このリンクされたデバイスのエイリアスを入力してください"
   },
   "showPairingWordsTitle": {
-    "message": "Linking Secret Words"
+    "message": "リンクのシークレットワード"
   },
   "secretPrompt": {
-    "message": "Here is your secret"
+    "message": "こちらがあなたのシークレットです"
   },
   "confirmUnpairingTitle": {
-    "message": "Please confirm you want to unlink the following device:"
+    "message": "以下のデバイスのリンクを解除してよろしいですか："
   },
   "unpairDevice": {
-    "message": "Unlink Device"
+    "message": "デバイスのリンクを解除"
   },
   "unpairDeviceWarning": {
-    "message": "Are you sure you want to unlink this device?",
+    "message": "このデバイスのリンクを解除してよろしいですか？",
     "description": "Warning for device unlinking in settings view"
   },
   "unpairDeviceWarningSub": {
-    "message": "Unlinking this device will delete all history, including all messages, sessions, and contacts from this device.",
+    "message": "このデバイスのリンクを解除すると、このデバイスから全てのメッセージ、セッション、および連絡先を含む全ての履歴が削除されます。",
     "description": "Warning description for device unlinking in settings view"
   },
   "deviceUnpaired": {
-    "message": "Device Unlinked"
+    "message": "デバイスのリンクが解除されました"
   },
   "clear": {
-    "message": "Clear"
+    "message": "クリア"
   },
   "copySeed": {
     "message": "シードをコピー"
@@ -934,13 +934,13 @@
     "message": "確認"
   },
   "failedToSend": {
-    "message": "Failed to send to some recipients. Check your network connection."
+    "message": "一部の宛先への送信に失敗しました。ネットワーク接続を確認してください。"
   },
   "error": {
     "message": "エラー"
   },
   "messageDetail": {
-    "message": "Message Detail"
+    "message": "メッセージの詳細"
   },
   "delete": {
     "message": "削除"
@@ -953,19 +953,19 @@
     "description": "Text of Forward Message button"
   },
   "deletePublicWarning": {
-    "message": "Are you sure? Clicking 'unsend' will permanently remove this message for everyone in this channel."
+    "message": "続行してよろしいですか？「送信解除」をクリックすると、このチャンネル内の全員からこのメッセージが永久に削除されます。"
   },
   "deleteMultiplePublicWarning": {
-    "message": "Are you sure? Clicking 'unsend' will permanently remove these messages for everyone in this channel."
+    "message": "続行してよろしいですか？「送信解除」をクリックすると、このチャンネル内の全員からこれらのメッセージが永久に削除されます。"
   },
   "deleteWarning": {
-    "message": "Are you sure? Clicking 'delete' will permanently remove this message from this device only."
+    "message": "続行してよろしいですか？「削除」をクリックすると、このデバイスからのみこのメッセージが永久に削除されます。"
   },
   "deleteMultipleWarning": {
-    "message": "Are you sure? Clicking 'delete' will permanently remove these messages from this device only."
+    "message": "続行してよろしいですか？「削除」をクリックすると、このデバイスからのみこれらのメッセージが永久に削除されます。"
   },
   "messageDeletionForbidden": {
-    "message": "You don’t have permission to delete others’ messages",
+    "message": "あなたには他の人のメッセージを削除する権限はありません",
     "description": "Toast message explaining that the user doens't have the rights to delete other people's messages."
   },
   "deleteThisMessage": {
@@ -973,61 +973,61 @@
   },
   "from": {
     "message": "From",
-    "description": "Label for the sender of a message"
+    "description": "メッセージの送信者のラベル"
   },
   "to": {
     "message": "to",
-    "description": "Label for the receiver of a message"
+    "description": "メッセージの受信者のラベル"
   },
   "sent": {
-    "message": "Sent",
+    "message": "送信日時",
     "description": "Label for the time a message was sent"
   },
   "received": {
-    "message": "Received",
+    "message": "受信日時",
     "description": "Label for the time a message was received"
   },
   "sendMessage": {
-    "message": " Type your message",
+    "message": "メッセージを入力してください",
     "description": "Placeholder text in the message entry field"
   },
   "sendMessageDisabledSecondary": {
-    "message": "This pubkey belongs to a secondary device. You should never see this message",
+    "message": "この公開鍵はセカンダリデバイスに属しています。このメッセージは決して表示されるべきではありません。",
     "description": "Placeholder text in the message entry field when it is disabled because a secondary device conversation is visible"
   },
   "sendMessageDisabled": {
-    "message": "Waiting for friend request approval",
+    "message": "友達リクエスト承認待ち",
     "description": "Placeholder text in the message entry field when it is disabled while we are waiting for a friend request approval"
   },
   "sendMessageFriendRequest": {
-    "message": "Send your first message",
+    "message": "最初のメッセージを送る",
     "description": "Placeholder text in the message entry field when it is the first message sent to that contact"
   },
   "sendMessageLeftGroup": {
-    "message": "You left this group"
+    "message": "あなたはこのグループから退出しました"
   },
   "sendMessageBlockedUser": {
-    "message": "You have blocked the user"
+    "message": "ユーザーをブロックしました"
   },
   "groupMembers": {
-    "message": "Group members"
+    "message": "グループメンバー"
   },
   "showMembers": {
-    "message": "Show members"
+    "message": "メンバーを表示"
   },
   "resetSession": {
-    "message": "Reset Session",
+    "message": "Session をリセット",
     "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
   },
   "showSafetyNumber": {
-    "message": "View Safety Number"
+    "message": "安全番号を表示"
   },
   "viewAllMedia": {
-    "message": "View all media",
+    "message": "全てのメディアを表示",
     "description": "This is a menu item for viewing all media (images + video) in a conversation, using the imperative case, as in a command."
   },
   "verifyHelp": {
-    "message": "If you wish to verify the security of your end-to-end encryption with $name$, compare the numbers above with the numbers on their device.",
+    "message": "$name$ のとエンドツーエンドの暗号化のセキュリティを確認したい場合は、上記の数字と相手のデバイスの数字が一致することを確認してください。",
     "placeholders": {
       "name": {
         "content": "$1",
@@ -1036,18 +1036,18 @@
     }
   },
   "theirIdentityUnknown": {
-    "message": "You haven't exchanged any messages with this contact yet. Your safety number with them will be available after the first message."
+    "message": "この連絡先とはまだメッセージを交換していません。あなたの安全番号は、最初のメッセージの後に利用可能になります。"
   },
   "moreInfo": {
     "message": "詳細情報...",
     "description": "Shown on the drop-down menu for an individual message, takes you to message detail screen"
   },
   "retrySend": {
-    "message": "Retry Send",
+    "message": "送信を再試行",
     "description": "Shown on the drop-down menu for an indinvidaul message, but only if it is an outgoing message that failed to send"
   },
   "deleteMessage": {
-    "message": "Delete Message",
+    "message": "メッセージを削除",
     "description": "Shown on the drop-down menu for an individual message, deletes single message"
   },
   "unsendMessage": {
@@ -1063,24 +1063,24 @@
     "description": "Message search result"
   },
   "deleteMessages": {
-    "message": "Delete Messages",
+    "message": "メッセージを削除",
     "description": "Menu item for deleting messages, title case."
   },
 
   "deletePublicConversationConfirmation": {
-    "message": "Permanently delete the messages locally from this public channel?",
+    "message": "この公開チャンネルからローカルでメッセージを永久に削除しますか？",
     "description": "Confirmation dialog text that asks the user if they really wish to delete the public channel messages locally. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
   },
   "deleteConversationConfirmation": {
-    "message": "Permanently delete the messages in this conversation?",
+    "message": "この会話からメッセージを永久に削除しますか？",
     "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
   },
   "deletePublicChannel": {
-    "message": "Leave Channel",
+    "message": "チャンネルを退出",
     "description": "Confirmation dialog title that asks the user if they really wish to delete a public channel. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
   },
   "deletePublicChannelConfirmation": {
-    "message": "Leave this Open Group?",
+    "message": "この公開グループから退出しますか？",
     "description": "Confirmation dialog text that tells the user what will happen if they leave the public channel."
   },
   "deleteAccount": {
@@ -1096,71 +1096,71 @@
     "description": "Warning for account deletion in settings view"
   },
   "deleteContact": {
-    "message": "Delete Contact",
+    "message": "連絡先を削除",
     "description": "Confirmation dialog title that asks the user if they really wish to delete the contact. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
   },
   "deleteContactConfirmation": {
-    "message": "Permanently delete this contact and destroy all sessions?",
+    "message": "この連絡先を永久に削除し、すべてのセッションを破棄しますか？",
     "description": "Confirmation dialog text that tells the user what will happen if they delete the contact."
   },
   "sessionResetFailed": {
-    "message": "Secure session reset failed",
+    "message": "安全なセッションのリセットに失敗しました",
     "description": "your secure session could not been transmitted to the other participant."
   },
   "sessionResetOngoing": {
-    "message": "Secure session reset in progress",
+    "message": "安全なセッションのリセットが進行中です",
     "description": "your secure session is currently being reset, waiting for the reset acknowledgment."
   },
   "sessionEnded": {
-    "message": "Secure session reset succeeded",
+    "message": "安全なセッションのリセットが完了しました",
     "description": "This is a past tense, informational message. In other words, your secure session has been reset."
   },
   "betaDisclaimerTitle": {
-    "message": "Thanks for using Session!",
+    "message": "Session をご使用いただきありがとうございます！",
     "description": "Title for beta disclaimer modal"
   },
   "betaDisclaimerSubtitle": {
-    "message": "This software is still in its beta phase.",
+    "message": "このソフトウェアはまだベータ版の段階です。",
     "description": "Subtitle for beta disclaimer modal"
   },
   "betaDisclaimerDescription": {
-    "message": "While your messages are secured with end-to-end encryption, third parties like your ISP can see who you're talking to while in the beta version. It is also possible that third parties could correlate your public key to your IP address and real identity if they learn your public key.",
+    "message": "あなたのメッセージはエンドツーエンドの暗号化で保護されていますが、ベータ版では、あなたの ISP のような第三者があなたが誰と話しているのかを見ることができます。また、第三者があなたの公開鍵を知ることで、あなたの公開鍵とあなたの IP アドレスや実際の身元が関連づけられる可能性もあります。",
     "description": "Description for beta disclaimer modal"
   },
   "quoteThumbnailAlt": {
-    "message": "Thumbnail of image from quoted message",
+    "message": "引用されたメッセージの画像のサムネイル",
     "description": "Used in alt tag of thumbnail images inside of an embedded message quote"
   },
   "imageAttachmentAlt": {
-    "message": "Image attached to message",
+    "message": "メッセージに添付された画像",
     "description": "Used in alt tag of image attachment"
   },
   "videoAttachmentAlt": {
-    "message": "Screenshot of video attached to message",
+    "message": "メッセージに添付された動画のスクリーンショット",
     "description": "Used in alt tag of video attachment preview"
   },
   "lightboxImageAlt": {
-    "message": "Image sent in conversation",
+    "message": "会話の中で送られてきた画像",
     "description": "Used in the alt tag for the image shown in a full-screen lightbox view"
   },
   "imageCaptionIconAlt": {
-    "message": "Icon showing that this image has a caption",
+    "message": "この画像にキャプションがあることを示すアイコン",
     "description": "Used for the icon layered on top of an image in message bubbles"
   },
   "addACaption": {
-    "message": "Add a caption...",
+    "message": "キャプションを追加...",
     "descripton": "Used as the placeholder text in the caption editor text field"
   },
   "save": {
-    "message": "Save",
+    "message": "保存",
     "descripton": "Used as a 'commit changes' button in the Caption Editor for outgoing image attachments"
   },
   "fileIconAlt": {
-    "message": "File icon",
+    "message": "ファイルアイコン",
     "description": "Used in the media gallery documents tab to visually represent a file"
   },
   "emojiAlt": {
-    "message": "Emoji image of '$title$'",
+    "message": "$title$ の絵文字画像",
     "description": "Used in the alt tag of all emoji images",
     "placeholders": {
       "title": {
@@ -1174,11 +1174,11 @@
     "description": "Welcome title on the install page"
   },
   "installTagline": {
-    "message": "Privacy is possible. Signal makes it easy.",
+    "message": "プライバシーを守ることができます。Session が簡単にしてくれます。",
     "description": "Tagline displayed under 'installWelcome' string on the install page"
   },
   "linkYourPhone": {
-    "message": "Link your phone to Session",
+    "message": "あなたの端末を Session にリンク",
     "description": "Shown on the front page when the application first starst, above the QR code"
   },
   "signalSettings": {
@@ -1190,35 +1190,35 @@
     "description": "Used in the guidance to help people find the 'link new device' area of their Signal mobile app"
   },
   "plusButton": {
-    "message": "'+' Button",
+    "message": "'+' ボタン",
     "description": "The button used in Signal Android to add a new linked device"
   },
   "linkNewDevice": {
-    "message": "Link New Device",
+    "message": "新しいデバイスをリンク",
     "description": "The menu option shown in Signal iOS to add a new linked device"
   },
   "deviceName": {
-    "message": "Device name",
+    "message": "デバイス名",
     "description": "The label in settings panel shown for the user-provided name for this desktop instance"
   },
   "chooseDeviceName": {
-    "message": "Choose this device's name",
+    "message": "このデバイスの名前を選択",
     "description": "The header shown on the 'choose device name' screen in the device linking process"
   },
   "finishLinkingPhone": {
-    "message": "Finish linking phone",
+    "message": "端末のリンクを完了",
     "description": "The text on the button to finish the linking process, after choosing the device name"
   },
   "initialSync": {
-    "message": "Syncing contacts and groups",
+    "message": "連絡先とグループの同期",
     "description": "Shown during initial link while contacts and groups are being pulled from mobile device"
   },
   "installConnectionFailed": {
-    "message": "Failed to connect to server.",
+    "message": "サーバーへの接続に失敗しました。",
     "description": "Displayed when we can't connect to the server."
   },
   "installTooManyDevices": {
-    "message": "Sorry, you have too many devices linked already. Try removing some."
+    "message": "申し訳ありませんが、すでにリンクされているデバイスが多すぎます。いくつか削除してみてください。"
   },
   "settings": {
     "message": "設定",
@@ -1229,11 +1229,11 @@
     "description": "Header for theme settings"
   },
   "permissions": {
-    "message": "Permissions",
+    "message": "権限",
     "description": "Header for permissions section of settings"
   },
   "general": {
-    "message": "General",
+    "message": "一般",
     "description": "Header for general options on the settings screen"
   },
   "linkPreviewsTitle": {
@@ -1248,54 +1248,54 @@
     "message": "警告"
   },
   "linkPreviewsConfirmMessage": {
-    "message": "You will not have full metadata protection when sending or receiving link previews."
+    "message": "リンクプレビューの送受信時には、完全なメタデータ保護受けられません。"
   },
 
   "mediaPermissionsTitle": {
-    "message": "Microphone and Camera"
+    "message": "カメラとマイク"
   },
   "mediaPermissionsDescription": {
-    "message": "Allow access to camera and microphone",
+    "message": "カメラとマイクへのアクセスを許可",
     "description": "Description of the media permission description"
   },
   "spellCheckTitle": {
-    "message": "Spell Check",
+    "message": "スペルチェック",
     "description": "Description of the media permission description"
   },
   "spellCheckDescription": {
-    "message": "Enable spell check of text entered in message composition box",
+    "message": "メッセージボックスに入力されたテキストのスペルチェックを有効にする",
     "description": "Description of the media permission description"
   },
   "spellCheckDirty": {
-    "message": "You must restart Session to apply your new settings",
+    "message": "新しい設定を適用するには、Session を再起動する必要があります。",
     "description": "Shown when the user changes their spellcheck setting to indicate that they must restart Signal."
   },
   "clearDataHeader": {
-    "message": "Clear All Local Data",
+    "message": "全てのローカルデータを削除",
     "description": "Header in the settings dialog for the section dealing with data deletion"
   },
   "clearDataExplanation": {
-    "message": "This will clear all data in the application, removing all messages and saved account information.",
+    "message": "これにより、アプリケーション内の全てのデータが削除され、すべてのメッセージと保存されたアカウント情報が削除されます。",
     "description": "Text describing what the clear data button will do."
   },
   "clearDataButton": {
-    "message": "Clear Data",
+    "message": "データを削除",
     "description": "Button in the settings dialog starting process to delete all data"
   },
   "deleteAllDataHeader": {
-    "message": "Delete all data?",
+    "message": "全てのデータを削除しますか？",
     "description": "Header of the full-screen delete data confirmation screen"
   },
   "deleteAllDataBody": {
-    "message": "You are about to delete all of this application's saved account information, including all contacts and all messages. You can always register with your seed again, but that will not restore deleted messages.",
+    "message": "あなたは、全ての連絡先と全てのメッセージを含む、このアプリケーションの保存されたアカウント情報を全て削除しようとしています。あなたはいつでも再びあなたのシードに登録することができますが、それは削除されたメッセージを復元することはできません。",
     "description": "Text describing what exactly will happen if the user clicks the button to delete all data"
   },
   "deleteAllDataButton": {
-    "message": "Delete all data",
+    "message": "全てのデータを削除",
     "description": "Text of the button that deletes all data"
   },
   "deleteAllDataProgress": {
-    "message": "Disconnecting and deleting all data",
+    "message": "切断して全てのデータを削除中",
     "description": "Message shown to user when app is disconnected and data deleted"
   },
   "notifications": {
