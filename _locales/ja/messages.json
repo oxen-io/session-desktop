@@ -1303,19 +1303,19 @@
     "description": "Header for notification settings"
   },
   "readReceiptSettingDescription": {
-    "message": "See and share when messages have been read (enables read receipts in all sessions).",
+    "message": "メッセージの既読を表示および共有します(全てのセッションで開封確認メッセージを有効にします)。",
     "description": "Description of the read receipts setting"
   },
   "readReceiptSettingTitle": {
-    "message": "Read Receipts",
+    "message": "開封確認",
     "description": "Title of the read receipts setting"
   },
   "typingIndicatorsSettingDescription": {
-    "message": "See and share when messages are being typed (applies to all sessions).",
+    "message": "メッセージ入力中の通知を表示および共有します(全てのセッションに適用されます)。",
     "description": "Description of the typing indicators setting"
   },
   "typingIndicatorsSettingTitle": {
-    "message": "Typing Indicators",
+    "message": "メッセージ入力中通知",
     "description": "Title of the typing indicators setting"
   },
   "messageTTL": {
@@ -1323,19 +1323,19 @@
     "description": "Title of the Message TTL setting"
   },
   "messageTTLSettingDescription": {
-    "message": "Time to live (how long the recipient will have to collect their messages)",
+    "message": "メッセージの生存時間 (受信者がメッセージを収集可能な時間)",
     "description": "Description of the time to live setting"
   },
   "messageTTLSettingWarning": {
-    "message": "Warning! Lowering the TTL could result in messages being lost if the recipient doesn't collect them in time!",
+    "message": "警告！ TTL を短く設定しすぎると、受信者がメッセージを受け取る前にメッセージが失われ(生存時間が切れ)、受信者がメッセージを受け取れなくなる可能性があります。",
     "description": "Warning for the time to live setting"
   },
   "zoomFactorSettingTitle": {
-    "message": "Zoom Factor",
+    "message": "ズームファクタ",
     "description": "Title of the Zoom Factor setting"
   },
   "notificationSettingsDialog": {
-    "message": "When messages arrive, display notifications that reveal...",
+    "message": "メッセージ受信時に表示される通知の設定...",
     "description": "Explain the purpose of the notification settings"
   },
   "disableNotifications": {
@@ -1355,83 +1355,83 @@
     "description": "Label for setting notifications to display sender name only"
   },
   "newMessage": {
-    "message": "New Message",
+    "message": "新着メッセージ",
     "description": "Displayed in notifications for only 1 message"
   },
   "newMessages": {
-    "message": "New Messages",
+    "message": "新着メッセージ",
     "description": "Displayed in notifications for multiple messages"
   },
   "notificationMostRecentFrom": {
-    "message": "Most recent from:",
+    "message": "最近の連絡先から：",
     "description": "Displayed in notifications when setting is 'name only' and more than one message is waiting"
   },
   "notificationFrom": {
-    "message": "From:",
+    "message": "差出人：",
     "description": "Displayed in notifications when setting is 'name only' and one message is waiting"
   },
   "notificationMostRecent": {
-    "message": "Most recent:",
+    "message": "最近の受信：",
     "description": "Displayed in notifications when setting is 'name and message' and more than one message is waiting"
   },
   "sendFailed": {
-    "message": "Send failed",
+    "message": "送信できませんでした",
     "description": "Shown on outgoing message if it fails to send"
   },
   "showMore": {
-    "message": "Details",
+    "message": "詳細",
     "description": "Displays the details of a key change"
   },
   "showLess": {
-    "message": "Hide details",
+    "message": "詳細を非表示",
     "description": "Hides the details of a key change"
   },
   "learnMore": {
-    "message": "Learn more about verifying safety numbers",
+    "message": "安全番号の確認について",
     "description": "Text that links to a support article on verifying safety numbers"
   },
   "expiredWarning": {
-    "message": "This version of Session has expired. Please upgrade to the latest version to continue messaging.",
+    "message": "Session のバージョンが古すぎます。最新版にアップデートしてください。",
     "description": "Warning notification that this version of the app has expired"
   },
   "clockOutOfSync": {
-    "message": "Your clock is out of sync. Please update your clock and try again.",
+    "message": "時刻が同期されていません。時刻を更新して、もう一度やり直してください。",
     "description": "Notifcation that user's clock is out of sync with Loki's servers."
   },
   "upgrade": {
-    "message": "Upgrade",
+    "message": "アップデート",
     "description": "Label text for button to upgrade the app to the latest version"
   },
   "mediaMessage": {
-    "message": "Media message",
+    "message": "メディアメッセージ",
     "description": "Description of a message that has an attachment and no text, displayed in the conversation list as a preview."
   },
   "unregisteredUser": {
-    "message": "Number is not registered",
+    "message": "宛先の電話番号は登録されていません",
     "description": "Error message displayed when sending to an unregistered user."
   },
   "sync": {
-    "message": "Contacts",
+    "message": "連絡先",
     "description": "Label for contact and group sync settings"
   },
   "syncExplanation": {
-    "message": "Import all Signal groups and contacts from your mobile device.",
+    "message": "グループと連絡先を携帯端末から取り込む",
     "description": "Explanatory text for sync settings"
   },
   "lastSynced": {
-    "message": "Last import at",
+    "message": "最近の取り込みは",
     "description": "Label for date and time of last sync operation"
   },
   "syncNow": {
-    "message": "Import now",
+    "message": "取り込む",
     "description": "Label for a button that syncs contacts and groups from your phone"
   },
   "syncing": {
-    "message": "Importing...",
+    "message": "取り込み中...",
     "description": "Label for a disabled sync button while sync is in progress."
   },
   "syncFailed": {
-    "message": "Import failed. Make sure your computer and your phone are connected to the internet.",
+    "message": "取り込みに失敗しました。パソコンと携帯端末がインターネットに接続されているか確認してください。",
     "description": "Informational text displayed if a sync operation times out."
   },
   "timestamp_s": {
@@ -1499,15 +1499,15 @@
     "description": "Shown if the user tries to send more than 64kb of text"
   },
   "unblockToSend": {
-    "message": "Unblock this contact to send a message.",
+    "message": "この連絡先にメッセージを送信するには、ブロックを解除してください。",
     "description": "Brief message shown when trying to message a blocked number"
   },
   "unblockGroupToSend": {
-    "message": "This group is blocked. Unlock it if you would like to send a message.",
+    "message": "このグループにメッセージを送信するには、ブロックを解除してください。",
     "description": "Brief message shown when trying to message a blocked group"
   },
   "youChangedTheTimer": {
-    "message": "You set the disappearing message timer to $time$",
+    "message": "消えるメッセージのタイマーを $time$ に設定しました",
     "description": "Message displayed when you change the message expiration timer in a conversation.",
     "placeholders": {
       "time": {
@@ -1517,7 +1517,7 @@
     }
   },
   "timerSetOnSync": {
-    "message": "Updated disappearing message timer to $time$",
+    "message": "消えるメッセージのタイマーを $time$ に更新しました",
     "description": "Message displayed when timer is set on initial link of desktop device.",
     "placeholders": {
       "time": {
@@ -1527,7 +1527,7 @@
     }
   },
   "theyChangedTheTimer": {
-    "message": "$name$ set the disappearing message timer to $time$",
+    "message": "$name$ が消えるメッセージのタイマーを $time$ に設定しました",
     "description": "Message displayed when someone else changes the message expiration timer in a conversation.",
     "placeholders": {
       "name": {
@@ -1677,15 +1677,15 @@
     }
   },
   "audioNotificationDescription": {
-    "message": "Play audio notification",
+    "message": "音声通知を有効にする",
     "description": "Description for audio notification setting"
   },
   "safetyNumberChanged": {
-    "message": "Safety Number has changed",
+    "message": "安全番号が変更されました",
     "description": "A notification shown in the conversation when a contact reinstalls"
   },
   "safetyNumberChangedGroup": {
-    "message": "Safety Number with $name$ has changed",
+    "message": "$name$ との安全番号が変更されました",
     "description": "A notification shown in a group conversation when a contact reinstalls, showing the contact name",
     "placeholders": {
       "name": {
@@ -1699,7 +1699,7 @@
     "description": "Label on button included with safety number change notification in the conversation"
   },
   "yourSafetyNumberWith": {
-    "message": "Your safety number with $name$:",
+    "message": "$name$ との安全番号：",
     "description": "Heading for safety number view",
     "placeholders": {
       "name": {
@@ -1717,13 +1717,13 @@
     "description": "Label text for dark theme"
   },
   "themeToggleTitle": {
-    "message": "Light Mode"
+    "message": "ライトモード"
   },
   "themeToggleDescription": {
-    "message": "Choose the theme best suited to you"
+    "message": "あなたに適したテーマを選択してください"
   },
   "noteToSelf": {
-    "message": "Note to Self",
+    "message": "自分のためのメモ",
     "description": "Name for the conversation with your own phone number"
   },
   "hideMenuBarTitle": {
@@ -1735,19 +1735,19 @@
     "description": "Label text for menu bar visibility setting"
   },
   "startConversation": {
-    "message": "Start New Conversation",
+    "message": "新しい会話を開始",
     "description": "Label underneath number a user enters that is not an existing contact"
   },
   "newPhoneNumber": {
-    "message": "Enter a phone number to add a contact.",
+    "message": "番号を入力して連絡先を追加する",
     "description": "Placeholder for adding a new number to a contact"
   },
   "invalidNumberError": {
-    "message": "Invalid public key",
+    "message": "無効な公開鍵です",
     "description": "When a person inputs a public key that is invalid"
   },
   "unlinkedWarning": {
-    "message": "Relink Session Desktop to your mobile device to continue messaging."
+    "message": "メッセージを継続するために携帯端末と再接続する。"
   },
   "unlinked": {
     "message": "リンク解除"
@@ -1780,10 +1780,10 @@
     "message": "ダウンロード"
   },
   "autoUpdateDownloadedMessage": {
-    "message": "The new update has been downloaded."
+    "message": "アップデートのダウンロードが完了しました。"
   },
   "autoUpdateDownloadInstructions": {
-    "message": "Would you like to download the update?"
+    "message": "アップデートをダウンロードしますか？"
   },
   "leftTheGroup": {
     "message": "$name$ がグループを退出しました",
@@ -1811,7 +1811,7 @@
   },
   "titleIsNow": {
     "comment": "Do not add a period here, used as a fragment and will break unit test",
-    "message": "Group name has been set to '$name$'",
+    "message": "タイトルが '$name$' になりました",
     "description": "Shown in the conversation history when someone changes the title of the group",
     "placeholders": {
       "name": {
@@ -1861,27 +1861,27 @@
     }
   },
   "friendRequestPending": {
-    "message": "Friend request",
+    "message": "連絡先リクエスト",
     "description": "Shown in the conversation history when the user sends or recieves a friend request"
   },
   "friendRequestAccepted": {
-    "message": "Friend request accepted",
+    "message": "連絡先リクエストが了承されました",
     "description": "Shown in the conversation history when the user accepts a friend request"
   },
   "friendRequestDeclined": {
-    "message": "Session request declined",
+    "message": "連絡先リクエストが拒否されました",
     "description": "Shown in the conversation history when the user declines a friend request"
   },
   "friendRequestExpired": {
-    "message": "Friend request expired",
+    "message": "連絡先リクエストの期限が切れました",
     "description": "Shown in the conversation history when the users friend request expires"
   },
   "friendRequestNotificationTitle": {
-    "message": "Friend request",
+    "message": "連絡先リクエスト",
     "description": "Shown in a notification title when receiving a friend request"
   },
   "friendRequestNotificationMessage": {
-    "message": "$name$ sent you a friend request",
+    "message": "$name$ があなたに連絡先リクエストを送信しました",
     "description": "Shown in a notification body when receiving a friend request",
     "placeholders": {
       "name": {
@@ -1891,11 +1891,11 @@
     }
   },
   "friendRequestAcceptedNotificationTitle": {
-    "message": "Friend request accepted",
+    "message": "連絡先リクエストが了承されました",
     "description": "Shown in a notification title when friend request was accepted by the other user"
   },
   "friendRequestAcceptedNotificationMessage": {
-    "message": "$name$ accepted your friend request",
+    "message": "$name$ があなたの連絡先リクエストを了承しました",
     "description": "Shown in a notification body when friend request was accepted by the other user",
     "placeholders": {
       "name": {
@@ -2031,7 +2031,7 @@
     "description": "Prompt for user to set account password in settings view"
   },
   "setAccountPasswordDescription": {
-    "message": "Require password to unlock Session’s screen. You can still receive message notifications while Screen Lock is enabled. Session’s notification settings allow you to customize information that is displayed",
+    "message": "Session の画面ロックを解除するにはパスワードが必要です。画面ロックが有効になっている間も、メッセージ通知は受信できます。Session の通知設定から、通知に表示される情報を設定できます。",
     "description": "Description for set account password setting view"
   },
   "changeAccountPasswordTitle": {
@@ -2047,7 +2047,7 @@
     "description": "Prompt for user to remove account password in settings view"
   },
   "removeAccountPasswordDescription": {
-    "message": "Remove the password associated with your account",
+    "message": "アカウントに関連付けられているパスワードを削除する",
     "description": "Description for remove account password setting view"
   },
   "enterPassword": {
@@ -2057,7 +2057,7 @@
     "message": "パスワードの確認"
   },
   "pasteLongPasswordToastTitle": {
-    "message": "The clipboard content exceeds the maximum password length of $max_pwd_len$ characters.",
+    "message": "クリップボードの内容が、パスワードの最大長である $max_pwd_len$ 文字を超えています。",
     "description": "Shown when user pastes a password which is longer than MAX_PASSWORD_LEN"
   },
   "showSeedPasswordRequest": {
@@ -2065,11 +2065,11 @@
     "description": "Request for user to enter password to show seed."
   },
   "seedSavePromptMain": {
-    "message": "Please save the seed below in a safe location.",
+    "message": "以下のシードを安全な場所に保存してください。",
     "description": "Prompt on seed modal requesting user to save their seed. Line one"
   },
   "seedSavePromptAlt": {
-    "message": "They can be used to restore your account if you lose access or migrate to a new device.",
+    "message": "アカウントへのアクセスを失ったり、新しいデバイスに移行したりした場合に、アカウントを復元するために使用できます。",
     "description": "Prompt on seed modal requesting user to save their seed. Line two"
   },
   "QRCodeTitle": {
@@ -2077,7 +2077,7 @@
     "description": "Title given to QR Code modal"
   },
   "QRCodeDescription": {
-    "message": "This is <strong>your unique public QR Code.</strong><br/>Other users may scan this in order to begin a conversation with you.",
+    "message": "これは<strong>あなた固有の公開可能な QR コードです</strong>。<br/>他のユーザーは、あなたとの会話を開始するためにこれをスキャンすることができます。",
     "description": "Description given to QRCode modal"
   },
   "showQRCode": {
@@ -2101,19 +2101,19 @@
     "description": "Title for the dialog box used to connect to a new public server"
   },
   "createPrivateGroup": {
-    "message": "Create Private Group",
+    "message": "プライベートグループを作成",
     "description": "Button action that the user can click to show a dialog for creating a new private group chat"
   },
   "seedViewTitle": {
-    "message": "Please save the seed below in a safe location. They can be used to restore your account if you lose access or migrate to a new device.",
+    "message": "以下のシードを安全な場所に保存してください。アカウントへのアクセスを失ったり、新しいデバイスに移行したりした場合に、アカウントを復元するために使用できます。",
     "description": "The title shown when the user views their seeds"
   },
   "copiedMnemonic": {
-    "message": "Recovery phrase copied successfully",
+    "message": "リカバリーフレーズが正常にコピーされました",
     "description": "A toast message telling the user that the mnemonic seed was copied"
   },
   "copiedSessionID": {
-    "message": "Copied Session ID to clipboard",
+    "message": "Session ID がクリップボードにコピーされました",
     "description": "A toast message telling the user that their Session ID was copied"
   },
   "passwordViewTitle": {
@@ -2144,31 +2144,31 @@
     "description": "Button action that the user can click to remove a password"
   },
   "maxPasswordAttempts": {
-    "message": "Invalid Password. Would you like to reset the database?"
+    "message": "パスワードが正しくありません。データベースをリセットしますか？"
   },
   "typeInOldPassword": {
-    "message": "Please type in your old password"
+    "message": "現在のパスワードを入力してください"
   },
   "invalidOldPassword": {
-    "message": "Old password is invalid"
+    "message": "現在のパスワードが正しくありません"
   },
   "invalidPassword": {
-    "message": "Invalid password"
+    "message": "パスワードが正しくありません"
   },
   "noGivenPassword": {
-    "message": "Please enter your password"
+    "message": "パスワードを入力してください"
   },
   "passwordsDoNotMatch": {
-    "message": "Passwords do not match"
+    "message": "パスワードが一致しません"
   },
   "setPasswordInvalid": {
-    "message": "Passwords do not match"
+    "message": "パスワードが一致しません"
   },
   "changePasswordInvalid": {
-    "message": "The old password you entered is incorrect"
+    "message": "入力した現在のパスワードが正しくありません"
   },
   "removePasswordInvalid": {
-    "message": "Incorrect password"
+    "message": "誤ったパスワードです"
   },
   "setPasswordTitle": {
     "message": "パスワードの設定"
@@ -2180,34 +2180,34 @@
     "message": "パスワードの削除"
   },
   "setPasswordToastDescription": {
-    "message": "Your password has been set. Please keep it safe."
+    "message": "パスワードが設定されました。パスワードは安全に管理してください。"
   },
   "changePasswordToastDescription": {
-    "message": "Your password has been changed. Please keep it safe."
+    "message": "パスワードが変更されました。パスワードは安全に管理してください。"
   },
   "removePasswordToastDescription": {
-    "message": "You have removed your password."
+    "message": "パスワードが削除されました。"
   },
   "publicChatExists": {
-    "message": "You are already connected to this public channel"
+    "message": "あなたは既にこの公開チャネルに接続しています"
   },
   "connectToServerFail": {
-    "message": "Failed to connect to server. Check URL"
+    "message": "サーバーへの接続に失敗しました。URL をご確認ください。"
   },
   "connectToServerSuccess": {
-    "message": "Successfully connected to new open group server"
+    "message": "新しい公開グループサーバーに正常に接続されました"
   },
   "setPasswordFail": {
-    "message": "Failed to set password"
+    "message": "パスワードの設定に失敗しました"
   },
   "removePasswordFail": {
-    "message": "Failed to remove password"
+    "message": "パスワードの削除に失敗しました"
   },
   "changePasswordFail": {
-    "message": "Failed to change password"
+    "message": "パスワードの変更に失敗しました"
   },
   "setPasswordSuccess": {
-    "message": "Password set"
+    "message": "パスワードが設定されました"
   },
   "removePasswordSuccess": {
     "message": "パスワードを削除しました"
@@ -2216,15 +2216,15 @@
     "message": "パスワードを変更しました"
   },
   "passwordLengthError": {
-    "message": "Password must be between 6 and 50 characters long",
+    "message": "パスワードは6〜50文字に設定してください",
     "description": "Error string shown to the user when password doesn't meet length criteria"
   },
   "passwordTypeError": {
-    "message": "Password must be a string",
+    "message": "パスワードは文字列である必要があります",
     "description": "Error string shown to the user when password is not a string"
   },
   "passwordCharacterError": {
-    "message": "Password must only contain letters, numbers and symbols",
+    "message": "パスワードには、文字、数字、記号のみ使用可能です",
     "description": "Error string shown to the user when password contains an invalid character"
   },
   "change": {
@@ -2237,42 +2237,42 @@
     "message": "削除"
   },
   "invalidHexId": {
-    "message": "Invalid Session ID or LNS Name",
+    "message": "無効な Session ID または LNS 名です",
     "description": "Error string shown when user types an invalid pubkey hex string"
   },
   "invalidLnsFormat": {
-    "message": "Invalid LNS Name",
+    "message": "無効な LNS 名です",
     "description": "Error string shown when user types an invalid LNS name"
   },
   "invalidPubkeyFormat": {
-    "message": "Invalid Pubkey Format",
+    "message": "無効な公開鍵の形式です",
     "description": "Error string shown when user types an invalid pubkey format"
   },
   "lnsMappingNotFound": {
-    "message": "There is no LNS mapping associated with this name",
+    "message": "この名前に関連付けられた LNS マッピングはありません",
     "description": "Shown in toast if user enters an unknown LNS name"
   },
   "lnsLookupTimeout": {
-    "message": "LNS lookup timed out",
+    "message": "LNS ルックアップがタイムアウトしました",
     "description": "Shown in toast if user enters an unknown LNS name"
   },
   "lnsTooFewNodes": {
-    "message": "Not enough nodes currently active for LNS lookup"
+    "message": "LNS ルックアップに現在アクティブなノードが不足しています"
   },
   "conversationsTab": {
     "message": "会話",
     "description": "conversation tab title"
   },
   "friendsTab": {
-    "message": "Friends",
+    "message": "連絡先",
     "description": "friend tab title"
   },
   "pendingAcceptance": {
-    "message": "Pending Acceptance",
+    "message": "保留中の承認",
     "description": "Indicates that a friend request is pending"
   },
   "notFriends": {
-    "message": "Not Friends",
+    "message": "連絡先がいません",
     "description": "Indicates that a conversation is not friends with us"
   },
   "emptyGroupNameError": {
@@ -2302,40 +2302,40 @@
     "message": "グループ名"
   },
   "inviteContacts": {
-    "message": "Invite Contacts"
+    "message": "無効な連絡先"
   },
   "manageModerators": {
-    "message": "Manage Moderators"
+    "message": "モデレーターの管理"
   },
   "addModerators": {
-    "message": "Add Moderators"
+    "message": "モデレーターの追加"
   },
   "removeModerators": {
-    "message": "Remove Moderators"
+    "message": "モデレーターの削除"
   },
   "add": {
     "message": "追加"
   },
   "groupInvitation": {
-    "message": "Group Invitation"
+    "message": "グループへの招待"
   },
   "addingFriends": {
-    "message": "Adding friends to"
+    "message": "連絡先を追加"
   },
   "noFriendsToAdd": {
-    "message": "No friends to add"
+    "message": "追加可能な連絡先がいません"
   },
   "noMembersInThisGroup": {
-    "message": "No other members in this group"
+    "message": "このグループには他のメンバーがいません"
   },
   "noModeratorsToRemove": {
-    "message": "no moderators to remove"
+    "message": "削除可能なモデレーターがいません"
   },
   "couldNotDecryptMessage": {
-    "message": "Couldn't decrypt a message"
+    "message": "メッセージを復号できませんでした"
   },
   "confirmSessionRestore": {
-    "message": "Would you like to start a new session with $pubkey$? Only do so if you know this pubkey.",
+    "message": "$pubkey$ と新しいセッションを開始しますか？あなたがこの公開鍵を知っている場合にのみ続行してください。",
     "placeholders": {
       "pubkey": {
         "content": "$1",
@@ -2353,7 +2353,7 @@
     "message": "あなたの Session ID はこちらです"
   },
   "allUsersAreRandomly...": {
-    "message": "Your Session ID is the unique address people can use to contact you on Session. Your Session ID is totally private, anonymous, and has no connection to your real identity."
+    "message": "Session ID は、ユーザーがセッションで連絡を取るために使用できる一意のアドレスです。Session ID は完全にプライベートで匿名であり、現実世界の ID との関連付けはありません。"
   },
   "getStarted": {
     "message": "始める"
@@ -2362,7 +2362,7 @@
     "message": "Session ID を作成"
   },
   "mnemonicSeed": {
-    "message": "Mnemonic Seed"
+    "message": "ニーモニックシード"
   },
   "enterSeed": {
     "message": "リカバリーフレーズを入力"
@@ -2383,25 +2383,25 @@
     "message": "パスワードの確認"
   },
   "devicePairingHeaderReassure": {
-    "message": "Linking may take up to one minute to register on your primary device. Please be patient."
+    "message": "プライマリデバイスに登録するため、リンクには最大で1分かかる場合があります。しばらくお待ちください。"
   },
   "devicePairingHeader_Step1": {
-    "message": "Open Session on your other device."
+    "message": "あなたの他のデバイスでセッションを開きます。"
   },
   "devicePairingHeader_Step2": {
-    "message": "Navigate to the <strong>Devices</strong> section in your user account screen."
+    "message": "ユーザーアカウント画面の「<strong>デバイス/strong>」の項目に移動します。"
   },
   "devicePairingHeader_Step3": {
-    "message": "Select <strong>Link New Device</strong> to prepare your other device for pairing."
+    "message": "「<strong>新しいデバイスをリンク</strong>」を選択して、他のデバイスをリンク用に準備します。"
   },
   "devicePairingHeader_Step4": {
-    "message": "Enter your <strong>Session ID</strong> below to link this device to your <strong>Session ID</strong>."
+    "message": "あなたの <strong>Session ID</strong> このデバイスで入力します。"
   },
   "enterSessionIDHere": {
-    "message": "Enter your Session ID here"
+    "message": "あなたの Session ID をここに入力"
   },
   "continueYourSession": {
-    "message": "Continue Your Session"
+    "message": "あなたの Session を続行"
   },
   "linkDevice": {
     "message": "デバイスをリンク"
@@ -2410,40 +2410,40 @@
     "message": "Session ID を復元"
   },
   "restoreUsingSeed": {
-    "message": "Restore From Recovery Phrase"
+    "message": "リカバリーフレーズから復元"
   },
   "linkDeviceToExistingAccount": {
-    "message": "Link Device to Existing Session ID"
+    "message": "デバイスを既存の Session ID にリンク"
   },
   "or": {
     "message": "または"
   },
   "ByUsingThisService...": {
-    "message": "By using this service, you agree to our <a href=\"https://getsession.org/legal/#tos\">Terms of Service</a> and <a href=\"https://getsession.org/privacy-policy/\" target=\"_blank\">Privacy Policy</a>"
+    "message": "このサービスを使用すると、あなたは私たちの<a href=\"https://getsession.org/legal/#tos\">利用規約</a>と<a href=\"https://getsession.org/privacy-policy/\" target=\"_blank\">プライバシーポリシー</a>同意したものとみなします。"
   },
   "beginYourSession": {
-    "message": "Begin<br />your<br />Session."
+    "message": "あなたの<br />Session を<br />始める。"
   },
   "welcomeToYourSession": {
     "message": "Session へようこそ"
   },
   "completeSignUp": {
-    "message": "Complete Sign Up"
+    "message": "登録完了"
   },
   "compose": {
-    "message": "Compose"
+    "message": "作成"
   },
   "newSession": {
-    "message": "New Session"
+    "message": "新しい Session"
   },
   "freindRequestsButton": {
-    "message": "Requests"
+    "message": "リクエスト"
   },
   "searchForAKeyPhrase": {
-    "message": "Search for a key phrase or contact"
+    "message": "キーフレーズまたは連絡先を検索する"
   },
   "enterRecipient": {
-    "message": "Enter Recipient"
+    "message": "宛先を入力"
   },
   "enterSessionID": {
     "message": "Session ID を入力"
@@ -2452,10 +2452,10 @@
     "message": "Session ID または LNS 名を入力"
   },
   "usersCanShareTheir...": {
-    "message": "Users can share their Session ID from their account settings, or by sharing their QR code."
+    "message": "ユーザーは、自分のアカウント設定から、または QR コードを共有することによって、Session ID を共有することができます。"
   },
   "searchByIDOrDisplayName": {
-    "message": "Search by ID # or Display Name"
+    "message": "ID # または表示名で検索"
   },
   "message": {
     "message": "メッセージ"
@@ -2518,13 +2518,13 @@
     "message": "リンク済みデバイスの管理"
   },
   "mnemonicEmpty": {
-    "message": "Seed is mandatory"
+    "message": "シードは必須です"
   },
   "displayNameEmpty": {
-    "message": "Display Name Is Mandatory"
+    "message": "表示名は必須です"
   },
   "youHaveFriendRequestFrom": {
-    "message": "You have friend requests from..."
+    "message": "連絡先リクエストを受信..."
   },
   "members": {
     "message": "$count$ メンバー",
@@ -2554,7 +2554,7 @@
     "message": "非公開グループを作成"
   },
   "createClosedGroupDescription": {
-    "message": "Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions."
+    "message": "プライベートグループは、最大10人のメンバーで利用可能な、エンドツーエンド暗号化されたグループチャットです。1対1の Session と同程度のプライバシー保護を提供します。"
   },
   "createClosedGroupNamePrompt": {
     "message": "グループ名"
@@ -2587,7 +2587,7 @@
     "message": "説明"
   },
   "filterReceivedRequests": {
-    "message": "Filter received requests"
+    "message": "受信したリクエストをフィルターする"
   },
   "secretWords": {
     "message": "シークレットワード"
