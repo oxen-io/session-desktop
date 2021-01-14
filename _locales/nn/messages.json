@@ -705,10 +705,6 @@
         "message": "Gruppemedlemmer",
         "description": ""
     },
-    "resetSession": {
-        "message": "Nullstill økta",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "Vis tryggingsnummer",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "Vil du sletta denne samtalen?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "Sikker økt nullstillt",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "Miniatyrbilde i sitert melding",

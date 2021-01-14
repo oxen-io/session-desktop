@@ -705,10 +705,6 @@
         "message": "Membres du groupe",
         "description": ""
     },
-    "resetSession": {
-        "message": "Réinitialiser la session sécurisée",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "Afficher le numéro de sécurité",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "Supprimer définitivement cette conversation ?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "La session sécurisée a été réinitialisée",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "Imagette du message cité",
@@ -1481,14 +1473,7 @@
         "message": "Êtes-vous sur de vouloir supprimer les messages de ce groupe public de façon permanente ?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the open group messages locally. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
     },
-    "sessionResetFailed": {
-        "message": "La réinitialisation de la session sécurisée a échoué",
-        "description": "your secure session could not been transmitted to the other participant."
-    },
-    "sessionResetOngoing": {
-        "message": "Réinitialisation de la session sécurisée en cours",
-        "description": "your secure session is currently being reset, waiting for the reset acknowledgment."
-    },
+
     "linkPreviewsConfirmMessage": {
         "message": "Vous n'aurez pas une protection complète des métadonnées en envoyant ou recevant des aperçu de liens."
     },

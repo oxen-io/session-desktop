@@ -705,10 +705,6 @@
         "message": "グループメンバー",
         "description": ""
     },
-    "resetSession": {
-        "message": "安全なセッションをリセット",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "安全番号を見る",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "この会話を完全に消去しますが，よろしいですか？",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "安全なセッションがリセットされました",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "引用されたメッセージから画像のサムネール",

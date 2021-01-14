@@ -705,10 +705,6 @@
         "message": "Участники группы",
         "description": ""
     },
-    "resetSession": {
-        "message": "Обновить Сеанс Шифрования",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "Просмотреть Код Безопасности",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "Удалить этот разговор без возможности восстановления?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "Безопасная сессия сброшена",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "Миниатюра изображения из цитируемого сообщения",
@@ -1481,14 +1473,7 @@
         "message": "Permanently delete the messages locally from this open group?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the open group messages locally. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
     },
-    "sessionResetFailed": {
-        "message": "Secure session reset failed",
-        "description": "your secure session could not been transmitted to the other participant."
-    },
-    "sessionResetOngoing": {
-        "message": "Secure session reset in progress",
-        "description": "your secure session is currently being reset, waiting for the reset acknowledgment."
-    },
+
     "linkPreviewsConfirmMessage": {
         "message": "You will not have full metadata protection when sending or receiving link previews."
     },

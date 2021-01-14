@@ -966,12 +966,6 @@
     "message": "Group members",
     "androidKey": "ConversationActivity_group_members"
   },
-  "resetSession": {
-    "message": "Reset Secure Session",
-    "description": "This is a menu item for resetting the session, using the imperative case, as in a command.",
-    "androidKey": "conversation_secure_verified__menu_reset_secure_session",
-    "ignoreCase": true
-  },
   "showSafetyNumber": {
     "message": "View Safety Number",
     "androidKey": "recipient_preferences__view_safety_number",
@@ -1045,18 +1039,8 @@
     "description": "Confirmation dialog text that tells the user what will happen if they delete the contact.",
     "androidKey": "activity_home_delete_conversation_dialog_message"
   },
-  "sessionResetFailed": {
-    "message": "Secure session reset failed",
-    "description": "your secure session could not been transmitted to the other participant."
-  },
-  "sessionResetOngoing": {
-    "message": "Secure session reset in progress",
-    "description": "your secure session is currently being reset, waiting for the reset acknowledgment."
-  },
-  "sessionEnded": {
-    "message": "Secure session reset succeeded",
-    "description": "This is a past tense, informational message. In other words, your secure session has been reset."
-  },
+
+
   "quoteThumbnailAlt": {
     "message": "Thumbnail of image from quoted message",
     "description": "Used in alt tag of thumbnail images inside of an embedded message quote"

@@ -705,10 +705,6 @@
         "message": "Členové skupiny",
         "description": ""
     },
-    "resetSession": {
-        "message": "Resetovat sezení",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "Zobrazit bezpečnostní kód",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "Trvale smazat tuto konverzaci?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "Bezpečné sezení resetováno",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "Thumbnail of image from quoted message",

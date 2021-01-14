@@ -705,10 +705,6 @@
         "message": "សមាជិកក្រុម",
         "description": ""
     },
-    "resetSession": {
-        "message": "កំណត់ការប្រើប្រាស់ឡើងវិញ",
-        "description": "This is a menu item for resetting the session, using the imperative case, as in a command."
-    },
     "showSafetyNumber": {
         "message": "បង្ហាញលេខសុវត្ថិភាព",
         "description": ""
@@ -738,10 +734,6 @@
     "deleteConversationConfirmation": {
         "message": "លុបការសន្ទនានេះចោលរហូត?",
         "description": "Confirmation dialog text that asks the user if they really wish to delete the conversation. Answer buttons use the strings 'ok' and 'cancel'. The deletion is permanent, i.e. it cannot be undone."
-    },
-    "sessionEnded": {
-        "message": "កំណត់ការប្រើប្រាស់សុវត្ថិភាពឡើងវិញ",
-        "description": "This is a past tense, informational message. In other words, your secure session has been reset."
     },
     "quoteThumbnailAlt": {
         "message": "រូបភាពតូចៗនៃរូបភាពពីសារដែលបានដកស្រង់",
