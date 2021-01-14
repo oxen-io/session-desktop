@@ -133,13 +133,4 @@ describe('MessageCollection', () => {
     message = messages.add({ flags: true });
     assert.equal(message.getDescription(), i18n('sessionEnded'));
   });
-
-  it('checks if it is end of the session', () => {
-    const messages = new Whisper.MessageCollection();
-    let message = messages.add(attributes);
-    assert.notOk(message.isEndSession());
-
-    message = messages.add({ flags: true });
-    assert.ok(message.isEndSession());
-  });
 });
