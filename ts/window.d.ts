@@ -1,6 +1,5 @@
 import { LocalizerType } from '../types/Util';
 import { LokiMessageAPIInterface } from '../../js/modules/loki_message_api';
-import { LibsignalProtocol } from '../../libtextsecure/libsignal-protocol';
 import { SignalInterface } from '../../js/modules/signal';
 import { Libloki } from '../libloki';
 import { LokiPublicChatFactoryInterface } from '../js/modules/loki_public_chat_api';
@@ -28,7 +27,6 @@ If you import anything in global.d.ts, the type system won't work correctly.
 declare global {
   interface Window {
     CONSTANTS: any;
-    SignalProtocolStore: any;
     Events: any;
     Lodash: any;
     LokiAppDotNetServerAPI: any;
@@ -57,7 +55,6 @@ declare global {
     getSettingValue: any;
     i18n: LocalizerType;
     libloki: Libloki;
-    libsignal: LibsignalProtocol;
     log: any;
     lokiFeatureFlags: {
       multiDeviceUnpairing: boolean;
@@ -116,7 +113,6 @@ declare global {
     setClockParams: any;
     clientClockSynced: number | undefined;
     inboxStore: Store;
-    getSocketStatus: any;
     actionsCreators: any;
     extension: {
       expired: (boolean) => void;

@@ -56,8 +56,6 @@ module.exports = {
   getAllIdentityKeys,
 
   createOrUpdatePreKey,
-  getPreKeyById,
-  getPreKeyByRecipient,
   bulkAddPreKeys,
   removePreKeyById,
   removeAllPreKeys,
@@ -76,7 +74,6 @@ module.exports = {
   getContactPreKeys,
   getAllContactPreKeys,
   bulkAddContactPreKeys,
-  removeContactPreKeyByIdentityKey,
   removeAllContactPreKeys,
 
   createOrUpdateContactSignedPreKey,
@@ -84,7 +81,6 @@ module.exports = {
   getContactSignedPreKeyByIdentityKey,
   getContactSignedPreKeys,
   bulkAddContactSignedPreKeys,
-  removeContactSignedPreKeyByIdentityKey,
   removeAllContactSignedPreKeys,
 
   createOrUpdatePairingAuthorisation,
@@ -140,7 +136,6 @@ module.exports = {
   saveSeenMessageHash,
   updateLastHash,
   saveSeenMessageHashes,
-  saveLegacyMessage,
   saveMessages,
   removeMessage,
   _removeMessages,
@@ -190,8 +185,6 @@ module.exports = {
   cleanupOrphanedAttachments,
 
   // Returning plain JSON
-  getMessagesNeedingUpgrade,
-  getLegacyMessagesNeedingUpgrade,
   getMessagesWithVisualMediaAttachments,
   getMessagesWithFileAttachments,
 
@@ -495,14 +488,7 @@ async function createOrUpdatePreKey(data) {
   const updated = keysFromArrayBuffer(PRE_KEY_KEYS, data);
   await channels.createOrUpdatePreKey(updated);
 }
-async function getPreKeyById(id) {
-  const data = await channels.getPreKeyById(id);
-  return keysToArrayBuffer(PRE_KEY_KEYS, data);
-}
-async function getPreKeyByRecipient(recipient) {
-  const data = await channels.getPreKeyByRecipient(recipient);
-  return keysToArrayBuffer(PRE_KEY_KEYS, data);
-}
+
 async function bulkAddPreKeys(array) {
   const updated = map(array, data => keysFromArrayBuffer(PRE_KEY_KEYS, data));
   await channels.bulkAddPreKeys(updated);
@@ -569,9 +555,6 @@ async function bulkAddContactPreKeys(array) {
   const updated = map(array, data => keysFromArrayBuffer(PRE_KEY_KEYS, data));
   await channels.bulkAddContactPreKeys(updated);
 }
-async function removeContactPreKeyByIdentityKey(id) {
-  await channels.removeContactPreKeyByIdentityKey(id);
-}
 async function removeAllContactPreKeys() {
   await channels.removeAllContactPreKeys();
 }
@@ -597,9 +580,7 @@ async function bulkAddContactSignedPreKeys(array) {
   const updated = map(array, data => keysFromArrayBuffer(PRE_KEY_KEYS, data));
   await channels.bulkAddContactSignedPreKeys(updated);
 }
-async function removeContactSignedPreKeyByIdentityKey(id) {
-  await channels.removeContactSignedPreKeyByIdentityKey(id);
-}
+
 async function removeAllContactSignedPreKeys() {
   await channels.removeAllContactSignedPreKeys();
 }
@@ -935,42 +916,6 @@ async function saveMessage(data, { forceSave, Message } = {}) {
   return id;
 }
 
-async function saveLegacyMessage(data) {
-  const db = await window.Whisper.Database.open();
-  try {
-    await new Promise((resolve, reject) => {
-      const transaction = db.transaction('messages', 'readwrite');
-
-      transaction.onerror = () => {
-        window.Whisper.Database.handleDOMException(
-          'saveLegacyMessage transaction error',
-          transaction.error,
-          reject
-        );
-      };
-      transaction.oncomplete = resolve;
-
-      const store = transaction.objectStore('messages');
-
-      if (!data.id) {
-        // eslint-disable-next-line no-param-reassign
-        data.id = window.getGuid();
-      }
-
-      const request = store.put(data, data.id);
-      request.onsuccess = resolve;
-      request.onerror = () => {
-        window.Whisper.Database.handleDOMException(
-          'saveLegacyMessage request error',
-          request.error,
-          reject
-        );
-      };
-    });
-  } finally {
-    db.close();
-  }
-}
 
 async function saveMessages(arrayOfMessages, { forceSave } = {}) {
   await channels.saveMessages(_cleanData(arrayOfMessages), { forceSave });
@@ -1244,72 +1189,6 @@ async function callChannel(name) {
 }
 
 // Functions below here return plain JSON instead of Backbone Models
-
-async function getLegacyMessagesNeedingUpgrade(
-  limit,
-  { maxVersion = MessageType.CURRENT_SCHEMA_VERSION }
-) {
-  const db = await window.Whisper.Database.open();
-  try {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction('messages', 'readonly');
-      const messages = [];
-
-      transaction.onerror = () => {
-        window.Whisper.Database.handleDOMException(
-          'getLegacyMessagesNeedingUpgrade transaction error',
-          transaction.error,
-          reject
-        );
-      };
-      transaction.oncomplete = () => {
-        resolve(messages);
-      };
-
-      const store = transaction.objectStore('messages');
-      const index = store.index('schemaVersion');
-      const range = IDBKeyRange.upperBound(maxVersion, true);
-
-      const request = index.openCursor(range);
-      let count = 0;
-
-      request.onsuccess = event => {
-        const cursor = event.target.result;
-
-        if (cursor) {
-          count += 1;
-          messages.push(cursor.value);
-
-          if (count >= limit) {
-            return;
-          }
-
-          cursor.continue();
-        }
-      };
-      request.onerror = () => {
-        window.Whisper.Database.handleDOMException(
-          'getLegacyMessagesNeedingUpgrade request error',
-          request.error,
-          reject
-        );
-      };
-    });
-  } finally {
-    db.close();
-  }
-}
-
-async function getMessagesNeedingUpgrade(
-  limit,
-  { maxVersion = MessageType.CURRENT_SCHEMA_VERSION }
-) {
-  const messages = await channels.getMessagesNeedingUpgrade(limit, {
-    maxVersion,
-  });
-
-  return messages;
-}
 
 async function getMessagesWithVisualMediaAttachments(
   conversationId,

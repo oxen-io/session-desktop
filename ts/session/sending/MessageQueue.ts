@@ -9,7 +9,6 @@ import {
   ContentMessage,
   ExpirationTimerUpdateMessage,
   OpenGroupMessage,
-  SessionRequestMessage,
   SyncMessage,
   TypingMessage,
 } from '../messages/outgoing';
@@ -17,7 +16,7 @@ import { PendingMessageCache } from './PendingMessageCache';
 import { GroupUtils, JobQueue, TypedEventEmitter } from '../utils';
 import { PubKey, RawMessage } from '../types';
 import { MessageSender } from '.';
-import { MultiDeviceProtocol, SessionProtocol } from '../protocols';
+import { MultiDeviceProtocol } from '../protocols';
 import { UserUtil } from '../../util';
 import { ClosedGroupV2ChatMessage } from '../messages/outgoing/content/data/groupv2/ClosedGroupV2ChatMessage';
 
@@ -155,14 +154,6 @@ export class MessageQueue implements MessageQueueInterface {
   public async processPending(device: PubKey) {
     const messages = await this.pendingMessageCache.getForDevice(device);
 
-    const isMediumGroup = GroupUtils.isMediumGroup(device);
-    const hasSession = await SessionProtocol.hasSession(device);
-
-    // If we don't have a session then try and establish one and then continue sending messages
-    if (!isMediumGroup && !hasSession) {
-      await SessionProtocol.sendSessionRequestIfNeeded(device);
-    }
-
     const jobQueue = this.getJobQueue(device);
     messages.forEach(async message => {
       const messageId = String(message.timestamp);
@@ -221,10 +212,6 @@ export class MessageQueue implements MessageQueueInterface {
     const currentDevice = await UserUtil.getCurrentDevicePubKey();
     if (currentDevice && device.isEqual(currentDevice)) {
       return;
-    }
-
-    if (message instanceof SessionRequestMessage) {
-      return SessionProtocol.sendSessionRequest(message, device);
     }
 
     await this.pendingMessageCache.add(device, message, sentCb);

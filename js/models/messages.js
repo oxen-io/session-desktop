@@ -64,12 +64,8 @@
           this.propsForTimerNotification = this.getPropsForTimerNotification();
         } else if (this.isVerifiedChange()) {
           this.propsForVerificationNotification = this.getPropsForVerificationNotification();
-        } else if (this.isEndSession()) {
-          this.propsForResetSessionNotification = this.getPropsForResetSessionNotification();
         } else if (this.isGroupUpdate()) {
           this.propsForGroupNotification = this.getPropsForGroupNotification();
-        } else if (this.isSessionRestoration()) {
-          // do nothing
         } else if (this.isGroupInvitation()) {
           this.propsForGroupInvitation = this.getPropsForGroupInvitation();
         } else {
@@ -119,20 +115,6 @@
       if (missing.length) {
         window.log.warn(`Message missing attributes: ${missing}`);
       }
-    },
-    isEndSession() {
-      const endSessionFlag = textsecure.protobuf.DataMessage.Flags.END_SESSION;
-      // eslint-disable-next-line no-bitwise
-      return !!(this.get('flags') & endSessionFlag);
-    },
-    getEndSessionTranslationKey() {
-      const sessionType = this.get('endSessionType');
-      if (sessionType === 'ongoing') {
-        return 'sessionResetOngoing';
-      } else if (sessionType === 'failed') {
-        return 'sessionResetFailed';
-      }
-      return 'sessionEnded';
     },
     isExpirationTimerUpdate() {
       const expirationTimerFlag =
@@ -221,9 +203,6 @@
           }
         }
         return messages.join(' ');
-      }
-      if (this.isEndSession()) {
-        return i18n(this.getEndSessionTranslationKey());
       }
       if (this.isIncoming() && this.hasErrors()) {
         return i18n('incomingError');
@@ -356,11 +335,6 @@
         type,
         isLocal,
         contact: this.findAndFormatContact(phoneNumber),
-      };
-    },
-    getPropsForResetSessionNotification() {
-      return {
-        sessionResetMessageKey: this.getEndSessionTranslationKey(),
       };
     },
     getPropsForGroupInvitation() {
@@ -1154,7 +1128,6 @@
           e.number === number &&
           (e.name === 'MessageError' ||
             e.name === 'SendMessageNetworkError' ||
-            e.name === 'SignedPreKeyRotationError' ||
             e.name === 'OutgoingIdentityKeyError')
       );
       this.set({ errors: errors[1] });
@@ -1265,9 +1238,7 @@
     async handleMessageSentFailure(sentMessage, error) {
       if (error instanceof Error) {
         this.saveErrors(error);
-        if (error.name === 'SignedPreKeyRotationError') {
-          await window.getAccountManager().rotateSignedPreKey();
-        } else if (error.name === 'OutgoingIdentityKeyError') {
+        if (error.name === 'OutgoingIdentityKeyError') {
           const c = window.getConversationController().get(sentMessage.device);
           await c.getProfiles();
         }
@@ -1519,10 +1490,6 @@
       });
       errors = errors.concat(this.get('errors') || []);
 
-      if (this.isEndSession()) {
-        this.set({ endSessionType: 'failed' });
-      }
-
       this.set({ errors });
       await this.commit();
     },
@@ -1531,8 +1498,7 @@
         this.get('errors'),
         e =>
           e.name === 'MessageError' ||
-          e.name === 'SendMessageNetworkError' ||
-          e.name === 'SignedPreKeyRotationError'
+          e.name === 'SendMessageNetworkError'
       );
       return !!error;
     },

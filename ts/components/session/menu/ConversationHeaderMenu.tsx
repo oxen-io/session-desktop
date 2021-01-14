@@ -10,7 +10,6 @@ import {
   getInviteContactMenuItem,
   getLeaveGroupMenuItem,
   getRemoveModeratorsMenuItem,
-  getResetSessionMenuItem,
   getShowSafetyNumberMenuItem,
   getUpdateGroupNameMenuItem,
 } from './Menu';
@@ -42,7 +41,6 @@ export type PropsConversationHeaderMenu = {
   onUnblockUser: () => void;
   onShowSafetyNumber: () => void;
   onSetDisappearingMessages: (seconds: number) => void;
-  onResetSession: () => void;
 };
 
 export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
@@ -71,7 +69,6 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
     onBlockUser,
     onUnblockUser,
     onShowSafetyNumber,
-    onResetSession,
     onSetDisappearingMessages,
   } = props;
 
@@ -93,14 +90,6 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
         isGroup,
         isMe,
         onShowSafetyNumber,
-        window.i18n
-      )}
-      {getResetSessionMenuItem(
-        isPublic,
-        isRss,
-        isGroup,
-        isBlocked,
-        onResetSession,
         window.i18n
       )}
       {getBlockMenuItem(

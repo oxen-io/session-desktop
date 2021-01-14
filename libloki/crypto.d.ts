@@ -7,12 +7,8 @@ declare enum PairingTypeEnum {
 
 export interface CryptoInterface {
   DHDecrypt: any;
-  DHEncrypt: any;
   DecryptGCM: any; // AES-GCM
   EncryptGCM: any; // AES-GCM
-  FallBackDecryptionError: any;
-  FallBackSessionCipher: any;
-  LokiSessionCipher: any;
   PairingType: PairingTypeEnum;
   _decodeSnodeAddressToPubKey: any;
   decryptForPubkey: any;
@@ -23,5 +19,4 @@ export interface CryptoInterface {
   sha512: any;
   validateAuthorisation: any;
   verifyAuthorisation(authorisation: PairingAuthorisation): Promise<boolean>;
-  verifyPairingSignature: any;
 }

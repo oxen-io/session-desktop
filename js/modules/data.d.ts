@@ -1,4 +1,3 @@
-import { KeyPair } from '../../libtextsecure/libsignal-protocol';
 import { HexKeyPair } from '../../ts/receiver/closedGroupsV2';
 import { PubKey } from '../../ts/session/types';
 import { ConversationType } from '../../ts/state/ducks/conversations';
@@ -102,8 +101,6 @@ export function removeAllIdentityKeys(): Promise<void>;
 
 // Pre Keys
 export function createOrUpdatePreKey(data: PreKey): Promise<void>;
-export function getPreKeyById(id: number): Promise<PreKey | null>;
-export function getPreKeyByRecipient(recipient: string): Promise<PreKey | null>;
 export function bulkAddPreKeys(data: Array<PreKey>): Promise<void>;
 export function removePreKeyById(id: number): Promise<void>;
 export function getAllPreKeys(): Promise<Array<PreKey>>;
@@ -130,7 +127,6 @@ export function getAllContactPreKeys(): Promise<Array<ContactPreKey>>;
 export function bulkAddContactPreKeys(
   array: Array<ContactPreKey>
 ): Promise<void>;
-export function removeContactPreKeyByIdentityKey(id: number): Promise<void>;
 export function removeAllContactPreKeys(): Promise<void>;
 
 // Contact Signed Pre Key
@@ -149,9 +145,6 @@ export function getContactSignedPreKeys(
 ): Promise<Array<ContactSignedPreKey>>;
 export function bulkAddContactSignedPreKeys(
   array: Array<ContactSignedPreKey>
-): Promise<void>;
-export function removeContactSignedPreKeyByIdentityKey(
-  id: string
 ): Promise<void>;
 export function removeAllContactSignedPreKeys(): Promise<void>;
 
@@ -245,7 +238,6 @@ export function updateSwarmNodesForPubkey(
 // TODO: Strictly type the following
 export function updateLastHash(data: any): Promise<any>;
 export function saveSeenMessageHashes(data: any): Promise<any>;
-export function saveLegacyMessage(data: any): Promise<any>;
 export function saveMessages(
   arrayOfMessages: any,
   { forceSave }?: any
@@ -379,22 +371,6 @@ export function removeOtherData(): Promise<void>;
 export function cleanupOrphanedAttachments(): Promise<void>;
 
 // Getters
-export function getMessagesNeedingUpgrade(
-  limit: any,
-  {
-    maxVersion,
-  }: {
-    maxVersion?: number;
-  }
-): Promise<any>;
-export function getLegacyMessagesNeedingUpgrade(
-  limit: any,
-  {
-    maxVersion,
-  }: {
-    maxVersion?: number;
-  }
-): Promise<any>;
 export function getMessagesWithVisualMediaAttachments(
   conversationId: any,
   {

@@ -7,15 +7,13 @@
   storage,
   textsecure,
   Whisper,
-  libloki,
   libsession,
-  libsignal,
   BlockedNumberController,
   libsession,
 */
 
 // eslint-disable-next-line func-names
-(async function() {
+(async function () {
   'use strict';
 
   // Globally disable drag and drop
@@ -69,20 +67,6 @@
   // We add this to window here because the default Node context is erased at the end
   //   of preload.js processing
   window.setImmediate = window.nodeSetImmediate;
-
-  const { IdleDetector, MessageDataMigrator } = Signal.Workflow;
-  const {
-    mandatoryMessageUpgrade,
-    migrateAllToSQLCipher,
-    removeDatabase,
-    runMigrations,
-    doesDatabaseExist,
-  } = Signal.IndexedDB;
-  const { Message } = window.Signal.Types;
-  const {
-    upgradeMessageSchema,
-    writeNewAttachmentData,
-  } = window.Signal.Migrations;
   const { Views } = window.Signal;
 
   // Implicitly used in `indexeddb-backbonejs-adapter`:
@@ -103,22 +87,12 @@
     }, 2000);
   }
 
-  let idleDetector;
   let initialLoadComplete = false;
   let newVersion = false;
 
   window.document.title = window.getTitle();
 
-  // start a background worker for ecc
-  textsecure.startWorker('js/libsignal-protocol-worker.js');
-  Whisper.KeyChangeListener.init(textsecure.storage.protocol);
   let messageReceiver;
-  window.getSocketStatus = () => {
-    if (messageReceiver) {
-      return messageReceiver.getStatus();
-    }
-    return -1;
-  };
   Whisper.events = _.clone(Backbone.Events);
   Whisper.events.isListenedTo = eventName =>
     Whisper.events._events ? !!Whisper.events._events[eventName] : false;
@@ -145,13 +119,6 @@
   };
 
   const cancelInitializationMessage = Views.Initialization.setMessage();
-
-  const isIndexedDBPresent = await doesDatabaseExist();
-  if (isIndexedDBPresent) {
-    window.installStorage(window.legacyStorage);
-    window.log.info('Start IndexedDB migrations');
-    await runMigrations();
-  }
 
   window.log.info('Storage fetch');
   storage.fetch();
@@ -282,9 +249,6 @@
       shutdown: async () => {
         // Stop background processing
         window.Signal.AttachmentDownloads.stop();
-        if (idleDetector) {
-          idleDetector.stop();
-        }
 
         // Stop processing incoming messages
         if (messageReceiver) {
@@ -312,57 +276,10 @@
       await window.Signal.Logs.deleteAll();
     }
 
-    if (isIndexedDBPresent) {
-      await mandatoryMessageUpgrade({ upgradeMessageSchema });
-      await migrateAllToSQLCipher({ writeNewAttachmentData, Views });
-      await removeDatabase();
-      try {
-        await window.Signal.Data.removeIndexedDBFiles();
-      } catch (error) {
-        window.log.error(
-          'Failed to remove IndexedDB files:',
-          error && error.stack ? error.stack : error
-        );
-      }
-
-      window.installStorage(window.newStorage);
-      await window.storage.fetch();
-      await storage.put('indexeddb-delete-needed', true);
-    }
-
     Views.Initialization.setMessage(window.i18n('optimizingApplication'));
 
     Views.Initialization.setMessage(window.i18n('loading'));
 
-    idleDetector = new IdleDetector();
-    let isMigrationWithIndexComplete = false;
-    window.log.info(
-      `Starting background data migration. Target version: ${Message.CURRENT_SCHEMA_VERSION}`
-    );
-    idleDetector.on('idle', async () => {
-      const NUM_MESSAGES_PER_BATCH = 1;
-
-      if (!isMigrationWithIndexComplete) {
-        const batchWithIndex = await MessageDataMigrator.processNext({
-          BackboneMessage: Whisper.Message,
-          BackboneMessageCollection: Whisper.MessageCollection,
-          numMessagesPerBatch: NUM_MESSAGES_PER_BATCH,
-          upgradeMessageSchema,
-          getMessagesNeedingUpgrade:
-            window.Signal.Data.getMessagesNeedingUpgrade,
-          saveMessage: window.Signal.Data.saveMessage,
-        });
-        window.log.info('Upgrade message schema (with index):', batchWithIndex);
-        isMigrationWithIndexComplete = batchWithIndex.done;
-      }
-
-      if (isMigrationWithIndexComplete) {
-        window.log.info(
-          'Background migration complete. Stopping idle detector.'
-        );
-        idleDetector.stop();
-      }
-    });
 
     const themeSetting = window.Events.getThemeSetting();
     const newThemeSetting = mapOldThemeToNew(themeSetting);
@@ -454,10 +371,6 @@
           'expirationStartTimestamp'
         );
 
-        if (message.isEndSession()) {
-          return;
-        }
-
         if (message.hasErrors()) {
           return;
         }
@@ -495,8 +408,6 @@
         storage.put('link-preview-setting', false);
       });
 
-      // listeners
-      Whisper.RotateSignedPreKeyListener.init(Whisper.events, newVersion);
 
       connect(true);
     });
@@ -516,8 +427,6 @@
       Whisper.Registration.isDone() &&
       !Whisper.Registration.ongoingSecondaryDeviceRegistration()
     ) {
-      // listeners
-      Whisper.RotateSignedPreKeyListener.init(Whisper.events, newVersion);
 
       connect();
       appView.openInbox({
@@ -559,6 +468,11 @@
     window.showResetSessionIdDialog = () => {
       appView.showResetSessionIdDialog();
     };
+
+    window.getSodium = async () => {
+      await window.sodiumImport.ready;
+      return window.sodiumImport;
+    }
 
     window.showEditProfileDialog = async () => {
       const ourNumber = window.storage.get('primaryDevicePubKey');
@@ -624,7 +538,8 @@
                 conversation.set('avatar', tempUrl);
 
                 // Encrypt with a new key every time
-                profileKey = libsignal.crypto.getRandomBytes(32);
+                const sodium = await window.getSodium();
+                profileKey = sodium.randombytes_buf(32);
                 const encryptedData = await textsecure.crypto.encryptProfile(
                   dataResized,
                   profileKey
@@ -1006,7 +921,6 @@
     });
 
     Whisper.events.on('devicePairingRequestRejected', async pubKey => {
-      await libloki.storage.removeContactPreKeyBundle(pubKey);
       await libsession.Protocols.MultiDeviceProtocol.removePairingAuthorisations(
         pubKey
       );
@@ -1060,12 +974,6 @@
     window.removeEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
 
-    if (disconnectTimer && isSocketOnline()) {
-      window.log.warn('Already online. Had a blip in online/offline status.');
-      clearTimeout(disconnectTimer);
-      disconnectTimer = null;
-      return;
-    }
     if (disconnectTimer) {
       clearTimeout(disconnectTimer);
       disconnectTimer = null;
@@ -1074,12 +982,6 @@
     connect();
   }
 
-  function isSocketOnline() {
-    const socketStatus = window.getSocketStatus();
-    return (
-      socketStatus === WebSocket.CONNECTING || socketStatus === WebSocket.OPEN
-    );
-  }
 
   async function disconnect() {
     window.log.info('disconnect');
@@ -1229,19 +1131,6 @@
         // sending of the message is handled in the 'private' case below
       }
     }
-
-    libsession.Protocols.SessionProtocol.checkSessionRequestExpiry().catch(
-      e => {
-        window.log.error(
-          'Error occured which checking for session request expiry',
-          e
-        );
-      }
-    );
-
-    storage.onready(async () => {
-      idleDetector.start();
-    });
   }
 
   function onEmpty() {

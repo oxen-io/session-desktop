@@ -37,23 +37,12 @@
     deleteAttachmentData,
   } = window.Signal.Migrations;
 
-  // Possible session reset states
-  const SessionResetEnum = Object.freeze({
-    // No ongoing reset
-    none: 0,
-    // we initiated the session reset
-    initiated: 1,
-    // we received the session reset
-    request_received: 2,
-  });
-
   Whisper.Conversation = Backbone.Model.extend({
     storeName: 'conversations',
     defaults() {
       return {
         unreadCount: 0,
         verified: textsecure.storage.protocol.VerifiedStatus.DEFAULT,
-        sessionResetStatus: SessionResetEnum.none,
         groupAdmins: [],
         isKickedFromGroup: false,
         profileSharing: false,
@@ -233,18 +222,7 @@
       if (this.isPublic() || this.isMediumGroup()) {
         return;
       }
-      // We don't send typing messages if the setting is disabled or we do not have a session
-      // or we blocked that user
-      const devicePubkey = new libsession.Types.PubKey(this.id);
-      const hasSession = await libsession.Protocols.SessionProtocol.hasSession(
-        devicePubkey
-      );
-
-      if (
-        !storage.get('typing-indicators-setting') ||
-        !hasSession ||
-        this.isBlocked()
-      ) {
+      if (!storage.get('typing-indicators-setting') || this.isBlocked()) {
         return;
       }
 
@@ -1460,109 +1438,6 @@
     isSearchable() {
       return !this.get('left');
     },
-    async setSessionResetStatus(newStatus) {
-      // Ensure that the new status is a valid SessionResetEnum value
-      if (!(newStatus in Object.values(SessionResetEnum))) {
-        return;
-      }
-      if (this.get('sessionResetStatus') !== newStatus) {
-        this.set({ sessionResetStatus: newStatus });
-        await this.commit();
-      }
-    },
-    async onSessionResetInitiated() {
-      await this.setSessionResetStatus(SessionResetEnum.initiated);
-    },
-    async onSessionResetReceived() {
-      await this.createAndStoreEndSessionMessage({
-        type: 'incoming',
-        endSessionType: 'ongoing',
-      });
-      await this.setSessionResetStatus(SessionResetEnum.request_received);
-    },
-
-    isSessionResetReceived() {
-      return (
-        this.get('sessionResetStatus') === SessionResetEnum.request_received
-      );
-    },
-
-    isSessionResetOngoing() {
-      return this.get('sessionResetStatus') !== SessionResetEnum.none;
-    },
-
-    async createAndStoreEndSessionMessage(attributes) {
-      const now = Date.now();
-      const message = this.messageCollection.add({
-        conversationId: this.id,
-        type: 'outgoing',
-        sent_at: now,
-        received_at: now,
-        destination: this.id,
-        recipients: this.getRecipients(),
-        flags: textsecure.protobuf.DataMessage.Flags.END_SESSION,
-        ...attributes,
-      });
-
-      const id = await message.commit();
-      message.set({ id });
-      window.Whisper.events.trigger('messageAdded', {
-        conversationKey: this.id,
-        messageModel: message,
-      });
-      return message;
-    },
-
-    async onNewSessionAdopted() {
-      if (this.get('sessionResetStatus') === SessionResetEnum.initiated) {
-        // send empty message to confirm that we have adopted the new session
-        const user = new libsession.Types.PubKey(this.id);
-
-        const sessionEstablished = new window.libsession.Messages.Outgoing.SessionEstablishedMessage(
-          { timestamp: Date.now() }
-        );
-        await libsession.getMessageQueue().send(user, sessionEstablished);
-      }
-      await this.createAndStoreEndSessionMessage({
-        type: 'incoming',
-        endSessionType: 'done',
-      });
-      await this.setSessionResetStatus(SessionResetEnum.none);
-    },
-
-    async endSession() {
-      if (this.isPrivate()) {
-        // Only create a new message if *we* initiated the session reset.
-        // On the receiver side, the actual message containing the END_SESSION flag
-        // will ensure the "session reset" message will be added to their conversation.
-        if (
-          this.get('sessionResetStatus') !== SessionResetEnum.request_received
-        ) {
-          await this.onSessionResetInitiated();
-          // const message = await this.createAndStoreEndSessionMessage({
-          //   type: 'outgoing',
-          //   endSessionType: 'ongoing',
-          // });
-          // window.log.info('resetting secure session');
-          // const device = new libsession.Types.PubKey(this.id);
-          // const preKeyBundle = await window.libloki.storage.getPreKeyBundleForContact(
-          //   device.key
-          // );
-          // // const endSessionMessage = new libsession.Messages.Outgoing.EndSessionMessage(
-          // //   {
-          // //     timestamp: message.get('sent_at'),
-          // //     preKeyBundle,
-          // //   }
-          // // );
-
-          // // await libsession.getMessageQueue().send(device, endSessionMessage);
-          // // // TODO handle errors to reset session reset status with the new pipeline
-          // // if (message.hasErrors()) {
-          // //   await this.setSessionResetStatus(SessionResetEnum.none);
-          // // }
-        }
-      }
-    },
 
     async commit() {
       await window.Signal.Data.updateConversation(this.id, this.attributes, {
@@ -1677,19 +1552,12 @@
         return;
       }
 
-      const devicePubkey = new libsession.Types.PubKey(this.id);
-      const hasSession = await libsession.Protocols.SessionProtocol.hasSession(
-        devicePubkey
-      );
-      if (!hasSession) {
-        return;
-      }
-
       if (this.isPrivate() && read.length && options.sendReadReceipts) {
         window.log.info(`Sending ${read.length} read receipts`);
         // Because syncReadMessages sends to our other devices, and sendReadReceipts goes
         //   to a contact, we need accessKeys for both.
-        await textsecure.messaging.syncReadMessages(read);
+        // FIXME enable me back when we have multi device back
+        // await textsecure.messaging.syncReadMessages(read);
 
         if (storage.get('read-receipt-setting')) {
           await Promise.all(

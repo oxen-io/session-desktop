@@ -129,8 +129,5 @@ describe('MessageCollection', () => {
       "Group name is now 'blerg'. Bob joined the group.",
       'Notes when there are multiple changes to group_updates properties.'
     );
-
-    message = messages.add({ flags: true });
-    assert.equal(message.getDescription(), i18n('sessionEnded'));
   });
 });

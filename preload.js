@@ -27,6 +27,7 @@ if (config.appInstance) {
 }
 
 window.Lodash = require('lodash');
+window.sodiumRequire = require('libsodium-wrappers');
 
 global.dcodeIO = global.dcodeIO || {};
 global.dcodeIO.ByteBuffer = require('bytebuffer');

@@ -19,7 +19,6 @@ interface ConversationAttributes {
   avatarPath?: string;
   isMe?: boolean;
   subscriberCount?: number;
-  sessionRestoreSeen?: boolean;
   is_medium_group?: boolean;
   type: string;
   lastMessage?: string;
@@ -34,7 +33,6 @@ export interface ConversationModel
   // Save model changes to the database
   commit: () => Promise<void>;
   notify: (message: MessageModel) => void;
-  isSessionResetReceived: () => boolean;
   updateExpirationTimer: (
     expireTimer: number | null,
     source?: string,
@@ -81,7 +79,6 @@ export interface ConversationModel
   updateGroupAdmins: any;
   setLokiProfile: any;
   getLokiProfile: any;
-  onSessionResetReceived: any;
   setVerifiedDefault: any;
   setVerified: any;
   setUnverified: any;
@@ -98,7 +95,6 @@ export interface ConversationModel
   removeMessage: (messageId: string) => Promise<void>;
   deleteMessages();
 
-  endSession: () => Promise<void>;
   block: any;
   copyPublicKey: any;
   getAvatar: any;

@@ -212,7 +212,6 @@ export class SessionMessagesList extends React.Component<Props, State> {
           const messageProps = message.propsForMessage;
 
           const timerProps = message.propsForTimerNotification;
-          const resetSessionProps = message.propsForResetSessionNotification;
           const verificationSessionProps =
             message.propsForVerificationNotification;
           const propsForGroupInvitation = message.propsForGroupInvitation;
@@ -266,18 +265,6 @@ export class SessionMessagesList extends React.Component<Props, State> {
               <>
                 <VerificationNotification
                   {...verificationSessionProps}
-                  key={message.id}
-                />
-                {unreadIndicator}
-              </>
-            );
-          }
-
-          if (resetSessionProps) {
-            return (
-              <>
-                <ResetSessionNotification
-                  {...resetSessionProps}
                   key={message.id}
                 />
                 {unreadIndicator}

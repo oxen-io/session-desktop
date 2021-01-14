@@ -468,9 +468,6 @@ export class SessionConversation extends React.Component<Props, State> {
         this.setState({ selectedMessages: [] });
       },
       onDeleteContact: () => conversation.deleteContact(),
-      onResetSession: () => {
-        void conversation.endSession();
-      },
 
       onShowSafetyNumber: () => {
         this.setState({ infoViewState: 'safetyNumber' });

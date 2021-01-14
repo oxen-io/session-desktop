@@ -3,7 +3,6 @@ import * as sinon from 'sinon';
 import { TestUtils } from '../../../test-utils';
 import { MessageUtils } from '../../../../session/utils';
 import { EncryptionType, PubKey } from '../../../../session/types';
-import { SessionProtocol } from '../../../../session/protocols';
 import { ClosedGroupV2ChatMessage } from '../../../../session/messages/outgoing/content/data/groupv2/ClosedGroupV2ChatMessage';
 // tslint:disable-next-line: no-require-imports no-var-requires
 const chaiAsPromised = require('chai-as-promised');
@@ -19,14 +18,6 @@ describe('Message Utils', () => {
   });
 
   describe('toRawMessage', () => {
-    let hasSessionStub: sinon.SinonStub<[PubKey], Promise<boolean>>;
-
-    beforeEach(() => {
-      hasSessionStub = sandbox
-        .stub(SessionProtocol, 'hasSession')
-        .resolves(true);
-    });
-
     it('can convert to raw message', async () => {
       const device = TestUtils.generateFakePubKey();
       const message = TestUtils.generateChatMessage();
@@ -84,9 +75,7 @@ describe('Message Utils', () => {
       );
     });
 
-    it('should set encryption to MediumGroup if a MediumGroupMessage is passed in', async () => {
-      hasSessionStub.resolves(true);
-
+    it('should set encryption to ClosedGroup if a ClosedGroupV2ChatMessage is passed in', async () => {
       const device = TestUtils.generateFakePubKey();
       const groupId = TestUtils.generateFakePubKey();
       const chatMessage = TestUtils.generateChatMessage();
@@ -96,19 +85,7 @@ describe('Message Utils', () => {
       expect(rawMessage.encryption).to.equal(EncryptionType.ClosedGroup);
     });
 
-    it('should set encryption to Fallback on other messages if we do not have a session', async () => {
-      hasSessionStub.resolves(false);
-
-      const device = TestUtils.generateFakePubKey();
-      const message = TestUtils.generateChatMessage();
-      const rawMessage = await MessageUtils.toRawMessage(device, message);
-
-      expect(rawMessage.encryption).to.equal(EncryptionType.Fallback);
-    });
-
-    it('should set encryption to Fallback on other messages even if we have a session', async () => {
-      hasSessionStub.resolves(true);
-
+    it('should set encryption to Fallback on other messages', async () => {
       const device = TestUtils.generateFakePubKey();
       const message = TestUtils.generateChatMessage();
       const rawMessage = await MessageUtils.toRawMessage(device, message);

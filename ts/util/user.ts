@@ -1,13 +1,19 @@
 import { getItemById } from '../../js/modules/data';
-import { KeyPair } from '../../libtextsecure/libsignal-protocol';
 import { PrimaryPubKey } from '../session/types';
 import { MultiDeviceProtocol } from '../session/protocols';
 import { StringUtils } from '../session/utils';
 import _ from 'lodash';
 
+
+export type KeyPair = {
+  pubKey: ArrayBuffer;
+  privKey: ArrayBuffer;
+};
+
+
 export type HexKeyPair = {
-  pubKey: string;
-  privKey: string;
+  publicHex: string;
+  privateHex: string;
 };
 
 /**
@@ -50,8 +56,8 @@ export async function getUserED25519KeyPair(): Promise<HexKeyPair | undefined> {
     const pubKeyAsArray = _.map(ed25519KeyPair.publicKey, a => a);
     const privKeyAsArray = _.map(ed25519KeyPair.privateKey, a => a);
     return {
-      pubKey: StringUtils.toHex(new Uint8Array(pubKeyAsArray)),
-      privKey: StringUtils.toHex(new Uint8Array(privKeyAsArray)),
+      publicHex: StringUtils.toHex(new Uint8Array(pubKeyAsArray)),
+      privateHex: StringUtils.toHex(new Uint8Array(privKeyAsArray)),
     };
   }
   return undefined;

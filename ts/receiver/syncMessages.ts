@@ -5,7 +5,6 @@ import { getEnvelopeId } from './common';
 import _ from 'lodash';
 import ByteBuffer from 'bytebuffer';
 
-import { handleEndSession } from './sessionHandling';
 import {
   handleMessageEvent,
   isMessageEmpty,
@@ -104,11 +103,6 @@ async function handleSentMessage(
     window.log.info('dropping empty message synced');
     await removeFromCache(envelope);
     return;
-  }
-
-  // tslint:disable-next-line no-bitwise
-  if (msg.flags && msg.flags & SignalService.DataMessage.Flags.END_SESSION) {
-    await handleEndSession(destination as string);
   }
 
   if (msg.mediumGroupUpdate) {

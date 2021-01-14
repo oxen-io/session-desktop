@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* global dcodeIO, libsignal */
+/* global dcodeIO, libsignal, getSodium */
 
 /* eslint-disable camelcase, no-bitwise */
 
@@ -9,29 +9,16 @@ module.exports = {
   bytesFromString,
   concatenateBytes,
   constantTimeEqual,
-  decryptAesCtr,
-  decryptDeviceName,
   decryptAttachment,
   decryptFile,
   decryptSymmetric,
   deriveAccessKey,
-  encryptAesCtr,
-  encryptDeviceName,
   encryptAttachment,
   encryptFile,
   encryptSymmetric,
-  fromEncodedBinaryToArrayBuffer,
-  getAccessKeyVerifier,
-  getRandomBytes,
-  getViewOfArrayBuffer,
-  getZeroes,
-  highBitsToInt,
+  getZeroes, // getZeroes
   hmacSha256,
-  intsToByteHighAndLow,
-  splitBytes,
   stringFromBytes,
-  trimBytes,
-  verifyAccessKey,
 };
 
 function arrayBufferToBase64(arrayBuffer) {
@@ -41,9 +28,6 @@ function base64ToArrayBuffer(base64string) {
   return dcodeIO.ByteBuffer.wrap(base64string, 'base64').toArrayBuffer();
 }
 
-function fromEncodedBinaryToArrayBuffer(key) {
-  return dcodeIO.ByteBuffer.wrap(key, 'binary').toArrayBuffer();
-}
 
 function bytesFromString(string) {
   return dcodeIO.ByteBuffer.wrap(string, 'utf8').toArrayBuffer();
@@ -53,56 +37,6 @@ function stringFromBytes(buffer) {
 }
 
 // High-level Operations
-
-async function encryptDeviceName(deviceName, identityPublic) {
-  const plaintext = bytesFromString(deviceName);
-  const ephemeralKeyPair = await libsignal.KeyHelper.generateIdentityKeyPair();
-  const masterSecret = await libsignal.Curve.async.calculateAgreement(
-    identityPublic,
-    ephemeralKeyPair.privKey
-  );
-
-  const key1 = await hmacSha256(masterSecret, bytesFromString('auth'));
-  const syntheticIv = _getFirstBytes(await hmacSha256(key1, plaintext), 16);
-
-  const key2 = await hmacSha256(masterSecret, bytesFromString('cipher'));
-  const cipherKey = await hmacSha256(key2, syntheticIv);
-
-  const counter = getZeroes(16);
-  const ciphertext = await encryptAesCtr(cipherKey, plaintext, counter);
-
-  return {
-    ephemeralPublic: ephemeralKeyPair.pubKey,
-    syntheticIv,
-    ciphertext,
-  };
-}
-
-async function decryptDeviceName(
-  { ephemeralPublic, syntheticIv, ciphertext } = {},
-  identityPrivate
-) {
-  const masterSecret = await libsignal.Curve.async.calculateAgreement(
-    ephemeralPublic,
-    identityPrivate
-  );
-
-  const key2 = await hmacSha256(masterSecret, bytesFromString('cipher'));
-  const cipherKey = await hmacSha256(key2, syntheticIv);
-
-  const counter = getZeroes(16);
-  const plaintext = await decryptAesCtr(cipherKey, ciphertext, counter);
-
-  const key1 = await hmacSha256(masterSecret, bytesFromString('auth'));
-  const ourSyntheticIv = _getFirstBytes(await hmacSha256(key1, plaintext), 16);
-
-  if (!constantTimeEqual(ourSyntheticIv, syntheticIv)) {
-    throw new Error('decryptDeviceName: synthetic IV did not match');
-  }
-
-  return stringFromBytes(plaintext);
-}
-
 // Path structure: 'fa/facdf99c22945b1c9393345599a276f4b36ad7ccdc8c2467f5441b742c2d11fa'
 function getAttachmentLabel(path) {
   const filename = path.slice(3);
@@ -152,30 +86,14 @@ async function deriveAccessKey(profileKey) {
   return _getFirstBytes(accessKey, 16);
 }
 
-async function getAccessKeyVerifier(accessKey) {
-  const plaintext = getZeroes(32);
-  const hmac = await hmacSha256(accessKey, plaintext);
-
-  return hmac;
-}
-
-async function verifyAccessKey(accessKey, theirVerifier) {
-  const ourVerifier = await getAccessKeyVerifier(accessKey);
-
-  if (constantTimeEqual(ourVerifier, theirVerifier)) {
-    return true;
-  }
-
-  return false;
-}
-
 const IV_LENGTH = 16;
 const MAC_LENGTH = 16;
 const NONCE_LENGTH = 16;
 
 async function encryptSymmetric(key, plaintext) {
   const iv = getZeroes(IV_LENGTH);
-  const nonce = getRandomBytes(NONCE_LENGTH);
+  const sodium = await window.getSodium();
+  const nonce = sodium.randombytes_buf(NONCE_LENGTH);
 
   const cipherKey = await hmacSha256(key, nonce);
   const macKey = await hmacSha256(key, cipherKey);
@@ -286,54 +204,6 @@ async function _decrypt_aes256_CBC_PKCSPadding(key, iv, plaintext) {
   return window.crypto.subtle.decrypt(algorithm, cryptoKey, plaintext);
 }
 
-async function encryptAesCtr(key, plaintext, counter) {
-  const extractable = false;
-  const algorithm = {
-    name: 'AES-CTR',
-    counter: new Uint8Array(counter),
-    length: 128,
-  };
-
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key,
-    algorithm,
-    extractable,
-    ['encrypt']
-  );
-
-  const ciphertext = await crypto.subtle.encrypt(
-    algorithm,
-    cryptoKey,
-    plaintext
-  );
-
-  return ciphertext;
-}
-
-async function decryptAesCtr(key, ciphertext, counter) {
-  const extractable = false;
-  const algorithm = {
-    name: 'AES-CTR',
-    counter: new Uint8Array(counter),
-    length: 128,
-  };
-
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    key,
-    algorithm,
-    extractable,
-    ['decrypt']
-  );
-  const plaintext = await crypto.subtle.decrypt(
-    algorithm,
-    cryptoKey,
-    ciphertext
-  );
-  return plaintext;
-}
-
 async function _encrypt_aes_gcm(key, iv, plaintext) {
   const algorithm = {
     name: 'AES-GCM',
@@ -353,11 +223,6 @@ async function _encrypt_aes_gcm(key, iv, plaintext) {
 
 // Utility
 
-function getRandomBytes(n) {
-  const bytes = new Uint8Array(n);
-  window.crypto.getRandomValues(bytes);
-  return bytes;
-}
 
 function getZeroes(n) {
   const result = new Uint8Array(n);
@@ -370,23 +235,6 @@ function getZeroes(n) {
   return result;
 }
 
-function highBitsToInt(byte) {
-  return (byte & 0xff) >> 4;
-}
-
-function intsToByteHighAndLow(highValue, lowValue) {
-  return ((highValue << 4) | lowValue) & 0xff;
-}
-
-function trimBytes(buffer, length) {
-  return _getFirstBytes(buffer, length);
-}
-
-function getViewOfArrayBuffer(buffer, start, finish) {
-  const source = new Uint8Array(buffer);
-  const result = source.slice(start, finish);
-  return result.buffer;
-}
 
 function concatenateBytes(...elements) {
   const length = elements.reduce(
@@ -407,32 +255,6 @@ function concatenateBytes(...elements) {
   }
 
   return result.buffer;
-}
-
-function splitBytes(buffer, ...lengths) {
-  const total = lengths.reduce((acc, length) => acc + length, 0);
-
-  if (total !== buffer.byteLength) {
-    throw new Error(
-      `Requested lengths total ${total} does not match source total ${buffer.byteLength}`
-    );
-  }
-
-  const source = new Uint8Array(buffer);
-  const results = [];
-  let position = 0;
-
-  for (let i = 0, max = lengths.length; i < max; i += 1) {
-    const length = lengths[i];
-    const result = new Uint8Array(length);
-    const section = source.slice(position, position + length);
-    result.set(section);
-    position += result.byteLength;
-
-    results.push(result);
-  }
-
-  return results;
 }
 
 // Internal-only

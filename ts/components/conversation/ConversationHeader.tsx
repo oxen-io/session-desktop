@@ -69,7 +69,6 @@ interface Props {
   onSetDisappearingMessages: (seconds: number) => void;
   onDeleteMessages: () => void;
   onDeleteContact: () => void;
-  onResetSession: () => void;
 
   onCloseOverlay: () => void;
   onDeleteSelectedMessages: () => void;

@@ -5,9 +5,8 @@ import { getEnvelopeId } from './common';
 import { removeFromCache, updateCache } from './cache';
 import { SignalService } from '../protobuf';
 import * as Lodash from 'lodash';
-import * as libsession from '../session';
 import { handlePairingAuthorisationMessage } from './multidevice';
-import { MultiDeviceProtocol, SessionProtocol } from '../session/protocols';
+import { MultiDeviceProtocol } from '../session/protocols';
 import { PubKey } from '../session/types';
 
 import { handleSyncMessage } from './syncMessages';
@@ -221,29 +220,6 @@ export async function isBlocked(number: string) {
   return BlockedNumberController.isBlockedAsync(number);
 }
 
-async function decryptPreKeyWhisperMessage(
-  ciphertext: any,
-  sessionCipher: any,
-  address: any
-): Promise<ArrayBuffer> {
-  const padded = await sessionCipher.decryptPreKeyWhisperMessage(ciphertext);
-
-  try {
-    return unpad(padded);
-  } catch (e) {
-    if (e.message === 'Unknown identity key') {
-      // create an error that the UI will pick up and ask the
-      // user if they want to re-negotiate
-      const buffer = ByteBuffer.wrap(ciphertext);
-      throw new window.textsecure.IncomingIdentityKeyError(
-        address.toString(),
-        buffer.toArrayBuffer(),
-        e.identityKey
-      );
-    }
-    throw e;
-  }
-}
 
 async function decryptUnidentifiedSender(
   envelope: EnvelopePlus,
@@ -277,42 +253,21 @@ async function decryptUnidentifiedSender(
 
 async function doDecrypt(
   envelope: EnvelopePlus,
-  ciphertext: ArrayBuffer,
-  address: any
+  ciphertext: ArrayBuffer
 ): Promise<ArrayBuffer | null> {
-  const { textsecure, libloki } = window;
 
-  const lokiSessionCipher = new libloki.crypto.LokiSessionCipher(
-    textsecure.storage.protocol,
-    address
-  );
   if (ciphertext.byteLength === 0) {
     throw new Error('Received an empty envelope.'); // Error.noData
   }
 
   switch (envelope.type) {
-    case SignalService.Envelope.Type.CIPHERTEXT:
-      window.log.info('message from', getEnvelopeId(envelope));
-      return lokiSessionCipher.decryptWhisperMessage(ciphertext).then(unpad);
     case SignalService.Envelope.Type.CLOSED_GROUP_CIPHERTEXT:
+      window.log.info('CLOSED_GROUP_CIPHERTEXT from ', envelope.source);
+
       return decryptForClosedGroupV2(envelope, ciphertext);
-    case SignalService.Envelope.Type.FALLBACK_MESSAGE: {
-      window.log.info('Fallback message from ', envelope.source);
-
-      const fallBackSessionCipher = new libloki.crypto.FallBackSessionCipher(
-        address
-      );
-
-      return fallBackSessionCipher.decrypt(ciphertext).then(unpad);
-    }
-    case SignalService.Envelope.Type.PREKEY_BUNDLE:
-      window.log.info('prekey message from', getEnvelopeId(envelope));
-      return decryptPreKeyWhisperMessage(
-        ciphertext,
-        lokiSessionCipher,
-        address
-      );
     case SignalService.Envelope.Type.UNIDENTIFIED_SENDER: {
+      window.log.info('UNIDENTIFIED_SENDER from ', envelope.source);
+
       return decryptUnidentifiedSender(envelope, ciphertext);
     }
     default:
@@ -325,17 +280,10 @@ async function decrypt(
   envelope: EnvelopePlus,
   ciphertext: ArrayBuffer
 ): Promise<any> {
-  const { textsecure, libsignal, log } = window;
-
-  // Envelope.source will be null on UNIDENTIFIED_SENDER
-  // Don't use it there!
-  const address = new libsignal.SignalProtocolAddress(
-    envelope.source,
-    envelope.sourceDevice
-  );
+  const { textsecure } = window;
 
   try {
-    const plaintext = await doDecrypt(envelope, ciphertext, address);
+    const plaintext = await doDecrypt(envelope, ciphertext);
 
     if (!plaintext) {
       await removeFromCache(envelope);
@@ -358,16 +306,7 @@ async function decrypt(
       (error.message.indexOf('No record for device') === 0 ||
         error.message.indexOf('decryptWithSessionList: list is empty') === 0);
 
-    if (error && error.message === 'Unknown identity key') {
-      // create an error that the UI will pick up and ask the
-      // user if they want to re-negotiate
-      const buffer = ByteBuffer.wrap(ciphertext);
-      errorToThrow = new textsecure.IncomingIdentityKeyError(
-        address.toString(),
-        buffer.toArrayBuffer(),
-        error.identityKey
-      );
-    } else if (!noSession) {
+   if (!noSession) {
       // We want to handle "no-session" error, not re-throw it
       throw error;
     }
@@ -445,18 +384,26 @@ export async function innerHandleContentMessage(
         );
       }
     }
-    const { FALLBACK_MESSAGE } = SignalService.Envelope.Type;
+    const {
+      UNIDENTIFIED_SENDER,
+      CLOSED_GROUP_CIPHERTEXT,
+    } = SignalService.Envelope.Type;
 
     await ConversationController.getInstance().getOrCreateAndWait(
       envelope.source,
       'private'
     );
 
-    if (envelope.type !== FALLBACK_MESSAGE) {
-      const device = new PubKey(envelope.source);
+    if (
+      envelope.type !== UNIDENTIFIED_SENDER &&
+      envelope.type !== CLOSED_GROUP_CIPHERTEXT
+    ) {
+      window?.log?.warn(
+        'Received a content message with an envelope type of neither UNIDENTIFIED_SENDER nor CLOSED_GROUP_CIPHERTEXT. Dropping it'
+      );
+      await removeFromCache(envelope);
 
-      await SessionProtocol.onSessionEstablished(device);
-      await libsession.getMessageQueue().processPending(device);
+      return;
     }
 
     if (content.pairingAuthorisation) {

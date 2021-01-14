@@ -8,7 +8,6 @@
   const DebugFlagsEnum = {
     GROUP_SYNC_MESSAGES: 1,
     CONTACT_SYNC_MESSAGES: 2,
-    FALLBACK_MESSAGES: 8,
     SESSION_BACKGROUND_MESSAGE: 32,
     GROUP_REQUEST_INFO: 64,
     // If you add any new flag, be sure it is bitwise safe! (unique and 2 multiples)
@@ -95,22 +94,6 @@
     });
   }
 
-  async function sendSessionRequestsToMembers(members = []) {
-    // For every member, trigger a session request if needed
-    members.forEach(async memberStr => {
-      const ourPubKey = textsecure.storage.user.getNumber();
-      if (memberStr !== ourPubKey) {
-        const memberPubkey = new libsession.Types.PubKey(memberStr);
-        await window
-          .getConversationController()
-          .getOrCreateAndWait(memberStr, 'private');
-        await libsession.Protocols.SessionProtocol.sendSessionRequestIfNeeded(
-          memberPubkey
-        );
-      }
-    });
-  }
-
   const debug = {
     logContactSync,
     logGroupSync,
@@ -119,7 +102,6 @@
   };
 
   window.libloki.api = {
-    sendSessionRequestsToMembers,
     createContactSyncMessage,
     createGroupSyncMessage,
     debug,

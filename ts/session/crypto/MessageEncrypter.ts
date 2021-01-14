@@ -1,11 +1,9 @@
 import { EncryptionType } from '../types/EncryptionType';
 import { SignalService } from '../../protobuf';
 import { UserUtil } from '../../util';
-import { CipherTextObject } from '../../../libtextsecure/libsignal-protocol';
 import { PubKey } from '../types';
 import { concatUInt8Array, getSodium } from '.';
 import { fromHexToArray } from '../utils/String';
-import { ECKeyPair } from '../../receiver/closedGroupsV2';
 export { concatUInt8Array, getSodium };
 import { getLatestClosedGroupEncryptionKeyPair } from '../../../js/modules/data';
 
@@ -107,8 +105,8 @@ export async function encryptUsingSessionProtocol(
   const userED25519KeyPairHex = await UserUtil.getUserED25519KeyPair();
   if (
     !userED25519KeyPairHex ||
-    !userED25519KeyPairHex.pubKey?.length ||
-    !userED25519KeyPairHex.privKey?.length
+    !userED25519KeyPairHex.publicHex?.length ||
+    !userED25519KeyPairHex.privateHex?.length
   ) {
     throw new Error("Couldn't find user ED25519 key pair.");
   }
@@ -120,9 +118,9 @@ export async function encryptUsingSessionProtocol(
   );
 
   const recipientX25519PublicKey = recipientHexEncodedX25519PublicKey.withoutPrefixToArray();
-  const userED25519PubKeyBytes = fromHexToArray(userED25519KeyPairHex.pubKey);
+  const userED25519PubKeyBytes = fromHexToArray(userED25519KeyPairHex.publicHex);
   const userED25519SecretKeyBytes = fromHexToArray(
-    userED25519KeyPairHex.privKey
+    userED25519KeyPairHex.privateHex
   );
 
   // merge all arrays into one

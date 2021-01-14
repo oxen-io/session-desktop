@@ -1,5 +1,5 @@
 /* global log, textsecure, libloki, Signal, Whisper,
-clearTimeout, getMessageController, libsignal, StringView, window, _,
+clearTimeout, getMessageController, StringView, window, _,
 dcodeIO, Buffer, process */
 const nodeFetch = require('node-fetch');
 const { URL, URLSearchParams } = require('url');
@@ -477,20 +477,6 @@ class LokiAppDotNetServerAPI {
 
   async setProfileName(profileName) {
     // when we add an annotation, may need this
-    /*
-    const privKey = await this.getPrivateKey();
-    // we might need an annotation that sets the homeserver for media
-    // better to include this with each attachment...
-    const objToSign = {
-      name: profileName,
-      version: 1,
-      annotations: [],
-    };
-    const sig = await libsignal.Curve.async.calculateSignature(
-      privKey,
-      JSON.stringify(objToSign)
-    );
-    */
 
     // You cannot use null to clear the profile name
     // the name key has to be set to know what value we want changed
@@ -1077,7 +1063,7 @@ class LokiPublicChannelAPI {
 
   async getPrivateKey() {
     if (!this.myPrivateKey) {
-      const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
+      const myKeyPair = await window.libsession.Utils.UserUtil.getIdentityKeyPair();
       this.myPrivateKey = myKeyPair.privKey;
     }
     return this.myPrivateKey;
@@ -1584,7 +1570,15 @@ class LokiPublicChannelAPI {
     const pubKeyBin = StringView.hexToArrayBuffer(adnMessage.user.username);
     const sigBin = StringView.hexToArrayBuffer(sig);
     try {
-      await libsignal.Curve.async.verifySignature(pubKeyBin, sigData, sigBin);
+      const sodium = await window.getSodium();
+      const isValid = sodium.crypto_sign_verify_detached(
+        sigBin,
+        sigData,
+        pubKeyBin
+      );
+      if(!isValid) {
+        throw new Error('Invalid signature')
+      }
     } catch (e) {
       if (e.message === 'Invalid signature') {
         // keep noise out of the logs, once per start up is enough
@@ -1813,7 +1807,6 @@ class LokiPublicChannelAPI {
           const messageData = {
             serverId: adnMessage.id,
             clientVerified: true,
-            isSessionRequest: false,
             source: pubKey,
             sourceDevice: 1,
             timestamp, // sender timestamp
@@ -2166,9 +2159,11 @@ class LokiPublicChannelAPI {
       previewAnnotations.map(anno => anno.value),
       mockAdnMessage
     );
-    const sig = await libsignal.Curve.async.calculateSignature(
-      privKey,
-      sigData
+    const sodium = await window.getSodium();
+
+    const sig = sodium.crypto_sign_detached(
+      sigData,
+      privKey
     );
     payload.annotations[0].value.sig = StringView.arrayBufferToHex(sig);
     payload.annotations[0].value.sigver = sigVer;

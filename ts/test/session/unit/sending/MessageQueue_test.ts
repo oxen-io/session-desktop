@@ -13,10 +13,7 @@ import {
 import { PrimaryPubKey, PubKey, RawMessage } from '../../../../session/types';
 import { UserUtil } from '../../../../util';
 import { MessageSender } from '../../../../session/sending';
-import {
-  MultiDeviceProtocol,
-  SessionProtocol,
-} from '../../../../session/protocols';
+import { MultiDeviceProtocol } from '../../../../session/protocols';
 import { PendingMessageCacheStub } from '../../../test-utils/stubs';
 import { TestSyncMessage } from '../../../test-utils/stubs/messages/TestSyncMessage';
 import { ClosedGroupV2Message } from '../../../../session/messages/outgoing/content/data/groupv2';
@@ -42,18 +39,10 @@ describe('MessageQueue', () => {
   let sendStub: sinon.SinonStub<[RawMessage, (number | undefined)?]>;
   // Utils Stubs
   let isMediumGroupStub: sinon.SinonStub<[PubKey], boolean>;
-  // Session Protocol Stubs
-  let hasSessionStub: sinon.SinonStub<[PubKey]>;
-  let sendSessionRequestIfNeededStub: sinon.SinonStub<[PubKey], Promise<void>>;
 
   beforeEach(async () => {
     // Utils Stubs
     sandbox.stub(UserUtil, 'getCurrentDevicePubKey').resolves(ourNumber);
-
-    TestUtils.stubWindow('libsignal', {
-      SignalProtocolAddress: sandbox.stub(),
-      SessionCipher: Stubs.SessionCipherStub,
-    } as any);
 
     // Message Sender Stubs
     sendStub = sandbox.stub(MessageSender, 'send').resolves();
@@ -62,13 +51,6 @@ describe('MessageQueue', () => {
     isMediumGroupStub = sandbox
       .stub(GroupUtils, 'isMediumGroup')
       .returns(false);
-
-    // Session Protocol Stubs
-    sandbox.stub(SessionProtocol, 'sendSessionRequest').resolves();
-    hasSessionStub = sandbox.stub(SessionProtocol, 'hasSession').resolves(true);
-    sendSessionRequestIfNeededStub = sandbox
-      .stub(SessionProtocol, 'sendSessionRequestIfNeeded')
-      .resolves();
 
     // Init Queue
     pendingMessageCache = new PendingMessageCacheStub();
@@ -81,48 +63,18 @@ describe('MessageQueue', () => {
   });
 
   describe('processPending', () => {
-    it('will send session request if no session and not sending to medium group', async () => {
-      hasSessionStub.resolves(false);
-      isMediumGroupStub.returns(false);
-
-      const device = TestUtils.generateFakePubKey();
-
-      await messageQueueStub.processPending(device);
-
-      const stubCallPromise = PromiseUtils.waitUntil(
-        () => sendSessionRequestIfNeededStub.callCount === 1
-      );
-      await expect(stubCallPromise).to.be.fulfilled;
-    });
-
-    it('will not send session request if sending to medium group', async () => {
-      hasSessionStub.resolves(false);
-      isMediumGroupStub.returns(true);
-
-      const device = TestUtils.generateFakePubKey();
-      await messageQueueStub.processPending(device);
-
-      expect(sendSessionRequestIfNeededStub.callCount).to.equal(0);
-    });
-
     it('will send messages', async () => {
-      for (const hasSession of [true, false]) {
-        hasSessionStub.resolves(hasSession);
+      const device = TestUtils.generateFakePubKey();
+      await pendingMessageCache.add(device, TestUtils.generateChatMessage());
 
-        const device = TestUtils.generateFakePubKey();
-        await pendingMessageCache.add(device, TestUtils.generateChatMessage());
-
-        const successPromise = PromiseUtils.waitForTask(done => {
-          messageQueueStub.events.once('sendSuccess', done);
-        });
-        await messageQueueStub.processPending(device);
-        await expect(successPromise).to.be.fulfilled;
-      }
+      const successPromise = PromiseUtils.waitForTask(done => {
+        messageQueueStub.events.once('sendSuccess', done);
+      });
+      await messageQueueStub.processPending(device);
+      await expect(successPromise).to.be.fulfilled;
     });
 
     it('should remove message from cache', async () => {
-      hasSessionStub.resolves(true);
-
       const events = ['sendSuccess', 'sendFail'];
       for (const event of events) {
         if (event === 'sendSuccess') {
@@ -148,8 +100,6 @@ describe('MessageQueue', () => {
 
     describe('events', () => {
       it('should send a success event if message was sent', async () => {
-        hasSessionStub.resolves(true);
-
         const device = TestUtils.generateFakePubKey();
         const message = TestUtils.generateChatMessage();
         await pendingMessageCache.add(device, message);
@@ -168,7 +118,6 @@ describe('MessageQueue', () => {
       });
 
       it('should send a fail event if something went wrong while sending', async () => {
-        hasSessionStub.resolves(true);
         sendStub.throws(new Error('failure'));
 
         const spy = sandbox.spy();
@@ -227,8 +176,6 @@ describe('MessageQueue', () => {
 
   describe('sendMessageToDevices', () => {
     it('can send to many devices', async () => {
-      hasSessionStub.resolves(false);
-
       const devices = TestUtils.generateFakePubKeys(5);
       const message = TestUtils.generateChatMessage();
 
@@ -239,8 +186,6 @@ describe('MessageQueue', () => {
 
   describe('sendSyncMessage', () => {
     it('should send a message to all our devices', async () => {
-      hasSessionStub.resolves(false);
-
       const ourOtherDevices = TestUtils.generateFakePubKeys(2);
       const ourDevices = [ourDevice, ...ourOtherDevices];
       sandbox.stub(MultiDeviceProtocol, 'getAllDevices').resolves(ourDevices);
@@ -259,14 +204,6 @@ describe('MessageQueue', () => {
   });
 
   describe('sendToGroup', () => {
-    it('should throw an error if invalid non-group message was passed', async () => {
-      // const chatMessage = TestUtils.generateChatMessage();
-      // await expect(
-      //   messageQueueStub.sendToGroup(chatMessage)
-      // ).to.be.rejectedWith('Invalid group message passed in sendToGroup.');
-      // Cannot happen with typescript as this function only accept group message now
-    });
-
     describe('closed groups', async () => {
       beforeEach(() => {
         sandbox

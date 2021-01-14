@@ -74,9 +74,7 @@ module.exports = grunt => {
         },
         src: [
           'libtextsecure/errors.js',
-          'libtextsecure/libsignal-protocol.js',
           'libtextsecure/protocol_wrapper.js',
-
           'libtextsecure/crypto.js',
           'libtextsecure/storage.js',
           'libtextsecure/storage/user.js',
@@ -93,7 +91,6 @@ module.exports = grunt => {
           'libtextsecure/sendmessage.js',
           'libtextsecure/sync_request.js',
           'libtextsecure/contacts_parser.js',
-          'libtextsecure/ProvisioningCipher.js',
           'libtextsecure/task_with_timeout.js',
         ],
         dest: 'js/libtextsecure.js',

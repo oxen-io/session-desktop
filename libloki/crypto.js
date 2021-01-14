@@ -15,25 +15,10 @@
 (function() {
   window.libloki = window.libloki || {};
 
-  class FallBackDecryptionError extends Error {}
 
   const IV_LENGTH = 16;
   const NONCE_LENGTH = 12;
 
-  async function DHEncrypt(symmetricKey, plainText) {
-    const iv = libsignal.crypto.getRandomBytes(IV_LENGTH);
-    const ciphertext = await libsignal.crypto.encrypt(
-      symmetricKey,
-      plainText,
-      iv
-    );
-    const ivAndCiphertext = new Uint8Array(
-      iv.byteLength + ciphertext.byteLength
-    );
-    ivAndCiphertext.set(new Uint8Array(iv));
-    ivAndCiphertext.set(new Uint8Array(ciphertext), iv.byteLength);
-    return ivAndCiphertext;
-  }
 
   async function deriveSymmetricKey(pubkey, seckey) {
     const ephemeralSecret = await libsignal.Curve.async.calculateAgreement(
@@ -131,53 +116,6 @@
     return libsignal.crypto.decrypt(symmetricKey, ciphertext, iv);
   }
 
-  class FallBackSessionCipher {
-    constructor(address) {
-      this.identityKeyString = address.getName();
-      this.pubKey = StringView.hexToArrayBuffer(address.getName());
-    }
-
-    // Should we use ephemeral key pairs here rather than long term keys on each side?
-    async encrypt(plaintext) {
-      const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
-      if (!myKeyPair) {
-        throw new Error('Failed to get keypair for encryption');
-      }
-      const myPrivateKey = myKeyPair.privKey;
-      const symmetricKey = await libsignal.Curve.async.calculateAgreement(
-        this.pubKey,
-        myPrivateKey
-      );
-      const ivAndCiphertext = await DHEncrypt(symmetricKey, plaintext);
-      const binaryIvAndCiphertext = dcodeIO.ByteBuffer.wrap(
-        ivAndCiphertext
-      ).toString('binary');
-      return {
-        type: textsecure.protobuf.Envelope.Type.FALLBACK_MESSAGE,
-        body: binaryIvAndCiphertext,
-        registrationId: undefined,
-      };
-    }
-
-    async decrypt(ivAndCiphertext) {
-      const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
-      if (!myKeyPair) {
-        throw new Error('Failed to get keypair for decryption');
-      }
-      const myPrivateKey = myKeyPair.privKey;
-      const symmetricKey = await libsignal.Curve.async.calculateAgreement(
-        this.pubKey,
-        myPrivateKey
-      );
-      try {
-        return await DHDecrypt(symmetricKey, ivAndCiphertext);
-      } catch (e) {
-        throw new FallBackDecryptionError(
-          `Could not decrypt message from ${this.identityKeyString} using FallBack encryption.`
-        );
-      }
-    }
-  }
 
   const base32zIndex = Multibase.names.indexOf('base32z');
   const base32zCode = Multibase.codes[base32zIndex];
@@ -205,7 +143,7 @@
     data.set(new Uint8Array(pubKeyArrayBuffer), 0);
     data[len] = type;
 
-    const myKeyPair = await textsecure.storage.protocol.getIdentityKeyPair();
+    const myKeyPair = await window.libsession.Utils.UserUtil.getIdentityKeyPair();
     if (!myKeyPair) {
       throw new Error('Failed to get keypair for pairing signature generation');
     }
@@ -331,7 +269,7 @@
     const serverPubKey = new Uint8Array(
       dcodeIO.ByteBuffer.fromBase64(serverPubKey64).toArrayBuffer()
     );
-    const keyPair = await textsecure.storage.protocol.getIdentityKeyPair();
+    const keyPair = await window.libsession.Utils.UserUtil.getIdentityKeyPair();
     if (!keyPair) {
       throw new Error('Failed to get keypair for token decryption');
     }
@@ -354,167 +292,17 @@
     GRANT: 2,
   });
 
-  /**
-   * A wrapper around Signal's SessionCipher.
-   * This handles specific session reset logic that we need.
-   */
-  class LokiSessionCipher {
-    constructor(storage, protocolAddress) {
-      this.storage = storage;
-      this.protocolAddress = protocolAddress;
-      this.sessionCipher = new libsignal.SessionCipher(
-        storage,
-        protocolAddress
-      );
-      this.TYPE = Object.freeze({
-        MESSAGE: 1,
-        PREKEY: 2,
-      });
-    }
-
-    decryptWhisperMessage(buffer, encoding) {
-      return this._decryptMessage(this.TYPE.MESSAGE, buffer, encoding);
-    }
-
-    decryptPreKeyWhisperMessage(buffer, encoding) {
-      return this._decryptMessage(this.TYPE.PREKEY, buffer, encoding);
-    }
-
-    async _decryptMessage(type, buffer, encoding) {
-      // Capture active session
-      const activeSessionBaseKey = await this._getCurrentSessionBaseKey();
-
-      if (type === this.TYPE.PREKEY && !activeSessionBaseKey) {
-        const wrapped = dcodeIO.ByteBuffer.wrap(buffer);
-        await window.libloki.storage.verifyFriendRequestAcceptPreKey(
-          this.protocolAddress.getName(),
-          wrapped
-        );
-      }
-
-      const decryptFunction =
-        type === this.TYPE.PREKEY
-          ? this.sessionCipher.decryptPreKeyWhisperMessage
-          : this.sessionCipher.decryptWhisperMessage;
-      const result = await decryptFunction(buffer, encoding);
-
-      // Handle session reset
-      // This needs to be done synchronously so that the next time we decrypt a message,
-      // we have the correct session
-      try {
-        await this._handleSessionResetIfNeeded(activeSessionBaseKey);
-      } catch (e) {
-        window.log.info('Failed to handle session reset: ', e);
-      }
-
-      return result;
-    }
-
-    async _handleSessionResetIfNeeded(previousSessionBaseKey) {
-      if (!previousSessionBaseKey) {
-        return;
-      }
-
-      let conversation;
-      try {
-        conversation = await window
-          .getConversationController()
-          .getOrCreateAndWait(this.protocolAddress.getName(), 'private');
-      } catch (e) {
-        window.log.info(
-          'Error getting conversation: ',
-          this.protocolAddress.getName()
-        );
-        return;
-      }
-
-      if (conversation.isSessionResetOngoing()) {
-        const currentSessionBaseKey = await this._getCurrentSessionBaseKey();
-        if (currentSessionBaseKey !== previousSessionBaseKey) {
-          if (conversation.isSessionResetReceived()) {
-            // The other user used an old session to contact us; wait for them to switch to a new one.
-            await this._restoreSession(previousSessionBaseKey);
-          } else {
-            // Our session reset was successful; we initiated one and got a new session back from the other user.
-            await this._deleteAllSessionExcept(currentSessionBaseKey);
-            await conversation.onNewSessionAdopted();
-          }
-        } else if (conversation.isSessionResetReceived()) {
-          // Our session reset was successful; we received a message with the same session from the other user.
-          await this._deleteAllSessionExcept(previousSessionBaseKey);
-          await conversation.onNewSessionAdopted();
-        }
-      }
-    }
-
-    async _getCurrentSessionBaseKey() {
-      const record = await this.sessionCipher.getRecord(
-        this.protocolAddress.toString()
-      );
-      if (!record) {
-        return null;
-      }
-      const openSession = record.getOpenSession();
-      if (!openSession) {
-        return null;
-      }
-      const { baseKey } = openSession.indexInfo;
-      return baseKey;
-    }
-
-    async _restoreSession(sessionBaseKey) {
-      const record = await this.sessionCipher.getRecord(
-        this.protocolAddress.toString()
-      );
-      if (!record) {
-        return;
-      }
-      record.archiveCurrentState();
-
-      const sessionToRestore = record.sessions[sessionBaseKey];
-      if (!sessionToRestore) {
-        throw new Error(`Cannot find session with base key ${sessionBaseKey}`);
-      }
-
-      record.promoteState(sessionToRestore);
-      record.updateSessionState(sessionToRestore);
-      await this.storage.storeSession(
-        this.protocolAddress.toString(),
-        record.serialize()
-      );
-    }
-
-    async _deleteAllSessionExcept(sessionBaseKey) {
-      const record = await this.sessionCipher.getRecord(
-        this.protocolAddress.toString()
-      );
-      if (!record) {
-        return;
-      }
-      const sessionToKeep = record.sessions[sessionBaseKey];
-      record.sessions = {};
-      record.updateSessionState(sessionToKeep);
-      await this.storage.storeSession(
-        this.protocolAddress.toString(),
-        record.serialize()
-      );
-    }
-  }
 
   window.libloki.crypto = {
-    DHEncrypt,
     EncryptGCM, // AES-GCM
     DHDecrypt,
     DecryptGCM, // AES-GCM
-    FallBackSessionCipher,
-    FallBackDecryptionError,
     decryptToken,
     generateSignatureForPairing,
-    verifyPairingSignature,
     verifyAuthorisation,
     validateAuthorisation,
+    verifyPairingSignature,
     PairingType,
-    LokiSessionCipher,
     generateEphemeralKeyPair,
     encryptForPubkey,
     decryptForPubkey,

@@ -7,7 +7,6 @@ import { ConversationType, getEnvelopeId } from './common';
 import { MessageModel } from '../../js/models/messages';
 import { PubKey } from '../session/types';
 import { handleMessageJob } from './queuedJob';
-import { handleEndSession } from './sessionHandling';
 import { handleUnpairRequest } from './multidevice';
 import { downloadAttachment } from './attachments';
 import _ from 'lodash';
@@ -176,12 +175,7 @@ export async function processDecrypted(envelope: EnvelopePlus, decrypted: any) {
     decrypted.expireTimer = 0;
   }
 
-  if (decrypted.flags & FLAGS.END_SESSION) {
-    decrypted.body = '';
-    decrypted.attachments = [];
-    decrypted.group = null;
-    return Promise.resolve(decrypted);
-  } else if (decrypted.flags & FLAGS.EXPIRATION_TIMER_UPDATE) {
+  if (decrypted.flags & FLAGS.EXPIRATION_TIMER_UPDATE) {
     decrypted.body = '';
     decrypted.attachments = [];
   } else if (decrypted.flags & FLAGS.PROFILE_KEY_UPDATE) {
@@ -288,16 +282,6 @@ export async function handleDataMessage(
     await handleClosedGroupV2(envelope, dataMessage.closedGroupUpdateV2);
     return;
   }
-
-  // tslint:disable no-bitwise
-  if (
-    dataMessage.flags &&
-    dataMessage.flags & SignalService.DataMessage.Flags.END_SESSION
-  ) {
-    await handleEndSession(envelope.source);
-    return removeFromCache(envelope);
-  }
-  // tslint:enable no-bitwise
 
   const message = await processDecrypted(envelope, dataMessage);
   const ourPubKey = window.textsecure.storage.user.getNumber();
@@ -683,14 +667,6 @@ export async function handleMessageEvent(event: MessageEvent): Promise<void> {
       // mark created conversation as secondary if this is one
       conv.setSecondaryStatus(true, primaryDestination.key);
     }
-  }
-
-  // =========== Process flags =============
-
-  // tslint:disable-next-line: no-bitwise
-  if (message.flags & SESSION_RESTORE) {
-    // Show that the session reset is "in progress" even though we had a valid session
-    msg.set({ endSessionType: 'ongoing' });
   }
 
   const ourNumber = window.textsecure.storage.user.getNumber();

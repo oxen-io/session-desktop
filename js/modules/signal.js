@@ -10,7 +10,6 @@ const OS = require('../../ts/OS');
 const Settings = require('./settings');
 const Util = require('../../ts/util');
 const { migrateToSQL } = require('./migrate_to_sql');
-const Metadata = require('./metadata/SecretSessionCipher');
 const LinkPreviews = require('./link_previews');
 const AttachmentDownloads = require('./attachment_downloads');
 
@@ -96,12 +95,6 @@ const {
 const conversationsDuck = require('../../ts/state/ducks/conversations');
 const userDuck = require('../../ts/state/ducks/user');
 
-// Migrations
-const {
-  getPlaceholderMigrations,
-  getCurrentVersion,
-} = require('./migrations/get_placeholder_migrations');
-const { run } = require('./migrations/migrations');
 
 // Types
 const AttachmentType = require('./types/attachment');
@@ -118,111 +111,10 @@ const SettingsType = require('../../ts/types/Settings');
 // Views
 const Initialization = require('./views/initialization');
 
-// Workflow
-const { IdleDetector } = require('./idle_detector');
-const MessageDataMigrator = require('./messages_data_migrator');
 
-function initializeMigrations({
-  userDataPath,
-  getRegionCode,
-  Attachments,
-  Type,
-  VisualType,
-  logger,
-}) {
-  if (!Attachments) {
-    return null;
-  }
-  const {
-    getPath,
-    createReader,
-    createAbsolutePathGetter,
-    createWriterForNew,
-    createWriterForExisting,
-  } = Attachments;
-  const {
-    makeObjectUrl,
-    revokeObjectUrl,
-    getImageDimensions,
-    makeImageThumbnail,
-    makeVideoScreenshot,
-  } = VisualType;
-
-  const attachmentsPath = getPath(userDataPath);
-  const readAttachmentData = createReader(attachmentsPath);
-  const loadAttachmentData = Type.loadData(readAttachmentData);
-  const loadPreviewData = MessageType.loadPreviewData(loadAttachmentData);
-  const loadQuoteData = MessageType.loadQuoteData(loadAttachmentData);
-  const getAbsoluteAttachmentPath = createAbsolutePathGetter(attachmentsPath);
-  const deleteOnDisk = Attachments.createDeleter(attachmentsPath);
-  const writeNewAttachmentData = createWriterForNew(attachmentsPath);
-
-  return {
-    attachmentsPath,
-    deleteAttachmentData: deleteOnDisk,
-    deleteExternalMessageFiles: MessageType.deleteAllExternalFiles({
-      deleteAttachmentData: Type.deleteData(deleteOnDisk),
-      deleteOnDisk,
-    }),
-    getAbsoluteAttachmentPath,
-    getPlaceholderMigrations,
-    getCurrentVersion,
-    loadAttachmentData,
-    loadMessage: MessageType.createAttachmentLoader(loadAttachmentData),
-    loadPreviewData,
-    loadQuoteData,
-    readAttachmentData,
-    run,
-    processNewAttachment: attachment =>
-      MessageType.processNewAttachment(attachment, {
-        writeNewAttachmentData,
-        getAbsoluteAttachmentPath,
-        makeObjectUrl,
-        revokeObjectUrl,
-        getImageDimensions,
-        makeImageThumbnail,
-        makeVideoScreenshot,
-        logger,
-      }),
-    upgradeMessageSchema: (message, options = {}) => {
-      const { maxVersion } = options;
-
-      return MessageType.upgradeSchema(message, {
-        writeNewAttachmentData,
-        getRegionCode,
-        getAbsoluteAttachmentPath,
-        makeObjectUrl,
-        revokeObjectUrl,
-        getImageDimensions,
-        makeImageThumbnail,
-        makeVideoScreenshot,
-        logger,
-        maxVersion,
-      });
-    },
-    writeMessageAttachments: MessageType.createAttachmentDataWriter({
-      writeExistingAttachmentData: createWriterForExisting(attachmentsPath),
-      logger,
-    }),
-    writeNewAttachmentData: createWriterForNew(attachmentsPath),
-    writeAttachment: ({ data, path }) =>
-      createWriterForExisting(attachmentsPath)({ data, path }),
-  };
-}
-
-exports.setup = (options = {}) => {
-  const { Attachments, userDataPath, getRegionCode, logger } = options;
+exports.setup = () => {
 
   Data.init();
-
-  const Migrations = initializeMigrations({
-    userDataPath,
-    getRegionCode,
-    Attachments,
-    Type: AttachmentType,
-    VisualType: VisualAttachment,
-    logger,
-  });
 
   const Components = {
     ContactDetail,
@@ -285,11 +177,6 @@ exports.setup = (options = {}) => {
     Initialization,
   };
 
-  const Workflow = {
-    IdleDetector,
-    MessageDataMigrator,
-  };
-
   return {
     AttachmentDownloads,
     Components,
@@ -299,9 +186,7 @@ exports.setup = (options = {}) => {
     Emoji,
     IndexedDB,
     LinkPreviews,
-    Metadata,
     migrateToSQL,
-    Migrations,
     Notifications,
     OS,
     Settings,
@@ -309,6 +194,5 @@ exports.setup = (options = {}) => {
     Types,
     Util,
     Views,
-    Workflow,
   };
 };

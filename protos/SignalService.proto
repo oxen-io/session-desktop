@@ -1,4 +1,3 @@
-// Source: https://github.com/signalapp/libsignal-service-java/blob/4684a49b2ed8f32be619e0d0eea423626b6cb2cb/protobuf/SignalService.proto
 package signalservice;
 
 option java_package = "org.whispersystems.signalservice.internal.push";

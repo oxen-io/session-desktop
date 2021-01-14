@@ -24,8 +24,8 @@ describe('MessageEncrypter', () => {
   const sandbox = sinon.createSandbox();
   const ourNumber = '0123456789abcdef';
   const ourUserEd25516Keypair = {
-    pubKey: '37e1631b002de498caf7c5c1712718bde7f257c6dadeed0c21abf5e939e6c309',
-    privKey:
+    publicHex: '37e1631b002de498caf7c5c1712718bde7f257c6dadeed0c21abf5e939e6c309',
+    privateHex:
       'be1d11154ff9b6de77873f0b6b0bcc460000000000000000000000000000000037e1631b002de498caf7c5c1712718bde7f257c6dadeed0c21abf5e939e6c309',
   };
 
@@ -102,29 +102,12 @@ describe('MessageEncrypter', () => {
   };
 
   beforeEach(() => {
-    TestUtils.stubWindow('libsignal', {
-      SignalProtocolAddress: sandbox.stub(),
-      SessionCipher: Stubs.SessionCipherStub,
-    } as any);
-
     TestUtils.stubWindow('textsecure', {
       storage: {
         protocol: sandbox.stub(),
       },
     });
 
-    TestUtils.stubWindow('Signal', {
-      Metadata: {
-        SecretSessionCipher: Stubs.SecretSessionCipherStub,
-      },
-    });
-
-    TestUtils.stubWindow('libloki', {
-      crypto: {
-        FallBackSessionCipher: Stubs.FallBackSessionCipherStub,
-        encryptForPubkey: sinon.fake.returns(''),
-      } as any,
-    });
 
     sandbox.stub(UserUtil, 'getCurrentDevicePubKey').resolves(ourNumber);
     sandbox
@@ -141,7 +124,7 @@ describe('MessageEncrypter', () => {
     describe('ClosedGroupV2', () => {
       it('should return a CLOSED_GROUP_CIPHERTEXT envelope type for ClosedGroup', async () => {
         const hexKeyPair = {
-          publicHex: `05${ourUserEd25516Keypair.pubKey}`,
+          publicHex: `05${ourUserEd25516Keypair.publicHex}`,
           privateHex: '0123456789abcdef',
         };
 
@@ -232,7 +215,7 @@ describe('MessageEncrypter', () => {
       );
       const userED25519PubKeyBytes = new Uint8Array(
         // tslint:disable: no-non-null-assertion
-        StringUtils.fromHex(keypair!.pubKey)
+        StringUtils.fromHex(keypair!.publicHex)
       );
       const recipientX25519PublicKeyWithoutPrefix = PubKey.remove05PrefixIfNeeded(
         recipient.key
@@ -250,7 +233,7 @@ describe('MessageEncrypter', () => {
         userED25519SecretKeyBytes,
       ] = cryptoSignDetachedSpy.args[0];
       const userEdPrivkeyBytes = new Uint8Array(
-        StringUtils.fromHex(keypair!.privKey)
+        StringUtils.fromHex(keypair!.privateHex)
       );
       expect(userED25519SecretKeyBytes).to.equalBytes(userEdPrivkeyBytes);
       // dataForSign must be plaintext | userED25519PubKeyBytes | recipientX25519PublicKey
@@ -324,7 +307,7 @@ describe('MessageEncrypter', () => {
       const plaintextDecoded = plaintextWithMetadata.subarray(0, plainTextEnd);
 
       expect(plaintextDecoded).to.equalBytes(plainTextBytes);
-      expect(senderED25519PublicKey).to.equalBytes(userEd25519KeyPair!.pubKey);
+      expect(senderED25519PublicKey).to.equalBytes(userEd25519KeyPair!.publicHex);
 
       // verify the signature is valid
       const dataForVerify = concatUInt8Array(

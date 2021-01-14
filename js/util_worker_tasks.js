@@ -1,9 +1,7 @@
-/* global dcodeIO, pow */
+/* global pow */
 /* eslint-disable strict */
 
 const functions = {
-  stringToArrayBufferBase64,
-  arrayBufferToStringBase64,
   calcPoW,
 };
 
@@ -35,12 +33,6 @@ function prepareErrorForPostMessage(error) {
   return error.message;
 }
 
-function stringToArrayBufferBase64(string) {
-  return dcodeIO.ByteBuffer.wrap(string, 'base64').toArrayBuffer();
-}
-function arrayBufferToStringBase64(arrayBuffer) {
-  return dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('base64');
-}
 function calcPoW(
   timestamp,
   ttl,

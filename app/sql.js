@@ -41,8 +41,6 @@ module.exports = {
   getAllIdentityKeys,
 
   createOrUpdatePreKey,
-  getPreKeyById,
-  getPreKeyByRecipient,
   bulkAddPreKeys,
   removePreKeyById,
   removeAllPreKeys,
@@ -61,7 +59,6 @@ module.exports = {
   getContactPreKeys,
   getAllContactPreKeys,
   bulkAddContactPreKeys,
-  removeContactPreKeyByIdentityKey,
   removeAllContactPreKeys,
 
   createOrUpdateContactSignedPreKey,
@@ -69,7 +66,6 @@ module.exports = {
   getContactSignedPreKeyByIdentityKey,
   getContactSignedPreKeys,
   bulkAddContactSignedPreKeys,
-  removeContactSignedPreKeyByIdentityKey,
   removeAllContactSignedPreKeys,
 
   createOrUpdatePairingAuthorisation,
@@ -164,7 +160,6 @@ module.exports = {
   removeAll,
   removeAllConfiguration,
 
-  getMessagesNeedingUpgrade,
   getMessagesWithVisualMediaAttachments,
   getMessagesWithFileAttachments,
 
@@ -822,6 +817,7 @@ const LOKI_SCHEMA_VERSIONS = [
   updateToLokiSchemaVersion9,
   updateToLokiSchemaVersion10,
   updateToLokiSchemaVersion11,
+  updateToLokiSchemaVersion12, // remove of Signal protocol
 ];
 
 async function updateToLokiSchemaVersion1(currentVersion, instance) {
@@ -1151,6 +1147,33 @@ async function updateToLokiSchemaVersion11(currentVersion, instance) {
   console.log('updateToLokiSchemaVersion11: success!');
 }
 
+async function updateToLokiSchemaVersion12(currentVersion, instance) {
+  if (currentVersion >= 11) {
+    return;
+  }
+  console.log('updateToLokiSchemaVersion12: starting...');
+  await instance.run('BEGIN TRANSACTION;');
+
+  await instance.run(`DELETE FROM ${ITEMS_TABLE} WHERE id = $id;`, {
+    $id: 'sentSessionsTimestamp',
+  });
+
+  await instance.run(`DELETE FROM ${ITEMS_TABLE} WHERE id = $id;`, {
+    $id: 'processedSessionsTimestamp',
+  });
+
+  await instance.run(
+    `INSERT INTO loki_schema (
+        version
+      ) values (
+        11
+      );`
+  );
+
+  await instance.run('COMMIT TRANSACTION;');
+  console.log('updateToLokiSchemaVersion12: success!');
+}
+
 async function updateLokiSchema(instance) {
   const result = await instance.get(
     "SELECT name FROM sqlite_master WHERE type = 'table' AND name='loki_schema';"
@@ -1397,23 +1420,6 @@ async function createOrUpdatePreKey(data) {
     }
   );
 }
-async function getPreKeyById(id) {
-  return getById(PRE_KEYS_TABLE, id);
-}
-async function getPreKeyByRecipient(recipient) {
-  const row = await db.get(
-    `SELECT * FROM ${PRE_KEYS_TABLE} WHERE recipient = $recipient;`,
-    {
-      $recipient: recipient,
-    }
-  );
-
-  if (!row) {
-    return null;
-  }
-
-  return jsonToObject(row.json);
-}
 async function bulkAddPreKeys(array) {
   return bulkAdd(PRE_KEYS_TABLE, array);
 }
@@ -1477,14 +1483,6 @@ async function getContactPreKeys(keyId, identityKeyString) {
 async function bulkAddContactPreKeys(array) {
   return bulkAdd(CONTACT_PRE_KEYS_TABLE, array);
 }
-async function removeContactPreKeyByIdentityKey(key) {
-  await db.run(
-    `DELETE FROM ${CONTACT_PRE_KEYS_TABLE} WHERE identityKeyString = $identityKeyString;`,
-    {
-      $identityKeyString: key,
-    }
-  );
-}
 async function removeAllContactPreKeys() {
   return removeAllFromTable(CONTACT_PRE_KEYS_TABLE);
 }
@@ -1538,14 +1536,7 @@ async function getContactSignedPreKeys(keyId, identityKeyString) {
 async function bulkAddContactSignedPreKeys(array) {
   return bulkAdd(CONTACT_SIGNED_PRE_KEYS_TABLE, array);
 }
-async function removeContactSignedPreKeyByIdentityKey(key) {
-  await db.run(
-    `DELETE FROM ${CONTACT_SIGNED_PRE_KEYS_TABLE} WHERE identityKeyString = $identityKeyString;`,
-    {
-      $identityKeyString: key,
-    }
-  );
-}
+
 async function removeAllContactSignedPreKeys() {
   return removeAllFromTable(CONTACT_SIGNED_PRE_KEYS_TABLE);
 }
@@ -2943,20 +2934,6 @@ async function removeAllConversations() {
 
 async function removeAllPrivateConversations() {
   await db.run(`DELETE FROM ${CONVERSATIONS_TABLE} WHERE type = 'private'`);
-}
-
-async function getMessagesNeedingUpgrade(limit, { maxVersion }) {
-  const rows = await db.all(
-    `SELECT json FROM ${MESSAGES_TABLE}
-     WHERE schemaVersion IS NULL OR schemaVersion < $maxVersion
-     LIMIT $limit;`,
-    {
-      $maxVersion: maxVersion,
-      $limit: limit,
-    }
-  );
-
-  return map(rows, row => jsonToObject(row.json));
 }
 
 async function getMessagesWithVisualMediaAttachments(

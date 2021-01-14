@@ -5,5 +5,4 @@ export * from './OpenGroupSyncMessage';
 export * from './SyncMessage';
 export * from './SentSyncMessage';
 export * from './SyncReadMessage';
-export * from './VerifiedSyncMessage';
 export * from './BlockedListSyncMessage';

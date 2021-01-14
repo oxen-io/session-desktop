@@ -13,18 +13,11 @@ import {
 import { getMessageQueue } from '../session';
 import { decryptWithSessionProtocol } from './contentMessage';
 import * as Data from '../../js/modules/data';
-import { getPrimary } from '../util/user';
+import { getPrimary, HexKeyPair, KeyPair } from '../util/user';
 import {
   ClosedGroupV2NewMessage,
   ClosedGroupV2NewMessageParams,
 } from '../session/messages/outgoing/content/data/groupv2/ClosedGroupV2NewMessage';
-
-import { KeyPair } from '../../libtextsecure/libsignal-protocol';
-
-export type HexKeyPair = {
-  publicHex: string;
-  privateHex: string;
-};
 
 export class ECKeyPair {
   public readonly publicKeyData: Uint8Array;
@@ -338,10 +331,6 @@ async function handleUpdateClosedGroupV2(
     diff.newName
   ) {
     await ClosedGroupV2.addUpdateMessage(convo, diff, 'incoming');
-    if (diff.joiningMembers?.length) {
-      // send a session request for all the members we do not have a session with
-      await window.libloki.api.sendSessionRequestsToMembers(members);
-    }
   }
 
   convo.set('name', name);
