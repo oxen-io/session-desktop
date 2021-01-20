@@ -1,0 +1,59 @@
+this.messageCollection
+
+
+const sodium = await window.getSodium();
+const seed = sodium.randombytes_buf(seedSize);
+
+
+getSignalingKey
+signaling_key
+deviceNameEncrypted
+
+indexeddb
+
+
+
+generatePreKey
+storePreKey
+
+
+
+// low level
+
+getRecord()
+rotateSignedPreKey
+'signedKeyId'
+'maxPreKeyId'
+
+store.getIdentityKeyPair
+store.storeSignedPreKey
+store.storePreKey
+
+
+
+
+
+remove from db
+    * 'sentSessionsTimestamp'
+    * 'processedSessionsTimestamp'
+    * 'sessions'
+    * 'preKeys'
+    * 'signedPreKeys'
+    * senderkeys
+
+
+remove what is is Storage / user.js
+remove on the UI ts files the calls to conversationModel. everything should be on the props
+conversationModel
+    .get()
+
+getOurNumber
+primaryDevicePubKey
+getRecipients() does not make asny sense right
+
+ReadSyncs
+SyncMessage
+sendSyncMessage needs to be rewritten
+sendSyncMessageOnly to fix 
+
+
