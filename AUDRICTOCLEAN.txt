@@ -1,36 +1,6 @@
 this.messageCollection
 
-
-const sodium = await window.getSodium();
-const seed = sodium.randombytes_buf(seedSize);
-
-
-getSignalingKey
-signaling_key
-deviceNameEncrypted
-
 indexeddb
-
-
-
-generatePreKey
-storePreKey
-
-
-
-// low level
-
-getRecord()
-rotateSignedPreKey
-'signedKeyId'
-'maxPreKeyId'
-
-store.getIdentityKeyPair
-store.storeSignedPreKey
-store.storePreKey
-
-
-
 
 
 remove from db

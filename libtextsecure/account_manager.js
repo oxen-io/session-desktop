@@ -119,7 +119,6 @@
       );
 
       await textsecure.storage.put('identityKey', identityKeyPair);
-      await textsecure.storage.put('signaling_key', signalingKey);
       await textsecure.storage.put('password', password);
       if (userAgent) {
         await textsecure.storage.put('userAgent', userAgent);

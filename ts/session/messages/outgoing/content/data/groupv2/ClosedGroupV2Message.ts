@@ -2,7 +2,6 @@ import { DataMessage } from '../DataMessage';
 import { MessageParams } from '../../../Message';
 import { PubKey } from '../../../../../types';
 import { SignalService } from '../../../../../../protobuf';
-import { TTL_DEFAULT } from '../../../../../constants';
 
 export interface ClosedGroupV2MessageParams extends MessageParams {
   groupId: string | PubKey;
@@ -31,10 +30,6 @@ export abstract class ClosedGroupV2Message extends DataMessage {
     members: Array<string>
   ) {
     return admins.every(a => members.includes(a));
-  }
-
-  public ttl(): number {
-    return TTL_DEFAULT.REGULAR_MESSAGE;
   }
 
   public dataProto(): SignalService.DataMessage {
