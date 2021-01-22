@@ -7,7 +7,7 @@ import {
   SessionButtonColor,
   SessionButtonType,
 } from '../SessionButton';
-import { BlockedNumberController } from '../../../util';
+import { BlockedNumberController, PasswordUtil } from '../../../util';
 import { ToastUtils } from '../../../session/utils';
 import { ConversationLookupType } from '../../../state/ducks/conversations';
 import { StateType } from '../../../state/reducer';
@@ -211,7 +211,7 @@ class SettingsViewInner extends React.Component<SettingsViewProps, State> {
 
     // Check if the password matches the hash we have stored
     const hash = await window.Signal.Data.getPasswordHash();
-    if (hash && !window.passwordUtil.matchesHash(enteredPassword, hash)) {
+    if (hash && !PasswordUtil.matchesHash(enteredPassword, hash)) {
       this.setState({
         pwdLockError: window.i18n('invalidPassword'),
       });

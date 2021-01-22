@@ -79,7 +79,7 @@ window.isBeforeVersion = (toCheck, baseVersion) => {
 // eslint-disable-next-line func-names
 window.CONSTANTS = new (function() {
   this.MAX_LOGIN_TRIES = 3;
-  this.MAX_PASSWORD_LENGTH = 64;
+  this.MAX_PASSWORD_LENGTH = 640;
   this.MAX_USERNAME_LENGTH = 20;
   this.MAX_GROUP_NAME_LENGTH = 64;
   this.DEFAULT_PUBLIC_CHAT_URL = appConfig.get('defaultPublicChatServer');
@@ -173,7 +173,6 @@ window.setPassword = (passPhrase, oldPhrase) =>
     ipc.send('set-password', passPhrase, oldPhrase);
   });
 
-window.passwordUtil = require('./ts/util/passwordUtils');
 window.libsession = require('./ts/session');
 
 window.getMessageController =
