@@ -2,8 +2,9 @@ import _, { omit } from 'lodash';
 
 import { Constants } from '../../session';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { MessageModel } from '../../../js/models/messages';
 import { ConversationController } from '../../session/conversations';
+import { MessageCollection, MessageModel } from '../../models/message';
+import { MessageDeliveryStatus } from '../../models/messageType';
 
 // State
 
@@ -34,37 +35,43 @@ export type MessageType = {
   isSelected?: boolean;
 };
 
-export type MessageTypeInConvo = {
-  id: string;
-  conversationId: string;
-  attributes: any;
-  propsForMessage: Object;
-  propsForSearchResult: Object;
-  propsForGroupInvitation: Object;
-  propsForTimerNotification: Object;
-  propsForGroupNotification: Object;
-  firstMessageOfSeries: boolean;
-  receivedAt: number;
-  getPropsForMessageDetail(): Promise<any>;
-};
+// export type MessageTypeInConvo = {
+//   id: string;
+//   conversationId: string;
+//   attributes: any;
+//   propsForMessage: Object;
+//   propsForSearchResult: Object;
+//   propsForGroupInvitation: Object;
+//   propsForTimerNotification: Object;
+//   propsForGroupNotification: Object;
+//   firstMessageOfSeries: boolean;
+//   receivedAt: number;
+//   getPropsForMessageDetail(): Promise<any>;
+// };
 
-export type ConversationType = {
+export type ConversationPrivateOrGroup = 'private' | 'group';
+
+export interface ConversationType {
   id: string;
   name?: string;
+  profileName?: string;
+  hasNickname?: boolean;
+  index?: number;
+
   activeAt?: number;
   timestamp: number;
   lastMessage?: {
-    status: 'error' | 'sending' | 'sent' | 'delivered' | 'read';
+    status: MessageDeliveryStatus;
     text: string;
   };
   phoneNumber: string;
-  type: 'direct' | 'group';
+  type: ConversationPrivateOrGroup;
   isMe: boolean;
   isPublic?: boolean;
-  lastUpdated: number;
   unreadCount: number;
   mentionedUs: boolean;
   isSelected: boolean;
+
   isTyping: boolean;
   isBlocked: boolean;
   isKickedFromGroup: boolean;
@@ -72,7 +79,8 @@ export type ConversationType = {
   avatarPath?: string; // absolute filepath to the avatar
   groupAdmins?: Array<string>; // admins for closed groups and moderators for open groups
   members?: Array<string>; // members for closed groups only
-};
+}
+
 export type ConversationLookupType = {
   [key: string]: ConversationType;
 };
@@ -80,13 +88,13 @@ export type ConversationLookupType = {
 export type ConversationsStateType = {
   conversationLookup: ConversationLookupType;
   selectedConversation?: string;
-  messages: Array<MessageTypeInConvo>;
+  messages: Array<MessageModel>;
 };
 
 async function getMessages(
   conversationKey: string,
   numMessages: number
-): Promise<Array<MessageTypeInConvo>> {
+): Promise<Array<MessageModel>> {
   const conversation = ConversationController.getInstance().get(
     conversationKey
   );
@@ -95,7 +103,7 @@ async function getMessages(
     window.log.error('Failed to get convo on reducer.');
     return [];
   }
-  const unreadCount = await conversation.getUnreadCount();
+  const unreadCount = (await conversation.getUnreadCount()) as number;
   let msgCount =
     numMessages ||
     Number(Constants.CONVERSATION.DEFAULT_MESSAGE_FETCH_COUNT) + unreadCount;
@@ -110,7 +118,7 @@ async function getMessages(
 
   const messageSet = await window.Signal.Data.getMessagesByConversation(
     conversationKey,
-    { limit: msgCount, MessageCollection: window.Whisper.MessageCollection }
+    { limit: msgCount, MessageCollection }
   );
 
   // Set first member of series here.
@@ -142,7 +150,11 @@ const updateFirstMessageOfSeries = (messageModels: Array<any>) => {
     if (i >= 0 && currentSender === nextSender) {
       firstMessageOfSeries = false;
     }
-    messageModels[i].firstMessageOfSeries = firstMessageOfSeries;
+    if (messageModels[i].propsForMessage) {
+      messageModels[
+        i
+      ].propsForMessage.firstMessageOfSeries = firstMessageOfSeries;
+    }
   }
   return messageModels;
 };
@@ -412,6 +424,7 @@ const toPickFromMessageModel = [
   // FIXME below are what is needed to fetch on the fly messageDetails. This is not the react way
   'getPropsForMessageDetail',
   'get',
+  'set',
   'getConversation',
   'isIncoming',
   'findAndFormatContact',
@@ -420,6 +433,7 @@ const toPickFromMessageModel = [
   'getMessagePropStatus',
   'hasErrors',
   'isOutgoing',
+  'markRead',
 ];
 
 function getEmptyState(): ConversationsStateType {
@@ -430,9 +444,9 @@ function getEmptyState(): ConversationsStateType {
 }
 
 function sortMessages(
-  messages: Array<MessageTypeInConvo>,
+  messages: Array<MessageModel>,
   isPublic: boolean
-): Array<MessageTypeInConvo> {
+): Array<MessageModel> {
   // we order by serverTimestamp for public convos
   if (isPublic) {
     return messages.sort(
@@ -455,7 +469,7 @@ function handleMessageAdded(
     const addedMessage = _.pick(
       messageModel as any,
       toPickFromMessageModel
-    ) as MessageTypeInConvo;
+    ) as MessageModel;
     const messagesWithNewMessage = [...messages, addedMessage];
     const convo = state.conversationLookup[state.selectedConversation];
     const isPublic = convo?.isPublic || false;
@@ -486,7 +500,7 @@ function handleMessageChanged(
     const changedMessage = _.pick(
       action.payload as any,
       toPickFromMessageModel
-    ) as MessageTypeInConvo;
+    ) as MessageModel;
     // we cannot edit the array directly, so slice the first part, insert our edited message, and slice the second part
     const editedMessages = [
       ...state.messages.slice(0, messageInStoreIndex),
@@ -651,7 +665,7 @@ export function reducer(
     if (conversationKey === state.selectedConversation) {
       const lightMessages = messages.map((m: any) =>
         _.pick(m, toPickFromMessageModel)
-      ) as Array<MessageTypeInConvo>;
+      ) as Array<MessageModel>;
       return {
         ...state,
         messages: lightMessages,

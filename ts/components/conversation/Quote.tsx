@@ -7,9 +7,10 @@ import * as MIME from '../../../ts/types/MIME';
 import * as GoogleChrome from '../../../ts/util/GoogleChrome';
 
 import { MessageBody } from './MessageBody';
-import { ColorType, LocalizerType } from '../../types/Util';
+import { LocalizerType } from '../../types/Util';
 import { ContactName } from './ContactName';
 import { PubKey } from '../../session/types';
+import { ConversationPrivateOrGroup } from '../../state/ducks/conversations';
 
 interface Props {
   attachment?: QuotedAttachmentType;
@@ -19,7 +20,7 @@ interface Props {
   i18n: LocalizerType;
   isFromMe: boolean;
   isIncoming: boolean;
-  conversationType: 'group' | 'direct';
+  conversationType: ConversationPrivateOrGroup;
   convoId: string;
   isPublic?: boolean;
   withContentAbove: boolean;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { animation, Menu } from 'react-contexify';
+import { ConversationPrivateOrGroup } from '../../../state/ducks/conversations';
 
 import {
   getBlockMenuItem,
@@ -13,7 +14,7 @@ import {
 
 export type PropsContextConversationItem = {
   triggerId: string;
-  type: 'group' | 'direct';
+  type: ConversationPrivateOrGroup;
   isMe: boolean;
   isPublic?: boolean;
   isBlocked?: boolean;
@@ -57,7 +58,7 @@ export const ConversationListItemContextMenu = (
     <Menu id={triggerId} animation={animation.fade}>
       {getBlockMenuItem(
         isMe,
-        type === 'direct',
+        type === 'private',
         isBlocked,
         onBlockContact,
         onUnblockContact,

@@ -6,12 +6,9 @@ import { LeftPaneMessageSection } from './session/LeftPaneMessageSection';
 import { ConversationListItemProps } from './ConversationListItem';
 import { SearchResultsProps } from './SearchResults';
 import { SearchOptions } from '../types/Search';
-import { LeftPaneSectionHeader } from './session/LeftPaneSectionHeader';
-
 import { ConversationType } from '../state/ducks/conversations';
 import { LeftPaneContactSection } from './session/LeftPaneContactSection';
 import { LeftPaneSettingSection } from './session/LeftPaneSettingSection';
-import { SessionIconType } from './session/icon';
 import { SessionTheme } from '../state/ducks/SessionTheme';
 import { DefaultTheme } from 'styled-components';
 import { SessionSettingCategory } from './session/settings/SessionSettings';
@@ -145,7 +142,7 @@ export class LeftPane extends React.Component<Props> {
   }
 
   private getDirectContactsOnly() {
-    return this.props.contacts.filter(f => f.type === 'direct');
+    return this.props.contacts.filter(f => f.type === 'private');
   }
 
   private renderSettingSection() {

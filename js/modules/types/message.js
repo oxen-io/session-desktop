@@ -6,11 +6,9 @@ const SchemaVersion = require('./schema_version');
 const {
   initializeAttachmentMetadata,
 } = require('../../../ts/types/message/initializeAttachmentMetadata');
-const MessageTS = require('../../../ts/types/Message');
 const Contact = require('./contact');
 
 const GROUP = 'group';
-const PRIVATE = 'private';
 
 // Schema version history
 //
@@ -54,7 +52,6 @@ const INITIAL_SCHEMA_VERSION = 0;
 
 // Public API
 exports.GROUP = GROUP;
-exports.PRIVATE = PRIVATE;
 
 // Placeholder until we have stronger preconditions:
 exports.isValid = () => true;
@@ -727,5 +724,3 @@ exports.createAttachmentDataWriter = ({
     return messageWithoutAttachmentData;
   };
 };
-
-exports.hasExpiration = MessageTS.hasExpiration;

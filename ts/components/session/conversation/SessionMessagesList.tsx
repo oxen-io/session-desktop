@@ -11,15 +11,12 @@ import { AttachmentType } from '../../../types/Attachment';
 import { GroupNotification } from '../../conversation/GroupNotification';
 import { GroupInvitation } from '../../conversation/GroupInvitation';
 import { ConversationType } from '../../../state/ducks/conversations';
-import {
-  MessageModel,
-  MessageRegularProps,
-} from '../../../../js/models/messages';
 import { SessionLastSeenIndicator } from './SessionLastSeedIndicator';
 import { ToastUtils } from '../../../session/utils';
 import { TypingBubble } from '../../conversation/TypingBubble';
 import { ConversationController } from '../../../session/conversations';
-import { PubKey } from '../../../session/types';
+import { MessageCollection, MessageModel } from '../../../models/message';
+import { MessageRegularProps } from '../../../models/messageType';
 
 interface State {
   showScrollButton: boolean;
@@ -137,7 +134,7 @@ export class SessionMessagesList extends React.Component<Props, State> {
     const { showScrollButton } = this.state;
 
     let displayedName = null;
-    if (conversation.type === 'direct') {
+    if (conversation.type === 'private') {
       displayedName = ConversationController.getInstance().getContactProfileNameOrShortenedPubKey(
         conversationKey
       );
@@ -299,7 +296,7 @@ export class SessionMessagesList extends React.Component<Props, State> {
             <>
               {this.renderMessage(
                 messageProps,
-                message.firstMessageOfSeries,
+                messageProps.firstMessageOfSeries,
                 multiSelectMode,
                 message
               )}
@@ -339,6 +336,7 @@ export class SessionMessagesList extends React.Component<Props, State> {
     messageProps.onDownload = (attachment: AttachmentType) => {
       this.props.onDownloadAttachment({ attachment });
     };
+
 
     messageProps.isQuotedMessageToAnimate =
       messageProps.id === this.state.animateQuotedMessageId;
@@ -560,7 +558,7 @@ export class SessionMessagesList extends React.Component<Props, State> {
     //   some more information then show an informative toast to the user.
     if (!targetMessage) {
       const collection = await window.Signal.Data.getMessagesBySentAt(quoteId, {
-        MessageCollection: window.Whisper.MessageCollection,
+        MessageCollection,
       });
       const found = Boolean(
         collection.find((item: MessageModel) => {

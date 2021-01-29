@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { DefaultTheme } from 'styled-components';
+import { MessageDeliveryStatus } from '../../../models/messageType';
 import {
   SessionIcon,
   SessionIconSize,
@@ -94,7 +95,7 @@ const MessageStatusError = (props: { theme: DefaultTheme }) => {
 };
 
 export const OutgoingMessageStatus = (props: {
-  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error' | 'pow';
+  status?: MessageDeliveryStatus;
   theme: DefaultTheme;
   iconColor: string;
   isInMessageView?: boolean;

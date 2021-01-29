@@ -2148,35 +2148,35 @@ async function saveMessage(data, { forceSave } = {}) {
     $unread: unread,
   };
 
-  if (id && !forceSave) {
-    await db.run(
-      `UPDATE messages SET
-        json = $json,
-        serverId = $serverId,
-        serverTimestamp = $serverTimestamp,
-        body = $body,
-        conversationId = $conversationId,
-        expirationStartTimestamp = $expirationStartTimestamp,
-        expires_at = $expires_at,
-        expireTimer = $expireTimer,
-        hasAttachments = $hasAttachments,
-        hasFileAttachments = $hasFileAttachments,
-        hasVisualMediaAttachments = $hasVisualMediaAttachments,
-        id = $id,
-        received_at = $received_at,
-        schemaVersion = $schemaVersion,
-        sent = $sent,
-        sent_at = $sent_at,
-        source = $source,
-        sourceDevice = $sourceDevice,
-        type = $type,
-        unread = $unread
-      WHERE id = $id;`,
-      payload
-    );
+  // if (id && !forceSave) {
+  //   await db.run(
+  //     `UPDATE messages SET
+  //       json = $json,
+  //       serverId = $serverId,
+  //       serverTimestamp = $serverTimestamp,
+  //       body = $body,
+  //       conversationId = $conversationId,
+  //       expirationStartTimestamp = $expirationStartTimestamp,
+  //       expires_at = $expires_at,
+  //       expireTimer = $expireTimer,
+  //       hasAttachments = $hasAttachments,
+  //       hasFileAttachments = $hasFileAttachments,
+  //       hasVisualMediaAttachments = $hasVisualMediaAttachments,
+  //       id = $id,
+  //       received_at = $received_at,
+  //       schemaVersion = $schemaVersion,
+  //       sent = $sent,
+  //       sent_at = $sent_at,
+  //       source = $source,
+  //       sourceDevice = $sourceDevice,
+  //       type = $type,
+  //       unread = $unread
+  //     WHERE id = $id;`,
+  //     payload
+  //   );
 
-    return id;
-  }
+  //   return id;
+  // }
 
   const toCreate = {
     ...data,
@@ -2184,7 +2184,7 @@ async function saveMessage(data, { forceSave } = {}) {
   };
 
   await db.run(
-    `INSERT INTO messages (
+    `INSERT OR REPLACE INTO messages (
     id,
     json,
 
@@ -2492,6 +2492,7 @@ async function getMessagesByConversation(
       $type: type,
     }
   );
+  console.warn('rows', rows)
   return map(rows, row => jsonToObject(row.json));
 }
 
