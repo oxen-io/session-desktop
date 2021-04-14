@@ -39,7 +39,7 @@ window.platform = process.platform;
 window.getDefaultPoWDifficulty = () => config.defaultPoWDifficulty;
 window.getTitle = () => title;
 window.getEnvironment = () => config.environment;
-window.isDev = () => config.environment === 'development';
+window.isDev = () => true; // config.environment === 'development';
 window.getAppInstance = () => config.appInstance;
 window.getVersion = () => config.version;
 window.isImportMode = () => config.importMode;

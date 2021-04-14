@@ -94,10 +94,13 @@ const sha256 = (s: string) => {
     .digest('base64');
 };
 
-const getSslAgentForSeedNode = (seedNodeHost: string) => {
+const getSslAgentForSeedNode = (seedNodeHost: string, isHttps: boolean) => {
   let filePrefix = '';
   let pubkey256 = '';
   let cert256 = '';
+  if (!isHttps) {
+    return undefined;
+  }
 
   switch (seedNodeHost) {
     case 'storage.seed1.loki.network':
@@ -199,7 +202,10 @@ export async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     method: 'get_n_service_nodes',
     params,
   };
-  const sslAgent = getSslAgentForSeedNode(urlObj.hostname);
+  const sslAgent = getSslAgentForSeedNode(
+    urlObj.hostname,
+    urlObj.protocol === 'https'
+  );
 
   const fetchOptions = {
     method: 'POST',
