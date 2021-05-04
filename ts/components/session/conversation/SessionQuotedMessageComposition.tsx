@@ -1,11 +1,6 @@
 import React, { useContext } from 'react';
 import { Flex } from '../../basic/Flex';
-import {
-  SessionIcon,
-  SessionIconButton,
-  SessionIconSize,
-  SessionIconType,
-} from '../icon';
+import { SessionIcon, SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import { ReplyingToMessageProps } from './SessionCompositionBox';
 import styled, { DefaultTheme, ThemeContext } from 'styled-components';
 import { getAlt, isAudio, isImageAttachment } from '../../../types/Attachment';
@@ -56,15 +51,9 @@ export const SessionQuotedMessageComposition = (props: Props) => {
   const hasAttachments = attachments && attachments.length > 0;
 
   const hasImageAttachment =
-    hasAttachments &&
-    attachments &&
-    attachments.length > 0 &&
-    isImageAttachment(attachments[0]);
+    hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0]);
   const hasAudioAttachment =
-    hasAttachments &&
-    attachments &&
-    attachments.length > 0 &&
-    isAudio(attachments);
+    hasAttachments && attachments && attachments.length > 0 && isAudio(attachments);
 
   return (
     <QuotedMessageComposition theme={theme}>
@@ -83,14 +72,8 @@ export const SessionQuotedMessageComposition = (props: Props) => {
         />
       </Flex>
       <QuotedMessageCompositionReply>
-        <Flex
-          container={true}
-          justifyContent="space-between"
-          margin={theme.common.margins.xs}
-        >
-          <Subtle>
-            {(hasAttachments && window.i18n('mediaMessage')) || body}
-          </Subtle>
+        <Flex container={true} justifyContent="space-between" margin={theme.common.margins.xs}>
+          <Subtle>{(hasAttachments && window.i18n('mediaMessage')) || body}</Subtle>
 
           {hasImageAttachment && (
             <Image
