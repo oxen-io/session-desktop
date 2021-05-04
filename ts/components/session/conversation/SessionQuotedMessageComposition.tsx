@@ -1,6 +1,11 @@
 import React, { useContext } from 'react';
 import { Flex } from '../Flex';
-import { SessionIcon, SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
+import {
+  SessionIcon,
+  SessionIconButton,
+  SessionIconSize,
+  SessionIconType,
+} from '../icon';
 import { ReplyingToMessageProps } from './SessionCompositionBox';
 import styled, { DefaultTheme, ThemeContext } from 'styled-components';
 import { getAlt, isAudio, isImageAttachment } from '../../../types/Attachment';
@@ -47,8 +52,16 @@ export const SessionQuotedMessageComposition = (props: Props) => {
   const { text: body, attachments } = quotedMessageProps;
   const hasAttachments = attachments && attachments.length > 0;
 
-  const hasImageAttachment = hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0]);
-  const hasAudioAttachment = hasAttachments && attachments && attachments.length > 0 && isAudio(attachments);
+  const hasImageAttachment =
+    hasAttachments &&
+    attachments &&
+    attachments.length > 0 &&
+    isImageAttachment(attachments[0]);
+  const hasAudioAttachment =
+    hasAttachments &&
+    attachments &&
+    attachments.length > 0 &&
+    isAudio(attachments);
 
   return (
     <QuotedMessageComposition theme={theme}>
@@ -76,7 +89,7 @@ export const SessionQuotedMessageComposition = (props: Props) => {
             {(hasAttachments && window.i18n('mediaMessage')) || body}
           </Subtle>
 
-          {(hasImageAttachment) && (
+          {hasImageAttachment && (
             <Image
               alt={getAlt(attachments![0], window.i18n)}
               i18n={window.i18n}
@@ -91,12 +104,12 @@ export const SessionQuotedMessageComposition = (props: Props) => {
             />
           )}
 
-          {(hasAudioAttachment) && (
-          <SessionIcon
-            iconType={SessionIconType.Microphone}
-            iconSize={SessionIconSize.Huge}
-            theme={theme}
-          />
+          {hasAudioAttachment && (
+            <SessionIcon
+              iconType={SessionIconType.Microphone}
+              iconSize={SessionIconSize.Huge}
+              theme={theme}
+            />
           )}
         </Flex>
       </QuotedMessageCompositionReply>
