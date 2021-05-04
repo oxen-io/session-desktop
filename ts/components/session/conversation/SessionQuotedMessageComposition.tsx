@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { Flex } from '../Flex';
-import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
+import { SessionIcon, SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import { ReplyingToMessageProps } from './SessionCompositionBox';
 import styled, { DefaultTheme, ThemeContext } from 'styled-components';
-import { getAlt, isImageAttachment, isVideoAttachment } from '../../../types/Attachment';
+import { getAlt, isAudio, isImageAttachment } from '../../../types/Attachment';
 import { Image } from '../../conversation/Image';
 
 // tslint:disable: react-unused-props-and-state
@@ -24,9 +24,6 @@ const QuotedMessageCompositionReply = styled.div`
   padding: ${props => props.theme.common.margins.xs};
   box-shadow: ${props => props.theme.colors.sessionShadow};
   margin: ${props => props.theme.common.margins.xs};
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 `;
 
 const Subtle = styled.div`
@@ -49,6 +46,10 @@ export const SessionQuotedMessageComposition = (props: Props) => {
 
   const { text: body, attachments } = quotedMessageProps;
   const hasAttachments = attachments && attachments.length > 0;
+
+  const hasImageAttachment = hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0]);
+  const hasAudioAttachment = hasAttachments && attachments && attachments.length > 0 && isAudio(attachments);
+
   return (
     <QuotedMessageComposition theme={theme}>
       <Flex
@@ -66,24 +67,38 @@ export const SessionQuotedMessageComposition = (props: Props) => {
         />
       </Flex>
       <QuotedMessageCompositionReply>
-        <Subtle>
-          {(hasAttachments && window.i18n('mediaMessage')) || body}
-        </Subtle>
+        <Flex
+          container={true}
+          justifyContent="space-between"
+          margin={theme.common.margins.xs}
+        >
+          <Subtle>
+            {(hasAttachments && window.i18n('mediaMessage')) || body}
+          </Subtle>
 
-        {(hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0])) && (
-          <Image
-            alt={getAlt(attachments[0], window.i18n)}
-            i18n={window.i18n}
-            attachment={attachments[0]}
-            height={100}
-            width={100}
-            curveTopLeft={true}
-            curveTopRight={true}
-            curveBottomLeft={true}
-            curveBottomRight={true}
-            url={attachments[0].thumbnail.objectUrl}
+          {(hasImageAttachment) && (
+            <Image
+              alt={getAlt(attachments![0], window.i18n)}
+              i18n={window.i18n}
+              attachment={attachments![0]}
+              height={100}
+              width={100}
+              curveTopLeft={true}
+              curveTopRight={true}
+              curveBottomLeft={true}
+              curveBottomRight={true}
+              url={attachments![0].thumbnail.objectUrl}
+            />
+          )}
+
+          {(hasAudioAttachment) && (
+          <SessionIcon
+            iconType={SessionIconType.Microphone}
+            iconSize={SessionIconSize.Huge}
+            theme={theme}
           />
-        )}
+          )}
+        </Flex>
       </QuotedMessageCompositionReply>
     </QuotedMessageComposition>
   );
