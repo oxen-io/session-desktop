@@ -2,7 +2,9 @@ import React, { useContext } from 'react';
 import { Flex } from '../../basic/Flex';
 import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import { ReplyingToMessageProps } from './SessionCompositionBox';
-import styled, { DefaultTheme, ThemeContext } from 'styled-components';
+import styled, { ThemeContext } from 'styled-components';
+import { getAlt, isImageAttachment } from '../../../types/Attachment';
+import { Image } from '../../conversation/Image';
 
 // tslint:disable: react-unused-props-and-state
 interface Props {
@@ -22,6 +24,9 @@ const QuotedMessageCompositionReply = styled.div`
   padding: ${props => props.theme.common.margins.xs};
   box-shadow: ${props => props.theme.colors.sessionShadow};
   margin: ${props => props.theme.common.margins.xs};
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 
 const Subtle = styled.div`
@@ -61,7 +66,24 @@ export const SessionQuotedMessageComposition = (props: Props) => {
         />
       </Flex>
       <QuotedMessageCompositionReply>
-        <Subtle>{(hasAttachments && window.i18n('mediaMessage')) || body}</Subtle>
+        <Subtle>
+          {(hasAttachments && window.i18n('mediaMessage')) || body}
+        </Subtle>
+
+        {(hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0])) && (
+          <Image
+            alt={getAlt(attachments[0], window.i18n)}
+            i18n={window.i18n}
+            attachment={attachments[0]}
+            height={100}
+            width={100}
+            curveTopLeft={true}
+            curveTopRight={true}
+            curveBottomLeft={true}
+            curveBottomRight={true}
+            url={attachments[0].thumbnail.objectUrl}
+          />
+        )}
       </QuotedMessageCompositionReply>
     </QuotedMessageComposition>
   );
