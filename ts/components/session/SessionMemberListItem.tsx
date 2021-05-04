@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Avatar } from '../Avatar';
+import { Avatar, AvatarSize } from '../Avatar';
 import { SessionIcon, SessionIconSize, SessionIconType } from './icon';
 import { Constants } from '../../session';
 import { DefaultTheme } from 'styled-components';
@@ -44,8 +44,7 @@ class SessionMemberListItemInner extends React.Component<Props> {
   public render() {
     const { isSelected, member } = this.props;
 
-    const name =
-      member.authorProfileName || PubKey.shorten(member.authorPhoneNumber);
+    const name = member.authorProfileName || PubKey.shorten(member.authorPhoneNumber);
 
     return (
       <div
@@ -58,17 +57,10 @@ class SessionMemberListItemInner extends React.Component<Props> {
         role="button"
       >
         <div className="session-member-item__info">
-          <span className="session-member-item__avatar">
-            {this.renderAvatar()}
-          </span>
+          <span className="session-member-item__avatar">{this.renderAvatar()}</span>
           <span className="session-member-item__name">{name}</span>
         </div>
-        <span
-          className={classNames(
-            'session-member-item__checkmark',
-            isSelected && 'selected'
-          )}
-        >
+        <span className={classNames('session-member-item__checkmark', isSelected && 'selected')}>
           <SessionIcon
             iconType={SessionIconType.Check}
             iconSize={SessionIconSize.Medium}
@@ -92,7 +84,7 @@ class SessionMemberListItemInner extends React.Component<Props> {
       <Avatar
         avatarPath={authorAvatarPath}
         name={userName}
-        size={28}
+        size={AvatarSize.XS}
         pubkey={authorPhoneNumber}
       />
     );
