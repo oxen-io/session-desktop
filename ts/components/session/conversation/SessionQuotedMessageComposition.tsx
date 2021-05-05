@@ -24,9 +24,6 @@ const QuotedMessageCompositionReply = styled.div`
   padding: ${props => props.theme.common.margins.xs};
   box-shadow: ${props => props.theme.colors.sessionShadow};
   margin: ${props => props.theme.common.margins.xs};
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 `;
 
 const Subtle = styled.div`
