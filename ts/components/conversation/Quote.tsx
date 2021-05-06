@@ -94,20 +94,27 @@ function getTypeLabel({
 
   return;
 }
+  const QuoteIcon = (props: any) => {
+    const { icon } = props;
 
-export const Quote = (props: Props) => {
-  const [imageBroken, setImageBroken] = useState(false);
-
-  const handleImageErrorBound = () => {};
-
-  const handleImageError = () => {
-    // tslint:disable-next-line no-console
-    console.log('Message: Image failed to load; failing over to placeholder');
-    setImageBroken(true);
+    return (
+      <div className="module-quote__icon-container">
+        <div className="module-quote__icon-container__inner">
+          <div className="module-quote__icon-container__circle-background">
+            <div
+              className={classNames(
+                'module-quote__icon-container__icon',
+                `module-quote__icon-container__icon--${icon}`
+              )}
+            />
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  const QuoteImage = (props: any) => {
-    let { url, i18n, icon, contentType } = props;
+const QuoteImage = (props: any) => {
+    let { url, i18n, icon, contentType, handleImageErrorBound } = props;
 
     let { loading, urlToLoad } = useEncryptedFileFetch(url, contentType);
     const srcData = !loading ? urlToLoad : '';
@@ -133,24 +140,6 @@ export const Quote = (props: Props) => {
     );
   };
 
-  const QuoteIcon = (props: any) => {
-    const { icon } = props;
-
-    return (
-      <div className="module-quote__icon-container">
-        <div className="module-quote__icon-container__inner">
-          <div className="module-quote__icon-container__circle-background">
-            <div
-              className={classNames(
-                'module-quote__icon-container__icon',
-                `module-quote__icon-container__icon--${icon}`
-              )}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const QuoteGenericFile = (props: any) => {
     const { attachment, isIncoming } = props;
@@ -186,9 +175,8 @@ export const Quote = (props: Props) => {
     );
   };
 
-  // pass in props like {...props, imageBroken }
   const QuoteIconContainer = (props: any) => {
-    const { attachment, i18n, imageBroken } = props;
+    const { attachment, i18n, imageBroken, handleImageErrorBound } = props;
 
     if (!attachment) {
       return null;
@@ -206,7 +194,7 @@ export const Quote = (props: Props) => {
     }
     if (GoogleChrome.isImageTypeSupported(contentType)) {
       return objectUrl && !imageBroken ? (
-        <QuoteImage url={objectUrl} i18n={i18n} contentType={contentType} />
+        <QuoteImage url={objectUrl} i18n={i18n} contentType={contentType} handleImageErrorBound={handleImageErrorBound}/>
       ) : (
         <QuoteIcon icon="image" />
       );
@@ -351,6 +339,17 @@ export const Quote = (props: Props) => {
     );
   };
 
+export const Quote = (props: Props) => {
+  const [imageBroken, setImageBroken] = useState(false);
+
+  const handleImageErrorBound = () => {};
+
+  const handleImageError = () => {
+    // tslint:disable-next-line no-console
+    console.log('Message: Image failed to load; failing over to placeholder');
+    setImageBroken(true);
+  };
+
   const { isIncoming, onClick, referencedMessageNotFound, withContentAbove } = props;
 
   if (!validateQuote(props)) {
@@ -381,7 +380,7 @@ export const Quote = (props: Props) => {
             <QuoteGenericFile {...props} />
             <QuoteText {...props} />
           </div>
-          <QuoteIconContainer {...props} />
+          <QuoteIconContainer {...props} handleImageErrorBound={handleImageErrorBound} />
           <QuoteClose {...props} />
         </div>
         <QuoteReferenceWarning {...props} />
