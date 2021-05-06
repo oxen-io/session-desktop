@@ -47,8 +47,14 @@ export const SessionQuotedMessageComposition = (props: Props) => {
   const { text: body, attachments } = quotedMessageProps;
   const hasAttachments = attachments && attachments.length > 0;
 
-  const hasImageAttachment =
-    hasAttachments && attachments && attachments.length > 0 && isImageAttachment(attachments[0]);
+  let hasImageAttachment = false;
+
+  let firstImageAttachment;
+  if (attachments && attachments.length > 0) {
+    firstImageAttachment = attachments[0];
+    hasImageAttachment = true;
+  }
+
   const hasAudioAttachment =
     hasAttachments && attachments && attachments.length > 0 && isAudio(attachments);
 
@@ -74,16 +80,16 @@ export const SessionQuotedMessageComposition = (props: Props) => {
 
           {hasImageAttachment && (
             <Image
-              alt={getAlt(attachments![0], window.i18n)}
+              alt={getAlt(firstImageAttachment, window.i18n)}
               i18n={window.i18n}
-              attachment={attachments![0]}
+              attachment={firstImageAttachment}
               height={100}
               width={100}
               curveTopLeft={true}
               curveTopRight={true}
               curveBottomLeft={true}
               curveBottomRight={true}
-              url={attachments![0].thumbnail.objectUrl}
+              url={firstImageAttachment.thumbnail.objectUrl}
             />
           )}
 

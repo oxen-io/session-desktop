@@ -14,7 +14,7 @@ import { ConversationTypeEnum } from '../../models/conversation';
 
 import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
 
-interface Props {
+interface QuoteProps {
   attachment?: QuotedAttachmentType;
   authorPhoneNumber: string;
   authorProfileName?: string;
@@ -32,10 +32,6 @@ interface Props {
   referencedMessageNotFound: boolean;
 }
 
-interface State {
-  imageBroken: boolean;
-}
-
 export interface QuotedAttachmentType {
   contentType: MIME.MIMEType;
   fileName: string;
@@ -50,7 +46,7 @@ interface Attachment {
   objectUrl?: string;
 }
 
-function validateQuote(quote: Props): boolean {
+function validateQuote(quote: QuoteProps): boolean {
   if (quote.text) {
     return true;
   }
@@ -114,9 +110,9 @@ export const QuoteIcon = (props: any) => {
 };
 
 export const QuoteImage = (props: any) => {
-  let { url, i18n, icon, contentType, handleImageErrorBound } = props;
+  const { url, i18n, icon, contentType, handleImageErrorBound } = props;
 
-  let { loading, urlToLoad } = useEncryptedFileFetch(url, contentType);
+  const { loading, urlToLoad } = useEncryptedFileFetch(url, contentType);
   const srcData = !loading ? urlToLoad : '';
 
   const iconElement = icon ? (
@@ -144,7 +140,6 @@ export const QuoteGenericFile = (props: any) => {
   const { attachment, isIncoming } = props;
 
   if (!attachment) {
-    // return;
     return <></>;
   }
 
@@ -155,7 +150,6 @@ export const QuoteGenericFile = (props: any) => {
     !MIME.isAudio(contentType);
 
   if (!isGenericFile) {
-    // return null;
     return <></>;
   }
 
@@ -343,10 +337,11 @@ export const QuoteReferenceWarning = (props: any) => {
   );
 };
 
-export const Quote = (props: Props) => {
+export const Quote = (props: QuoteProps) => {
   const [imageBroken, setImageBroken] = useState(false);
 
-  const handleImageErrorBound = () => {};
+  // const handleImageErrorBound = () => {};
+  const handleImageErrorBound = null;
 
   const handleImageError = () => {
     // tslint:disable-next-line no-console
