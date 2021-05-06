@@ -139,7 +139,7 @@ async function copyFromQuotedMessage(
     return;
   }
 
-  if (!firstAttachment || !contentTypeSupported(firstAttachment)) {
+  if (!firstAttachment || !contentTypeSupported(firstAttachment.contentType)) {
     return;
   }
 
