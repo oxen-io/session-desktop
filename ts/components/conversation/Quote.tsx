@@ -12,7 +12,7 @@ import { ContactName } from './ContactName';
 import { PubKey } from '../../session/types';
 import { ConversationTypeEnum } from '../../models/conversation';
 
-import { useEncryptedFileFetch } from "../../hooks/useEncryptedFileFetch";
+import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
 
 interface Props {
   attachment?: QuotedAttachmentType;
@@ -96,16 +96,15 @@ function getTypeLabel({
 }
 
 export const Quote = (props: Props) => {
-
   const [imageBroken, setImageBroken] = useState(false);
 
-  const handleImageErrorBound = () => { };
+  const handleImageErrorBound = () => {};
 
   const handleImageError = () => {
     // tslint:disable-next-line no-console
     console.log('Message: Image failed to load; failing over to placeholder');
     setImageBroken(true);
-  }
+  };
 
   const QuoteImage = (props: any) => {
     let { url, i18n, icon, contentType } = props;
@@ -138,7 +137,7 @@ export const Quote = (props: Props) => {
         {iconElement}
       </div>
     );
-  }
+  };
 
   const QuoteIcon = (props: any) => {
     const { icon } = props;
@@ -157,14 +156,14 @@ export const Quote = (props: Props) => {
         </div>
       </div>
     );
-  }
+  };
 
   const QuoteGenericFile = (props: any) => {
     const { attachment, isIncoming } = props;
 
     if (!attachment) {
       // return;
-      return (<></>);
+      return <></>;
     }
 
     const { fileName, contentType } = attachment;
@@ -175,7 +174,7 @@ export const Quote = (props: Props) => {
 
     if (!isGenericFile) {
       // return null;
-      return (<></>);
+      return <></>;
     }
 
     return (
@@ -191,7 +190,7 @@ export const Quote = (props: Props) => {
         </div>
       </div>
     );
-  }
+  };
 
   // pass in props like {...props, imageBroken }
   const QuoteIconContainer = (props: any) => {
@@ -205,20 +204,24 @@ export const Quote = (props: Props) => {
     const objectUrl = getObjectUrl(thumbnail);
 
     if (GoogleChrome.isVideoTypeSupported(contentType)) {
-      return objectUrl && !imageBroken
-        ? <QuoteImage url={objectUrl} i18n={i18n}  icon={'play'} />
-        : <QuoteIcon icon="movie" />
+      return objectUrl && !imageBroken ? (
+        <QuoteImage url={objectUrl} i18n={i18n} icon={'play'} />
+      ) : (
+        <QuoteIcon icon="movie" />
+      );
     }
     if (GoogleChrome.isImageTypeSupported(contentType)) {
-      return objectUrl && !imageBroken
-        ? <QuoteImage url={objectUrl} i18n={i18n} contentType={contentType} />
-        : <QuoteIcon icon="image" />
+      return objectUrl && !imageBroken ? (
+        <QuoteImage url={objectUrl} i18n={i18n} contentType={contentType} />
+      ) : (
+        <QuoteIcon icon="image" />
+      );
     }
     if (MIME.isAudio(contentType)) {
-      return <QuoteIcon icon="microphone" />
+      return <QuoteIcon icon="microphone" />;
     }
     return null;
-  }
+  };
 
   const QuoteText = (props: any) => {
     const { i18n, text, attachment, isIncoming, conversationType, convoId } = props;
@@ -264,7 +267,7 @@ export const Quote = (props: Props) => {
     }
 
     return null;
-  }
+  };
 
   const QuoteClose = (props: any) => {
     const { onClose } = props;
@@ -286,8 +289,7 @@ export const Quote = (props: Props) => {
         <div className="module-quote__close-button" role="button" onClick={onClick} />
       </div>
     );
-
-  }
+  };
 
   const QuoteAuthor = (props: any) => {
     const {
@@ -321,8 +323,7 @@ export const Quote = (props: Props) => {
         )}
       </div>
     );
-
-  }
+  };
 
   const QuoteReferenceWarning = (props: any) => {
     const { i18n, isIncoming, referencedMessageNotFound } = props;
@@ -354,14 +355,13 @@ export const Quote = (props: Props) => {
         </div>
       </div>
     );
-  }
+  };
 
   const { isIncoming, onClick, referencedMessageNotFound, withContentAbove } = props;
 
   if (!validateQuote(props)) {
     return null;
   }
-
 
   return (
     <>
@@ -394,8 +394,8 @@ export const Quote = (props: Props) => {
         <QuoteReferenceWarning {...props} />
       </div>
     </>
-  )
-}
+  );
+};
 
 export class Quote2 extends React.Component<Props, State> {
   public handleImageErrorBound: () => void;
