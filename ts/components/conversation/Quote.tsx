@@ -340,7 +340,6 @@ export const QuoteReferenceWarning = (props: any) => {
 export const Quote = (props: QuoteProps) => {
   const [imageBroken, setImageBroken] = useState(false);
 
-  // const handleImageErrorBound = () => {};
   const handleImageErrorBound = null;
 
   const handleImageError = () => {
