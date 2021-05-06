@@ -94,7 +94,7 @@ function getTypeLabel({
 
   return;
 }
-const QuoteIcon = (props: any) => {
+export const QuoteIcon = (props: any) => {
   const { icon } = props;
 
   return (
@@ -113,7 +113,7 @@ const QuoteIcon = (props: any) => {
   );
 };
 
-const QuoteImage = (props: any) => {
+export const QuoteImage = (props: any) => {
   let { url, i18n, icon, contentType, handleImageErrorBound } = props;
 
   let { loading, urlToLoad } = useEncryptedFileFetch(url, contentType);
@@ -140,7 +140,7 @@ const QuoteImage = (props: any) => {
   );
 };
 
-const QuoteGenericFile = (props: any) => {
+export const QuoteGenericFile = (props: any) => {
   const { attachment, isIncoming } = props;
 
   if (!attachment) {
@@ -174,7 +174,7 @@ const QuoteGenericFile = (props: any) => {
   );
 };
 
-const QuoteIconContainer = (props: any) => {
+export const QuoteIconContainer = (props: any) => {
   const { attachment, i18n, imageBroken, handleImageErrorBound } = props;
 
   if (!attachment) {
@@ -209,7 +209,7 @@ const QuoteIconContainer = (props: any) => {
   return null;
 };
 
-const QuoteText = (props: any) => {
+export const QuoteText = (props: any) => {
   const { i18n, text, attachment, isIncoming, conversationType, convoId } = props;
 
   if (text) {
@@ -255,7 +255,7 @@ const QuoteText = (props: any) => {
   return null;
 };
 
-const QuoteClose = (props: any) => {
+export const QuoteClose = (props: any) => {
   const { onClose } = props;
 
   if (!onClose) {
@@ -277,7 +277,7 @@ const QuoteClose = (props: any) => {
   );
 };
 
-const QuoteAuthor = (props: any) => {
+export const QuoteAuthor = (props: any) => {
   const {
     authorProfileName,
     authorPhoneNumber,
@@ -311,7 +311,7 @@ const QuoteAuthor = (props: any) => {
   );
 };
 
-const QuoteReferenceWarning = (props: any) => {
+export const QuoteReferenceWarning = (props: any) => {
   const { i18n, isIncoming, referencedMessageNotFound } = props;
 
   if (!referencedMessageNotFound) {
