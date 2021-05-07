@@ -27,7 +27,6 @@ interface QuoteProps {
   isPublic?: boolean;
   withContentAbove: boolean;
   onClick?: (e: any) => void;
-  onClose?: () => void;
   text: string;
   referencedMessageNotFound: boolean;
 }
@@ -205,6 +204,7 @@ export const QuoteIconContainer = (props: any) => {
 
 export const QuoteText = (props: any) => {
   const { i18n, text, attachment, isIncoming, conversationType, convoId } = props;
+  const isGroup = conversationType === ConversationTypeEnum.GROUP;
 
   if (text) {
     return (
@@ -216,7 +216,7 @@ export const QuoteText = (props: any) => {
         )}
       >
         <MessageBody
-          isGroup={conversationType === 'group'}
+          isGroup={isGroup}
           convoId={convoId}
           text={text}
           disableLinks={true}
@@ -247,28 +247,6 @@ export const QuoteText = (props: any) => {
   }
 
   return null;
-};
-
-export const QuoteClose = (props: any) => {
-  const { onClose } = props;
-
-  if (!onClose) {
-    return null;
-  }
-
-  // We don't want the overall click handler for the quote to fire, so we stop
-  //   propagation before handing control to the caller's callback.
-  const onClick = (e: any): void => {
-    e.stopPropagation();
-    onClose();
-  };
-
-  // We need the container to give us the flexibility to implement the iOS design.
-  return (
-    <div className="module-quote__close-container">
-      <div className="module-quote__close-button" role="button" onClick={onClick} />
-    </div>
-  );
 };
 
 export const QuoteAuthor = (props: any) => {
@@ -379,7 +357,6 @@ export const Quote = (props: QuoteProps) => {
             <QuoteText {...props} />
           </div>
           <QuoteIconContainer {...props} handleImageErrorBound={handleImageErrorBound} />
-          <QuoteClose {...props} />
         </div>
         <QuoteReferenceWarning {...props} />
       </div>
