@@ -405,6 +405,10 @@ export class SessionConversation extends React.Component<Props, State> {
       onAvatarClick: (pubkey: any) => {
         this.toggleRightPanel();
       },
+
+      onChangeNickname: () => {
+        conversation.changeNickname();
+      }
     };
 
     return headerProps;

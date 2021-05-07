@@ -1315,7 +1315,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (this.isPublic()) {
       throw new Error('Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.');
     } 
-    window.showEditProfileDialog();
+    window.showNicknameDialog({
+      title: 'change nickname',
+      message: 'enter nickname',
+      resolve: () => {
+        void ConversationController.getInstance().deleteContact(this.id);
+      },
+    });
   }
 
   public deleteContact() {

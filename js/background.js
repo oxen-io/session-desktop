@@ -383,6 +383,31 @@
       confirmDialog.render();
     };
 
+    window.showNicknameDialog = params => {
+      // appView.showChangeNicknameDialog();
+      // const changeNicknameDialog = new Whisper.SessionChangeNicknameView({
+      //   el: $('body'),
+      //   title: params.title,
+      //   message: params.message,
+      //   messageSub: params.messageSub || undefined,
+      //   resolve: params.resolve || undefined,
+      //   reject: params.reject || undefined,
+      //   okText: params.okText || undefined,
+      //   okTheme: params.okTheme || undefined,
+      //   closeTheme: params.closeTheme || undefined,
+      //   cancelText: params.cancelText || undefined,
+      //   hideCancel: params.hideCancel || false,
+      //   sessionIcon: params.sessionIcon || undefined,
+      //   iconSize: params.iconSize || undefined,
+      // });
+
+      // changeNicknameDialog.render();
+
+      if (appView) {
+        appView.showNicknameDialog();
+      }
+    }
+
     window.showResetSessionIdDialog = () => {
       appView.showResetSessionIdDialog();
     };

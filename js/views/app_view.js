@@ -3,7 +3,7 @@
 /* eslint-disable more/no-then */
 
 // eslint-disable-next-line func-names
-(function() {
+(function () {
   'use strict';
 
   window.Whisper = window.Whisper || {};
@@ -117,6 +117,12 @@
       // eslint-disable-next-line no-param-reassign
       options.theme = this.getThemeObject();
       const dialog = new Whisper.EditProfileDialogView(options);
+      this.el.prepend(dialog.el);
+    },
+    showNicknameDialog() {
+      // eslint-disable-next-line no-param-reassign
+      const theme = this.getThemeObject();
+      const dialog = new Whisper.SessionNicknameDialog({ theme })
       this.el.prepend(dialog.el);
     },
     showResetSessionIdDialog() {

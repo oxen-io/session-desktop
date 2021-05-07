@@ -69,6 +69,7 @@ declare global {
     setPassword: any;
     setSettingValue: any;
     showEditProfileDialog: any;
+    showNicknameDialog: any;
     showResetSessionIdDialog: any;
     storage: any;
     textsecure: LibTextsecure;
