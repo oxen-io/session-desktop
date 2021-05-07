@@ -435,6 +435,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       onClearNickname: () => {
         void this.setLokiProfile({ displayName: null });
       },
+      onChangeNickname: () => this.changeNickname
     };
   }
 
@@ -1309,7 +1310,12 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public changeNickname() {
-    throw new Error('changeNickname todo');
+    // throw new Error('changeNickname todo');
+    console.warn('Change nickname called.');
+    if (this.isPublic()) {
+      throw new Error('Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.');
+    } 
+    window.showEditProfileDialog();
   }
 
   public deleteContact() {

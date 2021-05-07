@@ -32,6 +32,7 @@ export type PropsContextConversationItem = {
   onUnblockContact?: () => void;
   onInviteContacts?: () => void;
   onClearNickname?: () => void;
+  onChangeNickname?: () => void;
 };
 
 export const ConversationListItemContextMenu = (props: PropsContextConversationItem) => {

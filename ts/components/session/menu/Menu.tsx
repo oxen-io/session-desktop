@@ -24,6 +24,10 @@ function showClearNickname(isPublic: boolean, isMe: boolean, hasNickname: boolea
   return !isPublic && !isMe && hasNickname;
 }
 
+function showChangeNickname(isPublic: boolean, isMe: boolean) {
+  return !isPublic && !isMe;
+}
+
 function showDeleteMessages(isPublic: boolean): boolean {
   return !isPublic;
 }
@@ -201,7 +205,7 @@ export function getDisappearingMenuItem(
       // Remove the && false to make context menu work with RTL support
       <Submenu
         label={i18n('disappearingMessages') as any}
-        // rtl={isRtlMode && false}
+      // rtl={isRtlMode && false}
       >
         {(timerOptions || []).map(item => (
           <Item
@@ -260,6 +264,18 @@ export function getClearNicknameMenuItem(
 ): JSX.Element | null {
   if (showClearNickname(Boolean(isPublic), Boolean(isMe), Boolean(hasNickname))) {
     return <Item onClick={action}>{i18n('clearNickname')}</Item>;
+  }
+  return null;
+}
+
+export function getChangeNicknameMenuItem(
+  isPublic: boolean | undefined,
+  isMe: boolean | undefined,
+  action: any,
+  i18n: LocalizerType
+): JSX.Element | null {
+  if (showChangeNickname(Boolean(isPublic), Boolean(isMe))) {
+    return <Item onClick={action}>{i18n('changeNickname')}</Item>
   }
   return null;
 }

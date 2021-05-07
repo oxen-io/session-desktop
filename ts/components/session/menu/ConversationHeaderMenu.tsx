@@ -12,6 +12,7 @@ import {
   getMarkAllReadMenuItem,
   getRemoveModeratorsMenuItem,
   getUpdateGroupNameMenuItem,
+  getChangeNicknameMenuItem
 } from './Menu';
 import { TimerOption } from '../../conversation/ConversationHeader';
 
@@ -30,6 +31,7 @@ export type PropsConversationHeaderMenu = {
   onDeleteContact?: () => void;
   onCopyPublicKey?: () => void;
   onInviteContacts?: () => void;
+  onChangeNickname?: () => void;
 
   onLeaveGroup: () => void;
   onMarkAllRead: () => void;
@@ -54,6 +56,7 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
     isPrivate,
     left,
 
+    onChangeNickname,
     onDeleteMessages,
     onDeleteContact,
     onCopyPublicKey,
@@ -99,6 +102,7 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
         onDeleteContact,
         window.i18n
       )}
+      {getChangeNicknameMenuItem(isPublic, isMe,  onChangeNickname, window.i18n)}
     </Menu>
   );
 };
