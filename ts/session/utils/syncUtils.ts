@@ -17,7 +17,7 @@ import {
 import { ConversationModel } from '../../models/conversation';
 import { fromBase64ToArray, fromBase64ToArrayBuffer, fromHexToArray } from './String';
 import { fromBase64 } from 'bytebuffer';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import _ from 'lodash';
 import {
   AttachmentPointer,
@@ -211,7 +211,7 @@ export const getCurrentConfigurationMessage = async (convos: Array<ConversationM
 
 const buildSyncVisibleMessage = (
   identifier: string,
-  dataMessage: SignalService.DataMessage,
+  dataMessage: SessionProtos.DataMessage,
   timestamp: number,
   syncTarget: string
 ) => {
@@ -255,7 +255,7 @@ const buildSyncVisibleMessage = (
 
 const buildSyncExpireTimerMessage = (
   identifier: string,
-  dataMessage: SignalService.DataMessage,
+  dataMessage: SessionProtos.DataMessage,
   timestamp: number,
   syncTarget: string
 ) => {
@@ -273,13 +273,13 @@ export type SyncMessageType = VisibleMessage | ExpirationTimerUpdateMessage | Co
 
 export const buildSyncMessage = (
   identifier: string,
-  dataMessage: SignalService.DataMessage,
+  dataMessage: SessionProtos.DataMessage,
   syncTarget: string,
   sentTimestamp: number
 ): VisibleMessage | ExpirationTimerUpdateMessage => {
   if (
     (dataMessage as any).constructor.name !== 'DataMessage' &&
-    !(dataMessage instanceof SignalService.DataMessage)
+    !(dataMessage instanceof SessionProtos.DataMessage)
   ) {
     window.log.warn('buildSyncMessage with something else than a DataMessage');
   }
@@ -289,7 +289,7 @@ export const buildSyncMessage = (
   }
   // don't include our profileKey on syncing message. This is to be done by a ConfigurationMessage now
   const timestamp = _.toNumber(sentTimestamp);
-  if (dataMessage.flags === SignalService.DataMessage.Flags.EXPIRATION_TIMER_UPDATE) {
+  if (dataMessage.flags === SessionProtos.DataMessage.Flags.EXPIRATION_TIMER_UPDATE) {
     return buildSyncExpireTimerMessage(identifier, dataMessage, timestamp, syncTarget);
   }
   return buildSyncVisibleMessage(identifier, dataMessage, timestamp, syncTarget);

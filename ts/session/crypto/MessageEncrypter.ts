@@ -1,5 +1,5 @@
 import { EncryptionType } from '../types/EncryptionType';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import { PubKey } from '../types';
 import { concatUInt8Array, getSodium } from '.';
 import { fromHexToArray } from '../utils/String';
@@ -9,7 +9,7 @@ import { UserUtils } from '../utils';
 import { addMessagePadding } from './BufferPadding';
 
 type EncryptResult = {
-  envelopeType: SignalService.Envelope.Type;
+  envelopeType: SessionProtos.Envelope.Type;
   cipherText: Uint8Array;
 };
 
@@ -26,7 +26,7 @@ export async function encrypt(
   plainTextBuffer: Uint8Array,
   encryptionType: EncryptionType
 ): Promise<EncryptResult> {
-  const { CLOSED_GROUP_CIPHERTEXT, UNIDENTIFIED_SENDER } = SignalService.Envelope.Type;
+  const { CLOSED_GROUP_MESSAGE, SESSION_MESSAGE } = SessionProtos.Envelope.Type;
   if (encryptionType !== EncryptionType.ClosedGroup && encryptionType !== EncryptionType.Fallback) {
     throw new Error(`Invalid encryption type:${encryptionType}`);
   }
@@ -35,7 +35,7 @@ export async function encrypt(
 
   if (encryptForClosedGroup) {
     window?.log?.info(
-      'Encrypting message with SessionProtocol and envelope type is CLOSED_GROUP_CIPHERTEXT'
+      'Encrypting message with SessionProtocol and envelope type is CLOSED_GROUP_MESSAGE'
     );
     const hexEncryptionKeyPair = await getLatestClosedGroupEncryptionKeyPair(device.key);
     if (!hexEncryptionKeyPair) {
@@ -52,13 +52,13 @@ export async function encrypt(
     );
 
     return {
-      envelopeType: CLOSED_GROUP_CIPHERTEXT,
+      envelopeType: CLOSED_GROUP_MESSAGE,
       cipherText: cipherTextClosedGroup,
     };
   }
 
   const cipherText = await exports.encryptUsingSessionProtocol(device, plainText);
-  return { envelopeType: UNIDENTIFIED_SENDER, cipherText };
+  return { envelopeType: SESSION_MESSAGE, cipherText };
 }
 
 export async function encryptUsingSessionProtocol(

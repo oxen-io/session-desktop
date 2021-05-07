@@ -1,9 +1,9 @@
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 
 export type BinaryString = string;
 
 export type CipherTextObject = {
-  type: SignalService.Envelope.Type;
+  type: SessionProtos.Envelope.Type;
   body: BinaryString;
 };
 export interface SignalProtocolAddressConstructor {

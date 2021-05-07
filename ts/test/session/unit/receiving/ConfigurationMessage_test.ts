@@ -1,6 +1,6 @@
 // tslint:disable: no-implicit-dependencies
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import chai from 'chai';
 
 import { ConfigurationMessage } from '../../../../session/messages/outgoing/controlMessage/ConfigurationMessage';
@@ -55,7 +55,7 @@ describe('ConfigurationMessage_receiving', () => {
     getItemByIdStub = sandbox.stub(data, 'getItemById').resolves();
     await handleConfigurationMessage(
       envelope,
-      proto.configurationMessage as SignalService.ConfigurationMessage
+      proto.configurationMessage as SessionProtos.ConfigurationMessage
     );
     expect(createOrUpdateStub.callCount).to.equal(0);
     expect(getItemByIdStub.callCount).to.equal(0);
@@ -77,7 +77,7 @@ describe('ConfigurationMessage_receiving', () => {
       getItemByIdStub = sandbox.stub(data, 'getItemById').resolves();
       await handleConfigurationMessage(
         envelope,
-        proto.configurationMessage as SignalService.ConfigurationMessage
+        proto.configurationMessage as SessionProtos.ConfigurationMessage
       );
       expect(createOrUpdateStub.callCount).to.equal(0);
       expect(getItemByIdStub.callCount).to.equal(0);
@@ -89,7 +89,7 @@ describe('ConfigurationMessage_receiving', () => {
 
     //     createOrUpdateStub = sandbox.stub(data, 'createOrUpdateItem').resolves();
     //     getItemByIdStub = sandbox.stub(data, 'getItemById').resolves();
-    //     await handleConfigurationMessage(envelope, proto.configurationMessage as SignalService.ConfigurationMessage);
+    //     await handleConfigurationMessage(envelope, proto.configurationMessage as SessionProtos.ConfigurationMessage);
     //     expect(getItemByIdStub.callCount).to.equal(1);
     // });
   });

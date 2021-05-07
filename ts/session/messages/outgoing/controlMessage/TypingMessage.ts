@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { MessageParams } from '../Message';
 import { Constants } from '../../..';
 import { ContentMessage } from '..';
@@ -22,19 +22,19 @@ export class TypingMessage extends ContentMessage {
     return Constants.TTL_DEFAULT.TYPING_MESSAGE;
   }
 
-  public contentProto(): SignalService.Content {
-    return new SignalService.Content({
+  public contentProto(): SessionProtos.Content {
+    return new SessionProtos.Content({
       typingMessage: this.typingProto(),
     });
   }
 
-  protected typingProto(): SignalService.TypingMessage {
-    const ACTION_ENUM = SignalService.TypingMessage.Action;
+  protected typingProto(): SessionProtos.TypingMessage {
+    const ACTION_ENUM = SessionProtos.TypingMessage.Action;
 
     const action = this.isTyping ? ACTION_ENUM.STARTED : ACTION_ENUM.STOPPED;
     const finalTimestamp = this.typingTimestamp || Date.now();
 
-    const typingMessage = new SignalService.TypingMessage();
+    const typingMessage = new SessionProtos.TypingMessage();
     typingMessage.action = action;
     typingMessage.timestamp = finalTimestamp;
 

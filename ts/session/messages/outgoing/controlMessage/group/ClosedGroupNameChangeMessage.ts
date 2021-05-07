@@ -1,5 +1,5 @@
 import { Constants } from '../../../..';
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { ClosedGroupMessage, ClosedGroupMessageParams } from './ClosedGroupMessage';
 
 interface ClosedGroupNameChangeMessageParams extends ClosedGroupMessageParams {
@@ -22,12 +22,12 @@ export class ClosedGroupNameChangeMessage extends ClosedGroupMessage {
     }
   }
 
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataMessage = super.dataProto();
 
     // tslint:disable: no-non-null-assertion
     dataMessage.closedGroupControlMessage!.type =
-      SignalService.DataMessage.ClosedGroupControlMessage.Type.NAME_CHANGE;
+      SessionProtos.DataMessage.ClosedGroupControlMessage.Type.NAME_CHANGE;
     dataMessage.closedGroupControlMessage!.name = this.name;
 
     return dataMessage;

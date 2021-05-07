@@ -1,4 +1,4 @@
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { removeFromCache } from './cache';
 import { EnvelopePlus } from './types';
 import { PubKey } from '../session/types';
@@ -39,10 +39,10 @@ export const distributingClosedGroupEncryptionKeyPairs = new Map<string, ECKeyPa
 
 export async function handleClosedGroupControlMessage(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage
 ) {
   const { type } = groupUpdate;
-  const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
+  const { Type } = SessionProtos.DataMessage.ClosedGroupControlMessage;
   window.log.info(
     ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${
       envelope.source
@@ -55,16 +55,10 @@ export async function handleClosedGroupControlMessage(
     return;
   }
 
-  if (type === Type.UPDATE) {
-    window.log.error('ClosedGroup: Got a non explicit group update. dropping it ', type);
-    await removeFromCache(envelope);
-    return;
-  }
-
   // We drop New closed group message from our other devices, as they will come as ConfigurationMessage instead
   if (type === Type.ENCRYPTION_KEY_PAIR) {
     const isComingFromGroupPubkey =
-      envelope.type === SignalService.Envelope.Type.CLOSED_GROUP_CIPHERTEXT;
+      envelope.type === SessionProtos.Envelope.Type.CLOSED_GROUP_MESSAGE;
     await handleClosedGroupEncryptionKeyPair(envelope, groupUpdate, isComingFromGroupPubkey);
     return;
   }
@@ -89,7 +83,7 @@ export async function handleClosedGroupControlMessage(
 }
 
 function sanityCheckNewGroup(
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage
 ): boolean {
   // for a new group message, we need everything to be set
   const { name, publicKey, members, admins, encryptionKeyPair } = groupUpdate;
@@ -150,11 +144,11 @@ function sanityCheckNewGroup(
 
 export async function handleNewClosedGroup(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage
 ) {
   const { log } = window;
 
-  if (groupUpdate.type !== SignalService.DataMessage.ClosedGroupControlMessage.Type.NEW) {
+  if (groupUpdate.type !== SessionProtos.DataMessage.ClosedGroupControlMessage.Type.NEW) {
     return;
   }
   if (!sanityCheckNewGroup(groupUpdate)) {
@@ -287,12 +281,12 @@ export async function markGroupAsLeftOrKicked(
  */
 async function handleClosedGroupEncryptionKeyPair(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage,
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage,
   isComingFromGroupPubkey: boolean
 ) {
   if (
     groupUpdate.type !==
-    SignalService.DataMessage.ClosedGroupControlMessage.Type.ENCRYPTION_KEY_PAIR
+    SessionProtos.DataMessage.ClosedGroupControlMessage.Type.ENCRYPTION_KEY_PAIR
   ) {
     return;
   }
@@ -360,9 +354,9 @@ async function handleClosedGroupEncryptionKeyPair(
   }
 
   // Parse it
-  let proto: SignalService.KeyPair;
+  let proto: SessionProtos.KeyPair;
   try {
-    proto = SignalService.KeyPair.decode(plaintext);
+    proto = SessionProtos.KeyPair.decode(plaintext);
     if (!proto || proto.privateKey.length === 0 || proto.publicKey.length === 0) {
       throw new Error();
     }
@@ -403,9 +397,9 @@ async function handleClosedGroupEncryptionKeyPair(
 
 async function performIfValid(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage
 ) {
-  const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
+  const { Type } = SessionProtos.DataMessage.ClosedGroupControlMessage;
 
   const groupPublicKey = envelope.source;
   const sender = envelope.senderIdentity;
@@ -474,7 +468,7 @@ async function performIfValid(
 
 async function handleClosedGroupNameChanged(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage,
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage,
   convo: ConversationModel
 ) {
   // Only add update message if we have something to show
@@ -501,7 +495,7 @@ async function handleClosedGroupNameChanged(
 
 async function handleClosedGroupMembersAdded(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage,
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage,
   convo: ConversationModel
 ) {
   const { members: addedMembersBinary } = groupUpdate;
@@ -556,7 +550,7 @@ async function areWeAdmin(groupConvo: ConversationModel) {
 
 async function handleClosedGroupMembersRemoved(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage,
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage,
   convo: ConversationModel
 ) {
   // Check that the admin wasn't removed
@@ -806,7 +800,7 @@ async function sendLatestKeyPairToUsers(
 
 async function handleClosedGroupEncryptionKeyPairRequest(
   envelope: EnvelopePlus,
-  groupUpdate: SignalService.DataMessage.ClosedGroupControlMessage,
+  groupUpdate: SessionProtos.DataMessage.ClosedGroupControlMessage,
   groupConvo: ConversationModel
 ) {
   if (!window.lokiFeatureFlags.useRequestEncryptionKeyPair) {

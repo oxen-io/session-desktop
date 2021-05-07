@@ -2,7 +2,7 @@ import { assert } from 'chai';
 
 import * as Message from '../../../../ts/types/message/initializeAttachmentMetadata';
 import { IncomingMessage } from '../../../../ts/types/Message';
-import { SignalService } from '../../../../ts/protobuf';
+import { SessionProtos } from '../../../../ts/protobuf';
 import * as MIME from '../../../../ts/types/MIME';
 // @ts-ignore
 import { stringToArrayBuffer } from '../../../../js/modules/string_to_array_buffer';
@@ -102,7 +102,7 @@ describe('Message', () => {
         attachments: [
           {
             contentType: MIME.AUDIO_AAC,
-            flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+            flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
             data: stringToArrayBuffer('foo'),
             fileName: 'Voice Message.aac',
             size: 1111,
@@ -119,7 +119,7 @@ describe('Message', () => {
         attachments: [
           {
             contentType: MIME.AUDIO_AAC,
-            flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+            flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
             data: stringToArrayBuffer('foo'),
             fileName: 'Voice Message.aac',
             size: 1111,

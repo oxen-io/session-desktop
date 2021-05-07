@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { PubKey } from '../../../../types';
 import { DataMessage } from '../../DataMessage';
 import { MessageParams } from '../../Message';
@@ -29,10 +29,10 @@ export abstract class ClosedGroupMessage extends DataMessage {
     return admins.every(a => members.includes(a));
   }
 
-  public dataProto(): SignalService.DataMessage {
-    const dataMessage = new SignalService.DataMessage();
+  public dataProto(): SessionProtos.DataMessage {
+    const dataMessage = new SessionProtos.DataMessage();
 
-    dataMessage.closedGroupControlMessage = new SignalService.DataMessage.ClosedGroupControlMessage();
+    dataMessage.closedGroupControlMessage = new SessionProtos.DataMessage.ClosedGroupControlMessage();
     dataMessage.expireTimer = this.expireTimer;
 
     return dataMessage;

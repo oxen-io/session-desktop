@@ -48,14 +48,6 @@ export async function uploadV2(params: UploadParamsV2): Promise<AttachmentPointe
     );
   }
 
-  const pointer: AttachmentPointer = {
-    contentType: attachment.contentType || undefined,
-    size: attachment.size,
-    fileName: attachment.fileName,
-    flags: attachment.flags,
-    caption: attachment.caption,
-  };
-
   const paddedAttachment: ArrayBuffer =
     window.lokiFeatureFlags.padOutgoingAttachments && !openGroup
       ? addAttachmentPadding(attachment.data)
@@ -63,8 +55,20 @@ export async function uploadV2(params: UploadParamsV2): Promise<AttachmentPointe
 
   const fileDetails = await uploadFileOpenGroupV2(new Uint8Array(paddedAttachment), openGroup);
 
-  pointer.id = fileDetails?.fileId || undefined;
-  pointer.url = fileDetails?.fileUrl || undefined;
+  if (!fileDetails) {
+    window.log.warn('Failed to upload attachment to opengroupv2');
+    throw new Error('Failed to upload attachment to opengroupv2');
+  }
+
+  const pointer: AttachmentPointer = {
+    contentType: attachment.contentType || undefined,
+    size: attachment.size,
+    fileName: attachment.fileName,
+    flags: attachment.flags,
+    caption: attachment.caption,
+    id: fileDetails.fileId,
+    url: fileDetails.fileUrl,
+  };
 
   return pointer;
 }

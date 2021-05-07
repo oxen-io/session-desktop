@@ -4,7 +4,7 @@ import { isArrayBuffer, padStart } from 'lodash';
 
 import * as MIME from './MIME';
 import { saveURLAsFile } from '../util/saveURLAsFile';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { isImageTypeSupported, isVideoTypeSupported } from '../util/GoogleChrome';
 import { LocalizerType } from './Util';
 import { fromHexToArray } from '../session/utils/String';
@@ -234,11 +234,11 @@ export function getAlt(attachment: AttachmentType, i18n: LocalizerType): string 
 export type Attachment = {
   fileName?: string;
   caption?: string;
-  flags?: SignalService.AttachmentPointer.Flags;
+  flags?: SessionProtos.AttachmentPointer.Flags;
   contentType?: MIME.MIMEType;
   size?: number;
   data: ArrayBuffer;
-
+  id: string;
   // // Omit unused / deprecated keys:
   // schemaVersion?: number;
   // id?: string;
@@ -286,7 +286,7 @@ export const isFile = (attachment: Attachment): boolean => {
 };
 
 export const isVoiceMessage = (attachment: Attachment): boolean => {
-  const flag = SignalService.AttachmentPointer.Flags.VOICE_MESSAGE;
+  const flag = SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE;
   const hasFlag =
     // tslint:disable-next-line no-bitwise
     !is.undefined(attachment.flags) && (attachment.flags & flag) === flag;

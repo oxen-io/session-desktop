@@ -1,4 +1,4 @@
-import { SignalService } from './../protobuf';
+import { SessionProtos } from './../protobuf';
 import { removeFromCache } from './cache';
 import { EnvelopePlus } from './types';
 import { getEnvelopeId } from './common';
@@ -20,7 +20,7 @@ import { allowOnlyOneAtATime } from '../session/utils/Promise';
 
 export async function updateProfileOneAtATime(
   conversation: ConversationModel,
-  profile: SignalService.DataMessage.ILokiProfile,
+  profile: SessionProtos.DataMessage.ILokiProfile,
   profileKey: any
 ) {
   if (!conversation?.id) {
@@ -35,7 +35,7 @@ export async function updateProfileOneAtATime(
 
 async function updateProfile(
   conversation: ConversationModel,
-  profile: SignalService.DataMessage.ILokiProfile,
+  profile: SessionProtos.DataMessage.ILokiProfile,
   profileKey: any
 ) {
   const { dcodeIO, textsecure, Signal } = window;
@@ -111,7 +111,7 @@ function cleanAttachments(decrypted: any) {
 
   // Here we go from binary to string/base64 in all AttachmentPointer digest/key fields
 
-  if (group && group.type === SignalService.GroupContext.Type.UPDATE) {
+  if (group && group.type === SessionProtos.GroupContext.Type.UPDATE) {
     if (group.avatar !== null) {
       group.avatar = cleanAttachment(group.avatar);
     }
@@ -169,10 +169,10 @@ function cleanAttachments(decrypted: any) {
 
 export async function processDecrypted(
   envelope: EnvelopePlus,
-  decrypted: SignalService.IDataMessage
+  decrypted: SessionProtos.IDataMessage
 ) {
   /* tslint:disable:no-bitwise */
-  const FLAGS = SignalService.DataMessage.Flags;
+  const FLAGS = SessionProtos.DataMessage.Flags;
 
   // Now that its decrypted, validate the message and clean it up for consumer
   //   processing
@@ -196,20 +196,20 @@ export async function processDecrypted(
     // decrypted.group.id = new TextDecoder('utf-8').decode(decrypted.group.id);
 
     switch (decrypted.group.type) {
-      case SignalService.GroupContext.Type.UPDATE:
+      case SessionProtos.GroupContext.Type.UPDATE:
         decrypted.body = '';
         decrypted.attachments = [];
         break;
-      case SignalService.GroupContext.Type.QUIT:
+      case SessionProtos.GroupContext.Type.QUIT:
         decrypted.body = '';
         decrypted.attachments = [];
         break;
-      case SignalService.GroupContext.Type.DELIVER:
+      case SessionProtos.GroupContext.Type.DELIVER:
         decrypted.group.name = null;
         decrypted.group.members = [];
         decrypted.group.avatar = null;
         break;
-      case SignalService.GroupContext.Type.REQUEST_INFO:
+      case SessionProtos.GroupContext.Type.REQUEST_INFO:
         decrypted.body = '';
         decrypted.attachments = [];
         break;
@@ -230,12 +230,12 @@ export async function processDecrypted(
 
   cleanAttachments(decrypted);
 
-  return decrypted as SignalService.DataMessage;
+  return decrypted as SessionProtos.DataMessage;
   /* tslint:disable:no-bitwise */
 }
 
-export function isMessageEmpty(message: SignalService.DataMessage) {
-  const { flags, body, attachments, group, quote, contact, preview, groupInvitation } = message;
+export function isMessageEmpty(message: SessionProtos.DataMessage) {
+  const { flags, body, attachments, group, quote, preview, groupInvitation } = message;
 
   return (
     !flags &&
@@ -244,7 +244,6 @@ export function isMessageEmpty(message: SignalService.DataMessage) {
     _.isEmpty(attachments) &&
     _.isEmpty(group) &&
     _.isEmpty(quote) &&
-    _.isEmpty(contact) &&
     _.isEmpty(preview) &&
     _.isEmpty(groupInvitation)
   );
@@ -267,13 +266,13 @@ function isBodyEmpty(body: string) {
  */
 export async function handleDataMessage(
   envelope: EnvelopePlus,
-  dataMessage: SignalService.IDataMessage
+  dataMessage: SessionProtos.IDataMessage
 ): Promise<void> {
   // we handle group updates from our other devices in handleClosedGroupControlMessage()
   if (dataMessage.closedGroupControlMessage) {
     await handleClosedGroupControlMessage(
       envelope,
-      dataMessage.closedGroupControlMessage as SignalService.DataMessage.ClosedGroupControlMessage
+      dataMessage.closedGroupControlMessage as SessionProtos.DataMessage.ClosedGroupControlMessage
     );
     return;
   }

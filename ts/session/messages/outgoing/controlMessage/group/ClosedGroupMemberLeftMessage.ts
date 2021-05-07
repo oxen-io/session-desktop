@@ -1,14 +1,14 @@
 import { Constants } from '../../../..';
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { ClosedGroupMessage } from './ClosedGroupMessage';
 
 export class ClosedGroupMemberLeftMessage extends ClosedGroupMessage {
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataMessage = super.dataProto();
 
     // tslint:disable: no-non-null-assertion
     dataMessage.closedGroupControlMessage!.type =
-      SignalService.DataMessage.ClosedGroupControlMessage.Type.MEMBER_LEFT;
+      SessionProtos.DataMessage.ClosedGroupControlMessage.Type.MEMBER_LEFT;
 
     return dataMessage;
   }

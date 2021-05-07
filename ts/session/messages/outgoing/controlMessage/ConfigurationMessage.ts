@@ -1,6 +1,6 @@
 // this is not a very good name, but a configuration message is a message sent to our other devices so sync our current public and closed groups
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { MessageParams } from '../Message';
 import { Constants } from '../../..';
 import { ECKeyPair } from '../../../../receiver/keypairs';
@@ -59,14 +59,14 @@ export class ConfigurationMessage extends ContentMessage {
     }
   }
 
-  public contentProto(): SignalService.Content {
-    return new SignalService.Content({
+  public contentProto(): SessionProtos.Content {
+    return new SessionProtos.Content({
       configurationMessage: this.configurationProto(),
     });
   }
 
-  protected configurationProto(): SignalService.ConfigurationMessage {
-    return new SignalService.ConfigurationMessage({
+  protected configurationProto(): SessionProtos.ConfigurationMessage {
+    return new SessionProtos.ConfigurationMessage({
       closedGroups: this.mapClosedGroupsObjectToProto(this.activeClosedGroups),
       openGroups: this.activeOpenGroups,
       displayName: this.displayName,
@@ -78,13 +78,13 @@ export class ConfigurationMessage extends ContentMessage {
 
   private mapClosedGroupsObjectToProto(
     closedGroups: Array<ConfigurationMessageClosedGroup>
-  ): Array<SignalService.ConfigurationMessage.ClosedGroup> {
+  ): Array<SessionProtos.ConfigurationMessage.ClosedGroup> {
     return (closedGroups || []).map(m => m.toProto());
   }
 
   private mapContactsObjectToProto(
     contacts: Array<ConfigurationMessageContact>
-  ): Array<SignalService.ConfigurationMessage.Contact> {
+  ): Array<SessionProtos.ConfigurationMessage.Contact> {
     return (contacts || []).map(m => m.toProto());
   }
 }
@@ -126,8 +126,8 @@ export class ConfigurationMessageContact {
     }
   }
 
-  public toProto(): SignalService.ConfigurationMessage.Contact {
-    return new SignalService.ConfigurationMessage.Contact({
+  public toProto(): SessionProtos.ConfigurationMessage.Contact {
+    return new SessionProtos.ConfigurationMessage.Contact({
       publicKey: fromHexToArray(this.publicKey),
       name: this.displayName,
       profilePicture: this.profilePictureURL,
@@ -188,8 +188,8 @@ export class ConfigurationMessageClosedGroup {
     }
   }
 
-  public toProto(): SignalService.ConfigurationMessage.ClosedGroup {
-    return new SignalService.ConfigurationMessage.ClosedGroup({
+  public toProto(): SessionProtos.ConfigurationMessage.ClosedGroup {
+    return new SessionProtos.ConfigurationMessage.ClosedGroup({
       publicKey: fromHexToArray(this.publicKey),
       name: this.name,
       encryptionKeyPair: {

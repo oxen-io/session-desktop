@@ -1,5 +1,5 @@
 import { StagedAttachmentType } from '../components/session/conversation/SessionCompositionBox';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { Constants } from '../session';
 import loadImage from 'blueimp-load-image';
 export interface MaxScaleSize {
@@ -100,7 +100,7 @@ export async function getFile(attachment: StagedAttachmentType, maxMeasurements?
   }
 
   const attachmentFlags = attachment.isVoiceMessage
-    ? SignalService.AttachmentPointer.Flags.VOICE_MESSAGE
+    ? SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE
     : null;
 
   const scaled = await autoScale(attachment, maxMeasurements);

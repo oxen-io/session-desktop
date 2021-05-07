@@ -1,14 +1,14 @@
 import { Constants } from '../../../..';
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { ClosedGroupMessage, ClosedGroupMessageParams } from './ClosedGroupMessage';
 
 export interface ClosedGroupEncryptionPairMessageParams extends ClosedGroupMessageParams {
-  encryptedKeyPairs: Array<SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper>;
+  encryptedKeyPairs: Array<SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper>;
 }
 
 export class ClosedGroupEncryptionPairMessage extends ClosedGroupMessage {
   private readonly encryptedKeyPairs: Array<
-    SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
+    SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
   >;
 
   constructor(params: ClosedGroupEncryptionPairMessageParams) {
@@ -24,12 +24,12 @@ export class ClosedGroupEncryptionPairMessage extends ClosedGroupMessage {
     }
   }
 
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataMessage = super.dataProto();
 
     // tslint:disable: no-non-null-assertion
     dataMessage.closedGroupControlMessage!.type =
-      SignalService.DataMessage.ClosedGroupControlMessage.Type.ENCRYPTION_KEY_PAIR;
+      SessionProtos.DataMessage.ClosedGroupControlMessage.Type.ENCRYPTION_KEY_PAIR;
     dataMessage.closedGroupControlMessage!.wrappers = this.encryptedKeyPairs.map(w => {
       const { publicKey, encryptedKeyPair } = w;
       return {

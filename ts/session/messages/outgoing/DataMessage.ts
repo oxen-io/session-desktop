@@ -1,12 +1,12 @@
 import { ContentMessage } from '.';
-import { SignalService } from '../../../protobuf';
+import { SessionProtos } from '../../../protobuf';
 import { TTL_DEFAULT } from '../../constants';
 
 export abstract class DataMessage extends ContentMessage {
-  public abstract dataProto(): SignalService.DataMessage;
+  public abstract dataProto(): SessionProtos.DataMessage;
 
-  public contentProto(): SignalService.Content {
-    return new SignalService.Content({
+  public contentProto(): SessionProtos.Content {
+    return new SessionProtos.Content({
       dataMessage: this.dataProto(),
     });
   }

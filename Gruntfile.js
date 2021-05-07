@@ -133,7 +133,7 @@ module.exports = grunt => {
         tasks: ['concat:libloki'],
       },
       protobuf: {
-        files: ['./protos/SignalService.proto'],
+        files: ['./protos/SessionProtos.proto'],
         tasks: ['exec:build-protobuf'],
       },
       sass: {

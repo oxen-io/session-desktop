@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import * as Attachment from '../../types/Attachment';
 import * as MIME from '../../types/MIME';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 // @ts-ignore
 import { stringToArrayBuffer } from '../../../js/modules/string_to_array_buffer';
 
@@ -152,7 +152,7 @@ describe('Attachment', () => {
     it('should return false for voice message attachment', () => {
       const attachment: Attachment.Attachment = {
         fileName: 'Voice Message.aac',
-        flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+        flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
         data: stringToArrayBuffer('voice message'),
         contentType: MIME.AUDIO_AAC,
       };
@@ -200,7 +200,7 @@ describe('Attachment', () => {
     it('should return false for voice message attachment', () => {
       const attachment: Attachment.Attachment = {
         fileName: 'Voice Message.aac',
-        flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+        flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
         data: stringToArrayBuffer('voice message'),
         contentType: MIME.AUDIO_AAC,
       };
@@ -212,7 +212,7 @@ describe('Attachment', () => {
     it('should return true for voice message attachment', () => {
       const attachment: Attachment.Attachment = {
         fileName: 'Voice Message.aac',
-        flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+        flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
         data: stringToArrayBuffer('voice message'),
         contentType: MIME.AUDIO_AAC,
       };

@@ -2,7 +2,7 @@
 
 import { RawMessage } from '../types/RawMessage';
 import { OpenGroupMessage } from '../messages/outgoing';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import { MessageEncrypter } from '../crypto';
 import pRetry from 'p-retry';
 import { PubKey } from '../types';
@@ -53,18 +53,18 @@ export async function send(
 }
 
 async function buildEnvelope(
-  type: SignalService.Envelope.Type,
+  type: SessionProtos.Envelope.Type,
   sskSource: string | undefined,
   timestamp: number,
   content: Uint8Array
-): Promise<SignalService.Envelope> {
+): Promise<SessionProtos.Envelope> {
   let source: string | undefined;
 
-  if (type === SignalService.Envelope.Type.CLOSED_GROUP_CIPHERTEXT) {
+  if (type === SessionProtos.Envelope.Type.CLOSED_GROUP_MESSAGE) {
     source = sskSource;
   }
 
-  return SignalService.Envelope.create({
+  return SessionProtos.Envelope.create({
     type,
     source,
     timestamp,
@@ -76,19 +76,19 @@ async function buildEnvelope(
  * This is an outdated practice and we should probably just send the envelope data directly.
  * Something to think about in the future.
  */
-function wrapEnvelope(envelope: SignalService.Envelope): Uint8Array {
-  const request = SignalService.WebSocketRequestMessage.create({
+function wrapEnvelope(envelope: SessionProtos.Envelope): Uint8Array {
+  const request = SessionProtos.WebSocketRequestMessage.create({
     id: 0,
-    body: SignalService.Envelope.encode(envelope).finish(),
+    body: SessionProtos.Envelope.encode(envelope).finish(),
     verb: 'PUT',
     path: '/api/v1/message',
   });
 
-  const websocket = SignalService.WebSocketMessage.create({
-    type: SignalService.WebSocketMessage.Type.REQUEST,
+  const websocket = SessionProtos.WebSocketMessage.create({
+    type: SessionProtos.WebSocketMessage.Type.REQUEST,
     request,
   });
-  return SignalService.WebSocketMessage.encode(websocket).finish();
+  return SessionProtos.WebSocketMessage.encode(websocket).finish();
 }
 
 // ================ Open Group ================

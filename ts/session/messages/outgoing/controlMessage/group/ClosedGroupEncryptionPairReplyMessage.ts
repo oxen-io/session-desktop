@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { fromHexToArray } from '../../../../utils/String';
 import { ClosedGroupEncryptionPairMessage } from './ClosedGroupEncryptionPairMessage';
 
@@ -13,7 +13,7 @@ import { ClosedGroupEncryptionPairMessage } from './ClosedGroupEncryptionPairMes
  * This reply must be sent to this user's pubkey, and so be encoded using sessionProtocol.
  */
 export class ClosedGroupEncryptionPairReplyMessage extends ClosedGroupEncryptionPairMessage {
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataMessage = super.dataProto();
     // tslint:disable: no-non-null-assertion
     dataMessage.closedGroupControlMessage!.publicKey = fromHexToArray(this.groupId.key);

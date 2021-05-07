@@ -1,5 +1,5 @@
 import { Constants } from '../../..';
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { PubKey } from '../../../types';
 import { StringUtils } from '../../../utils';
 import { VisibleMessage } from './VisibleMessage';
@@ -23,16 +23,16 @@ export class ClosedGroupVisibleMessage extends ClosedGroupMessage {
     });
     this.chatMessage = params.chatMessage;
   }
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataProto = this.chatMessage.dataProto();
 
     if (this.groupId) {
-      const groupMessage = new SignalService.GroupContext();
+      const groupMessage = new SessionProtos.GroupContext();
       const groupIdWithPrefix = PubKey.addTextSecurePrefixIfNeeded(this.groupId.key);
       const encoded = StringUtils.encode(groupIdWithPrefix, 'utf8');
       const id = new Uint8Array(encoded);
       groupMessage.id = id;
-      groupMessage.type = SignalService.GroupContext.Type.DELIVER;
+      groupMessage.type = SessionProtos.GroupContext.Type.DELIVER;
 
       dataProto.group = groupMessage;
     }

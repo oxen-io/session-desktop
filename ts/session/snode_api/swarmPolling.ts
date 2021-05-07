@@ -1,7 +1,7 @@
 import { PubKey } from '../types';
 import { getSnodesFor, Snode } from './snodePool';
 import { retrieveNextMessages } from './serviceNodeAPI';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import * as Receiver from '../../receiver/receiver';
 import _ from 'lodash';
 import {
@@ -27,8 +27,8 @@ interface Message {
 export function processMessage(message: string, options: any = {}) {
   try {
     const dataPlaintext = new Uint8Array(StringUtils.encode(message, 'base64'));
-    const messageBuf = SignalService.WebSocketMessage.decode(dataPlaintext);
-    if (messageBuf.type === SignalService.WebSocketMessage.Type.REQUEST) {
+    const messageBuf = SessionProtos.WebSocketMessage.decode(dataPlaintext);
+    if (messageBuf.type === SessionProtos.WebSocketMessage.Type.REQUEST) {
       Receiver.handleRequest(messageBuf.request?.body, options);
     }
   } catch (error) {

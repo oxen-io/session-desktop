@@ -13,14 +13,12 @@ import { addAttachmentPadding } from '../crypto/BufferPadding';
 
 interface UploadParams {
   attachment: Attachment;
-  openGroup?: OpenGroup;
-  isAvatar?: boolean;
   isRaw?: boolean;
   shouldPad?: boolean;
 }
 
 interface RawPreview {
-  url?: string;
+  url: string;
   title?: string;
   image: Attachment;
 }
@@ -42,8 +40,8 @@ interface RawQuote {
 export class AttachmentUtils {
   private constructor() {}
 
-  public static async uploadV1(params: UploadParams): Promise<AttachmentPointer> {
-    const { attachment, openGroup, isAvatar = false, isRaw = false, shouldPad = false } = params;
+  public static async uploadToFileServer(params: UploadParams): Promise<AttachmentPointer> {
+    const { attachment, isRaw = false, shouldPad = false } = params;
     if (typeof attachment !== 'object' || attachment == null) {
       throw new Error('Invalid attachment passed.');
     }
@@ -54,31 +52,15 @@ export class AttachmentUtils {
       );
     }
 
-    let server = window.tokenlessFileServerAdnAPI;
-    // this can only be an opengroupv1
-    if (openGroup) {
-      const openGroupServer = await window.lokiPublicChatAPI.findOrCreateServer(openGroup.server);
-      if (!openGroupServer) {
-        throw new Error(`Failed to get open group server: ${openGroup.server}.`);
-      }
-      server = openGroupServer;
-    }
-    const pointer: AttachmentPointer = {
-      contentType: attachment.contentType || undefined,
-      size: attachment.size,
-      fileName: attachment.fileName,
-      flags: attachment.flags,
-      caption: attachment.caption,
-    };
-
     let attachmentData: ArrayBuffer;
 
+    let key = new Uint8Array();
+    let digest = new Uint8Array();
     // We don't pad attachments for opengroup as they are unencrypted
-    if (isRaw || openGroup) {
+    if (isRaw) {
       attachmentData = attachment.data;
     } else {
-      server = window.tokenlessFileServerAdnAPI;
-      pointer.key = new Uint8Array(crypto.randomBytes(64));
+      key = new Uint8Array(crypto.randomBytes(64));
       const iv = new Uint8Array(crypto.randomBytes(16));
 
       const dataToEncrypt =
@@ -87,35 +69,37 @@ export class AttachmentUtils {
           : addAttachmentPadding(attachment.data);
       const data = await window.textsecure.crypto.encryptAttachment(
         dataToEncrypt,
-        pointer.key.buffer,
+        key.buffer,
         iv.buffer
       );
-      pointer.digest = new Uint8Array(data.digest);
+      digest = new Uint8Array(data.digest);
       attachmentData = data.ciphertext;
     }
 
     // use file server v2
-
-    if (FSv2.useFileServerAPIV2Sending) {
-      const uploadToV2Result = await FSv2.uploadFileToFsV2(attachmentData);
-      if (uploadToV2Result) {
-        pointer.id = uploadToV2Result.fileId;
-        pointer.url = uploadToV2Result.fileUrl;
-      } else {
-        window.log.warn('upload to file server v2 failed');
+    const uploadToV2Result = await FSv2.uploadFileToFsV2(attachmentData);
+    if (uploadToV2Result) {
+      const pointer: AttachmentPointer = {
+        contentType: attachment.contentType || undefined,
+        size: attachment.size,
+        fileName: attachment.fileName,
+        flags: attachment.flags,
+        caption: attachment.caption,
+        id: uploadToV2Result.fileId,
+        url: uploadToV2Result.fileUrl,
+      };
+      if (key.length) {
+        pointer.key = key;
       }
-    } else {
-      const result = isAvatar
-        ? await server.putAvatar(attachmentData)
-        : await server.putAttachment(attachmentData);
-      pointer.id = result.id;
-      pointer.url = result.url;
+      if (digest.length) {
+        pointer.digest = digest;
+      }
+      return pointer;
     }
-
-    return pointer;
+    throw new Error('upload to file server v2 failed.');
   }
 
-  public static async uploadAvatarV1(
+  public static async uploadAvatar(
     attachment?: Attachment
   ): Promise<AttachmentPointer | undefined> {
     if (!attachment) {
@@ -124,21 +108,18 @@ export class AttachmentUtils {
 
     // isRaw is true since the data is already encrypted
     // and doesn't need to be encrypted again
-    return this.uploadV1({
+    return this.uploadToFileServer({
       attachment,
-      isAvatar: true,
       isRaw: true,
     });
   }
 
-  public static async uploadAttachmentsV1(
-    attachments: Array<Attachment>,
-    openGroup?: OpenGroup
+  public static async uploadAttachments(
+    attachments: Array<Attachment>
   ): Promise<Array<AttachmentPointer>> {
     const promises = (attachments || []).map(async attachment =>
-      this.uploadV1({
+      this.uploadToFileServer({
         attachment,
-        openGroup,
         shouldPad: true,
       })
     );
@@ -146,10 +127,7 @@ export class AttachmentUtils {
     return Promise.all(promises);
   }
 
-  public static async uploadLinkPreviewsV1(
-    previews: Array<RawPreview>,
-    openGroup?: OpenGroup
-  ): Promise<Array<Preview>> {
+  public static async uploadLinkPreviews(previews: Array<RawPreview>): Promise<Array<Preview>> {
     const promises = (previews || []).map(async item => {
       // some links does not have an image associated, and it makes the whole message fail to send
       if (!item.image) {
@@ -157,16 +135,15 @@ export class AttachmentUtils {
       }
       return {
         ...item,
-        image: await this.uploadV1({
+        image: await this.uploadToFileServer({
           attachment: item.image,
-          openGroup,
         }),
       };
     });
     return Promise.all(promises);
   }
 
-  public static async uploadQuoteThumbnailsV1(
+  public static async uploadQuoteThumbnails(
     quote?: RawQuote,
     openGroup?: OpenGroup
   ): Promise<Quote | undefined> {
@@ -177,7 +154,7 @@ export class AttachmentUtils {
     const promises = (quote.attachments ?? []).map(async attachment => {
       let thumbnail: AttachmentPointer | undefined;
       if (attachment.thumbnail) {
-        thumbnail = await this.uploadV1({
+        thumbnail = await this.uploadToFileServer({
           attachment: attachment.thumbnail,
           openGroup,
         });

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { TextEncoder } from 'util';
 import { toNumber } from 'lodash';
 import { Constants } from '../../../../session';
@@ -17,7 +17,7 @@ describe('VisibleMessage', () => {
       timestamp: Date.now(),
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded).to.have.not.property('dataMessage', null);
     expect(decoded).to.have.not.property('dataMessage', undefined);
   });
@@ -28,7 +28,7 @@ describe('VisibleMessage', () => {
       body: 'body',
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage).to.have.deep.property('body', 'body');
   });
 
@@ -38,7 +38,7 @@ describe('VisibleMessage', () => {
       expireTimer: 3600,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage).to.have.deep.property('expireTimer', 3600);
   });
 
@@ -55,7 +55,7 @@ describe('VisibleMessage', () => {
       lokiProfile: lokiProfile,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage).to.have.deep.property('profile');
 
     expect(decoded.dataMessage)
@@ -76,7 +76,7 @@ describe('VisibleMessage', () => {
       quote,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     const decodedID = toNumber(decoded.dataMessage?.quote?.id);
     expect(decodedID).to.be.equal(1234);
     expect(decoded.dataMessage?.quote).to.have.deep.property('author', 'author');
@@ -95,7 +95,7 @@ describe('VisibleMessage', () => {
       preview: previews,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage?.preview).to.have.lengthOf(1);
     expect(decoded.dataMessage)
       .to.have.nested.property('preview[0].url')
@@ -117,7 +117,7 @@ describe('VisibleMessage', () => {
       attachments: attachments,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage?.attachments).to.have.lengthOf(1);
     const firstAttachment = decoded?.dataMessage?.attachments?.[0];
     const decodedID = toNumber(firstAttachment?.id);

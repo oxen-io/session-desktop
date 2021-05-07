@@ -1,4 +1,4 @@
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 
 export interface Quote {
   id: number; // this is in fact a uint64 so we will have an issue
@@ -8,7 +8,7 @@ export interface Quote {
   referencedMessageNotFound: boolean;
 }
 
-export interface EnvelopePlus extends SignalService.Envelope {
+export interface EnvelopePlus extends SessionProtos.Envelope {
   senderIdentity: string; // Sender's pubkey after it's been decrypted (for medium groups)
   receivedAt: number; // We only seem to set this for public messages?
   id: string;

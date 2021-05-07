@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { TestUtils } from '../../../test-utils';
 import { StringUtils } from '../../../../session/utils';
 import { PubKey } from '../../../../session/types';
@@ -23,7 +23,7 @@ describe('ClosedGroupVisibleMessage', () => {
       chatMessage,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.dataMessage)
       .to.have.property('group')
       .to.have.deep.property(
@@ -32,7 +32,7 @@ describe('ClosedGroupVisibleMessage', () => {
       );
     expect(decoded.dataMessage)
       .to.have.property('group')
-      .to.have.deep.property('type', SignalService.GroupContext.Type.DELIVER);
+      .to.have.deep.property('type', SessionProtos.GroupContext.Type.DELIVER);
 
     expect(decoded.dataMessage).to.have.deep.property('body', 'body');
 

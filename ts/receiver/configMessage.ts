@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { createOrUpdateItem, getItemById, hasSyncedInitialConfigurationItem } from '../data/data';
 import { ConversationTypeEnum } from '../models/conversation';
 import { OpenGroup } from '../opengroup/opengroupV1/OpenGroup';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { ConversationController } from '../session/conversations';
 import { UserUtils } from '../session/utils';
 import { toHex } from '../session/utils/String';
@@ -14,7 +14,7 @@ import { EnvelopePlus } from './types';
 
 async function handleOurProfileUpdate(
   sentAt: number | Long,
-  configMessage: SignalService.ConfigurationMessage,
+  configMessage: SessionProtos.ConfigurationMessage,
   ourPubkey: string
 ) {
   const latestProfileUpdateTimestamp = UserUtils.getLastProfileUpdateTimestamp();
@@ -52,7 +52,7 @@ async function handleOurProfileUpdate(
 
 async function handleGroupsAndContactsFromConfigMessage(
   envelope: EnvelopePlus,
-  configMessage: SignalService.ConfigurationMessage
+  configMessage: SessionProtos.ConfigurationMessage
 ) {
   const didWeHandleAConfigurationMessageAlready =
     (await getItemById(hasSyncedInitialConfigurationItem))?.value || false;
@@ -75,8 +75,8 @@ async function handleGroupsAndContactsFromConfigMessage(
 
   await Promise.all(
     configMessage.closedGroups.map(async c => {
-      const groupUpdate = new SignalService.DataMessage.ClosedGroupControlMessage({
-        type: SignalService.DataMessage.ClosedGroupControlMessage.Type.NEW,
+      const groupUpdate = new SessionProtos.DataMessage.ClosedGroupControlMessage({
+        type: SessionProtos.DataMessage.ClosedGroupControlMessage.Type.NEW,
         encryptionKeyPair: c.encryptionKeyPair,
         name: c.name,
         admins: c.admins,
@@ -132,7 +132,7 @@ async function handleGroupsAndContactsFromConfigMessage(
 
 export async function handleConfigurationMessage(
   envelope: EnvelopePlus,
-  configurationMessage: SignalService.ConfigurationMessage
+  configurationMessage: SessionProtos.ConfigurationMessage
 ): Promise<void> {
   const ourPubkey = UserUtils.getOurPubKeyStrFromCache();
   if (!ourPubkey) {

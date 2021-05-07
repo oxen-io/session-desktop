@@ -1,3 +1,3 @@
-import { signalservice as SignalService } from './compiled';
+import { SessionProtos } from './compiled';
 
-export { SignalService };
+export { SessionProtos };

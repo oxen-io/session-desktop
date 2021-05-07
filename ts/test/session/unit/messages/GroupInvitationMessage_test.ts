@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { Constants } from '../../../../session';
 import { GroupInvitationMessage } from '../../../../session/messages/outgoing/visibleMessage/GroupInvitationMessage';
 
@@ -23,7 +23,7 @@ describe('GroupInvitationMessage', () => {
 
   it('dataMessage.groupInvitation has serverAddress, channelId, and serverName set', () => {
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
 
     expect(decoded.dataMessage?.groupInvitation).to.have.property('serverAddress', serverAddress);
     expect(decoded.dataMessage?.groupInvitation).to.have.property('channelId', channelId);

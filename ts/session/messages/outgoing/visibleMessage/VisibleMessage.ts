@@ -1,15 +1,27 @@
 import ByteBuffer from 'bytebuffer';
 
-import { isNumber, toNumber } from 'lodash';
 import { DataMessage } from '..';
-import { Constants } from '../../..';
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { LokiProfile } from '../../../../types/Message';
-import { ExpirationTimerUpdateMessage } from '../controlMessage/ExpirationTimerUpdateMessage';
 import { MessageParams } from '../Message';
 
 export interface AttachmentPointer {
-  id?: number;
+  id: number;
+  contentType?: string;
+  key?: Uint8Array;
+  size?: number;
+  thumbnail?: Uint8Array;
+  digest?: Uint8Array;
+  fileName?: string;
+  flags?: number;
+  width?: number;
+  height?: number;
+  caption?: string;
+  url?: string;
+}
+
+export interface AttachmentPointerWithUrl {
+  id: number;
   contentType?: string;
   key?: Uint8Array;
   size?: number;
@@ -24,7 +36,7 @@ export interface AttachmentPointer {
 }
 
 export interface Preview {
-  url?: string;
+  url: string;
   title?: string;
   image?: AttachmentPointer;
 }
@@ -36,8 +48,8 @@ export interface QuotedAttachment {
 }
 
 export interface Quote {
-  id?: number;
-  author?: string;
+  id: number;
+  author: string;
   text?: string;
   attachments?: Array<QuotedAttachment>;
 }
@@ -92,8 +104,8 @@ export class VisibleMessage extends DataMessage {
     this.syncTarget = params.syncTarget;
   }
 
-  public dataProto(): SignalService.DataMessage {
-    const dataMessage = new SignalService.DataMessage();
+  public dataProto(): SessionProtos.DataMessage {
+    const dataMessage = new SessionProtos.DataMessage();
 
     if (this.body) {
       dataMessage.body = this.body;
@@ -113,7 +125,7 @@ export class VisibleMessage extends DataMessage {
     }
 
     if (this.avatarPointer || this.displayName) {
-      const profile = new SignalService.DataMessage.LokiProfile();
+      const profile = new SessionProtos.DataMessage.LokiProfile();
 
       if (this.avatarPointer) {
         profile.profilePicture = this.avatarPointer;
@@ -129,7 +141,7 @@ export class VisibleMessage extends DataMessage {
     }
 
     if (this.quote) {
-      dataMessage.quote = new SignalService.DataMessage.Quote();
+      dataMessage.quote = new SessionProtos.DataMessage.Quote();
 
       dataMessage.quote.id = this.quote.id;
       dataMessage.quote.author = this.quote.author;
@@ -137,7 +149,7 @@ export class VisibleMessage extends DataMessage {
       if (this.quote.attachments) {
         dataMessage.quote.attachments = this.quote.attachments.map(
           (attachment: QuotedAttachment) => {
-            const quotedAttachment = new SignalService.DataMessage.Quote.QuotedAttachment();
+            const quotedAttachment = new SessionProtos.DataMessage.Quote.QuotedAttachment();
             if (attachment.contentType) {
               quotedAttachment.contentType = attachment.contentType;
             }
@@ -156,7 +168,7 @@ export class VisibleMessage extends DataMessage {
 
     if (Array.isArray(this.preview)) {
       dataMessage.preview = this.preview.map(preview => {
-        const item = new SignalService.DataMessage.Preview();
+        const item = new SessionProtos.DataMessage.Preview();
         if (preview.title) {
           item.title = preview.title;
         }

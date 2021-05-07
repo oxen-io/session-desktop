@@ -2,7 +2,7 @@ import { EnvelopePlus } from './types';
 import { handleDataMessage } from './dataMessage';
 
 import { removeFromCache, updateCache } from './cache';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import * as Lodash from 'lodash';
 import { PubKey } from '../session/types';
 
@@ -228,10 +228,10 @@ async function doDecrypt(
   }
 
   switch (envelope.type) {
-    // Only UNIDENTIFIED_SENDER and CLOSED_GROUP_CIPHERTEXT are supported
-    case SignalService.Envelope.Type.CLOSED_GROUP_CIPHERTEXT:
+    // Only SESSION_MESSAGE and CLOSED_GROUP_MESSAGE are supported
+    case SessionProtos.Envelope.Type.CLOSED_GROUP_MESSAGE:
       return decryptForClosedGroup(envelope, ciphertext);
-    case SignalService.Envelope.Type.UNIDENTIFIED_SENDER: {
+    case SessionProtos.Envelope.Type.SESSION_MESSAGE: {
       return decryptUnidentifiedSender(envelope, ciphertext);
     }
     default:
@@ -262,7 +262,7 @@ async function decrypt(envelope: EnvelopePlus, ciphertext: ArrayBuffer): Promise
   }
 }
 
-function shouldDropBlockedUserMessage(content: SignalService.Content): boolean {
+function shouldDropBlockedUserMessage(content: SessionProtos.Content): boolean {
   // Even if the user is blocked, we should allow the message if:
   //   - it is a group message AND
   //   - the group exists already on the db (to not join a closed group created by a blocked user) AND
@@ -297,7 +297,6 @@ function shouldDropBlockedUserMessage(content: SignalService.Content): boolean {
   const data = content.dataMessage;
   const isControlDataMessageOnly =
     !data.body &&
-    !data.contact?.length &&
     !data.preview?.length &&
     !data.attachments?.length &&
     !data.groupInvitation &&
@@ -311,7 +310,7 @@ export async function innerHandleContentMessage(
   plaintext: ArrayBuffer
 ): Promise<void> {
   try {
-    const content = SignalService.Content.decode(new Uint8Array(plaintext));
+    const content = SessionProtos.Content.decode(new Uint8Array(plaintext));
 
     const blocked = await isBlocked(envelope.source);
     if (blocked) {
@@ -349,7 +348,7 @@ export async function innerHandleContentMessage(
       // this one can be quite long (downloads profilePictures and everything, is do not block)
       void handleConfigurationMessage(
         envelope,
-        content.configurationMessage as SignalService.ConfigurationMessage
+        content.configurationMessage as SessionProtos.ConfigurationMessage
       );
       return;
     }
@@ -393,19 +392,19 @@ export function onDeliveryReceipt(source: any, timestamp: any) {
 
 async function handleReceiptMessage(
   envelope: EnvelopePlus,
-  receiptMessage: SignalService.IReceiptMessage
+  receiptMessage: SessionProtos.IReceiptMessage
 ) {
-  const receipt = receiptMessage as SignalService.ReceiptMessage;
+  const receipt = receiptMessage as SessionProtos.ReceiptMessage;
 
   const { type, timestamp } = receipt;
 
   const results = [];
-  if (type === SignalService.ReceiptMessage.Type.DELIVERY) {
+  if (type === SessionProtos.ReceiptMessage.Type.DELIVERY) {
     for (const ts of timestamp) {
       const promise = onDeliveryReceipt(envelope.source, Lodash.toNumber(ts));
       results.push(promise);
     }
-  } else if (type === SignalService.ReceiptMessage.Type.READ) {
+  } else if (type === SessionProtos.ReceiptMessage.Type.READ) {
     for (const ts of timestamp) {
       const promise = onReadReceipt(
         Lodash.toNumber(envelope.timestamp),
@@ -422,11 +421,11 @@ async function handleReceiptMessage(
 
 async function handleTypingMessage(
   envelope: EnvelopePlus,
-  iTypingMessage: SignalService.ITypingMessage
+  iTypingMessage: SessionProtos.ITypingMessage
 ): Promise<void> {
   const ev = new Event('typing');
 
-  const typingMessage = iTypingMessage as SignalService.TypingMessage;
+  const typingMessage = iTypingMessage as SessionProtos.TypingMessage;
 
   const { timestamp, action } = typingMessage;
   const { source } = envelope;
@@ -453,7 +452,7 @@ async function handleTypingMessage(
   // typing message are only working with direct chats/ not groups
   const conversation = ConversationController.getInstance().get(source);
 
-  const started = action === SignalService.TypingMessage.Action.STARTED;
+  const started = action === SessionProtos.TypingMessage.Action.STARTED;
 
   if (conversation) {
     await conversation.notifyTyping({

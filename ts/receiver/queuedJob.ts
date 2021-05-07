@@ -3,7 +3,7 @@ import { queueAttachmentDownloads } from './attachments';
 import { Quote } from './types';
 import { PubKey } from '../session/types';
 import _ from 'lodash';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { StringUtils, UserUtils } from '../session/utils';
 import { ConversationController } from '../session/conversations';
 import { ConversationModel, ConversationTypeEnum } from '../models/conversation';
@@ -19,7 +19,7 @@ async function handleGroups(
   group: any,
   source: any
 ): Promise<any> {
-  const GROUP_TYPES = SignalService.GroupContext.Type;
+  const GROUP_TYPES = SessionProtos.GroupContext.Type;
 
   let groupUpdate = null;
 

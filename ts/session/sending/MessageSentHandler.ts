@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { getMessageById } from '../../data/data';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import { MessageController } from '../messages';
 import { OpenGroupMessage } from '../messages/outgoing';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
@@ -74,7 +74,7 @@ export class MessageSentHandler {
     // and the current message was sent to our device (so a sync message)
     const shouldMarkMessageAsSynced = isOurDevice && fetchedMessage.get('sentSync');
 
-    const contentDecoded = SignalService.Content.decode(sentMessage.plainTextBuffer);
+    const contentDecoded = SessionProtos.Content.decode(sentMessage.plainTextBuffer);
     const { dataMessage } = contentDecoded;
 
     /**
@@ -106,7 +106,7 @@ export class MessageSentHandler {
       if (dataMessage) {
         try {
           await fetchedMessage.sendSyncMessage(
-            dataMessage as SignalService.DataMessage,
+            dataMessage as SessionProtos.DataMessage,
             sentMessage.timestamp
           );
         } catch (e) {

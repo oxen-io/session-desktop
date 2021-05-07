@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { toNumber } from 'lodash';
 import { Constants } from '../../../../session';
 import { DeliveryReceiptMessage } from '../../../../session/messages/outgoing/controlMessage/receipt/DeliveryReceiptMessage';
@@ -21,7 +21,7 @@ describe('ReceiptMessage', () => {
 
   it('content of a read receipt is correct', () => {
     const plainText = readMessage.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
 
     expect(decoded.receiptMessage).to.have.property('type', 1);
     const decodedTimestamps = (decoded.receiptMessage?.timestamp ?? []).map(toNumber);
@@ -30,7 +30,7 @@ describe('ReceiptMessage', () => {
 
   it('content of a delivery receipt is correct', () => {
     const plainText = deliveryMessage.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
 
     expect(decoded.receiptMessage).to.have.property('type', 0);
     const decodedTimestamps = (decoded.receiptMessage?.timestamp ?? []).map(toNumber);

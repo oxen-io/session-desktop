@@ -24,7 +24,7 @@ import {
 
 import { getEnvelopeId } from './common';
 import { StringUtils, UserUtils } from '../session/utils';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { ConversationController } from '../session/conversations';
 import { removeUnprocessed } from '../data/data';
 import { ConversationTypeEnum } from '../models/conversation';
@@ -111,7 +111,7 @@ async function handleRequestDetail(
   options: ReqOptions,
   lastPromise: Promise<any>
 ): Promise<void> {
-  const envelope: any = SignalService.Envelope.decode(plaintext);
+  const envelope: any = SessionProtos.Envelope.decode(plaintext);
 
   // After this point, decoding errors are not the server's
   //   fault, and we should handle them gracefully and tell the
@@ -130,7 +130,7 @@ async function handleRequestDetail(
     // plaintext (and protobuf.Envelope) does not have that field...
     envelope.source = options.conversationId;
     // tslint:disable-next-line no-parameter-reassignment
-    plaintext = SignalService.Envelope.encode(envelope).finish();
+    plaintext = SessionProtos.Envelope.encode(envelope).finish();
     envelope.senderIdentity = senderIdentity;
   }
 
@@ -202,7 +202,7 @@ async function queueCached(item: any) {
     const envelopePlaintext = StringUtils.encode(item.envelope, 'base64');
     const envelopeArray = new Uint8Array(envelopePlaintext);
 
-    const envelope: any = SignalService.Envelope.decode(envelopeArray);
+    const envelope: any = SessionProtos.Envelope.decode(envelopeArray);
     envelope.id = envelope.serverGuid || item.id;
     envelope.source = envelope.source || item.source;
 
@@ -319,7 +319,7 @@ export async function handleOpenGroupV2Message(
   // Note: opengroup messages are not padded
   const dataUint = new Uint8Array(removeMessagePadding(fromBase64ToArray(base64EncodedData)));
 
-  const decoded = SignalService.Content.decode(dataUint);
+  const decoded = SessionProtos.Content.decode(dataUint);
 
   const conversationId = getOpenGroupV2ConversationId(serverUrl, roomId);
   if (!conversationId) {

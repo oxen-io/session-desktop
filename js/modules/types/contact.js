@@ -1,9 +1,9 @@
 const { omit, compact, map } = require('lodash');
 
 const { toLogFormat } = require('./errors');
-const { SignalService } = require('../../../ts/protobuf');
+const { SessionProtos } = require('../../../ts/protobuf');
 
-const DEFAULT_PHONE_TYPE = SignalService.DataMessage.Contact.Phone.Type.HOME;
+const DEFAULT_PHONE_TYPE = SessionProtos.DataMessage.Contact.Phone.Type.HOME;
 
 exports.parseAndWriteAvatar = upgradeAttachment => async (contact, context = {}) => {
   const { message, logger } = context;

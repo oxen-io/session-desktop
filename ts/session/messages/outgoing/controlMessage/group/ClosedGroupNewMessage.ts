@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { ClosedGroupMessage, ClosedGroupMessageParams } from './ClosedGroupMessage';
 import { fromHexToArray } from '../../../../utils/String';
 import { ECKeyPair } from '../../../../../receiver/keypairs';
@@ -49,22 +49,22 @@ export class ClosedGroupNewMessage extends ClosedGroupMessage {
     }
   }
 
-  public dataProto(): SignalService.DataMessage {
-    const dataMessage = new SignalService.DataMessage();
+  public dataProto(): SessionProtos.DataMessage {
+    const dataMessage = new SessionProtos.DataMessage();
 
     dataMessage.expireTimer = this.expireTimer;
 
-    dataMessage.closedGroupControlMessage = new SignalService.DataMessage.ClosedGroupControlMessage();
+    dataMessage.closedGroupControlMessage = new SessionProtos.DataMessage.ClosedGroupControlMessage();
 
     dataMessage.closedGroupControlMessage.type =
-      SignalService.DataMessage.ClosedGroupControlMessage.Type.NEW;
+      SessionProtos.DataMessage.ClosedGroupControlMessage.Type.NEW;
     dataMessage.closedGroupControlMessage.publicKey = fromHexToArray(this.groupId.key);
     dataMessage.closedGroupControlMessage.name = this.name;
 
     dataMessage.closedGroupControlMessage.admins = this.admins.map(fromHexToArray);
     dataMessage.closedGroupControlMessage.members = this.members.map(fromHexToArray);
     try {
-      dataMessage.closedGroupControlMessage.encryptionKeyPair = new SignalService.KeyPair();
+      dataMessage.closedGroupControlMessage.encryptionKeyPair = new SessionProtos.KeyPair();
       dataMessage.closedGroupControlMessage.encryptionKeyPair.privateKey = new Uint8Array(
         this.keypair.privateKeyData
       );

@@ -8,7 +8,7 @@ import { UserUtils } from '../session/utils';
 import { BlockedNumberController } from '../util';
 import { MessageController } from '../session/messages';
 import { leaveClosedGroup } from '../session/group';
-import { SignalService } from '../protobuf';
+import { SessionProtos } from '../protobuf';
 import { MessageModel } from './message';
 import { MessageAttributesOptionals, MessageModelType } from './messageType';
 import autoBind from 'auto-bind';
@@ -872,7 +872,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       // No type; 'incoming' messages are specially treated by conversation.markRead()
       sent_at: timestamp,
       received_at: timestamp,
-      flags: SignalService.DataMessage.Flags.EXPIRATION_TIMER_UPDATE,
+      flags: SessionProtos.DataMessage.Flags.EXPIRATION_TIMER_UPDATE,
       expirationTimerUpdate: {
         expireTimer,
         source,

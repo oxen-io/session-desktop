@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 // tslint:disable-next-line: match-default-export-name
 import filesize from 'filesize';
 import _ from 'lodash';
-import { SignalService } from '../../ts/protobuf';
+import { SessionProtos } from '../../ts/protobuf';
 import { getMessageQueue, Utils } from '../../ts/session';
 import { ConversationController } from '../../ts/session/conversations';
 import { MessageController } from '../../ts/session/messages';
@@ -88,7 +88,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   }
 
   public isExpirationTimerUpdate() {
-    const expirationTimerFlag = SignalService.DataMessage.Flags.EXPIRATION_TIMER_UPDATE;
+    const expirationTimerFlag = SessionProtos.DataMessage.Flags.EXPIRATION_TIMER_UPDATE;
     const flags = this.get('flags');
     if (!flags) {
       return false;
@@ -624,7 +624,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         flags &&
         // eslint-disable-next-line no-bitwise
         // tslint:disable-next-line: no-bitwise
-        flags & SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+        flags & SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
       pending,
       url: path ? window.Signal.Migrations.getAbsoluteAttachmentPath(path) : null,
       screenshot: screenshot
@@ -758,16 +758,15 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       linkPreviewPromise = uploadLinkPreviewsV2(previewWithData, openGroupV2);
       quotePromise = uploadQuoteThumbnailsV2(openGroupV2, quoteWithData);
     } else {
-      // NOTE: we want to go for the v1 if this is an OpenGroupV1 or not an open group at all
-      // because there is a fallback invoked on uploadV1() for attachments for not open groups attachments
-
-      const openGroupV1 = conversation?.isOpenGroupV1() ? conversation?.toOpenGroupV1() : undefined;
-      attachmentPromise = AttachmentUtils.uploadAttachmentsV1(
-        filenameOverridenAttachments,
-        openGroupV1
-      );
-      linkPreviewPromise = AttachmentUtils.uploadLinkPreviewsV1(previewWithData, openGroupV1);
-      quotePromise = AttachmentUtils.uploadQuoteThumbnailsV1(quoteWithData, openGroupV1);
+      // we don't support opengroupv1 anymore
+      const openGroupV1 = conversation?.isOpenGroupV1();
+      if (openGroupV1) {
+        window.log.warn('Open groupV1 are not supported anymore');
+        throw new Error('Open group v1 are not supported anymore');
+      }
+      attachmentPromise = AttachmentUtils.uploadAttachments(filenameOverridenAttachments);
+      linkPreviewPromise = AttachmentUtils.uploadLinkPreviews(previewWithData);
+      quotePromise = AttachmentUtils.uploadQuoteThumbnails(quoteWithData);
     }
 
     const [attachments, preview, quote] = await Promise.all([
@@ -953,7 +952,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     await this.sendSyncMessage(data, now);
   }
 
-  public async sendSyncMessage(dataMessage: SignalService.DataMessage, sentTimestamp: number) {
+  public async sendSyncMessage(dataMessage: SessionProtos.DataMessage, sentTimestamp: number) {
     if (this.get('synced') || this.get('sentSync')) {
       return;
     }
@@ -962,7 +961,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (
       (dataMessage.body && dataMessage.body.length) ||
       dataMessage.attachments.length ||
-      dataMessage.flags === SignalService.DataMessage.Flags.EXPIRATION_TIMER_UPDATE
+      dataMessage.flags === SessionProtos.DataMessage.Flags.EXPIRATION_TIMER_UPDATE
     ) {
       const conversation = this.getConversation();
       if (!conversation) {

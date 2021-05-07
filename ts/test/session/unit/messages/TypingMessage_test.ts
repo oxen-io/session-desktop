@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import Long from 'long';
 import { toNumber } from 'lodash';
 import { Constants } from '../../../../session';
@@ -13,10 +13,10 @@ describe('TypingMessage', () => {
       isTyping: true,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.typingMessage).to.have.property(
       'action',
-      SignalService.TypingMessage.Action.STARTED
+      SessionProtos.TypingMessage.Action.STARTED
     );
   });
 
@@ -26,10 +26,10 @@ describe('TypingMessage', () => {
       isTyping: false,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     expect(decoded.typingMessage).to.have.property(
       'action',
-      SignalService.TypingMessage.Action.STOPPED
+      SessionProtos.TypingMessage.Action.STOPPED
     );
   });
 
@@ -40,7 +40,7 @@ describe('TypingMessage', () => {
       typingTimestamp: 111111111,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     const decodedtimestamp = toNumber(decoded.typingMessage?.timestamp);
     expect(decodedtimestamp).to.be.equal(111111111);
   });
@@ -51,7 +51,7 @@ describe('TypingMessage', () => {
       isTyping: true,
     });
     const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
+    const decoded = SessionProtos.Content.decode(plainText);
     let timestamp = decoded.typingMessage?.timestamp;
     if (timestamp instanceof Long) {
       timestamp = timestamp.toNumber();

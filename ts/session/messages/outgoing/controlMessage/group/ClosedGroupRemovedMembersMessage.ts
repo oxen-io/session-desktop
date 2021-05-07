@@ -1,5 +1,5 @@
 import { Constants } from '../../../..';
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { fromHexToArray } from '../../../../utils/String';
 import { ClosedGroupMessage, ClosedGroupMessageParams } from './ClosedGroupMessage';
 
@@ -23,12 +23,12 @@ export class ClosedGroupRemovedMembersMessage extends ClosedGroupMessage {
     }
   }
 
-  public dataProto(): SignalService.DataMessage {
+  public dataProto(): SessionProtos.DataMessage {
     const dataMessage = super.dataProto();
 
     // tslint:disable: no-non-null-assertion
     dataMessage.closedGroupControlMessage!.type =
-      SignalService.DataMessage.ClosedGroupControlMessage.Type.MEMBERS_REMOVED;
+      SessionProtos.DataMessage.ClosedGroupControlMessage.Type.MEMBERS_REMOVED;
     dataMessage.closedGroupControlMessage!.members = this.removedMembers.map(fromHexToArray);
 
     return dataMessage;

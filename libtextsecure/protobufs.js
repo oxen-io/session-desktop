@@ -16,7 +16,7 @@
           window.log.error(text);
           throw error;
         }
-        const protos = result.build('signalservice');
+        const protos = result.build('SessionProtos');
         if (!protos) {
           const text = `Error loading protos from ${filename} (root: ${window.PROTO_ROOT})`;
           window.log.error(text);
@@ -31,7 +31,7 @@
   }
 
   // this is all the Session Protocols
-  loadProtoBufs('SignalService.proto');
+  loadProtoBufs('SessionProtos.proto');
   // this is for websocket wrapping of messages
   loadProtoBufs('SubProtocol.proto');
 })();

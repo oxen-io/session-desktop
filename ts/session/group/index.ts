@@ -12,7 +12,7 @@ import {
   removeAllClosedGroupEncryptionKeyPairs,
 } from '../../../ts/data/data';
 import uuid from 'uuid';
-import { SignalService } from '../../protobuf';
+import { SessionProtos } from '../../protobuf';
 import { generateCurve25519KeyPairWithoutPrefix } from '../crypto';
 import { encryptUsingSessionProtocol } from '../crypto/MessageEncrypter';
 import { ECKeyPair } from '../../receiver/keypairs';
@@ -546,16 +546,16 @@ export async function buildEncryptionKeyPairWrappers(
     throw new Error('buildEncryptionKeyPairWrappers() needs a valid encryptionKeyPair set');
   }
 
-  const proto = new SignalService.KeyPair({
+  const proto = new SessionProtos.KeyPair({
     privateKey: encryptionKeyPair?.privateKeyData,
     publicKey: encryptionKeyPair?.publicKeyData,
   });
-  const plaintext = SignalService.KeyPair.encode(proto).finish();
+  const plaintext = SessionProtos.KeyPair.encode(proto).finish();
 
   const wrappers = await Promise.all(
     targetMembers.map(async pubkey => {
       const ciphertext = await encryptUsingSessionProtocol(PubKey.cast(pubkey), plaintext);
-      return new SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
+      return new SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
         encryptedKeyPair: ciphertext,
         publicKey: fromHexToArray(pubkey),
       });

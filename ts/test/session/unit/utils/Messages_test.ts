@@ -14,7 +14,7 @@ import { ConversationModel, ConversationTypeEnum } from '../../../../models/conv
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised as any);
 import { ClosedGroupEncryptionPairReplyMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { ClosedGroupAddedMembersMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupAddedMembersMessage';
 import { ClosedGroupEncryptionPairMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairMessage';
 import { ClosedGroupNameChangeMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupNameChangeMessage';
@@ -167,10 +167,10 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
 
       const fakeWrappers = new Array<
-        SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
+        SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
       >();
       fakeWrappers.push(
-        new SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
+        new SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
           publicKey: new Uint8Array(8),
           encryptedKeyPair: new Uint8Array(8),
         })
@@ -189,10 +189,10 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
 
       const fakeWrappers = new Array<
-        SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
+        SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper
       >();
       fakeWrappers.push(
-        new SignalService.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
+        new SessionProtos.DataMessage.ClosedGroupControlMessage.KeyPairWrapper({
           publicKey: new Uint8Array(8),
           encryptedKeyPair: new Uint8Array(8),
         })

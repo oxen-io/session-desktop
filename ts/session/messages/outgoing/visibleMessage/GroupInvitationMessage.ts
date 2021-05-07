@@ -1,6 +1,6 @@
 import { DataMessage } from '..';
 import { Constants } from '../../..';
-import { SignalService } from '../../../../protobuf';
+import { SessionProtos } from '../../../../protobuf';
 import { MessageParams } from '../Message';
 
 interface GroupInvitationMessageParams extends MessageParams {
@@ -26,14 +26,14 @@ export class GroupInvitationMessage extends DataMessage {
     this.expireTimer = params.expireTimer;
   }
 
-  public dataProto(): SignalService.DataMessage {
-    const groupInvitation = new SignalService.DataMessage.GroupInvitation({
+  public dataProto(): SessionProtos.DataMessage {
+    const groupInvitation = new SessionProtos.DataMessage.GroupInvitation({
       serverAddress: this.serverAddress,
       channelId: this.channelId,
       serverName: this.serverName,
     });
 
-    return new SignalService.DataMessage({
+    return new SessionProtos.DataMessage({
       groupInvitation,
       expireTimer: this.expireTimer,
     });

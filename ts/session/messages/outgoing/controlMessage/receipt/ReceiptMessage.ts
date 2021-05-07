@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../../protobuf';
+import { SessionProtos } from '../../../../../protobuf';
 import { MessageParams } from '../../Message';
 import { Constants } from '../../../..';
 import { ContentMessage } from '../..';
@@ -14,16 +14,16 @@ export abstract class ReceiptMessage extends ContentMessage {
     this.timestamps = timestamps;
   }
 
-  public abstract getReceiptType(): SignalService.ReceiptMessage.Type;
+  public abstract getReceiptType(): SessionProtos.ReceiptMessage.Type;
 
-  public contentProto(): SignalService.Content {
-    return new SignalService.Content({
+  public contentProto(): SessionProtos.Content {
+    return new SessionProtos.Content({
       receiptMessage: this.receiptProto(),
     });
   }
 
-  protected receiptProto(): SignalService.ReceiptMessage {
-    return new SignalService.ReceiptMessage({
+  protected receiptProto(): SessionProtos.ReceiptMessage {
+    return new SessionProtos.ReceiptMessage({
       type: this.getReceiptType(),
       timestamp: this.timestamps,
     });

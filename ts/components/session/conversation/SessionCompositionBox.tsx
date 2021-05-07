@@ -8,7 +8,7 @@ import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import { SessionEmojiPanel } from './SessionEmojiPanel';
 import { SessionRecording } from './SessionRecording';
 
-import { SignalService } from '../../../protobuf';
+import { SessionProtos } from '../../../protobuf';
 
 import { Constants } from '../../../session';
 
@@ -840,7 +840,7 @@ export class SessionCompositionBox extends React.Component<Props, State> {
 
     const audioAttachment: Attachment = {
       data: fileBuffer,
-      flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+      flags: SessionProtos.AttachmentPointer.Flags.VOICE_MESSAGE,
       contentType: MIME.AUDIO_MP3,
       size: audioBlob.size,
     };
