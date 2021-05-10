@@ -1517,7 +1517,7 @@
         "description": "Conversation menu option to change user nickname"
     },
     "clearNickname": {
-        "message": "Clear nickname",
+        "message": "Clear Nickname",
         "description": "Conversation menu option to clear user nickname"
     },
     "themeToggleDescription": {
