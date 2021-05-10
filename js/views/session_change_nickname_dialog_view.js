@@ -7,7 +7,7 @@
   window.Whisper = window.Whisper || {};
 
   Whisper.SessionNicknameDialog = Whisper.View.extend({
-    className: 'loki-dialog session-nickname-wrapper',
+    className: 'loki-dialog session-nickname-wrapper modal',
     initialize(options) {
       this.props = {
         title: options.title,
@@ -53,19 +53,17 @@
       this.remove();
     },
     cancel() {
-      this.$('.session-nickname-wrapper').remove();
+      this.remove();
       this.unregisterEvents();
       if (this.props.reject) {
         this.props.reject();
       }
     }, 
     ok() {
-      this.$('.session-nickname-wrapper').remove();
-      console.log('ok method called');
+      this.remove();
       this.unregisterEvents();
 
       if (this.props.resolve) {
-        console.log('resolving nickname');
         this.props.resolve();
       }
     },

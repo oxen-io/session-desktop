@@ -1316,9 +1316,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       message: window.i18n('changeNicknameMessage') || '',
       placeholder: window.i18n('nicknamePlaceholder') || '',
       convoId: this.id,
-      resolve: (x: any) => {
-        // TODO: replace with conversation setting logic... I think?
-      },
     });
   }
 
