@@ -154,16 +154,16 @@ export class SessionCompositionBox extends React.Component<Props, State> {
   public componentDidMount() {
     setTimeout(this.focusCompositionBox, 100);
 
-    const div = this.container
-    div?.addEventListener("paste", this.handlePaste) 
+    const div = this.container;
+    div?.addEventListener('paste', this.handlePaste);
   }
 
   public componentWillUnmount() {
     this.abortLinkPreviewFetch();
     this.linkPreviewAbortController = undefined;
 
-    const div = this.container
-    div?.removeEventListener("paste", this.handlePaste) 
+    const div = this.container;
+    div?.removeEventListener('paste', this.handlePaste);
   }
 
   public componentDidUpdate(prevProps: Props, _prevState: State) {
@@ -203,15 +203,15 @@ export class SessionCompositionBox extends React.Component<Props, State> {
   private handlePaste(e: any) {
     const { items } = e.clipboardData;
     let imgBlob = null;
-    for (let i = 0; i < items.length; i += 1) {
-      if (items[i].type.split('/')[0] === 'image') {
-        imgBlob = items[i].getAsFile();
+    for (const item of items.length) {
+      if (item.type.split('/')[0] === 'image') {
+        imgBlob = item.getAsFile();
       }
     }
     if (imgBlob !== null) {
       const file = imgBlob;
-      window.log.info("Adding attachment from clipboard", file)
-      void this.props.onChoseAttachments([file]);
+      window.log.info('Adding attachment from clipboard', file);
+      this.props.onChoseAttachments([file]);
 
       e.preventDefault();
       e.stopPropagation();
