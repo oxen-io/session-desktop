@@ -422,10 +422,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       onUnblockContact: this.unblock,
       onCopyPublicKey: this.copyPublicKey,
       onDeleteContact: this.deleteContact,
+      onChangeNickname: this.changeNickname,
+      onDeleteMessages: this.deleteMessages,
       onLeaveGroup: () => {
         window.Whisper.events.trigger('leaveClosedGroup', this);
       },
-      onDeleteMessages: this.deleteMessages,
       onInviteContacts: () => {
         window.Whisper.events.trigger('inviteContacts', this);
       },
@@ -433,9 +434,8 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         void this.markReadBouncy(Date.now());
       },
       onClearNickname: () => {
-        void this.setLokiProfile({ displayName: null });
+        void this.setNickname('');
       },
-      onChangeNickname: () => this.changeNickname
     };
   }
 
