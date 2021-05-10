@@ -20,12 +20,12 @@ function showBlock(isMe: boolean, isPrivate: boolean): boolean {
   return !isMe && isPrivate;
 }
 
-function showClearNickname(isPublic: boolean, isMe: boolean, hasNickname: boolean): boolean {
-  return !isPublic && !isMe && hasNickname;
+function showClearNickname(isPublic: boolean, isMe: boolean, hasNickname: boolean, isGroup: boolean): boolean {
+  return !isPublic && !isMe && hasNickname && !isGroup;
 }
 
-function showChangeNickname(isPublic: boolean, isMe: boolean) {
-  return !isPublic && !isMe;
+function showChangeNickname(isPublic: boolean, isMe: boolean, isGroup: boolean) {
+  return !isPublic && !isMe && !isGroup;
 }
 
 function showDeleteMessages(isPublic: boolean): boolean {
@@ -260,9 +260,10 @@ export function getClearNicknameMenuItem(
   isMe: boolean | undefined,
   hasNickname: boolean | undefined,
   action: any,
+  isGroup: boolean | undefined,
   i18n: LocalizerType
 ): JSX.Element | null {
-  if (showClearNickname(Boolean(isPublic), Boolean(isMe), Boolean(hasNickname))) {
+  if (showClearNickname(Boolean(isPublic), Boolean(isMe), Boolean(hasNickname), Boolean(isGroup))) {
     return <Item onClick={action}>{i18n('clearNickname')}</Item>;
   }
   return null;
@@ -272,9 +273,10 @@ export function getChangeNicknameMenuItem(
   isPublic: boolean | undefined,
   isMe: boolean | undefined,
   action: any,
+  isGroup: boolean | undefined,
   i18n: LocalizerType
 ): JSX.Element | null {
-  if (showChangeNickname(Boolean(isPublic), Boolean(isMe))) {
+  if (showChangeNickname(Boolean(isPublic), Boolean(isMe), Boolean(isGroup))) {
     return <Item onClick={action}>{i18n('changeNickname')}</Item>
   }
   return null;

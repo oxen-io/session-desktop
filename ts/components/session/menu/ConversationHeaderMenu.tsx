@@ -92,8 +92,8 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
 
       {getCopyMenuItem(isPublic, isGroup, onCopyPublicKey, window.i18n)}
       {getMarkAllReadMenuItem(onMarkAllRead, window.i18n)}
-      {getChangeNicknameMenuItem(isPublic, isMe,  onChangeNickname, window.i18n)}
-      {getClearNicknameMenuItem(isPublic, isMe, hasNickname,  onClearNickname, window.i18n)}
+      {getChangeNicknameMenuItem(isPublic, isMe,  onChangeNickname, isGroup, window.i18n)}
+      {getClearNicknameMenuItem(isPublic, isMe, hasNickname,  onClearNickname, isGroup, window.i18n)}
       {getDeleteMessagesMenuItem(isPublic, onDeleteMessages, window.i18n)}
       {getAddModeratorsMenuItem(isAdmin, isKickedFromGroup, onAddModerators, window.i18n)}
       {getRemoveModeratorsMenuItem(isAdmin, isKickedFromGroup, onRemoveModerators, window.i18n)}
