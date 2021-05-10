@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ConversationController } from "../../session/conversations/ConversationController";
 import { SessionModal } from './SessionModal';
 import { SessionButton, SessionButtonColor } from './SessionButton';
 import { SessionHtmlRenderer } from './SessionHTMLRenderer';
@@ -21,6 +22,7 @@ type Props = {
   sessionIcon?: SessionIconType;
   iconSize?: SessionIconSize;
   theme: DefaultTheme;
+  convoId?: any
 };
 
 const SessionNicknameInner = (props: Props) => {
@@ -35,13 +37,46 @@ const SessionNicknameInner = (props: Props) => {
     hideCancel = false,
     sessionIcon,
     iconSize,
+    convoId
   } = props;
 
   const okText = props.okText || window.i18n('ok');
   const cancelText = props.cancelText || window.i18n('cancel');
   const showHeader = !!props.title;
 
+  const [nickname, setNickname] = useState('');
+
   const messageSubText = messageSub ? 'session-confirm-main-message' : 'subtle';
+
+  /**
+   * Changes the state of nickname variable. If enter is pressed, saves the current
+   * entered nickname value as the nickname.
+   */
+  const onNicknameInput = async (event: any) => {
+    if (event.key === 'Enter') {
+      saveNickname();
+    }
+    const currentNicknameEntered = event.target.value;
+    setNickname(currentNicknameEntered);
+  }
+
+  /**
+   * Saves the currently entered nickname. 
+   */
+  const saveNickname = async () => {
+    const convo = await ConversationController.getInstance().get(convoId);
+    // .getOrCreateAndWait(
+      // message.get('source'),
+      // ConversationTypeEnum.PRIVATE
+    // );
+    console.log({convoId});
+    onClickOk(nickname);
+
+    convo.setNickname(nickname);
+    convo.commit();
+  }
+
+  console.log(`nickname is ${nickname} on this render`);
 
   return (
     <SessionModal
@@ -69,8 +104,23 @@ const SessionNicknameInner = (props: Props) => {
         />
       </div>
 
+      <input
+        type="nickname"
+        id="nickname-modal-input"
+        // ww TODO: is this needed?
+        ref={input => {
+          // TODO: remove
+          console.log('input ref called');
+        }}
+        // ww TODO: change to internationalized input
+        placeholder="Enter a nickname"
+        onKeyUp={e => { onNicknameInput(e) }}
+      />
+
       <div className="session-modal__button-group">
-        <SessionButton text={okText + "test"} buttonColor={okTheme} onClick={onClickOk} />
+        <SessionButton text={okText + " test"} buttonColor={okTheme} onClick={saveNickname} />
+          {/* // TODO: Alter to allow to take onClick function like below rather than hard reference in the component 
+        <SessionButton text={okText + " test"} buttonColor={okTheme} onClick={onClickOk} /> */}
 
         {!hideCancel && (
           <SessionButton text={cancelText} buttonColor={closeTheme} onClick={onClickClose} />

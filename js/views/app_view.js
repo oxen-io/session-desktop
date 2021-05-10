@@ -119,10 +119,16 @@
       const dialog = new Whisper.EditProfileDialogView(options);
       this.el.prepend(dialog.el);
     },
-    showNicknameDialog() {
+    showNicknameDialog(options) {
       // eslint-disable-next-line no-param-reassign
+      let { title, message, resolve, reject, convoId } = options;
       const theme = this.getThemeObject();
-      const dialog = new Whisper.SessionNicknameDialog({ theme })
+      let options2 = { title, message, resolve, reject, theme, convoId };
+      
+      // TODO: clean and find which props causing recursive append. 
+
+      // const dialog = new Whisper.SessionNicknameDialog({ theme })
+      const dialog = new Whisper.SessionNicknameDialog(options2);
       this.el.prepend(dialog.el);
     },
     showResetSessionIdDialog() {

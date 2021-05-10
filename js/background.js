@@ -386,7 +386,7 @@
     window.showNicknameDialog = params => {
       const options = {
         el: $('body'),
-        title: params.title,
+        'title': params.title + "",
         message: params.message,
         messageSub: params.messageSub || undefined,
         resolve: params.resolve || undefined,
@@ -398,7 +398,9 @@
         hideCancel: params.hideCancel || false,
         sessionIcon: params.sessionIcon || undefined,
         iconSize: params.iconSize || undefined,
+        convoId: params.convoId
       };
+
 
       if (appView) {
         appView.showNicknameDialog(options);

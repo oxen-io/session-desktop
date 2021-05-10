@@ -1318,8 +1318,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     window.showNicknameDialog({
       title: 'change nickname',
       message: 'enter nickname',
-      resolve: () => {
-        void ConversationController.getInstance().deleteContact(this.id);
+      convoId: this.id,
+      resolve: (x: any) => {
+        // TODO: replace with conversation setting logic... I think?
+        console.log(x,'from conversation.ts');
+        console.log('Change nickname resolved')
+        console.log({x});
+        // void ConversationController.getInstance().deleteContact(this.id);
       },
     });
   }
