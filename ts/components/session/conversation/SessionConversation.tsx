@@ -408,7 +408,12 @@ export class SessionConversation extends React.Component<Props, State> {
 
       onChangeNickname: () => {
         conversation.changeNickname();
+      },
+
+      onClearNickname: () => {
+        conversation.clearNickname();
       }
+
     };
 
     return headerProps;

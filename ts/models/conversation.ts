@@ -423,6 +423,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       onCopyPublicKey: this.copyPublicKey,
       onDeleteContact: this.deleteContact,
       onChangeNickname: this.changeNickname,
+      onClearNickname: this.clearNickname,
       onDeleteMessages: this.deleteMessages,
       onLeaveGroup: () => {
         window.Whisper.events.trigger('leaveClosedGroup', this);
@@ -432,9 +433,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       },
       onMarkAllRead: () => {
         void this.markReadBouncy(Date.now());
-      },
-      onClearNickname: () => {
-        void this.setNickname('');
       },
     };
   }
@@ -532,9 +530,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
               fileName: fileName || null,
               thumbnail: thumbnail
                 ? {
-                    ...(await loadAttachmentData(thumbnail)),
-                    objectUrl: getAbsoluteAttachmentPath(thumbnail.path),
-                  }
+                  ...(await loadAttachmentData(thumbnail)),
+                  objectUrl: getAbsoluteAttachmentPath(thumbnail.path),
+                }
                 : null,
             };
           })
@@ -557,9 +555,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
               fileName: null,
               thumbnail: image
                 ? {
-                    ...(await loadAttachmentData(image)),
-                    objectUrl: getAbsoluteAttachmentPath(image.path),
-                  }
+                  ...(await loadAttachmentData(image)),
+                  objectUrl: getAbsoluteAttachmentPath(image.path),
+                }
                 : null,
             };
           })
@@ -1310,23 +1308,22 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public changeNickname() {
-    // throw new Error('changeNickname todo');
-    console.warn('Change nickname called.');
     if (this.isPublic()) {
       throw new Error('Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.');
-    } 
+    }
     window.showNicknameDialog({
-      title: 'change nickname',
-      message: 'enter nickname',
+      title: window.i18n('changeNickname') || 'Change Nickname',
+      message: window.i18n('changeNicknameMessage') || '',
+      placeholder: window.i18n('nicknamePlaceholder') || '',
       convoId: this.id,
       resolve: (x: any) => {
         // TODO: replace with conversation setting logic... I think?
-        console.log(x,'from conversation.ts');
-        console.log('Change nickname resolved')
-        console.log({x});
-        // void ConversationController.getInstance().deleteContact(this.id);
       },
     });
+  }
+
+  public clearNickname = () => {
+    void this.setNickname('');
   }
 
   public deleteContact() {

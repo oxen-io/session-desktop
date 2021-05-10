@@ -24,8 +24,8 @@
         hideCancel: options.hideCancel,
         sessionIcon: options.sessionIcon,
         iconSize: options.iconSize,
-        convoId: options.convoId
-
+        convoId: options.convoId,
+        placeholder: options.placeholder
       };
       this.render();
     },

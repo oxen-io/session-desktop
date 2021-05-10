@@ -10,6 +10,7 @@ type Props = {
   message: string;
   messageSub: string;
   title: string;
+  placeholder?: string;
   onOk?: any;
   onClose?: any;
   onClickOk: any;
@@ -22,7 +23,7 @@ type Props = {
   sessionIcon?: SessionIconType;
   iconSize?: SessionIconSize;
   theme: DefaultTheme;
-  convoId?: any
+  convoId?: string,
 };
 
 const SessionNicknameInner = (props: Props) => {
@@ -37,7 +38,8 @@ const SessionNicknameInner = (props: Props) => {
     hideCancel = false,
     sessionIcon,
     iconSize,
-    convoId
+    convoId,
+    placeholder
   } = props;
 
   const okText = props.okText || window.i18n('ok');
@@ -64,19 +66,14 @@ const SessionNicknameInner = (props: Props) => {
    * Saves the currently entered nickname. 
    */
   const saveNickname = async () => {
+    if (!convoId) {
+      return;
+    }
     const convo = await ConversationController.getInstance().get(convoId);
-    // .getOrCreateAndWait(
-      // message.get('source'),
-      // ConversationTypeEnum.PRIVATE
-    // );
-    console.log({convoId});
     onClickOk(nickname);
-
     convo.setNickname(nickname);
     convo.commit();
   }
-
-  console.log(`nickname is ${nickname} on this render`);
 
   return (
     <SessionModal
@@ -107,20 +104,12 @@ const SessionNicknameInner = (props: Props) => {
       <input
         type="nickname"
         id="nickname-modal-input"
-        // ww TODO: is this needed?
-        ref={input => {
-          // TODO: remove
-          console.log('input ref called');
-        }}
-        // ww TODO: change to internationalized input
-        placeholder="Enter a nickname"
+        placeholder={placeholder || "Enter a nickname"}
         onKeyUp={e => { onNicknameInput(e) }}
       />
 
       <div className="session-modal__button-group">
-        <SessionButton text={okText + " test"} buttonColor={okTheme} onClick={saveNickname} />
-          {/* // TODO: Alter to allow to take onClick function like below rather than hard reference in the component 
-        <SessionButton text={okText + " test"} buttonColor={okTheme} onClick={onClickOk} /> */}
+        <SessionButton text={okText} buttonColor={okTheme} onClick={saveNickname} />
 
         {!hideCancel && (
           <SessionButton text={cancelText} buttonColor={closeTheme} onClick={onClickClose} />

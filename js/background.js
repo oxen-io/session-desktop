@@ -388,6 +388,7 @@
         el: $('body'),
         'title': params.title + "",
         message: params.message,
+        placeholder: params.placeholder,
         messageSub: params.messageSub || undefined,
         resolve: params.resolve || undefined,
         reject: params.reject || undefined,
