@@ -385,7 +385,7 @@
 
     window.showNicknameDialog = params => {
       const options = {
-        title: params.title + '',
+        title: params.title || undefined,
         message: params.message,
         placeholder: params.placeholder,
         messageSub: params.messageSub || undefined,

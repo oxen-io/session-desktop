@@ -3,6 +3,8 @@ import { animation, Menu } from 'react-contexify';
 import {
   getAddModeratorsMenuItem,
   getBlockMenuItem,
+  getChangeNicknameMenuItem,
+  getClearNicknameMenuItem,
   getCopyMenuItem,
   getDeleteContactMenuItem,
   getDeleteMessagesMenuItem,
@@ -12,8 +14,6 @@ import {
   getMarkAllReadMenuItem,
   getRemoveModeratorsMenuItem,
   getUpdateGroupNameMenuItem,
-  getChangeNicknameMenuItem,
-  getClearNicknameMenuItem,
 } from './Menu';
 import { TimerOption } from '../../conversation/ConversationHeader';
 

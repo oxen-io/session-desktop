@@ -56,7 +56,7 @@ const SessionNicknameInner = (props: Props) => {
    */
   const onNicknameInput = async (event: any) => {
     if (event.key === 'Enter') {
-      saveNickname();
+      await saveNickname();
     }
     const currentNicknameEntered = event.target.value;
     setNickname(currentNicknameEntered);
@@ -69,10 +69,10 @@ const SessionNicknameInner = (props: Props) => {
     if (!convoId) {
       return;
     }
-    const convo = await ConversationController.getInstance().get(convoId);
+    const convo = ConversationController.getInstance().get(convoId);
     onClickOk(nickname);
-    convo.setNickname(nickname);
-    convo.commit();
+    await convo.setNickname(nickname);
+    await convo.commit();
   };
 
   return (
@@ -105,8 +105,8 @@ const SessionNicknameInner = (props: Props) => {
         type="nickname"
         id="nickname-modal-input"
         placeholder={placeholder || 'Enter a nickname'}
-        onKeyUp={e => {
-          onNicknameInput(e);
+        onKeyUp={async e => {
+          await onNicknameInput(e);
         }}
       />
 

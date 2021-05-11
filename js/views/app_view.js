@@ -121,7 +121,7 @@
     },
     showNicknameDialog(options) {
       // // eslint-disable-next-line no-param-reassign
-      let modifiedOptions = { ...options };
+      const modifiedOptions = { ...options };
       modifiedOptions.theme = this.getThemeObject();
       const dialog = new Whisper.SessionNicknameDialog(modifiedOptions);
       this.el.prepend(dialog.el);
