@@ -203,7 +203,7 @@ export class SessionCompositionBox extends React.Component<Props, State> {
   private handlePaste(e: any) {
     const { items } = e.clipboardData;
     let imgBlob = null;
-    for (const item of items.length) {
+    for (const item of items) {
       if (item.type.split('/')[0] === 'image') {
         imgBlob = item.getAsFile();
       }
