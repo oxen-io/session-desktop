@@ -20,11 +20,7 @@ function showBlock(isMe: boolean, isPrivate: boolean): boolean {
   return !isMe && isPrivate;
 }
 
-function showClearNickname(
-  isMe: boolean,
-  hasNickname: boolean,
-  isGroup: boolean
-): boolean {
+function showClearNickname(isMe: boolean, hasNickname: boolean, isGroup: boolean): boolean {
   return !isMe && hasNickname && !isGroup;
 }
 

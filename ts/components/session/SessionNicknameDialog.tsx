@@ -19,14 +19,7 @@ type Props = {
 };
 
 const SessionNicknameInner = (props: Props) => {
-  const {
-    title = '',
-    message,
-    onClickOk,
-    onClickClose,
-    convoId,
-    placeholder,
-  } = props;
+  const { title = '', message, onClickOk, onClickClose, convoId, placeholder } = props;
   const showHeader = true;
   const [nickname, setNickname] = useState('');
 
