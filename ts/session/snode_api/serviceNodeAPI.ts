@@ -32,55 +32,6 @@ import _ from 'lodash';
 
 const maxAcceptableFailuresStoreOnNode = 10;
 
-/**
- * Currently unused. If we need it again, be sure to update it to onion routing rather
- * than using a plain nodeFetch
- */
-export async function getVersion(node: Snode, retries: number = 0): Promise<string | boolean> {
-  const SNODE_VERSION_RETRIES = 3;
-
-  const { log } = window;
-
-  try {
-    window.log.warn('insecureNodeFetch => plaintext for getVersion');
-    const result = await insecureNodeFetch(`https://${node.ip}:${node.port}/get_stats/v1`, {
-      agent: snodeHttpsAgent,
-    });
-    const data = await result.json();
-    if (data.version) {
-      return data.version;
-    } else {
-      return false;
-    }
-  } catch (e) {
-    // ECONNREFUSED likely means it's just offline...
-    // ECONNRESET seems to retry and fail as ECONNREFUSED (so likely a node going offline)
-    // ETIMEDOUT not sure what to do about these
-    // retry for now but maybe we should be marking bad...
-    if (e.code === 'ECONNREFUSED') {
-      markNodeUnreachable(node);
-      // clean up these error messages to be a little neater
-      log.warn(`LokiSnodeAPI::_getVersion - ${node.ip}:${node.port} is offline, removing`);
-      // if not ECONNREFUSED, it's mostly ECONNRESETs
-      // ENOTFOUND could mean no internet or hiccup
-    } else if (retries < SNODE_VERSION_RETRIES) {
-      log.warn(
-        'LokiSnodeAPI::_getVersion - Error',
-        e.code,
-        e.message,
-        `on ${node.ip}:${node.port} retrying in 1s`
-      );
-      await sleepFor(1000);
-      return getVersion(node, retries + 1);
-    } else {
-      markNodeUnreachable(node);
-      log.warn(`LokiSnodeAPI::_getVersion - failing to get version for ${node.ip}:${node.port}`);
-    }
-    // maybe throw?
-    return false;
-  }
-}
-
 const getSslAgentForSeedNode = (seedNodeHost: string, isSsl = false) => {
   let filePrefix = '';
   let pubkey256 = '';
