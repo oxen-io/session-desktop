@@ -1,14 +1,33 @@
 import semver from 'semver';
 import _ from 'lodash';
 
-import { getSnodesFromSeedUrl, requestSnodesForPubkey } from './serviceNodeAPI';
+import {
+  getSnodePoolFromSnodes,
+  getSnodesFromSeedUrl,
+  requestSnodesForPubkey,
+} from './serviceNodeAPI';
 
 import { getSwarmNodesForPubkey, updateSwarmNodesForPubkey } from '../../../ts/data/data';
 
 export type SnodeEdKey = string;
 import { allowOnlyOneAtATime } from '../utils/Promise';
+import pRetry from 'p-retry';
 
 const MIN_NODES = 3;
+
+/**
+ * If we get less than minSnodePoolCount we consider that we need to fetch the new snode pool from a seed node
+ * and not from those snodes.
+ */
+const minSnodePoolCount = 12;
+
+/**
+ * If we do a request to fetch nodes from snodes and they don't return at least
+ * the same `requiredSnodesForAgreement` snodes we consider that this is not a valid return.
+ *
+ * Too many nodes are not shared for this call to be trustworthy
+ */
+export const requiredSnodesForAgreement = 24;
 
 export interface Snode {
   ip: string;
@@ -216,21 +235,51 @@ async function refreshRandomPoolDetail(seedNodes: Array<SeedNode>): Promise<void
     }
   }
 }
-
-export async function refreshRandomPool(seedNodes?: Array<any>): Promise<void> {
+/**
+ * This function runs only once at a time, and fetches the snode pool from a random seed node,
+ *  or if we have enough snodes, fetches the snode pool from one of the snode.
+ */
+export async function refreshRandomPool(): Promise<void> {
   const { log } = window;
 
-  if (!seedNodes || !seedNodes.length) {
-    if (!window.seedNodeList || !window.seedNodeList.length) {
-      log.error('LokiSnodeAPI:::refreshRandomPool - seedNodeList has not been loaded yet');
-      return;
-    }
-    // tslint:disable-next-line:no-parameter-reassignment
-    seedNodes = window.seedNodeList;
+  if (!window.seedNodeList || !window.seedNodeList.length) {
+    log.error('LokiSnodeAPI:::refreshRandomPool - seedNodeList has not been loaded yet');
+    return;
   }
+  // tslint:disable-next-line:no-parameter-reassignment
+  const seedNodes = window.seedNodeList;
 
   return allowOnlyOneAtATime('refreshRandomPool', async () => {
-    if (seedNodes) {
+    // we don't have nodes to fetch the pool from them, so call the seed node instead.
+    if (randomSnodePool.length < minSnodePoolCount) {
+      await refreshRandomPoolDetail(seedNodes);
+      return;
+    }
+    try {
+      // let this request try 5 times. If all those requests end up without having a consensus,
+      // fetch the snode pool from one of the seed nodes (see the catch).
+      await pRetry(
+        async () => {
+          const commonNodes = await getSnodePoolFromSnodes();
+          if (!commonNodes || commonNodes.length < requiredSnodesForAgreement) {
+            // throwing makes trigger a retry if we have some left.
+            throw new Error('Not enough common nodes.');
+          }
+          window.log.info('updating snode list with snode pool length:', commonNodes.length);
+          randomSnodePool = commonNodes;
+        },
+        {
+          retries: 3,
+          factor: 1,
+          minTimeout: 1000,
+        }
+      );
+    } catch (e) {
+      window.log.warn(
+        'Failed to fetch snode pool from snodes. Fetching from seed node instead:',
+        e
+      );
+      // fallback to a seed node fetch of the snode pool
       await refreshRandomPoolDetail(seedNodes);
     }
   });

@@ -15,10 +15,19 @@ import { sendOnionRequestLsrpcDest, snodeHttpsAgent, SnodeResponse } from './oni
 
 export { sendOnionRequestLsrpcDest };
 
-import { getRandomSnodeAddress, markNodeUnreachable, Snode, updateSnodesFor } from './snodePool';
+import {
+  getRandomSnodeAddress,
+  getRandomSnodePool,
+  markNodeUnreachable,
+  requiredSnodesForAgreement,
+  Snode,
+  updateSnodesFor,
+} from './snodePool';
 import { Constants } from '..';
 import { sleepFor } from '../utils/Promise';
 import { sha256 } from '../crypto';
+import pRetry from 'p-retry';
+import _ from 'lodash';
 
 /**
  * Currently unused. If we need it again, be sure to update it to onion routing rather
@@ -304,6 +313,104 @@ export async function requestLnsMapping(targetNode: Snode, nameHash: any) {
   } catch (e) {
     log.warn('exception caught making lns requests to a node', targetNode, e);
     return false;
+  }
+}
+
+/**
+ * Try to fetch from 3 different snodes an updated list of snodes.
+ * If we get less than 24 common snodes in those result, we consider the request to failed and an exception is thrown.
+ * Return the list of nodes all snodes agreed on.
+ */
+export async function getSnodePoolFromSnodes() {
+  const existingSnodePool = await getRandomSnodePool();
+  if (existingSnodePool.length < 3) {
+    window.log.warn('cannot get snodes from snodes; not enough snodes', existingSnodePool.length);
+    return;
+  }
+
+  // Note intersectionWith only works with 3 at most array to find the common snodes.
+  const nodesToRequest = _.sampleSize(existingSnodePool, 3);
+  const results = await Promise.all(
+    nodesToRequest.map(async node => {
+      return pRetry(
+        async () => {
+          return getSnodePoolFromSnode(node);
+        },
+        {
+          retries: 3,
+          factor: 1,
+          minTimeout: 1000,
+        }
+      );
+    })
+  );
+
+  // we want those at least `requiredSnodesForAgreement` snodes common between all the result
+  const commonSnodes = _.intersectionWith(
+    results[0],
+    results[1],
+    results[2],
+    (s1: Snode, s2: Snode) => {
+      return s1.ip === s2.ip && s1.port === s2.port;
+    }
+  );
+  // We want the snodes to agree on at least this many snodes
+  if (commonSnodes.length < requiredSnodesForAgreement) {
+    throw new Error('inconsistentSnodePools');
+  }
+  return commonSnodes;
+}
+
+/**
+ * Returns a list of uniq snodes got from the specified targetNode
+ */
+async function getSnodePoolFromSnode(targetNode: Snode): Promise<Array<Snode>> {
+  const params = {
+    endpoint: 'get_service_nodes',
+    params: {
+      active_only: true,
+      // limit: 256,
+      fields: {
+        public_ip: true,
+        storage_port: true,
+        pubkey_x25519: true,
+        pubkey_ed25519: true,
+      },
+    },
+  };
+  const method = 'oxend_request';
+  const result = await snodeRpc(method, params, targetNode);
+  if (!result || result.status !== 200) {
+    throw new Error('Invalid result');
+  }
+
+  try {
+    const json = JSON.parse(result.body);
+
+    if (!json || !json.result || !json.result.service_node_states?.length) {
+      window.log.error(
+        'loki_snode_api:::getSnodePoolFromSnode - invalid result from seed',
+        result.body
+      );
+      return [];
+    }
+
+    // Filter 0.0.0.0 nodes which haven't submitted uptime proofs
+    const snodes = json.result.service_node_states
+      .filter((snode: any) => snode.public_ip !== '0.0.0.0')
+      .map((snode: any) => ({
+        ip: snode.public_ip,
+        port: snode.storage_port,
+        pubkey_x25519: snode.pubkey_x25519,
+        pubkey_ed25519: snode.pubkey_ed25519,
+        version: '',
+      })) as Array<Snode>;
+
+    // we the return list by the snode is already made of uniq snodes
+    return _.compact(snodes);
+  } catch (e) {
+    window.log.error('Invalid json response');
+    return [];
   }
 }
 
