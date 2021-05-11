@@ -386,7 +386,7 @@
     window.showNicknameDialog = params => {
       const options = {
         el: $('body'),
-        'title': params.title + "",
+        title: params.title + "",
         message: params.message,
         placeholder: params.placeholder,
         messageSub: params.messageSub || undefined,
@@ -399,7 +399,7 @@
         hideCancel: params.hideCancel || false,
         sessionIcon: params.sessionIcon || undefined,
         iconSize: params.iconSize || undefined,
-        convoId: params.convoId
+        convoId: params.convoId || undefined
       };
 
 
