@@ -81,9 +81,6 @@ declare global {
     versionInfo: any;
     getStoragePubKey: (key: string) => string;
     getConversations: () => ConversationCollection;
-    SnodePool: {
-      getSnodesFor: (string) => any;
-    };
     profileImages: any;
     MediaRecorder: any;
     dataURLToBlobSync: any;

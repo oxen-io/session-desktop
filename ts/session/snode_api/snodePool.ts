@@ -7,13 +7,16 @@ import {
   requestSnodesForPubkey,
 } from './serviceNodeAPI';
 
-import { getSwarmNodesForPubkey, updateSwarmNodesForPubkey } from '../../../ts/data/data';
+import * as Data from '../../../ts/data/data';
 
 export type SnodeEdKey = string;
 import { allowOnlyOneAtATime } from '../utils/Promise';
 import pRetry from 'p-retry';
 
-const MIN_NODES = 3;
+/**
+ * If we get less than this snode in a swarm, we fetch new snodes for this pubkey
+ */
+const minSwarmSnodeCount = 3;
 
 /**
  * If we get less than minSnodePoolCount we consider that we need to fetch the new snode pool from a seed node
@@ -256,7 +259,7 @@ export async function refreshRandomPool(): Promise<void> {
       return;
     }
     try {
-      // let this request try 5 times. If all those requests end up without having a consensus,
+      // let this request try 3 (2+1) times. If all those requests end up without having a consensus,
       // fetch the snode pool from one of the seed nodes (see the catch).
       await pRetry(
         async () => {
@@ -269,7 +272,7 @@ export async function refreshRandomPool(): Promise<void> {
           randomSnodePool = commonNodes;
         },
         {
-          retries: 3,
+          retries: 2,
           factor: 1,
           minTimeout: 1000,
         }
@@ -291,18 +294,20 @@ export async function updateSnodesFor(pubkey: string, snodes: Array<Snode>): Pro
 }
 
 async function internalUpdateSnodesFor(pubkey: string, edkeys: Array<string>) {
+  // update our in-memory cache
   nodesForPubkey.set(pubkey, edkeys);
-  await updateSwarmNodesForPubkey(pubkey, edkeys);
+  // write this change to the db
+  await Data.updateSwarmNodesForPubkey(pubkey, edkeys);
 }
 
-export async function getSnodesFor(pubkey: string): Promise<Array<Snode>> {
+export async function getSwarm(pubkey: string): Promise<Array<Snode>> {
   const maybeNodes = nodesForPubkey.get(pubkey);
   let nodes: Array<string>;
 
   // NOTE: important that maybeNodes is not [] here
   if (maybeNodes === undefined) {
-    // First time access, try the database:
-    nodes = await getSwarmNodesForPubkey(pubkey);
+    // First time access, no cache yet, let's try the database.
+    nodes = await Data.getSwarmNodesForPubkey(pubkey);
     nodesForPubkey.set(pubkey, nodes);
   } else {
     nodes = maybeNodes;
@@ -311,13 +316,12 @@ export async function getSnodesFor(pubkey: string): Promise<Array<Snode>> {
   // See how many are actually still reachable
   const goodNodes = randomSnodePool.filter((n: Snode) => nodes.indexOf(n.pubkey_ed25519) !== -1);
 
-  if (goodNodes.length < MIN_NODES) {
+  if (goodNodes.length < minSwarmSnodeCount) {
     // Request new node list from the network
     const freshNodes = _.shuffle(await requestSnodesForPubkey(pubkey));
 
     const edkeys = freshNodes.map((n: Snode) => n.pubkey_ed25519);
-    void internalUpdateSnodesFor(pubkey, edkeys);
-    // TODO: We could probably check that the retuned sndoes are not "unreachable"
+    await internalUpdateSnodesFor(pubkey, edkeys);
 
     return freshNodes;
   } else {

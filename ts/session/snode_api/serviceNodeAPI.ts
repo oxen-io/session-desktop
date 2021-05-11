@@ -18,6 +18,7 @@ export { sendOnionRequestLsrpcDest };
 import {
   getRandomSnodeAddress,
   getRandomSnodePool,
+  getSwarm,
   markNodeUnreachable,
   requiredSnodesForAgreement,
   Snode,
@@ -28,6 +29,8 @@ import { sleepFor } from '../utils/Promise';
 import { sha256 } from '../crypto';
 import pRetry from 'p-retry';
 import _ from 'lodash';
+
+const maxAcceptableFailuresStoreOnNode = 10;
 
 /**
  * Currently unused. If we need it again, be sure to update it to onion routing rather
@@ -415,19 +418,27 @@ async function getSnodePoolFromSnode(targetNode: Snode): Promise<Array<Snode>> {
 }
 
 function checkResponse(response: SnodeResponse): void {
-  const { log, textsecure } = window;
-
   if (response.status === 406) {
-    throw new textsecure.TimestampError('Invalid Timestamp (check your clock)');
+    throw new window.textsecure.TimestampError('Invalid Timestamp (check your clock)');
   }
 
-  const json = JSON.parse(response.body);
-
-  // Wrong swarm
+  // Wrong/invalid swarm
   if (response.status === 421) {
-    log.warn('Wrong swarm, now looking at snodes', json.snodes);
-    const newSwarm = json.snodes ? json.snodes : [];
-    throw new textsecure.WrongSwarmError(newSwarm);
+    let json;
+    try {
+      json = JSON.parse(response.body);
+    } catch (e) {
+      // could not parse result. Consider that snode as invalid
+      throw new window.textsecure.InvalidateSwarm();
+    }
+
+    // The snode isn't associated with the given public key anymore
+    window.log.warn('Wrong swarm, now looking at snodes', json.snodes);
+    if (json.snodes?.length) {
+      throw new window.textsecure.WrongSwarmError(json.snodes);
+    }
+    // remove this node from the swarm of this pubkey
+    throw new window.textsecure.InvalidateSwarm();
   }
 }
 
@@ -435,7 +446,8 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
   const { log, textsecure } = window;
 
   let successiveFailures = 0;
-  while (successiveFailures < MAX_ACCEPTABLE_FAILURES) {
+
+  while (successiveFailures < maxAcceptableFailuresStoreOnNode) {
     // the higher this is, the longer the user delay is
     // we don't want to burn through all our retries quickly
     // we need to give the node a chance to heal
@@ -450,7 +462,7 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
       if (!result) {
         // this means the node we asked for is likely down
         log.warn(
-          `loki_message:::storeOnNode - Try #${successiveFailures}/${MAX_ACCEPTABLE_FAILURES} ${targetNode.ip}:${targetNode.port} failed`
+          `loki_message:::storeOnNode - Try #${successiveFailures}/${maxAcceptableFailuresStoreOnNode} ${targetNode.ip}:${targetNode.port} failed`
         );
         successiveFailures += 1;
         // eslint-disable-next-line no-continue
@@ -486,6 +498,16 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
         // TODO: Handle working connection but error response
         const body = await e.response.text();
         log.warn('loki_message:::storeOnNode - HTTPError body:', body);
+      } else if (e instanceof window.textsecure.InvalidateSwarm) {
+        window.log.warn(
+          'Got an `InvalidateSwarm` error, removing this node from this swarm of this pubkey'
+        );
+        const existingSwarm = await getSwarm(params.pubKey);
+        const updatedSwarm = existingSwarm.filter(
+          node => node.pubkey_ed25519 !== targetNode.pubkey_ed25519
+        );
+
+        await updateSnodesFor(params.pubKey, updatedSwarm);
       }
       successiveFailures += 1;
     }
@@ -526,6 +548,14 @@ export async function retrieveNextMessages(
       const { newSwarm } = e;
       await updateSnodesFor(params.pubKey, newSwarm);
       return [];
+    } else if (e instanceof window.textsecure.InvalidateSwarm) {
+      const existingSwarm = await getSwarm(params.pubKey);
+      const updatedSwarm = existingSwarm.filter(
+        node => node.pubkey_ed25519 !== targetNode.pubkey_ed25519
+      );
+
+      await updateSnodesFor(params.pubKey, updatedSwarm);
+      return [];
     }
   }
 
@@ -543,5 +573,3 @@ export async function retrieveNextMessages(
     return [];
   }
 }
-
-const MAX_ACCEPTABLE_FAILURES = 10;
