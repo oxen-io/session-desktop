@@ -55,7 +55,6 @@ declare global {
       useOnionRequests: boolean;
       useFileOnionRequests: boolean;
       useFileOnionRequestsV2: boolean;
-      onionRequestHops: number;
       useRequestEncryptionKeyPair: boolean;
       padOutgoingAttachments: boolean;
     };

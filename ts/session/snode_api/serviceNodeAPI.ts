@@ -235,39 +235,37 @@ export type SendParams = {
 export async function requestSnodesForPubkey(pubKey: string): Promise<Array<Snode>> {
   const { log } = window;
 
-  let snode;
+  let targetNode;
   try {
-    snode = await getRandomSnodeAddress();
+    targetNode = await getRandomSnodeAddress();
     const result = await snodeRpc(
       'get_snodes_for_pubkey',
       {
         pubKey,
       },
-      snode
+      targetNode
     );
 
     if (!result) {
       log.warn(
-        `LokiSnodeAPI::requestSnodesForPubkey - lokiRpc on ${snode.ip}:${snode.port} returned falsish value`,
+        `LokiSnodeAPI::requestSnodesForPubkey - lokiRpc on ${targetNode.ip}:${targetNode.port} returned falsish value`,
         result
       );
       return [];
     }
 
-    const res = result as SnodeResponse;
-
-    if (res.status !== 200) {
+    if (result.status !== 200) {
       log.warn('Status is not 200 for get_snodes_for_pubkey');
       return [];
     }
 
     try {
-      const json = JSON.parse(res.body);
+      const json = JSON.parse(result.body);
 
       if (!json.snodes) {
         // we hit this when snode gives 500s
         log.warn(
-          `LokiSnodeAPI::requestSnodesForPubkey - lokiRpc on ${snode.ip}:${snode.port} returned falsish value for snodes`,
+          `LokiSnodeAPI::requestSnodesForPubkey - lokiRpc on ${targetNode.ip}:${targetNode.port} returned falsish value for snodes`,
           result
         );
         return [];
@@ -282,19 +280,18 @@ export async function requestSnodesForPubkey(pubKey: string): Promise<Array<Snod
   } catch (e) {
     log.error('LokiSnodeAPI::requestSnodesForPubkey - error', e.code, e.message);
 
-    if (snode) {
-      markNodeUnreachable(snode);
+    if (targetNode) {
+      markNodeUnreachable(targetNode);
     }
 
     return [];
   }
 }
 
-export async function requestLnsMapping(node: Snode, nameHash: any) {
+export async function requestLnsMapping(targetNode: Snode, nameHash: any) {
   const { log } = window;
 
-  log.debug('[lns] lns requests to {}:{}', node.ip, node.port);
-
+  log.debug('[lns] lns requests to {}:{}', targetNode.ip, targetNode);
   try {
     // TODO: Check response status
     return snodeRpc(
@@ -302,10 +299,10 @@ export async function requestLnsMapping(node: Snode, nameHash: any) {
       {
         name_hash: nameHash,
       },
-      node
+      targetNode
     );
   } catch (e) {
-    log.warn('exception caught making lns requests to a node', node, e);
+    log.warn('exception caught making lns requests to a node', targetNode, e);
     return false;
   }
 }
@@ -343,7 +340,7 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
       const result = await snodeRpc('store', params, targetNode);
 
       // do not return true if we get false here...
-      if (result === false) {
+      if (!result) {
         // this means the node we asked for is likely down
         log.warn(
           `loki_message:::storeOnNode - Try #${successiveFailures}/${MAX_ACCEPTABLE_FAILURES} ${targetNode.ip}:${targetNode.port} failed`
@@ -353,7 +350,7 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
         continue;
       }
 
-      const snodeRes = result as SnodeResponse;
+      const snodeRes = result;
 
       checkResponse(snodeRes);
 
@@ -394,7 +391,7 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
 }
 
 export async function retrieveNextMessages(
-  nodeData: Snode,
+  targetNode: Snode,
   lastHash: string,
   pubkey: string
 ): Promise<Array<any>> {
@@ -404,20 +401,18 @@ export async function retrieveNextMessages(
   };
 
   // let exceptions bubble up
-  const result = await snodeRpc('retrieve', params, nodeData);
+  const result = await snodeRpc('retrieve', params, targetNode);
 
   if (!result) {
     window.log.warn(
-      `loki_message:::_retrieveNextMessages - lokiRpc could not talk to ${nodeData.ip}:${nodeData.port}`
+      `loki_message:::_retrieveNextMessages - lokiRpc could not talk to ${targetNode.ip}:${targetNode.port}`
     );
     return [];
   }
 
-  const res = result as SnodeResponse;
-
   // NOTE: we call `checkResponse` to check for "wrong swarm"
   try {
-    checkResponse(res);
+    checkResponse(result);
   } catch (e) {
     window.log.warn('loki_message:::retrieveNextMessages - send error:', e.code, e.message);
     if (e instanceof window.textsecure.WrongSwarmError) {
@@ -427,13 +422,13 @@ export async function retrieveNextMessages(
     }
   }
 
-  if (res.status !== 200) {
+  if (result.status !== 200) {
     window.log('retrieve result is not 200');
     return [];
   }
 
   try {
-    const json = JSON.parse(res.body);
+    const json = JSON.parse(result.body);
     return json.messages || [];
   } catch (e) {
     window.log.warn('exception while parsing json of nextMessage:', e);

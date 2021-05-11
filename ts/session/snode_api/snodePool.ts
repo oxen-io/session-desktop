@@ -24,10 +24,13 @@ let randomSnodePool: Array<Snode> = [];
 // We only store nodes' identifiers here,
 const nodesForPubkey: Map<string, Array<SnodeEdKey>> = new Map();
 
+export type SeedNode = {
+  url: string;
+  ip_url: string;
+};
+
 // just get the filtered list
-async function tryGetSnodeListFromLokidSeednode(
-  seedNodes = window.seedNodeList
-): Promise<Array<Snode>> {
+async function tryGetSnodeListFromLokidSeednode(seedNodes: Array<SeedNode>): Promise<Array<Snode>> {
   const { log } = window;
 
   if (!seedNodes.length) {
@@ -106,7 +109,7 @@ export async function getRandomSnodeAddress(): Promise<Snode> {
   if (randomSnodePool.length === 0) {
     // TODO: ensure that we only call this once at a time
     // Should not this be saved to the database?
-    await refreshRandomPool([]);
+    await refreshRandomPool();
 
     if (randomSnodePool.length === 0) {
       throw new window.textsecure.SeedNodeError('Invalid seed node response');
@@ -117,51 +120,19 @@ export async function getRandomSnodeAddress(): Promise<Snode> {
   return _.sample(randomSnodePool) as Snode;
 }
 
-function compareSnodes(lhs: any, rhs: any): boolean {
-  return lhs.pubkey_ed25519 === rhs.pubkey_ed25519;
-}
-
-/**
- * Request the version of the snode.
- * THIS IS AN INSECURE NODE FETCH and leaks our IP to all snodes but with no other identifying information
- * except "that a client started up" or "ran out of random pool snodes"
- * and the order of the list is randomized, so a snode can't tell if it just started or not
- */
-async function requestVersion(node: any): Promise<void> {
-  const { log } = window;
-
-  // WARNING: getVersion is doing an insecure node fetch.
-  // be sure to update getVersion to onion routing if we need this call again.
-  const result = false; // await getVersion(node);
-
-  if (result === false) {
-    return;
-  }
-
-  const version = result as string;
-
-  const foundNodeIdx = randomSnodePool.findIndex((n: any) => compareSnodes(n, node));
-  if (foundNodeIdx !== -1) {
-    randomSnodePool[foundNodeIdx].version = version;
-  } else {
-    // maybe already marked bad...
-    log.debug(`LokiSnodeAPI::_getVersion - can't find ${node.ip}:${node.port} in randomSnodePool`);
-  }
-}
-
 /**
  * This function force the snode poll to be refreshed from a random seed node again.
  * This should be called once in a day or so for when the app it kept on.
  */
 export async function forceRefreshRandomSnodePool(): Promise<Array<Snode>> {
-  await refreshRandomPool([]);
+  await refreshRandomPool();
 
   return randomSnodePool;
 }
 
 export async function getRandomSnodePool(): Promise<Array<Snode>> {
   if (randomSnodePool.length === 0) {
-    await refreshRandomPool([]);
+    await refreshRandomPool();
   }
   return randomSnodePool;
 }
@@ -172,7 +143,7 @@ export function getNodesMinVersion(minVersion: string): Array<Snode> {
 }
 
 async function getSnodeListFromLokidSeednode(
-  seedNodes = window.seedNodeList,
+  seedNodes: Array<SeedNode>,
   retries = 0
 ): Promise<Array<Snode>> {
   const SEED_NODE_RETRIES = 3;
@@ -207,7 +178,11 @@ async function getSnodeListFromLokidSeednode(
   return snodes;
 }
 
-async function refreshRandomPoolDetail(seedNodes: Array<any>): Promise<void> {
+/**
+ * Fetch all snodes from a seed nodes if we don't have enough snodes to make the request ourself
+ * @param seedNodes the seednodes to use to fetch snodes details
+ */
+async function refreshRandomPoolDetail(seedNodes: Array<SeedNode>): Promise<void> {
   const { log } = window;
 
   let snodes = [];
