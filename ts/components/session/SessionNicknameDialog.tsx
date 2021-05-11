@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ConversationController } from "../../session/conversations/ConversationController";
+import { ConversationController } from '../../session/conversations/ConversationController';
 import { SessionModal } from './SessionModal';
 import { SessionButton, SessionButtonColor } from './SessionButton';
 import { SessionHtmlRenderer } from './SessionHTMLRenderer';
@@ -23,7 +23,7 @@ type Props = {
   sessionIcon?: SessionIconType;
   iconSize?: SessionIconSize;
   theme: DefaultTheme;
-  convoId?: string,
+  convoId?: string;
 };
 
 const SessionNicknameInner = (props: Props) => {
@@ -39,7 +39,7 @@ const SessionNicknameInner = (props: Props) => {
     sessionIcon,
     iconSize,
     convoId,
-    placeholder
+    placeholder,
   } = props;
 
   const okText = props.okText || window.i18n('ok');
@@ -60,10 +60,10 @@ const SessionNicknameInner = (props: Props) => {
     }
     const currentNicknameEntered = event.target.value;
     setNickname(currentNicknameEntered);
-  }
+  };
 
   /**
-   * Saves the currently entered nickname. 
+   * Saves the currently entered nickname.
    */
   const saveNickname = async () => {
     if (!convoId) {
@@ -73,7 +73,7 @@ const SessionNicknameInner = (props: Props) => {
     onClickOk(nickname);
     convo.setNickname(nickname);
     convo.commit();
-  }
+  };
 
   return (
     <SessionModal
@@ -104,8 +104,10 @@ const SessionNicknameInner = (props: Props) => {
       <input
         type="nickname"
         id="nickname-modal-input"
-        placeholder={placeholder || "Enter a nickname"}
-        onKeyUp={e => { onNicknameInput(e) }}
+        placeholder={placeholder || 'Enter a nickname'}
+        onKeyUp={e => {
+          onNicknameInput(e);
+        }}
       />
 
       <div className="session-modal__button-group">

@@ -385,7 +385,7 @@
 
     window.showNicknameDialog = params => {
       const options = {
-        title: params.title + "",
+        title: params.title + '',
         message: params.message,
         placeholder: params.placeholder,
         messageSub: params.messageSub || undefined,
@@ -398,14 +398,13 @@
         hideCancel: params.hideCancel || false,
         sessionIcon: params.sessionIcon || undefined,
         iconSize: params.iconSize || undefined,
-        convoId: params.convoId || undefined
+        convoId: params.convoId || undefined,
       };
-
 
       if (appView) {
         appView.showNicknameDialog(options);
       }
-    }
+    };
 
     window.showResetSessionIdDialog = () => {
       appView.showResetSessionIdDialog();

@@ -3,7 +3,7 @@
 /* eslint-disable more/no-then */
 
 // eslint-disable-next-line func-names
-(function () {
+(function() {
   'use strict';
 
   window.Whisper = window.Whisper || {};
@@ -121,7 +121,7 @@
     },
     showNicknameDialog(options) {
       // // eslint-disable-next-line no-param-reassign
-      let modifiedOptions = {...options};
+      let modifiedOptions = { ...options };
       modifiedOptions.theme = this.getThemeObject();
       const dialog = new Whisper.SessionNicknameDialog(modifiedOptions);
       this.el.prepend(dialog.el);

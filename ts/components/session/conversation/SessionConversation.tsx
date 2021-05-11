@@ -412,8 +412,7 @@ export class SessionConversation extends React.Component<Props, State> {
 
       onClearNickname: () => {
         conversation.clearNickname();
-      }
-
+      },
     };
 
     return headerProps;

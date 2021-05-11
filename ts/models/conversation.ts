@@ -530,9 +530,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
               fileName: fileName || null,
               thumbnail: thumbnail
                 ? {
-                  ...(await loadAttachmentData(thumbnail)),
-                  objectUrl: getAbsoluteAttachmentPath(thumbnail.path),
-                }
+                    ...(await loadAttachmentData(thumbnail)),
+                    objectUrl: getAbsoluteAttachmentPath(thumbnail.path),
+                  }
                 : null,
             };
           })
@@ -555,9 +555,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
               fileName: null,
               thumbnail: image
                 ? {
-                  ...(await loadAttachmentData(image)),
-                  objectUrl: getAbsoluteAttachmentPath(image.path),
-                }
+                    ...(await loadAttachmentData(image)),
+                    objectUrl: getAbsoluteAttachmentPath(image.path),
+                  }
                 : null,
             };
           })
@@ -1309,7 +1309,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public changeNickname() {
     if (this.isPublic()) {
-      throw new Error('Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.');
+      throw new Error(
+        'Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.'
+      );
     }
     window.showNicknameDialog({
       title: window.i18n('changeNickname') || 'Change Nickname',
@@ -1321,7 +1323,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public clearNickname = () => {
     void this.setNickname('');
-  }
+  };
 
   public deleteContact() {
     let title = window.i18n('delete');

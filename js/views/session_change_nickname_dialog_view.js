@@ -1,7 +1,7 @@
 /* global Whisper */
 
 // eslint-disable-next-line func-names
-(function () {
+(function() {
   'use strict';
 
   window.Whisper = window.Whisper || {};
@@ -25,7 +25,7 @@
         sessionIcon: options.sessionIcon,
         iconSize: options.iconSize,
         convoId: options.convoId,
-        placeholder: options.placeholder
+        placeholder: options.placeholder,
       };
       this.render();
     },
@@ -58,7 +58,7 @@
       if (this.props.reject) {
         this.props.reject();
       }
-    }, 
+    },
     ok() {
       this.remove();
       this.unregisterEvents();
