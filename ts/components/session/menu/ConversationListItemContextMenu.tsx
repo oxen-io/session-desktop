@@ -72,8 +72,8 @@ export const ConversationListItemContextMenu = (props: PropsContextConversationI
       )}
       {getCopyMenuItem(isPublic, isGroup, onCopyPublicKey, window.i18n)}
       {getMarkAllReadMenuItem(onMarkAllRead, window.i18n)}
-      {getChangeNicknameMenuItem(isPublic, isMe, onChangeNickname, isGroup, window.i18n)}
-      {getClearNicknameMenuItem(isPublic, isMe, hasNickname, onClearNickname, isGroup, window.i18n)}
+      {getChangeNicknameMenuItem(isMe, onChangeNickname, isGroup, window.i18n)}
+      {getClearNicknameMenuItem(isMe, hasNickname, onClearNickname, isGroup, window.i18n)}
 
       {getDeleteMessagesMenuItem(isPublic, onDeleteMessages, window.i18n)}
       {getInviteContactMenuItem(isGroup, isPublic, onInviteContacts, window.i18n)}

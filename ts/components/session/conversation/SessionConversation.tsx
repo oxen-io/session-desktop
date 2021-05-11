@@ -359,6 +359,8 @@ export class SessionConversation extends React.Component<Props, State> {
       onSetDisappearingMessages: conversation.updateExpirationTimer,
       onDeleteMessages: conversation.deleteMessages,
       onDeleteSelectedMessages: this.deleteSelectedMessages,
+      onChangeNickname: conversation.changeNickname,
+      onClearNickname: conversation.clearNickname,
       onCloseOverlay: () => {
         this.setState({ selectedMessages: [] });
       },
@@ -404,14 +406,6 @@ export class SessionConversation extends React.Component<Props, State> {
 
       onAvatarClick: (pubkey: any) => {
         this.toggleRightPanel();
-      },
-
-      onChangeNickname: () => {
-        conversation.changeNickname();
-      },
-
-      onClearNickname: () => {
-        conversation.clearNickname();
       },
     };
 

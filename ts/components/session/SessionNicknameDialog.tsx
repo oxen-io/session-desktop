@@ -2,26 +2,18 @@ import React, { useState } from 'react';
 import { ConversationController } from '../../session/conversations/ConversationController';
 import { SessionModal } from './SessionModal';
 import { SessionButton, SessionButtonColor } from './SessionButton';
-import { SessionHtmlRenderer } from './SessionHTMLRenderer';
-import { SessionIcon, SessionIconSize, SessionIconType } from './icon';
 import { DefaultTheme, withTheme } from 'styled-components';
 
 type Props = {
   message: string;
-  messageSub: string;
   title: string;
   placeholder?: string;
   onOk?: any;
   onClose?: any;
   onClickOk: any;
   onClickClose: any;
-  okText?: string;
-  cancelText?: string;
   hideCancel: boolean;
   okTheme: SessionButtonColor;
-  closeTheme: SessionButtonColor;
-  sessionIcon?: SessionIconType;
-  iconSize?: SessionIconSize;
   theme: DefaultTheme;
   convoId?: string;
 };
@@ -30,25 +22,13 @@ const SessionNicknameInner = (props: Props) => {
   const {
     title = '',
     message,
-    messageSub = '',
-    okTheme = SessionButtonColor.Primary,
-    closeTheme = SessionButtonColor.Primary,
     onClickOk,
     onClickClose,
-    hideCancel = false,
-    sessionIcon,
-    iconSize,
     convoId,
     placeholder,
   } = props;
-
-  const okText = props.okText || window.i18n('ok');
-  const cancelText = props.cancelText || window.i18n('cancel');
-  const showHeader = !!props.title;
-
+  const showHeader = true;
   const [nickname, setNickname] = useState('');
-
-  const messageSubText = messageSub ? 'session-confirm-main-message' : 'subtle';
 
   /**
    * Changes the state of nickname variable. If enter is pressed, saves the current
@@ -72,7 +52,6 @@ const SessionNicknameInner = (props: Props) => {
     const convo = ConversationController.getInstance().get(convoId);
     onClickOk(nickname);
     await convo.setNickname(nickname);
-    await convo.commit();
   };
 
   return (
@@ -86,36 +65,20 @@ const SessionNicknameInner = (props: Props) => {
       {!showHeader && <div className="spacer-lg" />}
 
       <div className="session-modal__centered">
-        {sessionIcon && iconSize && (
-          <>
-            <SessionIcon iconType={sessionIcon} iconSize={iconSize} theme={props.theme} />
-            <div className="spacer-lg" />
-          </>
-        )}
-
-        <SessionHtmlRenderer tag="span" className={messageSubText} html={message} />
-        <SessionHtmlRenderer
-          tag="span"
-          className="session-confirm-sub-message subtle"
-          html={messageSub}
-        />
+        <span className="subtle">{message}</span>
+        <div className="spacer-lg" />
       </div>
 
       <input
         type="nickname"
         id="nickname-modal-input"
-        placeholder={placeholder || 'Enter a nickname'}
-        onKeyUp={async e => {
-          await onNicknameInput(e);
-        }}
+        placeholder={placeholder}
+        onKeyUp={onNicknameInput}
       />
 
       <div className="session-modal__button-group">
-        <SessionButton text={okText} buttonColor={okTheme} onClick={saveNickname} />
-
-        {!hideCancel && (
-          <SessionButton text={cancelText} buttonColor={closeTheme} onClick={onClickClose} />
-        )}
+        <SessionButton text={window.i18n('ok')} onClick={saveNickname} />
+        <SessionButton text={window.i18n('cancel')} onClick={onClickClose} />
       </div>
     </SessionModal>
   );

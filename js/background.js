@@ -388,16 +388,6 @@
         title: params.title || undefined,
         message: params.message,
         placeholder: params.placeholder,
-        messageSub: params.messageSub || undefined,
-        resolve: params.resolve || undefined,
-        reject: params.reject || undefined,
-        okText: params.okText || undefined,
-        okTheme: params.okTheme || undefined,
-        closeTheme: params.closeTheme || undefined,
-        cancelText: params.cancelText || undefined,
-        hideCancel: params.hideCancel || false,
-        sessionIcon: params.sessionIcon || undefined,
-        iconSize: params.iconSize || undefined,
         convoId: params.convoId || undefined,
       };
 

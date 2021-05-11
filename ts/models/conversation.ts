@@ -1308,9 +1308,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public changeNickname() {
-    if (this.isPublic()) {
+    if (this.isGroup()) {
       throw new Error(
-        'Called changeNickname() on an open group. This is only supported in 1-on-1 chats and contacts menu.'
+        'Called changeNickname() on a group. This is only supported in 1-on-1 conversation items and 1-on-1 conversation headers'
       );
     }
     window.showNicknameDialog({
