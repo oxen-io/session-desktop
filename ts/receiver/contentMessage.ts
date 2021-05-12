@@ -200,9 +200,7 @@ export function unpad(paddedData: ArrayBuffer): ArrayBuffer {
       plaintext.set(paddedPlaintext.subarray(0, i));
       return plaintext.buffer;
     } else if (paddedPlaintext[i] !== 0x00) {
-      window.log.warn(
-        'got a message without padding... Letting it through for now'
-      );
+      window.log.warn('got a message without padding... Letting it through for now');
       return paddedPlaintext;
     }
   }
