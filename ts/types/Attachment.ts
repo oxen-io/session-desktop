@@ -361,7 +361,11 @@ export const getSuggestedFilenameSending = ({
 
 export const getFileExtension = (attachment: AttachmentType): string | undefined => {
   // we override textplain to the extension of the file
-  if (!attachment.contentType || attachment.contentType === 'text/plain') {
+  if (
+    !attachment.contentType ||
+    attachment.contentType === 'text/plain' ||
+    attachment.contentType.startsWith('application/vnd') //libreoffice documents
+  ) {
     if (attachment.fileName?.length) {
       const dotLastIndex = attachment.fileName.lastIndexOf('.');
       if (dotLastIndex !== -1) {
