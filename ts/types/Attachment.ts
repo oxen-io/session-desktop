@@ -361,10 +361,11 @@ export const getSuggestedFilenameSending = ({
 
 export const getFileExtension = (attachment: AttachmentType): string | undefined => {
   // we override textplain to the extension of the file
+  // for contenttype starting with application, the mimetype is probably wrong so just use the extension of the file instead
   if (
     !attachment.contentType ||
     attachment.contentType === 'text/plain' ||
-    attachment.contentType.startsWith('application/vnd') //libreoffice documents
+    attachment.contentType.startsWith('application')
   ) {
     if (attachment.fileName?.length) {
       const dotLastIndex = attachment.fileName.lastIndexOf('.');
