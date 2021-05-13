@@ -1,4 +1,4 @@
-/* global log, textsecure, libloki, Signal, Whisper,
+/* global log, textsecure, Signal, Whisper,
 clearTimeout, getMessageController, libsignal, StringView, window, _,
 dcodeIO, Buffer, process */
 const { URL } = require('url');
@@ -350,9 +350,9 @@ class LokiAppDotNetServerAPI {
       log.error('requestToken request failed');
       return null;
     }
-    const body = res.response;
-    const token = await libloki.crypto.decryptToken(body);
-    return token;
+    // fixme token supprot for opengroupv1 dropped
+    // const token = await libloki.crypto.decryptToken(body);
+    return '';
   }
 
   // activate token
