@@ -117,7 +117,7 @@ export class MessageQueue {
   public async sendToGroup(
     message: ClosedGroupMessageType,
     sentCb?: (message: RawMessage) => Promise<void>
-  ): Promise<void | boolean> {
+  ): Promise<void> {
     let groupId: PubKey | undefined;
     if (message instanceof ExpirationTimerUpdateMessage || message instanceof ClosedGroupMessage) {
       groupId = message.groupId;
@@ -156,15 +156,14 @@ export class MessageQueue {
     message: ClosedGroupNewMessage
   ): Promise<boolean> {
     let rawMessage;
-    let wrappedEnvelope;
     try {
       rawMessage = await MessageUtils.toRawMessage(user, message);
-      wrappedEnvelope = await MessageSender.send(rawMessage, 5);
+      const wrappedEnvelope = await MessageSender.send(rawMessage, 5);
       await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
       return !!wrappedEnvelope;
     } catch (error) {
       if (rawMessage) {
-        await MessageSentHandler.handleMessageSentFailure(rawMessage, 'error');
+        await MessageSentHandler.handleMessageSentFailure(rawMessage, error);
       }
       return false;
     }

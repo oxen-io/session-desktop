@@ -895,11 +895,40 @@ export async function createClosedGroup(groupName: string, members: Array<string
     dbMessage
   );
 
-  const allInvitesSent = groupInviteResults.every(result => result === true);
-  if (!allInvitesSent) {
+  const allInvitesSent = _.every(groupInviteResults);
+  if (allInvitesSent) {
+    // tslint:disable-next-line: no-non-null-assertion
+    await addClosedGroupEncryptionKeyPair(groupPublicKey, encryptionKeyPair.toHexKeyPair());
+
+    // Subscribe to this group id
+    SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
+  } else {
     window.confirmationDialog({
-      title: 'Group Invite Failed',
-      message: 'Unable to successfully invite all group members',
+      title: window.i18n('groupInviteFailTitle'),
+      message: window.i18n('groupInviteFailMessage'),
+      resolve: () => {
+        // since promise array is same order as the listOfMembers
+
+        // let membersToResend = [];
+        // groupInviteResults.map((val, index) => {
+        //   if (!val) {
+        //     membersToResend.push(listOfMembers[index]);
+        //   }
+        // })
+
+        let membersToResend = [...listOfMembers].filter((val, index) => {
+          return groupInviteResults[index] === true;
+        });
+
+        sendToGroupMembers(
+          membersToResend,
+          groupPublicKey,
+          groupName,
+          admins,
+          encryptionKeyPair,
+          dbMessage
+        );
+      },
     });
   }
 
@@ -936,11 +965,6 @@ async function sendToGroupMembers(
     return getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
   });
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
-  // tslint:disable-next-line: no-non-null-assertion
-  await addClosedGroupEncryptionKeyPair(groupPublicKey, encryptionKeyPair.toHexKeyPair());
-
-  // Subscribe to this group id
-  SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
 
   return Promise.all(promises);
 }

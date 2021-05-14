@@ -1387,6 +1387,14 @@
     "description": "Button action that the user can click to edit a group name (open)",
     "androidKey": "conversation__menu_edit_group"
   },
+  "groupInviteFailTitle": {
+    "message": "Group Invite Failed",
+    "description": "Title for the dialog of a failed group invite modal"
+  },
+  "groupInviteFailMessage": {
+    "message": "Unable to successfully invite all group members",
+    "description": "Message for the dialog of a failed group invite modal"
+  },
   "editGroupName": {
     "message": "Edit group name",
     "description": "Button action that the user can click to edit a group name (closed)"
