@@ -889,7 +889,6 @@ export async function createClosedGroup(groupName: string, members: Array<string
 
   const allInvitesSent = groupInviteResults.every(result => result === true);
   if (!allInvitesSent) {
-    console.error("Group invite failed to send to all members");
     window.confirmationDialog({
       title: 'Group Invite Failed',
       message: 'Unable to successfully invite all group members',
