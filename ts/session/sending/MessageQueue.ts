@@ -157,17 +157,21 @@ export class MessageQueue {
     message: ClosedGroupNewMessage,
   ): Promise<boolean> {
     let rawMessage;
+    let wrappedEnvelope;
     try {
+      throw 'Hey';
       rawMessage = await MessageUtils.toRawMessage(user, message);
-      const wrappedEnvelope = await MessageSender.send(rawMessage, 5);
+      wrappedEnvelope = await MessageSender.send(rawMessage, 5);
       await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
-      return wrappedEnvelope ? true : false;
+      
     } catch (error) {
       console.error('Message failed to send');
       if (rawMessage) {
-        void MessageSentHandler.handleMessageSentFailure(rawMessage, error)
+        // void MessageSentHandler.handleMessageSentFailure(rawMessage, error)
+        await MessageSentHandler.handleMessageSentFailure(rawMessage, error)
       }
-      return false;
+    } finally {
+      return wrappedEnvelope ? true : false;
     }
   }
 

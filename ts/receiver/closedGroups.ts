@@ -907,9 +907,15 @@ export async function createClosedGroup(groupName: string, members: Array<string
   SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
 
   let results = await Promise.all(promises);
+  console.log('@@@@', results);
 
-  if (results.includes(false)) {
+  const failedPromises = results.includes(false) || results.includes(undefined);
+  if (failedPromises) {
     console.error("Group invite failed to send to all members");
+    window.confirmationDialog({
+      title: 'Group Invite Failed',
+      message: 'Unable to successfully invite all group members',
+    })
   }
 
   await forceSyncConfigurationNowIfNeeded();
