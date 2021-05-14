@@ -45,7 +45,7 @@ export class MessageQueue {
   public async sendToPubKey(
     user: PubKey,
     message: ContentMessage,
-    sentCb?: (message: RawMessage) => Promise<void>
+    sentCb?: (message: RawMessage) => Promise<void>,
   ): Promise<void | boolean> {
     if (message instanceof ConfigurationMessage || !!(message as any).syncTarget) {
       throw new Error('SyncMessage needs to be sent with sendSyncMessage');
@@ -154,7 +154,7 @@ export class MessageQueue {
    */
   public async sendToPubKeyNonDurably(
     user: PubKey,
-    message: ClosedGroupNewMessage
+    message: ClosedGroupNewMessage,
   ): Promise<boolean> {
     let rawMessage;
     try {
@@ -220,7 +220,7 @@ export class MessageQueue {
   private async process(
     device: PubKey,
     message: ContentMessage,
-    sentCb?: (message: RawMessage) => Promise<void>
+    sentCb?: (message: RawMessage) => Promise<void>,
   ): Promise<void | boolean> {
     // Don't send to ourselves
     const currentDevice = UserUtils.getOurPubKeyFromCache();

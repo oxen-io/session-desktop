@@ -909,7 +909,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   let results = await Promise.all(promises);
 
   if (results.includes(false)) {
-    console.log("@@@@ Something failed!");
+    console.error("Group invite failed to send to all members");
   }
 
   await forceSyncConfigurationNowIfNeeded();
