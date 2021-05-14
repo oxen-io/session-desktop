@@ -45,7 +45,8 @@ export async function handleClosedGroupControlMessage(
   const { type } = groupUpdate;
   const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
   window.log.info(
-    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${envelope.source
+    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${
+      envelope.source
     }`
   );
 
@@ -885,14 +886,21 @@ export async function createClosedGroup(groupName: string, members: Array<string
   convo.updateLastMessage();
 
   // Send a closed group update message to all members individually
-  let groupInviteResults = await sendToGroupMembers(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
+  const groupInviteResults = await sendToGroupMembers(
+    listOfMembers,
+    groupPublicKey,
+    groupName,
+    admins,
+    encryptionKeyPair,
+    dbMessage
+  );
 
   const allInvitesSent = groupInviteResults.every(result => result === true);
   if (!allInvitesSent) {
     window.confirmationDialog({
       title: 'Group Invite Failed',
       message: 'Unable to successfully invite all group members',
-    })
+    });
   }
 
   await forceSyncConfigurationNowIfNeeded();
@@ -904,8 +912,15 @@ export async function createClosedGroup(groupName: string, members: Array<string
  * Sends a group invite message to each member of the group.
  * @returns Array of promises for group invite messages sent to group members
  */
-async function sendToGroupMembers(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
-  const promises = listOfMembers.map(async (m) => {
+async function sendToGroupMembers(
+  listOfMembers: Array<string>,
+  groupPublicKey: string,
+  groupName: string,
+  admins: Array<string>,
+  encryptionKeyPair: ECKeyPair,
+  dbMessage: MessageModel
+) {
+  const promises = listOfMembers.map(async m => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
       name: groupName,
@@ -918,7 +933,7 @@ async function sendToGroupMembers(listOfMembers: string[], groupPublicKey: strin
     };
     const message = new ClosedGroupNewMessage(messageParams);
 
-    return getMessageQueue().sendToPubKey(PubKey.cast(m), message);
+    return getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
   });
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
   // tslint:disable-next-line: no-non-null-assertion
@@ -927,7 +942,5 @@ async function sendToGroupMembers(listOfMembers: string[], groupPublicKey: strin
   // Subscribe to this group id
   SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
 
-  let results = await Promise.all(promises);
-  return results;
+  return Promise.all(promises);
 }
-

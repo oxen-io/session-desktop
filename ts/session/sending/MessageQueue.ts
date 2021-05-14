@@ -45,13 +45,12 @@ export class MessageQueue {
   public async sendToPubKey(
     user: PubKey,
     message: ContentMessage,
-    sentCb?: (message: RawMessage) => Promise<void>,
-  ): Promise<void | boolean> {
+    sentCb?: (message: RawMessage) => Promise<void>
+  ): Promise<void> {
     if (message instanceof ConfigurationMessage || !!(message as any).syncTarget) {
       throw new Error('SyncMessage needs to be sent with sendSyncMessage');
     }
-    let result = await this.process(user, message, sentCb);
-    if (result) return result;
+    await this.process(user, message, sentCb);
   }
 
   /**
@@ -154,7 +153,7 @@ export class MessageQueue {
    */
   public async sendToPubKeyNonDurably(
     user: PubKey,
-    message: ClosedGroupNewMessage,
+    message: ClosedGroupNewMessage
   ): Promise<boolean> {
     let rawMessage;
     let wrappedEnvelope;
@@ -220,8 +219,8 @@ export class MessageQueue {
   private async process(
     device: PubKey,
     message: ContentMessage,
-    sentCb?: (message: RawMessage) => Promise<void>,
-  ): Promise<void | boolean> {
+    sentCb?: (message: RawMessage) => Promise<void>
+  ): Promise<void> {
     // Don't send to ourselves
     const currentDevice = UserUtils.getOurPubKeyFromCache();
     if (currentDevice && device.isEqual(currentDevice)) {
@@ -233,20 +232,14 @@ export class MessageQueue {
         (message as any).syncTarget?.length > 0
       ) {
         window.log.warn('Processing sync message');
-        window.log.warn('Sending message non-durably');
-        return await this.sendToPubKeyNonDurably(device, message as ClosedGroupNewMessage)
       } else {
         window.log.warn('Dropping message in process() to be sent to ourself');
         return;
       }
     }
 
-    if (message instanceof ClosedGroupNewMessage) {
-      return await this.sendToPubKeyNonDurably(device, message as ClosedGroupNewMessage)
-    } else {
     await this.pendingMessageCache.add(device, message, sentCb);
     void this.processPending(device);
-  }
   }
 
   private getJobQueue(device: PubKey): JobQueue {
