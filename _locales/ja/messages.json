@@ -562,7 +562,7 @@
         "description": "Explain the purpose of the notification settings"
     },
     "disableNotifications": {
-        "message": "通知をミュート",
+        "message": "通知を無効にする",
         "description": "Label for disabling notifications"
     },
     "nameAndMessage": {
@@ -985,7 +985,7 @@
         "message": "削除"
     },
     "invalidSessionId": {
-        "message": "Session ID が不正です"
+        "message": "Session ID が正しくありません"
     },
     "emptyGroupNameError": {
         "message": "グループ名を入力してください"
@@ -1024,7 +1024,7 @@
         "message": "アカウントを復元する"
     },
     "newSession": {
-        "message": "新しい Session"
+        "message": "新しいセッション"
     },
     "searchFor...": {
         "message": "会話やメッセージ、連絡先を検索します。"
