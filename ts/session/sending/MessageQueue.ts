@@ -159,19 +159,15 @@ export class MessageQueue {
     let rawMessage;
     let wrappedEnvelope;
     try {
-      throw 'Hey';
       rawMessage = await MessageUtils.toRawMessage(user, message);
       wrappedEnvelope = await MessageSender.send(rawMessage, 5);
       await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
-      
+      return !!wrappedEnvelope;
     } catch (error) {
-      console.error('Message failed to send');
       if (rawMessage) {
-        // void MessageSentHandler.handleMessageSentFailure(rawMessage, error)
-        await MessageSentHandler.handleMessageSentFailure(rawMessage, error)
+        await MessageSentHandler.handleMessageSentFailure(rawMessage, 'error');
       }
-    } finally {
-      return wrappedEnvelope ? true : false;
+      return false;
     }
   }
 

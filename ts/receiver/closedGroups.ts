@@ -34,6 +34,7 @@ import { ClosedGroupEncryptionPairReplyMessage } from '../session/messages/outgo
 import { queueAllCachedFromSource } from './receiver';
 import { actions as conversationActions } from '../state/ducks/conversations';
 import { SwarmPolling } from '../session/snode_api/swarmPolling';
+import { MessageModel } from '../models/message';
 
 export const distributingClosedGroupEncryptionKeyPairs = new Map<string, ECKeyPair>();
 
@@ -884,7 +885,28 @@ export async function createClosedGroup(groupName: string, members: Array<string
   convo.updateLastMessage();
 
   // Send a closed group update message to all members individually
-  const promises = listOfMembers.map(async m => {
+  let groupInviteResults = await sendToGroupMembers(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
+
+  const allInvitesSent = groupInviteResults.every(result => result === true);
+  if (!allInvitesSent) {
+    console.error("Group invite failed to send to all members");
+    window.confirmationDialog({
+      title: 'Group Invite Failed',
+      message: 'Unable to successfully invite all group members',
+    })
+  }
+
+  await forceSyncConfigurationNowIfNeeded();
+
+  window.inboxStore?.dispatch(conversationActions.openConversationExternal(groupPublicKey));
+}
+
+/**
+ * Sends a group invite message to each member of the group.
+ * @returns Array of promises for group invite messages sent to group members
+ */
+async function sendToGroupMembers(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
+  const promises = listOfMembers.map(async (m) => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
       name: groupName,
@@ -907,18 +929,6 @@ export async function createClosedGroup(groupName: string, members: Array<string
   SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
 
   let results = await Promise.all(promises);
-  console.log('@@@@', results);
-
-  const failedPromises = results.includes(false) || results.includes(undefined);
-  if (failedPromises) {
-    console.error("Group invite failed to send to all members");
-    window.confirmationDialog({
-      title: 'Group Invite Failed',
-      message: 'Unable to successfully invite all group members',
-    })
-  }
-
-  await forceSyncConfigurationNowIfNeeded();
-
-  window.inboxStore?.dispatch(conversationActions.openConversationExternal(groupPublicKey));
+  return results;
 }
+
