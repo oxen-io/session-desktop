@@ -1,5 +1,5 @@
 import { PendingMessageCache } from './PendingMessageCache';
-import { JobQueue, UserUtils } from '../utils';
+import { JobQueue, MessageUtils, UserUtils } from '../utils';
 import { PubKey, RawMessage } from '../types';
 import { MessageSender } from '.';
 import { ClosedGroupMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMessage';
@@ -46,11 +46,12 @@ export class MessageQueue {
     user: PubKey,
     message: ContentMessage,
     sentCb?: (message: RawMessage) => Promise<void>
-  ): Promise<void> {
+  ): Promise<void | boolean> {
     if (message instanceof ConfigurationMessage || !!(message as any).syncTarget) {
       throw new Error('SyncMessage needs to be sent with sendSyncMessage');
     }
-    await this.process(user, message, sentCb);
+    let result = await this.process(user, message, sentCb);
+    if (result) return result;
   }
 
   /**
@@ -117,7 +118,7 @@ export class MessageQueue {
   public async sendToGroup(
     message: ClosedGroupMessageType,
     sentCb?: (message: RawMessage) => Promise<void>
-  ): Promise<void> {
+  ): Promise<void | boolean> {
     let groupId: PubKey | undefined;
     if (message instanceof ExpirationTimerUpdateMessage || message instanceof ClosedGroupMessage) {
       groupId = message.groupId;
@@ -144,6 +145,30 @@ export class MessageQueue {
     const ourPubKey = UserUtils.getOurPubKeyStrFromCache();
 
     await this.process(PubKey.cast(ourPubKey), message, sentCb);
+  }
+
+  /**
+   * Sends a message that awaits until the message is completed sending
+   * @param user user pub key to send to
+   * @param message Message to be sent
+   */
+  public async sendToPubKeyNonDurably(
+    user: PubKey,
+    message: ClosedGroupNewMessage
+  ): Promise<boolean> {
+    let rawMessage;
+    try {
+      rawMessage = await MessageUtils.toRawMessage(user, message);
+      const wrappedEnvelope = await MessageSender.send(rawMessage, 5);
+      await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
+      return wrappedEnvelope ? true : false;
+    } catch (error) {
+      console.error('Message failed to send');
+      if (rawMessage) {
+        void MessageSentHandler.handleMessageSentFailure(rawMessage, error)
+      }
+      return false;
+    }
   }
 
   public async processPending(device: PubKey) {
@@ -196,7 +221,7 @@ export class MessageQueue {
     device: PubKey,
     message: ContentMessage,
     sentCb?: (message: RawMessage) => Promise<void>
-  ): Promise<void> {
+  ): Promise<void | boolean> {
     // Don't send to ourselves
     const currentDevice = UserUtils.getOurPubKeyFromCache();
     if (currentDevice && device.isEqual(currentDevice)) {
@@ -208,14 +233,20 @@ export class MessageQueue {
         (message as any).syncTarget?.length > 0
       ) {
         window.log.warn('Processing sync message');
+        window.log.warn('Sending message non-durably');
+        return await this.sendToPubKeyNonDurably(device, message as ClosedGroupNewMessage)
       } else {
         window.log.warn('Dropping message in process() to be sent to ourself');
         return;
       }
     }
 
+    if (message instanceof ClosedGroupNewMessage) {
+      return await this.sendToPubKeyNonDurably(device, message as ClosedGroupNewMessage)
+    } else {
     await this.pendingMessageCache.add(device, message, sentCb);
     void this.processPending(device);
+  }
   }
 
   private getJobQueue(device: PubKey): JobQueue {

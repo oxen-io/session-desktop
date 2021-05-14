@@ -44,8 +44,7 @@ export async function handleClosedGroupControlMessage(
   const { type } = groupUpdate;
   const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
   window.log.info(
-    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${
-      envelope.source
+    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${envelope.source
     }`
   );
 
@@ -907,7 +906,11 @@ export async function createClosedGroup(groupName: string, members: Array<string
   // Subscribe to this group id
   SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
 
-  await Promise.all(promises);
+  let results = await Promise.all(promises);
+
+  if (results.includes(false)) {
+    console.log("@@@@ Something failed!");
+  }
 
   await forceSyncConfigurationNowIfNeeded();
 
