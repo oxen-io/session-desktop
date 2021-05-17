@@ -884,7 +884,29 @@ export async function createClosedGroup(groupName: string, members: Array<string
   await convo.commit();
   convo.updateLastMessage();
 
-  // Send a closed group update message to all members individually
+  // Send a closed group update message to all members individually 
+
+  // const test = () => {
+  //   // retry the send 
+  //   console.log('@@@@ test');
+  //   window.confirmationDialog({
+  //     title: 'test',
+  //     message: window.i18n('groupInviteFailMessage'),
+  //     okText: 'Resend',
+  //     // hideCancel: true,
+  //     cancelText: 'cancel send',
+  //     resolve: () => {
+  //       console.log('@@@@ test resolving');
+  //       test();
+  //     },
+  //     reject: () => {
+  //       console.log('@@@@ test rejecting');
+  //       test();
+  //     }
+  //   });
+  // }
+
+  // test();
 
   let allInvitesSent = await sendToGroupMembers(
     listOfMembers,
@@ -896,25 +918,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   );
 
 
-  // const test = () => {
-  //   // retry the send 
-  //   console.log('@@@@ test');
-  //   window.confirmationDialog({
-  //     title: 'test',
-  //     message: window.i18n('groupInviteFailMessage'),
-  //     okText: 'Resend',
-  //     hideCancel: true,
-  //     cancelText: 'cancel send',
-  //     resolve: () => { 
-  //       console.log('resolving');
-  //       test(); },
-  //     reject: () => { 
-  //       console.log('rejecting');
-  //       test(); }
-  //   });
-  // }
 
-  // test();
 
   if (allInvitesSent) {
     // tslint:disable-next-line: no-non-null-assertion
@@ -955,8 +959,6 @@ async function sendToGroupMembers(
 
   const allInvitesSent = inviteResults.every(result => result === true);
 
-  // TEST: 
-
   if (allInvitesSent || skip) {
     window.confirmationDialog({
       title: 'Group invites success',
@@ -964,16 +966,20 @@ async function sendToGroupMembers(
     });
   } else {
     // retry the send 
-    window.confirmationDialog({
-      title: window.i18n('groupInviteFailTitle'),
-      message: window.i18n('groupInviteFailMessage'),
-      okText: 'Resend',
-      hideCancel: true,
-      cancelText: 'cancel send',
-      resolve: async () => {
-        let membersToResend: any[] = [...listOfMembers];
-        console.log('@@@@ group invite results: ', inviteResults);
-        console.table('@@@@ members to resend', membersToResend);
+    const resendInvites = async () => {
+      let membersToResend: any[] = []
+      console.log('@@@@ group invite results: ', inviteResults);
+      console.table('@@@@ members to resend', membersToResend);
+
+      inviteResults.forEach((result, index) => {
+        if (result !== true) {
+          membersToResend.push(listOfMembers[index]);
+        }
+      });
+
+      console.log({ membersToResend });
+
+      if (membersToResend.length > 0) {
         await sendToGroupMembers(
           membersToResend,
           groupPublicKey,
@@ -982,24 +988,21 @@ async function sendToGroupMembers(
           encryptionKeyPair,
           dbMessage
         );
-      },
-      reject: async ()=> {
-        console.log('@@@@ rejecting');
-        let membersToResend: any[] = [...listOfMembers];
-        console.log('@@@@ group invite results: ', inviteResults);
-        console.table('@@@@ members to resend', membersToResend);
-        await sendToGroupMembers(
-          membersToResend,
-          groupPublicKey,
-          groupName,
-          admins,
-          encryptionKeyPair,
-          dbMessage,
-        );
       }
+    }
+
+    window.confirmationDialog({
+      title: window.i18n('groupInviteFailTitle'),
+      message: window.i18n('groupInviteFailMessage'),
+      okText: 'Resend',
+      hideCancel: true,
+      resolve: () => { resendInvites(); },
+      reject: () => { resendInvites(); },
     });
   }
 
+  console.log('@@@@ finishing off');
+  return allInvitesSent;
 
 }
 
