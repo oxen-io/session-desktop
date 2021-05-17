@@ -885,6 +885,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   convo.updateLastMessage();
 
   // Send a closed group update message to all members individually
+
   let allInvitesSent = await sendToGroupMembers(
     listOfMembers,
     groupPublicKey,
@@ -893,6 +894,27 @@ export async function createClosedGroup(groupName: string, members: Array<string
     encryptionKeyPair,
     dbMessage
   );
+
+
+  // const test = () => {
+  //   // retry the send 
+  //   console.log('@@@@ test');
+  //   window.confirmationDialog({
+  //     title: 'test',
+  //     message: window.i18n('groupInviteFailMessage'),
+  //     okText: 'Resend',
+  //     hideCancel: true,
+  //     cancelText: 'cancel send',
+  //     resolve: () => { 
+  //       console.log('resolving');
+  //       test(); },
+  //     reject: () => { 
+  //       console.log('rejecting');
+  //       test(); }
+  //   });
+  // }
+
+  // test();
 
   if (allInvitesSent) {
     // tslint:disable-next-line: no-non-null-assertion
@@ -907,6 +929,8 @@ export async function createClosedGroup(groupName: string, members: Array<string
   window.inboxStore?.dispatch(conversationActions.openConversationExternal(groupPublicKey));
 }
 
+
+
 /**
  * Sends a group invite message to each member of the group.
  * @returns Array of promises for group invite messages sent to group members
@@ -917,11 +941,71 @@ async function sendToGroupMembers(
   groupName: string,
   admins: Array<string>,
   encryptionKeyPair: ECKeyPair,
-  dbMessage: MessageModel
+  dbMessage: MessageModel,
+  skip: boolean = false
 ): Promise<any> {
+  const promises = createMemberInvitePromises(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
 
-  let inviteResultLookup: any = {};
-  const promises = listOfMembers.map(async m => {
+  window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
+
+  // evaluating if all invites sent, if failed give the option to retry failed invites via modal dialog
+  const inviteResults = await Promise.all(promises);
+  // const allInvitesSent = _.every(await groupInviteResults);
+  // const allInvitesSent = _.every(groupInviteResults, Boolean);
+
+  const allInvitesSent = inviteResults.every(result => result === true);
+
+  // TEST: 
+
+  if (allInvitesSent || skip) {
+    window.confirmationDialog({
+      title: 'Group invites success',
+      message: 'Successfully sent to all members',
+    });
+  } else {
+    // retry the send 
+    window.confirmationDialog({
+      title: window.i18n('groupInviteFailTitle'),
+      message: window.i18n('groupInviteFailMessage'),
+      okText: 'Resend',
+      hideCancel: true,
+      cancelText: 'cancel send',
+      resolve: async () => {
+        let membersToResend: any[] = [...listOfMembers];
+        console.log('@@@@ group invite results: ', inviteResults);
+        console.table('@@@@ members to resend', membersToResend);
+        await sendToGroupMembers(
+          membersToResend,
+          groupPublicKey,
+          groupName,
+          admins,
+          encryptionKeyPair,
+          dbMessage
+        );
+      },
+      reject: async ()=> {
+        console.log('@@@@ rejecting');
+        let membersToResend: any[] = [...listOfMembers];
+        console.log('@@@@ group invite results: ', inviteResults);
+        console.table('@@@@ members to resend', membersToResend);
+        await sendToGroupMembers(
+          membersToResend,
+          groupPublicKey,
+          groupName,
+          admins,
+          encryptionKeyPair,
+          dbMessage,
+        );
+      }
+    });
+  }
+
+
+}
+
+
+function createMemberInvitePromises(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
+  return listOfMembers.map(async (m) => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
       name: groupName,
@@ -933,57 +1017,7 @@ async function sendToGroupMembers(
       expireTimer: 0,
     };
     const message = new ClosedGroupNewMessage(messageParams);
-    let invite = getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
-    inviteResultLookup[m] = invite;
-    return invite;
+    return getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
   });
-
-  window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
-
-  // evaluating if all invites sent, if failed give the option to retry failed invites via modal dialog
-  const groupInviteResults = await Promise.all(promises);
-
-  // const allInvitesSent = _.every(await groupInviteResults);
-  const allInvitesSent = _.every(groupInviteResults);
-  if (allInvitesSent) {
-    console.log('@@@@', 'Successfully sent to all members');
-    return true;
-  } else {
-    // retry the send 
-    window.confirmationDialog({
-      title: window.i18n('groupInviteFailTitle'),
-      message: window.i18n('groupInviteFailMessage'),
-      resolve: async () => {
-
-        console.log('@@@@ group invite results: ', groupInviteResults);
-
-        let membersToResend: any[] = [];
-
-        Object.keys(inviteResultLookup).forEach( async (m: any) => {
-          let memberResult = await inviteResultLookup[m];
-          if (!memberResult) {
-            membersToResend.push(m);
-          } else {
-            console.log(`${m} sent successfully`);
-          }
-        })
-
-        console.table('@@@@ members to resend', membersToResend);
-
-        sendToGroupMembers(
-          membersToResend,
-          groupPublicKey,
-          groupName,
-          admins,
-          encryptionKeyPair,
-          dbMessage
-        );
-      },
-
-      reject: () => {
-        return false;
-      }
-    });
-
-  }
 }
+
