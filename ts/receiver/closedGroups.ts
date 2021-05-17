@@ -45,7 +45,8 @@ export async function handleClosedGroupControlMessage(
   const { type } = groupUpdate;
   const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
   window.log.info(
-    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${envelope.source
+    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${
+      envelope.source
     }`
   );
 
@@ -884,8 +885,8 @@ export async function createClosedGroup(groupName: string, members: Array<string
   await convo.commit();
   convo.updateLastMessage();
 
-  // Send a closed group update message to all members individually 
-  let allInvitesSent = await sendToGroupMembers(
+  // Send a closed group update message to all members individually
+  const allInvitesSent = await sendToGroupMembers(
     listOfMembers,
     groupPublicKey,
     groupName,
@@ -895,8 +896,16 @@ export async function createClosedGroup(groupName: string, members: Array<string
   );
 
   if (allInvitesSent) {
-    // tslint:disable-next-line: no-non-null-assertion
-    await addClosedGroupEncryptionKeyPair(groupPublicKey, encryptionKeyPair.toHexKeyPair());
+    const newHexKeypair = encryptionKeyPair.toHexKeyPair();
+
+    const isHexKeyPairSaved = await isKeyPairAlreadySaved(groupPublicKey, newHexKeypair);
+
+    if (!isHexKeyPairSaved) {
+      // tslint:disable-next-line: no-non-null-assertion
+      await addClosedGroupEncryptionKeyPair(groupPublicKey, encryptionKeyPair.toHexKeyPair());
+    } else {
+      window.log.info('Dropping already saved keypair for group', groupPublicKey);
+    }
 
     // Subscribe to this group id
     SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
@@ -906,8 +915,6 @@ export async function createClosedGroup(groupName: string, members: Array<string
 
   window.inboxStore?.dispatch(conversationActions.openConversationExternal(groupPublicKey));
 }
-
-
 
 /**
  * Sends a group invite message to each member of the group.
@@ -919,16 +926,26 @@ async function sendToGroupMembers(
   groupName: string,
   admins: Array<string>,
   encryptionKeyPair: ECKeyPair,
-  dbMessage: MessageModel,
+  dbMessage: MessageModel
 ): Promise<any> {
-  const promises = createInvitePromises(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
+  const promises = createInvitePromises(
+    listOfMembers,
+    groupPublicKey,
+    groupName,
+    admins,
+    encryptionKeyPair,
+    dbMessage
+  );
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
   // evaluating if all invites sent, if failed give the option to retry failed invites via modal dialog
   const inviteResults = await Promise.all(promises);
   const allInvitesSent = _.every(inviteResults, Boolean);
 
   if (allInvitesSent) {
-    const invitesTitle = inviteResults.length >= 1 ? window.i18n('closedGroupInviteSuccessTitle') : window.i18n('closedGroupInviteSuccessTitlePlural')
+    const invitesTitle =
+      inviteResults.length >= 1
+        ? window.i18n('closedGroupInviteSuccessTitle')
+        : window.i18n('closedGroupInviteSuccessTitlePlural');
     window.confirmationDialog({
       title: invitesTitle,
       message: window.i18n('closedGroupInviteSuccessMessage'),
@@ -941,7 +958,7 @@ async function sendToGroupMembers(
       message: window.i18n('closedGroupInviteFailMessage'),
       okText: window.i18n('closedGroupInviteOkText'),
       resolve: async () => {
-        let membersToResend: any[] = []
+        const membersToResend: Array<string> = new Array<string>();
         inviteResults.forEach((result, index) => {
           if (result !== true) {
             membersToResend.push(listOfMembers[index]);
@@ -963,9 +980,15 @@ async function sendToGroupMembers(
   return allInvitesSent;
 }
 
-
-function createInvitePromises(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
-  return listOfMembers.map(async (m) => {
+function createInvitePromises(
+  listOfMembers: Array<string>,
+  groupPublicKey: string,
+  groupName: string,
+  admins: Array<string>,
+  encryptionKeyPair: ECKeyPair,
+  dbMessage: MessageModel
+) {
+  return listOfMembers.map(async m => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
       name: groupName,
@@ -980,4 +1003,3 @@ function createInvitePromises(listOfMembers: string[], groupPublicKey: string, g
     return getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
   });
 }
-
