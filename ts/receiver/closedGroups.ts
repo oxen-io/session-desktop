@@ -45,8 +45,7 @@ export async function handleClosedGroupControlMessage(
   const { type } = groupUpdate;
   const { Type } = SignalService.DataMessage.ClosedGroupControlMessage;
   window.log.info(
-    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${
-      envelope.source
+    ` handle closed group update from ${envelope.senderIdentity || envelope.source} about group ${envelope.source
     }`
   );
 
@@ -886,7 +885,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   convo.updateLastMessage();
 
   // Send a closed group update message to all members individually
-  const groupInviteResults = await sendToGroupMembers(
+  let allInvitesSent = await sendToGroupMembers(
     listOfMembers,
     groupPublicKey,
     groupName,
@@ -895,41 +894,12 @@ export async function createClosedGroup(groupName: string, members: Array<string
     dbMessage
   );
 
-  const allInvitesSent = _.every(groupInviteResults);
   if (allInvitesSent) {
     // tslint:disable-next-line: no-non-null-assertion
     await addClosedGroupEncryptionKeyPair(groupPublicKey, encryptionKeyPair.toHexKeyPair());
 
     // Subscribe to this group id
     SwarmPolling.getInstance().addGroupId(new PubKey(groupPublicKey));
-  } else {
-    window.confirmationDialog({
-      title: window.i18n('groupInviteFailTitle'),
-      message: window.i18n('groupInviteFailMessage'),
-      resolve: () => {
-        // since promise array is same order as the listOfMembers
-
-        // let membersToResend = [];
-        // groupInviteResults.map((val, index) => {
-        //   if (!val) {
-        //     membersToResend.push(listOfMembers[index]);
-        //   }
-        // })
-
-        let membersToResend = [...listOfMembers].filter((val, index) => {
-          return groupInviteResults[index] === true;
-        });
-
-        sendToGroupMembers(
-          membersToResend,
-          groupPublicKey,
-          groupName,
-          admins,
-          encryptionKeyPair,
-          dbMessage
-        );
-      },
-    });
   }
 
   await forceSyncConfigurationNowIfNeeded();
@@ -948,7 +918,9 @@ async function sendToGroupMembers(
   admins: Array<string>,
   encryptionKeyPair: ECKeyPair,
   dbMessage: MessageModel
-) {
+): Promise<any> {
+
+  let inviteResultLookup: any = {};
   const promises = listOfMembers.map(async m => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
@@ -961,10 +933,57 @@ async function sendToGroupMembers(
       expireTimer: 0,
     };
     const message = new ClosedGroupNewMessage(messageParams);
-
-    return getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
+    let invite = getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(m), message);
+    inviteResultLookup[m] = invite;
+    return invite;
   });
+
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
 
-  return Promise.all(promises);
+  // evaluating if all invites sent, if failed give the option to retry failed invites via modal dialog
+  const groupInviteResults = await Promise.all(promises);
+
+  // const allInvitesSent = _.every(await groupInviteResults);
+  const allInvitesSent = _.every(groupInviteResults);
+  if (allInvitesSent) {
+    console.log('@@@@', 'Successfully sent to all members');
+    return true;
+  } else {
+    // retry the send 
+    window.confirmationDialog({
+      title: window.i18n('groupInviteFailTitle'),
+      message: window.i18n('groupInviteFailMessage'),
+      resolve: async () => {
+
+        console.log('@@@@ group invite results: ', groupInviteResults);
+
+        let membersToResend: any[] = [];
+
+        Object.keys(inviteResultLookup).forEach( async (m: any) => {
+          let memberResult = await inviteResultLookup[m];
+          if (!memberResult) {
+            membersToResend.push(m);
+          } else {
+            console.log(`${m} sent successfully`);
+          }
+        })
+
+        console.table('@@@@ members to resend', membersToResend);
+
+        sendToGroupMembers(
+          membersToResend,
+          groupPublicKey,
+          groupName,
+          admins,
+          encryptionKeyPair,
+          dbMessage
+        );
+      },
+
+      reject: () => {
+        return false;
+      }
+    });
+
+  }
 }
