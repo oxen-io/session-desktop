@@ -157,13 +157,8 @@ export class MessageQueue {
   ): Promise<boolean> {
     let rawMessage;
     try {
-      let throwErr = Math.random() > 0.5;
-      console.log('@@@@ throw an error', throwErr);
-      if (throwErr) {
-        throw 'throwing forced error';
-      }
       rawMessage = await MessageUtils.toRawMessage(user, message);
-      const wrappedEnvelope = await MessageSender.send(rawMessage, 5);
+      const wrappedEnvelope = await MessageSender.send(rawMessage);
       await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
       return !!wrappedEnvelope;
     } catch (error) {

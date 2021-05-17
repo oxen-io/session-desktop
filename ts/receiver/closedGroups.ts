@@ -885,29 +885,6 @@ export async function createClosedGroup(groupName: string, members: Array<string
   convo.updateLastMessage();
 
   // Send a closed group update message to all members individually 
-
-  // const test = () => {
-  //   // retry the send 
-  //   console.log('@@@@ test');
-  //   window.confirmationDialog({
-  //     title: 'test',
-  //     message: window.i18n('groupInviteFailMessage'),
-  //     okText: 'Resend',
-  //     // hideCancel: true,
-  //     cancelText: 'cancel send',
-  //     resolve: () => {
-  //       console.log('@@@@ test resolving');
-  //       test();
-  //     },
-  //     reject: () => {
-  //       console.log('@@@@ test rejecting');
-  //       test();
-  //     }
-  //   });
-  // }
-
-  // test();
-
   let allInvitesSent = await sendToGroupMembers(
     listOfMembers,
     groupPublicKey,
@@ -916,9 +893,6 @@ export async function createClosedGroup(groupName: string, members: Array<string
     encryptionKeyPair,
     dbMessage
   );
-
-
-
 
   if (allInvitesSent) {
     // tslint:disable-next-line: no-non-null-assertion
@@ -948,66 +922,50 @@ async function sendToGroupMembers(
   dbMessage: MessageModel,
   skip: boolean = false
 ): Promise<any> {
-  const promises = createMemberInvitePromises(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
-
+  const promises = createInvitePromises(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
-
   // evaluating if all invites sent, if failed give the option to retry failed invites via modal dialog
   const inviteResults = await Promise.all(promises);
-  // const allInvitesSent = _.every(await groupInviteResults);
-  // const allInvitesSent = _.every(groupInviteResults, Boolean);
-
-  const allInvitesSent = inviteResults.every(result => result === true);
+  const allInvitesSent = _.every(inviteResults, Boolean);
 
   if (allInvitesSent || skip) {
     window.confirmationDialog({
       title: 'Group invites success',
       message: 'Successfully sent to all members',
     });
+
+    return allInvitesSent;
   } else {
-    // retry the send 
-    const resendInvites = async () => {
-      let membersToResend: any[] = []
-      console.log('@@@@ group invite results: ', inviteResults);
-      console.table('@@@@ members to resend', membersToResend);
-
-      inviteResults.forEach((result, index) => {
-        if (result !== true) {
-          membersToResend.push(listOfMembers[index]);
-        }
-      });
-
-      console.log({ membersToResend });
-
-      if (membersToResend.length > 0) {
-        await sendToGroupMembers(
-          membersToResend,
-          groupPublicKey,
-          groupName,
-          admins,
-          encryptionKeyPair,
-          dbMessage
-        );
-      }
-    }
-
+    // Confirmation dialog that recursively calls sendToGroupMembers on resolve
     window.confirmationDialog({
       title: window.i18n('groupInviteFailTitle'),
       message: window.i18n('groupInviteFailMessage'),
       okText: 'Resend',
-      hideCancel: true,
-      resolve: () => { resendInvites(); },
-      reject: () => { resendInvites(); },
+      resolve: async () => {
+        let membersToResend: any[] = []
+        inviteResults.forEach((result, index) => {
+          if (result !== true) {
+            membersToResend.push(listOfMembers[index]);
+          }
+        });
+        if (membersToResend.length > 0) {
+          await sendToGroupMembers(
+            membersToResend,
+            groupPublicKey,
+            groupName,
+            admins,
+            encryptionKeyPair,
+            dbMessage
+          );
+        }
+      },
     });
   }
-
-  console.log('@@@@ finishing off');
   return allInvitesSent;
-
 }
 
 
-function createMemberInvitePromises(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
+function createInvitePromises(listOfMembers: string[], groupPublicKey: string, groupName: string, admins: string[], encryptionKeyPair: ECKeyPair, dbMessage: MessageModel) {
   return listOfMembers.map(async (m) => {
     const messageParams: ClosedGroupNewMessageParams = {
       groupId: groupPublicKey,
