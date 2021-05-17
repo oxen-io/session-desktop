@@ -920,7 +920,6 @@ async function sendToGroupMembers(
   admins: Array<string>,
   encryptionKeyPair: ECKeyPair,
   dbMessage: MessageModel,
-  skip: boolean = false
 ): Promise<any> {
   const promises = createInvitePromises(listOfMembers, groupPublicKey, groupName, admins, encryptionKeyPair, dbMessage);
   window.log.info(`Creating a new group and an encryptionKeyPair for group ${groupPublicKey}`);
@@ -928,19 +927,19 @@ async function sendToGroupMembers(
   const inviteResults = await Promise.all(promises);
   const allInvitesSent = _.every(inviteResults, Boolean);
 
-  if (allInvitesSent || skip) {
+  if (allInvitesSent) {
+    const invitesTitle = inviteResults.length >= 1 ? window.i18n('closedGroupInviteSuccessTitle') : window.i18n('closedGroupInviteSuccessTitlePlural')
     window.confirmationDialog({
-      title: 'Group invites success',
-      message: 'Successfully sent to all members',
+      title: invitesTitle,
+      message: window.i18n('closedGroupInviteSuccessMessage'),
     });
-
     return allInvitesSent;
   } else {
     // Confirmation dialog that recursively calls sendToGroupMembers on resolve
     window.confirmationDialog({
-      title: window.i18n('groupInviteFailTitle'),
-      message: window.i18n('groupInviteFailMessage'),
-      okText: 'Resend',
+      title: window.i18n('closedGroupInviteFailTitle'),
+      message: window.i18n('closedGroupInviteFailMessage'),
+      okText: window.i18n('closedGroupInviteOkText'),
       resolve: async () => {
         let membersToResend: any[] = []
         inviteResults.forEach((result, index) => {
