@@ -926,7 +926,8 @@ async function sendToGroupMembers(
   groupName: string,
   admins: Array<string>,
   encryptionKeyPair: ECKeyPair,
-  dbMessage: MessageModel
+  dbMessage: MessageModel,
+  isRetry: boolean = false
 ): Promise<any> {
   const promises = createInvitePromises(
     listOfMembers,
@@ -942,14 +943,16 @@ async function sendToGroupMembers(
   const allInvitesSent = _.every(inviteResults, Boolean);
 
   if (allInvitesSent) {
-    const invitesTitle =
-      inviteResults.length >= 1
-        ? window.i18n('closedGroupInviteSuccessTitle')
-        : window.i18n('closedGroupInviteSuccessTitlePlural');
-    window.confirmationDialog({
-      title: invitesTitle,
-      message: window.i18n('closedGroupInviteSuccessMessage'),
-    });
+    if (isRetry) {
+      const invitesTitle =
+        inviteResults.length >= 1
+          ? window.i18n('closedGroupInviteSuccessTitlePlural')
+          : window.i18n('closedGroupInviteSuccessTitle');
+      window.confirmationDialog({
+        title: invitesTitle,
+        message: window.i18n('closedGroupInviteSuccessMessage'),
+      });
+    }
     return allInvitesSent;
   } else {
     // Confirmation dialog that recursively calls sendToGroupMembers on resolve
@@ -965,13 +968,15 @@ async function sendToGroupMembers(
           }
         });
         if (membersToResend.length > 0) {
+          const isRetry = true;
           await sendToGroupMembers(
             membersToResend,
             groupPublicKey,
             groupName,
             admins,
             encryptionKeyPair,
-            dbMessage
+            dbMessage,
+            isRetry
           );
         }
       },
