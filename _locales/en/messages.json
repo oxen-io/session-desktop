@@ -1388,12 +1388,20 @@
     "androidKey": "conversation__menu_edit_group"
   },
   "closedGroupInviteFailTitle": {
-    "message": "Group Invite Failed",
+    "message": "Group Invitation Failed",
     "description": "Title for the dialog of a failed group invite modal"
   },
+  "closedGroupInviteFailTitlePlural": {
+    "message": "Group Invitations Failed",
+    "description": "Title for the dialog of a failed group invite modal plural"
+  },
   "closedGroupInviteFailMessage": {
-    "message": "Unable to successfully invite all group members",
+    "message": "Unable to successfully invite a group member",
     "description": "Message for the dialog of a failed group invite modal"
+  },
+  "closedGroupInviteFailMessagePlural": {
+    "message": "Unable to successfully invite all group members",
+    "description": "Message for the dialog of a failed group invite modal plural"
   },
   "closedGroupInviteOkText": {
     "message": "Retry invitations",

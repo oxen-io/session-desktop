@@ -957,14 +957,22 @@ async function sendToGroupMembers(
   } else {
     // Confirmation dialog that recursively calls sendToGroupMembers on resolve
     window.confirmationDialog({
-      title: window.i18n('closedGroupInviteFailTitle'),
-      message: window.i18n('closedGroupInviteFailMessage'),
+      title:
+        inviteResults.length > 1
+          ? window.i18n('closedGroupInviteFailTitlePlural')
+          : window.i18n('closedGroupInviteFailTitle'),
+      message:
+        inviteResults.length > 1
+          ? window.i18n('closedGroupInviteFailMessagePlural')
+          : window.i18n('closedGroupInviteFailMessage'),
       okText: window.i18n('closedGroupInviteOkText'),
       resolve: async () => {
         const membersToResend: Array<string> = new Array<string>();
         inviteResults.forEach((result, index) => {
-          if (result !== true) {
-            membersToResend.push(listOfMembers[index]);
+          const member = listOfMembers[index];
+          // group invite must always contain the admin member.
+          if (result !== true || admins.includes(member)) {
+            membersToResend.push(member);
           }
         });
         if (membersToResend.length > 0) {
