@@ -945,7 +945,7 @@ async function sendToGroupMembers(
   if (allInvitesSent) {
     if (isRetry) {
       const invitesTitle =
-        inviteResults.length >= 1
+        inviteResults.length > 1
           ? window.i18n('closedGroupInviteSuccessTitlePlural')
           : window.i18n('closedGroupInviteSuccessTitle');
       window.confirmationDialog({
