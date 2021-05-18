@@ -968,7 +968,7 @@ async function sendToGroupMembers(
           }
         });
         if (membersToResend.length > 0) {
-          const isRetry = true;
+          const isRetrySend = true;
           await sendToGroupMembers(
             membersToResend,
             groupPublicKey,
@@ -976,7 +976,7 @@ async function sendToGroupMembers(
             admins,
             encryptionKeyPair,
             dbMessage,
-            isRetry
+            isRetrySend
           );
         }
       },
