@@ -65,7 +65,7 @@ export function getUnpaddedAttachment(
   if (data.byteLength <= unpaddedExpectedSize) {
     return null;
   }
-  // we know consider that anything coming after the expected size is padding, no matter what there is there
+  // we now consider that anything coming after the expected size is padding, no matter what there is there
   return data.slice(0, unpaddedExpectedSize);
 }
 
