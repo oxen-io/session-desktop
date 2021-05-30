@@ -194,6 +194,11 @@ export class SessionMessagesList extends React.Component<Props, State> {
       <>
         {messages.map((message: MessageModel) => {
           const messageProps = message.propsForMessage;
+          console.warn(
+            `rendering message serverId: ${message.get('serverId')}; sentAt: ${message.get(
+              'serverTimestamp'
+            )} text: ${message.propsForMessage.text} from: ${message.get('source')}`
+          );
 
           const timerProps = message.propsForTimerNotification;
           const propsForGroupInvitation = message.propsForGroupInvitation;

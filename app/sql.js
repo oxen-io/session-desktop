@@ -73,6 +73,7 @@ module.exports = {
   getUnreadCountByConversation,
   getMessageBySender,
   getMessageBySenderAndServerId,
+  getMessageBySenderAndServerTimestamp,
   getMessageIdsFromServerIds,
   getMessageById,
   getAllMessages,
@@ -2007,6 +2008,20 @@ async function getMessageBySenderAndServerId({ source, serverId }) {
     {
       $source: source,
       $serverId: serverId,
+    }
+  );
+
+  return map(rows, row => jsonToObject(row.json));
+}
+
+async function getMessageBySenderAndServerTimestamp({ source, serverTimestamp }) {
+  const rows = await db.all(
+    `SELECT json FROM ${MESSAGES_TABLE} WHERE
+      source = $source AND
+      serverTimestamp = $serverTimestamp;`,
+    {
+      $source: source,
+      $serverTimestamp: serverTimestamp,
     }
   );
 

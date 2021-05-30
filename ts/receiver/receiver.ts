@@ -340,35 +340,7 @@ export async function handleOpenGroupV2Message(
     window.log.error('Received a message for an unknown convo. Skipping');
     return;
   }
-  const isMe = UserUtils.isUsFromCache(sender);
-  // for an opengroupv2 incoming message the serverTimestamp and the timestamp
-  const messageCreationData: MessageCreationData = {
-    isPublic: true,
-    sourceDevice: 1,
-    serverId,
-    serverTimestamp: sentTimestamp,
-    receivedAt: Date.now(),
-    destination: conversationId,
-    timestamp: sentTimestamp,
-    unidentifiedStatus: undefined,
-    expirationStartTimestamp: undefined,
-    source: sender,
-    message: dataMessage,
-  };
 
-  if (await isMessageDuplicate(messageCreationData)) {
-    window.log.info('Received duplicate message. Dropping it.');
-    return;
-  }
-
-  // this line just create an empty message with some basic stuff set.
-  // the whole decoding of data is happening in handleMessageJob()
-  const msg = createMessage(messageCreationData, !isMe);
-
-  // if the message is `sent` (from secondary device) we have to set the sender manually... (at least for now)
-  // source = source || msg.get('source');
-
-  const ourNumber = UserUtils.getOurPubKeyStrFromCache();
   const conversation = await ConversationController.getInstance().getOrCreateAndWait(
     conversationId,
     ConversationTypeEnum.GROUP
@@ -380,6 +352,38 @@ export async function handleOpenGroupV2Message(
   }
 
   conversation.queueJob(async () => {
+    const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+    const isMe = UserUtils.isUsFromCache(sender);
+    // for an opengroupv2 incoming message the serverTimestamp and the timestamp
+    const messageCreationData: MessageCreationData = {
+      isPublic: true,
+      sourceDevice: 1,
+      serverId,
+      serverTimestamp: sentTimestamp,
+      receivedAt: Date.now(),
+      destination: conversationId,
+      timestamp: sentTimestamp,
+      unidentifiedStatus: undefined,
+      expirationStartTimestamp: undefined,
+      source: sender,
+      message: dataMessage,
+    };
+
+    console.warn(`received message ${serverId}, sentAt:${sentTimestamp}`);
+
+    // WARNING this is very important that the isMessageDuplicate is made in the conversation.queueJob
+    if (await isMessageDuplicate(messageCreationData)) {
+      window.log.info('Received duplicate message. Dropping it.');
+      return;
+    }
+
+    // this line just create an empty message with some basic stuff set.
+    // the whole decoding of data is happening in handleMessageJob()
+    const msg = createMessage(messageCreationData, !isMe);
+
+    // if the message is `sent` (from secondary device) we have to set the sender manually... (at least for now)
+    // source = source || msg.get('source');
+
     await handleMessageJob(msg, conversation, decoded?.dataMessage, ourNumber, noop, sender);
   });
 }
