@@ -72,14 +72,6 @@ const Section = (props: {
   const handleClick = () => {
     /* tslint:disable:no-void-expression */
     if (type === SectionType.Profile) {
-      // window.showEditProfileDialog();
-      console.log("edit profile");
-
-      // window.inboxStore?.dispatch(updateConfirmModal({ title: "title test" }));
-
-      // dispatch(updateConfirmModal({ title: "title test" }));
-
-      // setModal(<EditProfileDialog2 onClose={() => setModal(null)}></EditProfileDialog2>);
       setModal(<EditProfileDialog onClose={handleModalClose} theme={theme} ></EditProfileDialog>);
     } else if (type === SectionType.Moon) {
       const themeFromSettings = window.Events.getThemeSetting();
