@@ -20,6 +20,7 @@ import { MessageRegularProps } from '../../../models/messageType';
 import { getMessagesBySentAt } from '../../../data/data';
 import autoBind from 'auto-bind';
 import { ConversationTypeEnum } from '../../../models/conversation';
+import { DataExtractionNotification } from '../../conversation/DataExtractionNotification';
 
 interface State {
   showScrollButton: boolean;
@@ -45,7 +46,14 @@ interface Props {
   replyToMessage: (messageId: number) => Promise<void>;
   showMessageDetails: (messageProps: any) => void;
   onClickAttachment: (attachment: any, message: any) => void;
-  onDownloadAttachment: ({ attachment }: { attachment: any }) => void;
+  onDownloadAttachment: ({
+    attachment,
+    messageTimestamp,
+  }: {
+    attachment: any;
+    messageTimestamp: number;
+    messageSender: string;
+  }) => void;
   onDeleteSelectedMessages: () => Promise<void>;
   updateSessionConversationModal: (modal: JSX.Element | null) => any;
 }
@@ -198,6 +206,7 @@ export class SessionMessagesList extends React.Component<Props, State> {
 
           const timerProps = message.propsForTimerNotification;
           const propsForGroupInvitation = message.propsForGroupInvitation;
+          const propsForDataExtractionNotification = message.propsForDataExtractionNotification;
 
           const groupNotificationProps = message.propsForGroupNotification;
 
@@ -232,6 +241,18 @@ export class SessionMessagesList extends React.Component<Props, State> {
             return (
               <>
                 <GroupInvitation {...propsForGroupInvitation} key={message.id} />
+                {unreadIndicator}
+              </>
+            );
+          }
+
+          if (propsForDataExtractionNotification) {
+            return (
+              <>
+                <DataExtractionNotification
+                  {...propsForDataExtractionNotification}
+                  key={message.id}
+                />
                 {unreadIndicator}
               </>
             );
@@ -306,7 +327,11 @@ export class SessionMessagesList extends React.Component<Props, State> {
       this.props.onClickAttachment(attachment, messageProps);
     };
     messageProps.onDownload = (attachment: AttachmentType) => {
-      this.props.onDownloadAttachment({ attachment });
+      this.props.onDownloadAttachment({
+        attachment,
+        messageTimestamp: messageProps.timestamp,
+        messageSender: messageProps.authorPhoneNumber,
+      });
     };
 
     messageProps.isQuotedMessageToAnimate = messageProps.id === this.state.animateQuotedMessageId;

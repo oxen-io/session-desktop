@@ -4,9 +4,14 @@ import { parseStatusCodeFromOnionRequest } from '../opengroup/opengroupV2/OpenGr
 import { fromArrayBufferToBase64, fromBase64ToArrayBuffer } from '../session/utils/String';
 
 // tslint:disable-next-line: no-http-string
-export const fileServerV2URL = 'http://88.99.175.227';
-export const fileServerV2PubKey =
+export const oldFileServerV2URL = 'http://88.99.175.227';
+export const oldFileServerV2PubKey =
   '7cb31905b55cd5580c686911debf672577b3fb0bff81df4ce2d5c4cb3a7aaa69';
+// tslint:disable-next-line: no-http-string
+export const fileServerV2URL = 'http://filev2.getsession.org';
+
+export const fileServerV2PubKey =
+  'da21e1d886c6fbaea313f75298bd64aab03a97ce985b46bb2dad9f2089c8ee59';
 
 export type FileServerV2Request = {
   method: 'GET' | 'POST' | 'DELETE' | 'PUT';
@@ -14,9 +19,11 @@ export type FileServerV2Request = {
   // queryParams are used for post or get, but not the same way
   queryParams?: Record<string, any>;
   headers?: Record<string, string>;
+  isOldV2server?: boolean; // to remove in a few days
 };
 
 const FILES_ENDPOINT = 'files';
+const RELEASE_VERSION_ENDPOINT = 'session_version';
 
 // Disable this if you don't want to use the file server v2 for sending
 // Receiving is always enabled if the attachments url matches a fsv2 url
@@ -67,21 +74,28 @@ export const uploadFileToFsV2 = async (
  * @returns the data as an Uint8Array or null
  */
 export const downloadFileFromFSv2 = async (
-  fileIdOrCompleteUrl: string
+  fileIdOrCompleteUrl: string,
+  isOldV2server: boolean
 ): Promise<ArrayBuffer | null> => {
   let fileId = fileIdOrCompleteUrl;
   if (!fileIdOrCompleteUrl) {
-    window.log.warn('Empty url to download for file v2');
+    window?.log?.warn('Empty url to download for file v2');
     return null;
   }
 
-  const completeUrlPrefix = `${fileServerV2URL}/${FILES_ENDPOINT}/`;
-  if (fileIdOrCompleteUrl.startsWith(completeUrlPrefix)) {
-    fileId = fileId.substr(completeUrlPrefix.length);
+  const oldCompleteUrlPrefix = `${oldFileServerV2URL}/${FILES_ENDPOINT}/`;
+  const newCompleteUrlPrefix = `${fileServerV2URL}/${FILES_ENDPOINT}/`;
+
+  if (fileIdOrCompleteUrl.startsWith(newCompleteUrlPrefix)) {
+    fileId = fileId.substr(newCompleteUrlPrefix.length);
+  } else if (fileIdOrCompleteUrl.startsWith(oldCompleteUrlPrefix)) {
+    fileId = fileId.substr(oldCompleteUrlPrefix.length);
   }
+
   const request: FileServerV2Request = {
     method: 'GET',
     endpoint: `${FILES_ENDPOINT}/${fileId}`,
+    isOldV2server,
   };
 
   const result = await sendApiV2Request(request);
@@ -119,7 +133,11 @@ export const buildUrl = (request: FileServerV2Request | OpenGroupV2Request): URL
   if (isOpenGroupV2Request(request)) {
     rawURL = `${request.server}/${request.endpoint}`;
   } else {
-    rawURL = `${fileServerV2URL}/${request.endpoint}`;
+    if (request.isOldV2server) {
+      rawURL = `${oldFileServerV2URL}/${request.endpoint}`;
+    } else {
+      rawURL = `${fileServerV2URL}/${request.endpoint}`;
+    }
   }
 
   if (request.method === 'GET') {
@@ -136,4 +154,34 @@ export const buildUrl = (request: FileServerV2Request | OpenGroupV2Request): URL
   } catch (error) {
     return null;
   }
+};
+
+/**
+ * Upload a file to the file server v2
+ * @param fileContent the data to send
+ * @returns null or the fileID and complete URL to share this file
+ */
+export const getLatestDesktopReleaseFileToFsV2 = async (): Promise<string | null> => {
+  const queryParams = {
+    platform: 'desktop',
+  };
+
+  const request: FileServerV2Request = {
+    method: 'GET',
+    endpoint: RELEASE_VERSION_ENDPOINT,
+    queryParams,
+  };
+
+  const result = await sendApiV2Request(request);
+  const statusCode = parseStatusCodeFromOnionRequest(result);
+  if (statusCode !== 200) {
+    return null;
+  }
+
+  // we should probably change the logic of sendOnionRequest to not have all those levels
+  const latestVersionWithV = (result as any)?.result?.result as string | undefined;
+  if (!latestVersionWithV) {
+    return null;
+  }
+  return latestVersionWithV;
 };

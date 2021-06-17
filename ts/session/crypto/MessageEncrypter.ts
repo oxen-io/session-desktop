@@ -26,7 +26,7 @@ export async function encrypt(
   plainTextBuffer: Uint8Array,
   encryptionType: EncryptionType
 ): Promise<EncryptResult> {
-  const { CLOSED_GROUP_CIPHERTEXT, UNIDENTIFIED_SENDER } = SignalService.Envelope.Type;
+  const { CLOSED_GROUP_MESSAGE, SESSION_MESSAGE } = SignalService.Envelope.Type;
   if (encryptionType !== EncryptionType.ClosedGroup && encryptionType !== EncryptionType.Fallback) {
     throw new Error(`Invalid encryption type:${encryptionType}`);
   }
@@ -34,9 +34,9 @@ export async function encrypt(
   const plainText = addMessagePadding(plainTextBuffer);
 
   if (encryptForClosedGroup) {
-    window?.log?.info(
-      'Encrypting message with SessionProtocol and envelope type is CLOSED_GROUP_CIPHERTEXT'
-    );
+    // window?.log?.info(
+    //   'Encrypting message with SessionProtocol and envelope type is CLOSED_GROUP_MESSAGE'
+    // );
     const hexEncryptionKeyPair = await getLatestClosedGroupEncryptionKeyPair(device.key);
     if (!hexEncryptionKeyPair) {
       window?.log?.warn("Couldn't get key pair for closed group during encryption");
@@ -52,13 +52,13 @@ export async function encrypt(
     );
 
     return {
-      envelopeType: CLOSED_GROUP_CIPHERTEXT,
+      envelopeType: CLOSED_GROUP_MESSAGE,
       cipherText: cipherTextClosedGroup,
     };
   }
 
   const cipherText = await exports.encryptUsingSessionProtocol(device, plainText);
-  return { envelopeType: UNIDENTIFIED_SENDER, cipherText };
+  return { envelopeType: SESSION_MESSAGE, cipherText };
 }
 
 export async function encryptUsingSessionProtocol(
@@ -75,7 +75,7 @@ export async function encryptUsingSessionProtocol(
   }
   const sodium = await getSodium();
 
-  window?.log?.info('encryptUsingSessionProtocol for ', recipientHexEncodedX25519PublicKey.key);
+  // window?.log?.info('encryptUsingSessionProtocol for ', recipientHexEncodedX25519PublicKey.key);
 
   const recipientX25519PublicKey = recipientHexEncodedX25519PublicKey.withoutPrefixToArray();
   const userED25519PubKeyBytes = fromHexToArray(userED25519KeyPairHex.pubKey);

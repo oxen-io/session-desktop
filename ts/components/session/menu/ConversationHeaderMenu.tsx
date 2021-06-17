@@ -12,10 +12,12 @@ import {
   getInviteContactMenuItem,
   getLeaveGroupMenuItem,
   getMarkAllReadMenuItem,
+  getNotificationForConvoMenuItem,
   getRemoveModeratorsMenuItem,
   getUpdateGroupNameMenuItem,
 } from './Menu';
-import { TimerOption } from '../../conversation/ConversationHeader';
+import { NotificationForConvoOption, TimerOption } from '../../conversation/ConversationHeader';
+import { ConversationNotificationSettingType } from '../../../models/conversation';
 
 export type PropsConversationHeaderMenu = {
   id: string;
@@ -27,6 +29,8 @@ export type PropsConversationHeaderMenu = {
   isGroup: boolean;
   isAdmin: boolean;
   timerOptions: Array<TimerOption>;
+  notificationForConvo: Array<NotificationForConvoOption>;
+  currentNotificationSetting: ConversationNotificationSettingType;
   isPrivate: boolean;
   isBlocked: boolean;
   theme: any;
@@ -47,6 +51,7 @@ export type PropsConversationHeaderMenu = {
   onBlockUser: () => void;
   onUnblockUser: () => void;
   onSetDisappearingMessages: (seconds: number) => void;
+  onSetNotificationForConvo: (selected: ConversationNotificationSettingType) => void;
 };
 
 export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
@@ -64,6 +69,8 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
     left,
     hasNickname,
     theme,
+    notificationForConvo,
+    currentNotificationSetting,
 
     onClearNickname,
     onChangeNickname,
@@ -79,6 +86,7 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
     onBlockUser,
     onUnblockUser,
     onSetDisappearingMessages,
+    onSetNotificationForConvo,
   } = props;
 
 
@@ -98,21 +106,20 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
           isBlocked,
           timerOptions,
           onSetDisappearingMessages,
-          window.i18n
         )}
-        {getBlockMenuItem(isMe, isPrivate, isBlocked, onBlockUser, onUnblockUser, window.i18n)}
+        {getBlockMenuItem(isMe, isPrivate, isBlocked, onBlockUser, onUnblockUser)}
 
-        {getCopyMenuItem(isPublic, isGroup, onCopyPublicKey, window.i18n)}
-        {getMarkAllReadMenuItem(onMarkAllRead, window.i18n)}
+        {getCopyMenuItem(isPublic, isGroup, onCopyPublicKey)}
+        {getMarkAllReadMenuItem(onMarkAllRead)}
         {getChangeNicknameMenuItem(isMe, onChangeNickname, isGroup, window.i18n, id, setModal)}
-        {getClearNicknameMenuItem(isMe, hasNickname, onClearNickname, isGroup, window.i18n)}
+        {getClearNicknameMenuItem(isMe, hasNickname, onClearNickname, isGroup)}
         {getDeleteMessagesMenuItem(isPublic, onDeleteMessages, window.i18n, id)}
-        {getAddModeratorsMenuItem(isAdmin, isKickedFromGroup, onAddModerators, window.i18n)}
-        {getRemoveModeratorsMenuItem(isAdmin, isKickedFromGroup, onRemoveModerators, window.i18n)}
-        {getUpdateGroupNameMenuItem(isAdmin, isKickedFromGroup, left, onUpdateGroupName, window.i18n)}
+        {getAddModeratorsMenuItem(isAdmin, isKickedFromGroup, onAddModerators)}
+        {getRemoveModeratorsMenuItem(isAdmin, isKickedFromGroup, onRemoveModerators)}
+        {getUpdateGroupNameMenuItem(isAdmin, isKickedFromGroup, left, onUpdateGroupName)}
         {getLeaveGroupMenuItem(isKickedFromGroup, left, isGroup, isPublic, onLeaveGroup, window.i18n, id, setModal, theme)}
         {/* TODO: add delete group */}
-        {getInviteContactMenuItem(isGroup, isPublic, onInviteContacts, window.i18n)}
+        {getInviteContactMenuItem(isGroup, isPublic, onInviteContacts)}
         {getDeleteContactMenuItem(
           isMe,
           isGroup,

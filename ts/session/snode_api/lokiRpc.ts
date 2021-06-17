@@ -1,11 +1,12 @@
 import { default as insecureNodeFetch } from 'node-fetch';
-
-import { Snode } from './snodePool';
+import { Snode } from '../../data/data';
 
 import { lokiOnionFetch, snodeHttpsAgent, SnodeResponse } from './onions';
 
 interface FetchOptions {
   method: string;
+  body?: string;
+  agent?: any;
 }
 
 // A small wrapper around node-fetch which deserializes response
@@ -13,12 +14,13 @@ interface FetchOptions {
 async function lokiFetch(
   url: string,
   options: FetchOptions,
-  targetNode?: Snode
+  targetNode?: Snode,
+  associatedWith?: string
 ): Promise<undefined | SnodeResponse> {
   const timeout = 10000;
   const method = options.method || 'GET';
 
-  const fetchOptions: any = {
+  const fetchOptions = {
     ...options,
     timeout,
     method,
@@ -28,7 +30,7 @@ async function lokiFetch(
     // Absence of targetNode indicates that we want a direct connection
     // (e.g. to connect to a seed node for the first time)
     if (window.lokiFeatureFlags.useOnionRequests && targetNode) {
-      const fetchResult = await lokiOnionFetch(fetchOptions.body, targetNode);
+      const fetchResult = await lokiOnionFetch(targetNode, fetchOptions.body, associatedWith);
       if (!fetchResult) {
         return undefined;
       }
@@ -39,7 +41,7 @@ async function lokiFetch(
       // import that this does not get set in lokiFetch fetchOptions
       fetchOptions.agent = snodeHttpsAgent;
     }
-    window.log.warn(`insecureNodeFetch => lokiFetch of ${url}`);
+    window?.log?.warn(`insecureNodeFetch => lokiFetch of ${url}`);
 
     const response = await insecureNodeFetch(url, fetchOptions);
 
@@ -60,12 +62,18 @@ async function lokiFetch(
   }
 }
 
-// Wrapper for a JSON RPC request
-// Annoyngly, this is used for Lokid requests too
+/**
+ * This function will throw for a few reasons.
+ * The loki-important ones are
+ *  -> if we try to make a request to a path which fails too many times => user will need to retry himself
+ *  -> if the targetNode gets too many errors => we will need to try to do this request again with another target node
+ * The
+ */
 export async function snodeRpc(
   method: string,
   params: any,
-  targetNode: Snode
+  targetNode: Snode,
+  associatedWith?: string //the user pubkey this call is for. if the onion request fails, this is used to handle the error for this user swarm for isntance
 ): Promise<undefined | SnodeResponse> {
   const url = `https://${targetNode.ip}:${targetNode.port}/storage_rpc/v1`;
 
@@ -93,5 +101,5 @@ export async function snodeRpc(
     },
   };
 
-  return lokiFetch(url, fetchOptions, targetNode);
+  return lokiFetch(url, fetchOptions, targetNode, associatedWith);
 }

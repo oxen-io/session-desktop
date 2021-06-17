@@ -8,12 +8,14 @@ import { ToastUtils } from '../../../session/utils';
 import { ConversationLookupType } from '../../../state/ducks/conversations';
 import { StateType } from '../../../state/reducer';
 import { ConversationController } from '../../../session/conversations';
-import { getConversationLookup, getConversations } from '../../../state/selectors/conversations';
+import { getConversationLookup } from '../../../state/selectors/conversations';
 import { connect } from 'react-redux';
 import { getPasswordHash } from '../../../../ts/data/data';
 import { PasswordAction, SessionPasswordModal } from '../SessionPasswordModal';
 import { SessionConfirmDialogProps } from '../SessionConfirm';
 import { mapDispatchToProps } from '../../../state/actions';
+import { SpacerLG } from '../../basic/Text';
+import { shell } from 'electron';
 
 export enum SessionSettingCategory {
   Appearance = 'appearance',
@@ -176,7 +178,7 @@ class SettingsViewInner extends React.Component<SettingsViewProps, State> {
           {this.state.pwdLockError && (
             <>
               <div className="session-label warning">{this.state.pwdLockError}</div>
-              <div className="spacer-lg" />
+              <SpacerLG />
             </>
           )}
 
@@ -424,6 +426,24 @@ class SettingsViewInner extends React.Component<SettingsViewProps, State> {
           max: 200,
           defaultValue: 100,
           info: (value: number) => `${value}%`,
+        },
+        confirmationDialogParams: undefined,
+      },
+      {
+        id: 'help-translation',
+        title: window.i18n('translation'),
+        description: undefined,
+        hidden: false,
+        type: SessionSettingType.Button,
+        category: SessionSettingCategory.Appearance,
+        setFn: undefined,
+        comparisonValue: undefined,
+        onClick: () => {
+          void shell.openExternal('https://crowdin.com/project/session-desktop/');
+        },
+        content: {
+          buttonText: window.i18n('helpUsTranslateSession'),
+          buttonColor: SessionButtonColor.Primary,
         },
         confirmationDialogParams: undefined,
       },

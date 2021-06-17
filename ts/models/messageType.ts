@@ -7,7 +7,7 @@ import { Contact } from '../types/Contact';
 import { ConversationTypeEnum } from './conversation';
 
 export type MessageModelType = 'incoming' | 'outgoing';
-export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+export type MessageDeliveryStatus = 'sending' | 'sent' | 'read' | 'error';
 
 export interface MessageAttributes {
   // the id of the message
@@ -23,16 +23,13 @@ export interface MessageAttributes {
   body?: string;
   expirationStartTimestamp: number;
   read_by: Array<string>;
-  delivered_to: Array<string>;
   decrypted_at: number;
   expires_at?: number;
   recipients: Array<string>;
-  delivered?: number;
   type: MessageModelType;
   group_update?: any;
   groupInvitation?: any;
   attachments?: any;
-  contact?: any;
   conversationId: string;
   errors?: any;
   flags?: number;
@@ -98,7 +95,23 @@ export interface MessageAttributes {
    */
   snippet?: any;
   direction: any;
+
+  /**
+   * This is used for when a user screenshots or saves an attachment you sent.
+   * We display a small message just below the message referenced
+   */
+  dataExtractionNotification?: DataExtractionNotificationMsg;
 }
+
+export interface DataExtractionNotificationMsg {
+  type: number; // screenshot or saving event, based on SignalService.DataExtractionNotification.Type
+  source: string; // the guy who made a screenshot
+  referencedAttachmentTimestamp: number; // the attachment timestamp he screenshot
+}
+
+export type DataExtractionNotificationProps = DataExtractionNotificationMsg & {
+  name: string;
+};
 
 export interface MessageAttributesOptionals {
   id?: string;
@@ -112,11 +125,9 @@ export interface MessageAttributesOptionals {
   body?: string;
   expirationStartTimestamp?: number;
   read_by?: Array<string>;
-  delivered_to?: Array<string>;
   decrypted_at?: number;
   expires_at?: number;
   recipients?: Array<string>;
-  delivered?: number;
   type: MessageModelType;
   group_update?: any;
   groupInvitation?: any;
@@ -133,6 +144,11 @@ export interface MessageAttributesOptionals {
     expireTimer: number;
     source: string;
     fromSync?: boolean;
+  };
+  dataExtractionNotification?: {
+    type: number;
+    source: string;
+    referencedAttachmentTimestamp: number;
   };
   unread?: number;
   group?: any;
@@ -158,13 +174,22 @@ export interface MessageAttributesOptionals {
 export const fillMessageAttributesWithDefaults = (
   optAttributes: MessageAttributesOptionals
 ): MessageAttributes => {
-  //FIXME to do put the default
-  return _.defaults(optAttributes, {
+  const defaulted = _.defaults(optAttributes, {
     expireTimer: 0, // disabled
     id: uuidv4(),
     schemaVersion: window.Signal.Types.Message.CURRENT_SCHEMA_VERSION,
     unread: 0, // if nothing is set, this message is considered read
   });
+  // this is just to cleanup a bit the db. delivered and delivered_to were removed, so everytime we load a message
+  // we make sure to clean those fields in the json.
+  // the next commit() will write that to the disk
+  if (defaulted.delivered) {
+    delete defaulted.delivered;
+  }
+  if (defaulted.delivered_to) {
+    delete defaulted.delivered_to;
+  }
+  return defaulted;
 };
 
 export interface MessageRegularProps {
@@ -175,10 +200,10 @@ export interface MessageRegularProps {
   text?: string;
   id: string;
   collapseMetadata?: boolean;
-  direction: 'incoming' | 'outgoing';
+  direction: MessageModelType;
   timestamp: number;
   serverTimestamp?: number;
-  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+  status?: MessageDeliveryStatus;
   // What if changed this over to a single contact like quote, and put the events on it?
   contact?: Contact & {
     onSendMessage?: () => void;

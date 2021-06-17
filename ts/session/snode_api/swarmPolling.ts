@@ -1,6 +1,6 @@
 import { PubKey } from '../types';
-import { getSwarm, Snode } from './snodePool';
-import { retrieveNextMessages } from './serviceNodeAPI';
+import { getSwarmFor } from './snodePool';
+import { retrieveNextMessages } from './SNodeAPI';
 import { SignalService } from '../../protobuf';
 import * as Receiver from '../../receiver/receiver';
 import _ from 'lodash';
@@ -8,6 +8,7 @@ import {
   getLastHashBySnode,
   getSeenMessagesByHashList,
   saveSeenMessageHashes,
+  Snode,
   updateLastHash,
 } from '../../../ts/data/data';
 
@@ -36,7 +37,7 @@ export function processMessage(message: string, options: any = {}) {
       message,
       error: error.message,
     };
-    window.log.warn('HTTP-Resources Failed to handle message:', info);
+    window?.log?.warn('HTTP-Resources Failed to handle message:', info);
   }
 }
 
@@ -66,7 +67,7 @@ export class SwarmPolling {
 
   public addGroupId(pubkey: PubKey) {
     if (this.groupPubkeys.findIndex(m => m.key === pubkey.key) === -1) {
-      window.log.info('Swarm addGroupId: adding pubkey to polling', pubkey.key);
+      window?.log?.info('Swarm addGroupId: adding pubkey to polling', pubkey.key);
       this.groupPubkeys.push(pubkey);
     }
   }
@@ -80,7 +81,7 @@ export class SwarmPolling {
 
   public removePubkey(pk: PubKey | string) {
     const pubkey = PubKey.cast(pk);
-    window.log.info('Swarm removePubkey: removing pubkey from polling', pubkey.key);
+    window?.log?.info('Swarm removePubkey: removing pubkey from polling', pubkey.key);
 
     this.pubkeys = this.pubkeys.filter(key => !pubkey.isEqual(key));
     this.groupPubkeys = this.groupPubkeys.filter(key => !pubkey.isEqual(key));
@@ -91,7 +92,7 @@ export class SwarmPolling {
     // accept both until this is fixed:
     const pkStr = pubkey.key;
 
-    const snodes = await getSwarm(pkStr);
+    const snodes = await getSwarmFor(pkStr);
 
     // Select nodes for which we already have lastHashes
     const alreadyPolled = snodes.filter((n: Snode) => this.lastHashes[n.pubkey_ed25519]);
@@ -195,13 +196,10 @@ export class SwarmPolling {
     const groupPromises = this.groupPubkeys.map(async pk => {
       return this.pollOnceForKey(pk, true);
     });
-    // if a WrongSwarmError has been triggered, we have to forward it (and in fact we must forward any errors)
-    // but, we also need to make sure the next pollForAllKeys runs no matter if an error is triggered or not
-    // the finally here will be invoked even if the catch is throwing an exception
     try {
       await Promise.all(_.concat(directPromises, groupPromises));
     } catch (e) {
-      window.log.warn('pollForAllKeys swallowing exception: ', e);
+      window?.log?.warn('pollForAllKeys swallowing exception: ', e);
       throw e;
     } finally {
       setTimeout(this.pollForAllKeys.bind(this), 2000);

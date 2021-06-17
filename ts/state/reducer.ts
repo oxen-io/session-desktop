@@ -8,6 +8,10 @@ import { reducer as section, SectionStateType } from './ducks/section';
 import { defaultRoomReducer as defaultRooms, DefaultRoomsState } from './ducks/defaultRooms';
 import { defaultOnionReducer as onionPaths, OnionState } from './ducks/onion';
 import { confirmModalReducer as confirmModal, ConfirmModalState } from "./ducks/modalDialog";
+import {
+  defaultMentionsInputReducer as mentionsInput,
+  MentionsInputState,
+} from './ducks/mentionsInput';
 
 export type StateType = {
   search: SearchStateType;
@@ -22,6 +26,7 @@ export type StateType = {
 
   confirmModal: ConfirmModalState
   // modalState: ConfirmModalState
+  mentionsInput: MentionsInputState;
 };
 
 export const reducers = {
@@ -35,7 +40,8 @@ export const reducers = {
   section,
   defaultRooms,
   onionPaths,
-  confirmModal
+  confirmModal,
+  mentionsInput,
 };
 
 // Making this work would require that our reducer signature supported AnyAction, not

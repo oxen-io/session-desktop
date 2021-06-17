@@ -163,12 +163,12 @@ export const AddModeratorsDialog = (props: any) => {
     // if we don't have valid data entered by the user
     const pubkey = PubKey.from(inputBoxValue);
     if (!pubkey) {
-      window.log.info('invalid pubkey for adding as moderator:', inputBoxValue);
+      window?.log?.info('invalid pubkey for adding as moderator:', this.state.inputBoxValue);
       ToastUtils.pushInvalidPubKey();
       return;
     }
 
-    window.log.info(`asked to add moderator: ${pubkey.key}`);
+    window?.log?.info(`asked to add moderator: ${pubkey.key}`);
 
     try {
       setAddingInProgress(true);
@@ -181,18 +181,18 @@ export const AddModeratorsDialog = (props: any) => {
         isAdded = await ApiV2.addModerator(pubkey, roomInfos);
       }
       if (!isAdded) {
-        window.log.warn('failed to add moderators:', isAdded);
+        window?.log?.warn('failed to add moderators:', isAdded);
 
         ToastUtils.pushUserNeedsToHaveJoined();
       } else {
-        window.log.info(`${pubkey.key} added as moderator...`);
+        window?.log?.info(`${pubkey.key} added as moderator...`);
         ToastUtils.pushUserAddedToModerators();
 
         // clear input box
         setInputBoxValue('');
       }
     } catch (e) {
-      window.log.error('Got error while adding moderator:', e);
+      window?.log?.error('Got error while adding moderator:', e);
     } finally {
       setAddingInProgress(false);
     }

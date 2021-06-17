@@ -6,10 +6,10 @@ import { LokiMessageApi, MessageSender } from '../../../../session/sending';
 import { TestUtils } from '../../../test-utils';
 import { MessageEncrypter } from '../../../../session/crypto';
 import { SignalService } from '../../../../protobuf';
-import { OpenGroupMessage } from '../../../../session/messages/outgoing';
 import { EncryptionType } from '../../../../session/types/EncryptionType';
 import { PubKey } from '../../../../session/types';
 import { UserUtils } from '../../../../session/utils';
+import { ApiV2 } from '../../../../opengroup/opengroupV2';
 
 describe('MessageSender', () => {
   const sandbox = sinon.createSandbox();
@@ -29,7 +29,7 @@ describe('MessageSender', () => {
       lokiMessageAPISendStub = sandbox.stub(LokiMessageApi, 'sendMessage').resolves();
 
       encryptStub = sandbox.stub(MessageEncrypter, 'encrypt').resolves({
-        envelopeType: SignalService.Envelope.Type.UNIDENTIFIED_SENDER,
+        envelopeType: SignalService.Envelope.Type.SESSION_MESSAGE,
         cipherText: crypto.randomBytes(10),
       });
 
@@ -77,7 +77,7 @@ describe('MessageSender', () => {
     });
 
     describe('logic', () => {
-      let messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.UNIDENTIFIED_SENDER;
+      let messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.SESSION_MESSAGE;
 
       beforeEach(() => {
         encryptStub.callsFake(async (_device, plainTextBuffer, _type) => ({
@@ -107,7 +107,7 @@ describe('MessageSender', () => {
       });
 
       it('should correctly build the envelope', async () => {
-        messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.UNIDENTIFIED_SENDER;
+        messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.SESSION_MESSAGE;
 
         // This test assumes the encryption stub returns the plainText passed into it.
         const device = TestUtils.generateFakePubKey().key;
@@ -137,15 +137,15 @@ describe('MessageSender', () => {
         const envelope = SignalService.Envelope.decode(
           webSocketMessage.request?.body as Uint8Array
         );
-        expect(envelope.type).to.equal(SignalService.Envelope.Type.UNIDENTIFIED_SENDER);
+        expect(envelope.type).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
         expect(envelope.source).to.equal('');
         expect(toNumber(envelope.timestamp)).to.equal(timestamp);
         expect(envelope.content).to.deep.equal(plainTextBuffer);
       });
 
-      describe('UNIDENTIFIED_SENDER', () => {
+      describe('SESSION_MESSAGE', () => {
         it('should set the envelope source to be empty', async () => {
-          messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.UNIDENTIFIED_SENDER;
+          messageEncyrptReturnEnvelopeType = SignalService.Envelope.Type.SESSION_MESSAGE;
 
           // This test assumes the encryption stub returns the plainText passed into it.
           const device = TestUtils.generateFakePubKey().key;
@@ -175,44 +175,66 @@ describe('MessageSender', () => {
           const envelope = SignalService.Envelope.decode(
             webSocketMessage.request?.body as Uint8Array
           );
-          expect(envelope.type).to.equal(SignalService.Envelope.Type.UNIDENTIFIED_SENDER);
+          expect(envelope.type).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
           expect(envelope.source).to.equal(
             '',
-            'envelope source should be empty in UNIDENTIFIED_SENDER'
+            'envelope source should be empty in SESSION_MESSAGE'
           );
         });
       });
     });
   });
 
-  describe('sendToOpenGroup', () => {
-    it('should send the message to the correct server and channel', async () => {
-      // We can do this because LokiPublicChatFactoryAPI has a module export in it
-      const stub = sandbox.stub().resolves({
-        sendMessage: sandbox.stub(),
-      });
+  describe('sendToOpenGroupV2', () => {
+    const sandbox2 = sinon.createSandbox();
+    let postMessageRetryableStub: sinon.SinonStub;
+    beforeEach(() => {
+      sandbox
+        .stub(UserUtils, 'getOurPubKeyStrFromCache')
+        .resolves(TestUtils.generateFakePubKey().key);
 
-      TestUtils.stubWindow('lokiPublicChatAPI', {
-        findOrCreateChannel: stub,
-      });
+      postMessageRetryableStub = sandbox
+        .stub(ApiV2, 'postMessageRetryable')
+        .resolves(TestUtils.generateOpenGroupMessageV2());
+    });
 
-      const group = {
-        server: 'server',
-        channel: 1,
-        conversationId: '0',
-      };
+    afterEach(() => {
+      sandbox2.restore();
+    });
 
-      const message = new OpenGroupMessage({
-        timestamp: Date.now(),
-        group,
-      });
+    it('should call postMessageRetryableStub', async () => {
+      const message = TestUtils.generateOpenGroupVisibleMessage();
+      const roomInfos = TestUtils.generateOpenGroupV2RoomInfos();
 
-      await MessageSender.sendToOpenGroup(message);
+      await MessageSender.sendToOpenGroupV2(message, roomInfos);
+      expect(postMessageRetryableStub.callCount).to.eq(1);
+    });
 
-      const [server, channel, conversationId] = stub.getCall(0).args;
-      expect(server).to.equal(group.server);
-      expect(channel).to.equal(group.channel);
-      expect(conversationId).to.equal(group.conversationId);
+    it('should retry postMessageRetryableStub ', async () => {
+      const message = TestUtils.generateOpenGroupVisibleMessage();
+      const roomInfos = TestUtils.generateOpenGroupV2RoomInfos();
+
+      postMessageRetryableStub.throws('whate');
+      sandbox2.stub(ApiV2, 'getMinTimeout').returns(2);
+
+      postMessageRetryableStub.onThirdCall().resolves();
+      await MessageSender.sendToOpenGroupV2(message, roomInfos);
+      expect(postMessageRetryableStub.callCount).to.eq(3);
+    });
+
+    it('should not retry more than 3 postMessageRetryableStub ', async () => {
+      const message = TestUtils.generateOpenGroupVisibleMessage();
+      const roomInfos = TestUtils.generateOpenGroupV2RoomInfos();
+      sandbox2.stub(ApiV2, 'getMinTimeout').returns(2);
+      postMessageRetryableStub.throws('fake error');
+      postMessageRetryableStub.onCall(4).resolves();
+      try {
+        await MessageSender.sendToOpenGroupV2(message, roomInfos);
+        throw new Error('Error expected');
+      } catch (e) {
+        expect(e.name).to.eq('fake error');
+      }
+      expect(postMessageRetryableStub.calledThrice);
     });
   });
 });

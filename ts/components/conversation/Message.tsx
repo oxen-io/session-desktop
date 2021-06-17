@@ -218,7 +218,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
             withContentAbove={withContentAbove}
             withContentBelow={withContentBelow}
             bottomOverlay={!collapseMetadata}
-            i18n={window.i18n}
             onError={this.handleImageErrorBound}
             onClickAttachment={(attachment: AttachmentType) => {
               if (multiSelectMode) {
@@ -360,7 +359,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
             withContentAbove={withContentAbove}
             withContentBelow={true}
             onError={this.handleImageErrorBound}
-            i18n={window.i18n}
           />
         ) : null}
         <div
@@ -382,7 +380,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
                 url={first.image.url}
                 attachment={first.image}
                 onError={this.handleImageErrorBound}
-                i18n={window.i18n}
               />
             </div>
           ) : null}
@@ -425,7 +422,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
 
     return (
       <Quote
-        i18n={window.i18n}
         onClick={(e: any) => {
           e.preventDefault();
           e.stopPropagation();
@@ -530,7 +526,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
       >
         <MessageBody
           text={contents || ''}
-          i18n={window.i18n}
           isGroup={conversationType === 'group'}
           convoId={convoId}
           disableLinks={multiSelectMode}
@@ -733,21 +728,10 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
     const width = this.getWidth();
     const isShowingImage = this.isShowingImage();
 
-    // We parse the message later, but we still need to do an early check
-    // to see if the message mentions us, so we can display the entire
-    // message differently
-    const regex = new RegExp(`@${PubKey.regexForPubkeys}`, 'g');
-    const mentions = (text ? text.match(regex) : []) as Array<string>;
-    const mentionMe = mentions && mentions.some(m => UserUtils.isUsFromCache(m.slice(1)));
-
     const isIncoming = direction === 'incoming';
-    const shouldHightlight = mentionMe && isIncoming && isPublic;
     const shouldMarkReadWhenVisible = isIncoming && isUnread;
     const divClasses = ['session-message-wrapper'];
 
-    if (shouldHightlight) {
-      //divClasses.push('message-highlighted');
-    }
     if (selected) {
       divClasses.push('message-selected');
     }
@@ -894,7 +878,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
           name={authorName}
           profileName={authorProfileName}
           module="module-message__author"
-          i18n={window.i18n}
           boldProfileName={true}
           shouldShowPubkey={Boolean(isPublic)}
         />

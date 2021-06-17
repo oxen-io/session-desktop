@@ -1,8 +1,7 @@
 import React from 'react';
-
 import { icons, SessionIconSize, SessionIconType } from '../icon';
 import styled, { css, DefaultTheme, keyframes } from 'styled-components';
-import { drop } from 'lodash';
+import _ from 'lodash';
 
 export type SessionIconProps = {
   iconType: SessionIconType;
@@ -109,7 +108,6 @@ const animation = (props: any) => {
 //tslint:disable no-unnecessary-callback-wrapper
 const Svg = styled.svg<StyledSvgProps>`
   width: ${props => props.width};
-  animation: ${props => animation(props)};
   transform: ${props => `rotate(${props.iconRotation}deg)`};
   border-radius: ${props => props.borderRadius};
 `;
@@ -130,18 +128,16 @@ const SessionSvg = (props: {
 }) => {
   const colorSvg = props.iconColor || props?.theme?.colors.textColor;
   const pathArray = props.path instanceof Array ? props.path : [props.path];
+  const propsToPick = {
+    width: props.width,
+    height: props.height,
+    rotateDuration: props.rotateDuration,
+    iconRotation: props.iconRotation,
+    viewBox: props.viewBox,
+  };
 
   return (
-    <Svg {...props}>
-      {/* { props.glowDuration ?
-        <defs>
-          <filter>
-            <feDropShadow dx="0.2" dy="0.4" stdDeviation="0.2" />
-          </filter>
-        </defs>
-        :
-        null
-      } */}
+    <Svg {...propsToPick}>
       {pathArray.map((path, index) => {
         return <path key={index} fill={colorSvg} d={path} />;
       })}
@@ -167,7 +163,7 @@ export const SessionIcon = (props: SessionIconProps) => {
   const iconDef = icons[iconType];
   const ratio = iconDef?.ratio || 1;
   if (!theme) {
-    window.log.error('Missing theme props in SessionIcon');
+    window?.log?.error('Missing theme props in SessionIcon');
   }
 
   return (

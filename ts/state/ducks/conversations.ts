@@ -6,6 +6,7 @@ import { ConversationController } from '../../session/conversations';
 import { MessageModel } from '../../models/message';
 import { getMessagesByConversation } from '../../data/data';
 import { ConversationTypeEnum } from '../../models/conversation';
+import { MessageDeliveryStatus } from '../../models/messageType';
 
 // State
 
@@ -50,7 +51,7 @@ export type MessageTypeInConvo = {
   getPropsForMessageDetail(): Promise<any>;
 };
 
-export type LastMessageStatusType = 'error' | 'sending' | 'sent' | 'delivered' | 'read' | null;
+export type LastMessageStatusType = MessageDeliveryStatus | null;
 
 export type LastMessageType = {
   status: LastMessageStatusType;
@@ -112,7 +113,7 @@ async function getMessages(
   const conversation = ConversationController.getInstance().get(conversationKey);
   if (!conversation) {
     // no valid conversation, early return
-    window.log.error('Failed to get convo on reducer.');
+    window?.log?.error('Failed to get convo on reducer.');
     return [];
   }
   const unreadCount = await conversation.getUnreadCount();
@@ -176,7 +177,7 @@ const fetchMessagesForConversation = createAsyncThunk(
     const afterTimestamp = Date.now();
 
     const time = afterTimestamp - beforeTimestamp;
-    window.log.info(`Loading ${messages.length} messages took ${time}ms to load.`);
+    window?.log?.info(`Loading ${messages.length} messages took ${time}ms to load.`);
 
     return {
       conversationKey,
@@ -406,6 +407,7 @@ export function openConversationExternal(
   id: string,
   messageId?: string
 ): SelectedConversationChangedActionType {
+  window?.log?.info(`openConversationExternal with convoId: ${id}; messageId: ${messageId}`);
   return {
     type: 'SELECTED_CONVERSATION_CHANGED',
     payload: {
@@ -427,8 +429,8 @@ const toPickFromMessageModel = [
   'firstMessageOfSeries',
   'propsForGroupInvitation',
   'propsForTimerNotification',
-  'propsForVerificationNotification',
   'propsForGroupNotification',
+  'propsForDataExtractionNotification',
   // FIXME below are what is needed to fetch on the fly messageDetails. This is not the react way
   'getPropsForMessageDetail',
   'get',

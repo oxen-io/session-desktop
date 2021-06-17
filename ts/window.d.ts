@@ -1,16 +1,14 @@
+import {} from 'styled-components/cssprop';
+
 import { LocalizerType } from '../types/Util';
 import { LibsignalProtocol } from '../../libtextsecure/libsignal-protocol';
 import { SignalInterface } from '../../js/modules/signal';
 import { Libloki } from '../libloki';
-import { LokiPublicChatFactoryInterface } from '../js/modules/loki_public_chat_api';
-import { LokiAppDotNetServerInterface } from '../js/modules/loki_app_dot_net_api';
 
 import { LibTextsecure } from '../libtextsecure';
 import { ConfirmationDialogParams } from '../background';
-import {} from 'styled-components/cssprop';
 
 import { ConversationControllerType } from '../js/ConversationController';
-import { any } from 'underscore';
 import { Store } from 'redux';
 import { MessageController } from './session/messages/MessageController';
 import { DefaultTheme } from 'styled-components';
@@ -29,9 +27,6 @@ declare global {
     CONSTANTS: any;
     Events: any;
     Lodash: any;
-    LokiAppDotNetServerAPI: any;
-    LokiFileServerAPI: any;
-    LokiPublicChatAPI: any;
     LokiSnodeAPI: any;
     Session: any;
     Signal: SignalInterface;
@@ -58,13 +53,11 @@ declare global {
       useRequestEncryptionKeyPair: boolean;
       padOutgoingAttachments: boolean;
     };
-    lokiFileServerAPI: LokiFileServerInstance;
-    lokiPublicChatAPI: LokiPublicChatFactoryInterface;
     lokiSnodeAPI: LokiSnodeAPI;
     onLogin: any;
     resetDatabase: any;
     restart: any;
-    seedNodeList: any;
+    getSeedNodeList: () => Array<any> | undefined;
     setPassword: any;
     setSettingValue: any;
     showResetSessionIdDialog: any;
@@ -75,7 +68,6 @@ declare global {
     toggleMenuBar: any;
     toggleSpellCheck: any;
     setTheme: (newTheme: string) => any;
-    tokenlessFileServerAdnAPI: LokiAppDotNetServerInterface;
     userConfig: any;
     versionInfo: any;
     getStoragePubKey: (key: string) => string;
@@ -91,13 +83,13 @@ declare global {
       expired: (boolean) => void;
       expiredStatus: () => boolean;
     };
-    openUrl: (string) => void;
     lightTheme: DefaultTheme;
     darkTheme: DefaultTheme;
     LokiPushNotificationServer: any;
     LokiPushNotificationServerApi: any;
 
     confirmationDialog: any;
+    globalOnlineStatus: boolean;
   }
 
   // window.confirmationDialog = () => {

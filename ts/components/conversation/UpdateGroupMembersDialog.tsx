@@ -6,7 +6,6 @@ import { SessionButton, SessionButtonColor, SessionButtonType } from '../session
 import { ContactType, SessionMemberListItem } from '../session/SessionMemberListItem';
 import { DefaultTheme } from 'styled-components';
 import { ToastUtils } from '../../session/utils';
-import { LocalizerType } from '../../types/Util';
 import autoBind from 'auto-bind';
 import { ConversationController } from '../../session/conversations';
 
@@ -26,7 +25,6 @@ interface Props {
   existingZombies: Array<string>;
   admins: Array<string>; // used for closed group
 
-  i18n: LocalizerType;
   onSubmit: (membersLeft: Array<string>) => void;
   onClose: () => void;
   theme: DefaultTheme;
@@ -73,7 +71,7 @@ export class UpdateGroupMembersDialog extends React.Component<Props, State> {
       this.props.existingZombies.map(d => {
         const convo = ConversationController.getInstance().get(d);
         if (!convo) {
-          window.log.warn('Zombie convo not found');
+          window?.log?.warn('Zombie convo not found');
           return null;
         }
         const lokiProfile = convo.getLokiProfile();
@@ -256,12 +254,12 @@ export class UpdateGroupMembersDialog extends React.Component<Props, State> {
     }
 
     if (selected.existingMember && !isAdmin) {
-      window.log.warn('Only group admin can remove members!');
+      window?.log?.warn('Only group admin can remove members!');
       return;
     }
 
     if (selected.existingMember && admins.includes(selected.id)) {
-      window.log.warn(
+      window?.log?.warn(
         `User ${selected.id} cannot be removed as they are the creator of the closed group.`
       );
       ToastUtils.pushCannotRemoveCreatorFromGroup();

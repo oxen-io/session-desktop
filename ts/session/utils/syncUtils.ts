@@ -5,7 +5,6 @@ import {
 } from '../../../ts/data/data';
 import { getMessageQueue } from '..';
 import { ConversationController } from '../conversations';
-import { DAYS } from './Number';
 import uuid from 'uuid';
 import { UserUtils } from '.';
 import { ECKeyPair } from '../../receiver/keypairs';
@@ -21,13 +20,16 @@ import { SignalService } from '../../protobuf';
 import _ from 'lodash';
 import {
   AttachmentPointer,
+  AttachmentPointerWithUrl,
   Preview,
+  PreviewWithAttachmentUrl,
   Quote,
   VisibleMessage,
 } from '../messages/outgoing/visibleMessage/VisibleMessage';
 import { ExpirationTimerUpdateMessage } from '../messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
 import { getV2OpenGroupRoom } from '../../data/opengroups';
 import { getCompleteUrlFromRoom } from '../../opengroup/utils/OpenGroupUtils';
+import { DURATION } from '../constants';
 
 const ITEM_ID_LAST_SYNC_TIMESTAMP = 'lastSyncedTimestamp';
 
@@ -42,18 +44,18 @@ export const syncConfigurationIfNeeded = async () => {
   const now = Date.now();
 
   // if the last sync was less than 2 days before, return early.
-  if (Math.abs(now - lastSyncedTimestamp) < DAYS * 7) {
+  if (Math.abs(now - lastSyncedTimestamp) < DURATION.DAYS * 7) {
     return;
   }
 
   const allConvos = ConversationController.getInstance().getConversations();
   const configMessage = await getCurrentConfigurationMessage(allConvos);
   try {
-    // window.log.info('syncConfigurationIfNeeded with', configMessage);
+    // window?.log?.info('syncConfigurationIfNeeded with', configMessage);
 
     await getMessageQueue().sendSyncMessage(configMessage);
   } catch (e) {
-    window.log.warn('Caught an error while sending our ConfigurationMessage:', e);
+    window?.log?.warn('Caught an error while sending our ConfigurationMessage:', e);
     // we do return early so that next time we use the old timestamp again
     // and so try again to trigger a sync
     return;
@@ -88,7 +90,7 @@ export const forceSyncConfigurationNowIfNeeded = async (waitForMessageSent = fal
         }
       })
       .catch(e => {
-        window.log.warn('Caught an error while building our ConfigurationMessage:', e);
+        window?.log?.warn('Caught an error while building our ConfigurationMessage:', e);
         resolve(false);
       });
   });
@@ -160,35 +162,35 @@ const getValidContacts = (convos: Array<ConversationModel>) => {
   );
 
   const contacts = contactsModels.map(c => {
-    const profileKeyForContact = c.get('profileKey')
-      ? fromBase64ToArray(c.get('profileKey') as string)
-      : undefined;
+    try {
+      const profileKeyForContact = c.get('profileKey')
+        ? fromBase64ToArray(c.get('profileKey') as string)
+        : undefined;
 
-    return new ConfigurationMessageContact({
-      publicKey: c.id,
-      displayName: c.getLokiProfile()?.displayName,
-      profilePictureURL: c.get('avatarPointer'),
-      profileKey: profileKeyForContact,
-    });
+      return new ConfigurationMessageContact({
+        publicKey: c.id,
+        displayName: c.getLokiProfile()?.displayName,
+        profilePictureURL: c.get('avatarPointer'),
+        profileKey: profileKeyForContact,
+      });
+    } catch (e) {
+      window?.log.warn('getValidContacts', e);
+      return null;
+    }
   });
-  return contacts;
+  return _.compact(contacts);
 };
 
 export const getCurrentConfigurationMessage = async (convos: Array<ConversationModel>) => {
   const ourPubKey = UserUtils.getOurPubKeyStrFromCache();
   const ourConvo = convos.find(convo => convo.id === ourPubKey);
 
-  // Filter open groups v1
-  const openGroupsV1Ids = convos
-    .filter(c => !!c.get('active_at') && c.isOpenGroupV1() && !c.get('left'))
-    .map(c => c.id.substring((c.id as string).lastIndexOf('@') + 1)) as Array<string>;
-
   const opengroupV2CompleteUrls = await getActiveOpenGroupV2CompleteUrls(convos);
   const onlyValidClosedGroup = await getValidClosedGroups(convos);
   const validContacts = getValidContacts(convos);
 
   if (!ourConvo) {
-    window.log.error('Could not find our convo while building a configuration message.');
+    window?.log?.error('Could not find our convo while building a configuration message.');
   }
   const profileKeyFromStorage = window.storage.get('profileKey');
   const profileKey = profileKeyFromStorage ? new Uint8Array(profileKeyFromStorage) : undefined;
@@ -196,7 +198,7 @@ export const getCurrentConfigurationMessage = async (convos: Array<ConversationM
   const profilePicture = ourConvo?.get('avatarPointer') || undefined;
   const displayName = ourConvo?.getLokiProfile()?.displayName || undefined;
 
-  const activeOpenGroups = [...openGroupsV1Ids, ...opengroupV2CompleteUrls];
+  const activeOpenGroups = [...opengroupV2CompleteUrls];
 
   return new ConfigurationMessage({
     identifier: uuid(),
@@ -237,9 +239,9 @@ const buildSyncVisibleMessage = (
       key,
       digest,
     };
-  }) as Array<AttachmentPointer>;
+  }) as Array<AttachmentPointerWithUrl>;
   const quote = (dataMessage.quote as Quote) || undefined;
-  const preview = (dataMessage.preview as Array<Preview>) || [];
+  const preview = (dataMessage.preview as Array<PreviewWithAttachmentUrl>) || [];
   const expireTimer = dataMessage.expireTimer;
 
   return new VisibleMessage({
@@ -282,7 +284,7 @@ export const buildSyncMessage = (
     (dataMessage as any).constructor.name !== 'DataMessage' &&
     !(dataMessage instanceof SignalService.DataMessage)
   ) {
-    window.log.warn('buildSyncMessage with something else than a DataMessage');
+    window?.log?.warn('buildSyncMessage with something else than a DataMessage');
   }
 
   if (!sentTimestamp || !_.isNumber(sentTimestamp)) {

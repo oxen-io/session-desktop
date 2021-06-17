@@ -19,12 +19,12 @@ describe('GroupInvitationMessage', () => {
     });
   });
 
-  it('dataMessage.groupInvitation has serverAddress, channelId, and serverName set', () => {
+  it('dataMessage.groupInvitation has serverAddress, and serverName set', () => {
     const plainText = message.plainTextBuffer();
     const decoded = SignalService.Content.decode(plainText);
 
-    expect(decoded.dataMessage?.groupInvitation).to.have.property('serverAddress', serverAddress);
-    expect(decoded.dataMessage?.groupInvitation).to.have.property('serverName', serverName);
+    expect(decoded.dataMessage?.openGroupInvitation).to.have.property('url', serverAddress);
+    expect(decoded.dataMessage?.openGroupInvitation).to.have.property('name', serverName);
   });
 
   it('correct ttl', () => {

@@ -27,7 +27,6 @@ import {
   ConversationType as ReduxConversationType,
   LastMessageStatusType,
 } from '../state/ducks/conversations';
-import { OpenGroupMessage } from '../session/messages/outgoing';
 import { ExpirationTimerUpdateMessage } from '../session/messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
 import { TypingMessage } from '../session/messages/outgoing/controlMessage/TypingMessage';
 import {
@@ -36,7 +35,6 @@ import {
 } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
 import { GroupInvitationMessage } from '../session/messages/outgoing/visibleMessage/GroupInvitationMessage';
 import { ReadReceiptMessage } from '../session/messages/outgoing/controlMessage/receipt/ReadReceiptMessage';
-import { OpenGroup } from '../opengroup/opengroupV1/OpenGroup';
 import { OpenGroupUtils } from '../opengroup/utils';
 import { ConversationInteraction } from '../interactions';
 import { OpenGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
@@ -44,11 +42,20 @@ import { OpenGroupRequestCommonType } from '../opengroup/opengroupV2/ApiUtil';
 import { getOpenGroupV2FromConversationId } from '../opengroup/utils/OpenGroupUtils';
 import { useDispatch } from 'react-redux';
 import { updateConfirmModal } from '../state/ducks/modalDialog';
+import { NotificationForConvoOption } from '../components/conversation/ConversationHeader';
 
 export enum ConversationTypeEnum {
   GROUP = 'group',
   PRIVATE = 'private',
 }
+
+/**
+ * all: all  notifications enabled, the default
+ * disabled: no notifications at all
+ * mentions_only: trigger a notification only on mentions of ourself
+ */
+export const ConversationNotificationSetting = ['all', 'disabled', 'mentions_only'] as const;
+export type ConversationNotificationSettingType = typeof ConversationNotificationSetting[number];
 
 export interface ConversationAttributes {
   profileName?: string;
@@ -80,13 +87,12 @@ export interface ConversationAttributes {
   /* Avatar hash is currently used for opengroupv2. it's sha256 hash of the base64 avatar data. */
   avatarHash?: string;
   server?: any;
-  channelId?: any;
   nickname?: string;
   profile?: any;
-  lastPublicMessage?: any;
   profileAvatar?: any;
   profileKey?: string;
   accessKey?: any;
+  triggerNotificationsFor: ConversationNotificationSettingType;
 }
 
 export interface ConversationAttributesOptionals {
@@ -117,13 +123,12 @@ export interface ConversationAttributesOptionals {
   avatar?: any;
   avatarHash?: string;
   server?: any;
-  channelId?: any;
   nickname?: string;
   profile?: any;
-  lastPublicMessage?: any;
   profileAvatar?: any;
   profileKey?: string;
   accessKey?: any;
+  triggerNotificationsFor?: ConversationNotificationSettingType;
 }
 
 /**
@@ -151,6 +156,7 @@ export const fillConvoAttributesWithDefaults = (
     expireTimer: 0,
     mentionedUs: false,
     active_at: 0,
+    triggerNotificationsFor: 'all', // if the settings is not set in the db, this is the default
   });
 };
 
@@ -181,7 +187,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     //start right away the function is called, and wait 1sec before calling it again
     this.markRead = _.debounce(this.markReadBouncy, 1000, { leading: true });
     // Listening for out-of-band data updates
-    this.on('ourAvatarChanged', avatar => this.updateAvatarOnPublicChat(avatar));
 
     this.typingRefreshTimer = null;
     this.typingPauseTimer = null;
@@ -192,6 +197,10 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public idForLogging() {
     if (this.isPrivate()) {
       return this.id;
+    }
+
+    if (this.isPublic()) {
+      return `opengroup(${this.id})`;
     }
 
     return `group(${this.id})`;
@@ -205,9 +214,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
   public isOpenGroupV2(): boolean {
     return OpenGroupUtils.isOpenGroupV2(this.id);
-  }
-  public isOpenGroupV1(): boolean {
-    return OpenGroupUtils.isOpenGroupV1(this.id);
   }
   public isClosedGroup() {
     return this.get('type') === ConversationTypeEnum.GROUP && !this.isPublic();
@@ -353,7 +359,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const device = new PubKey(recipientId);
     getMessageQueue()
       .sendToPubKey(device, typingMessage)
-      .catch(window.log.error);
+      .catch(window?.log?.error);
   }
 
   public async cleanup() {
@@ -442,7 +448,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const newAdmins = _.sortBy(groupAdmins);
 
     if (_.isEqual(existingAdmins, newAdmins)) {
-      // window.log.info(
+      // window?.log?.info(
       //   'Skipping updates of groupAdmins/moderators. No change detected.'
       // );
       return;
@@ -588,17 +594,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     return getOpenGroupV2FromConversationId(this.id);
   }
 
-  public toOpenGroupV1(): OpenGroup {
-    if (!this.isOpenGroupV1()) {
-      throw new Error('tried to run toOpenGroup for not public group v1');
-    }
-
-    return new OpenGroup({
-      server: this.get('server'),
-      channel: this.get('channelId'),
-      conversationId: this.id,
-    });
-  }
   public async sendMessageJob(message: MessageModel, expireTimer: number | undefined) {
     try {
       const uploads = await message.uploadData();
@@ -612,22 +607,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       }
 
       if (this.isPublic() && !this.isOpenGroupV2()) {
-        const openGroup = this.toOpenGroupV1();
-
-        const openGroupParams = {
-          body: uploads.body,
-          timestamp: sentAt,
-          group: openGroup,
-          attachments: uploads.attachments,
-          preview: uploads.preview,
-          quote: uploads.quote,
-          identifier: id,
-        };
-        const openGroupMessage = new OpenGroupMessage(openGroupParams);
-        // we need the return await so that errors are caught in the catch {}
-        await getMessageQueue().sendToOpenGroup(openGroupMessage);
-
-        return;
+        throw new Error('Only opengroupv2 are supported now');
       }
       // an OpenGroupV2 message is just a visible message
       const chatMessageParams: VisibleMessageParams = {
@@ -720,7 +700,12 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
     const now = Date.now();
 
-    window.log.info('Sending message to conversation', this.idForLogging(), 'with timestamp', now);
+    window?.log?.info(
+      'Sending message to conversation',
+      this.idForLogging(),
+      'with timestamp',
+      now
+    );
     // be sure an empty quote is marked as undefined rather than being empty
     // otherwise upgradeMessageSchema() will return an object with an empty array
     // and this.get('quote') will be true, even if there is no quote.
@@ -778,29 +763,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     return null;
   }
 
-  public async updateAvatarOnPublicChat({ url, profileKey }: any) {
-    if (!this.isPublic()) {
-      return;
-    }
-    // Always share avatars on PublicChat
-
-    if (profileKey && typeof profileKey !== 'string') {
-      // eslint-disable-next-line no-param-reassign
-      // tslint:disable-next-line: no-parameter-reassignment
-      profileKey = fromArrayBufferToBase64(profileKey);
-    }
-    const serverAPI = await window.lokiPublicChatAPI.findOrCreateServer(this.get('server'));
-    if (!serverAPI) {
-      return;
-    }
-    await serverAPI.setAvatar(url, profileKey);
-  }
   public async bouncyUpdateLastMessage() {
     if (!this.id) {
       return;
     }
     if (!this.get('active_at')) {
-      window.log.info('Skipping update last message as active_at is falsy');
       return;
     }
     const messages = await getMessagesByConversation(this.id, {
@@ -826,6 +793,14 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     }
   }
 
+  public async setNotificationOption(selected: ConversationNotificationSettingType) {
+    const existingSettings = this.get('triggerNotificationsFor');
+    if (existingSettings !== selected) {
+      this.set({ triggerNotificationsFor: selected });
+      await this.commit();
+    }
+  }
+
   public async updateExpirationTimer(
     providedExpireTimer: any,
     providedSource?: string,
@@ -846,7 +821,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return null;
     }
 
-    window.log.info("Update conversation 'expireTimer'", {
+    window?.log?.info("Update conversation 'expireTimer'", {
       id: this.idForLogging(),
       expireTimer,
       source,
@@ -911,7 +886,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       const pubkey = new PubKey(this.get('id'));
       await getMessageQueue().sendToPubKey(pubkey, expirationTimerMessage);
     } else {
-      window.log.warn('TODO: Expiration update for closed groups are to be updated');
+      window?.log?.warn('TODO: Expiration update for closed groups are to be updated');
       const expireUpdateForGroup = {
         ...expireUpdate,
         groupId: this.get('id'),
@@ -951,6 +926,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         messageModel: model,
       })
     );
+    const unreadCount = await this.getUnreadCount();
+    this.set({ unreadCount });
+    await this.commit();
 
     return model;
   }
@@ -959,7 +937,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (this.isMediumGroup()) {
       await leaveClosedGroup(this.id);
     } else {
-      window.log.error('Cannot leave a non-medium group conversation');
+      window?.log?.error('Cannot leave a non-medium group conversation');
       throw new Error(
         'Legacy group are not supported anymore. You need to create this group again.'
       );
@@ -1015,7 +993,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         this.set({ unreadCount: 0 });
         await this.commit();
       } else {
-        // window.log.info('markRead(): nothing newly read.');
+        // window?.log?.info('markRead(): nothing newly read.');
       }
       return;
     }
@@ -1054,7 +1032,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return;
     }
     if (this.isPrivate() && read.length && options.sendReadReceipts) {
-      window.log.info(`Sending ${read.length} read receipts`);
+      window?.log?.info(`Sending ${read.length} read receipts`);
       if (window.storage.get('read-receipt-setting')) {
         await Promise.all(
           _.map(_.groupBy(read, 'sender'), async (receipts, sender) => {
@@ -1117,57 +1095,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public getNickname() {
     return this.get('nickname');
   }
-  // maybe "Backend" instead of "Source"?
-  public async setPublicSource(newServer: any, newChannelId: any) {
-    if (!this.isPublic()) {
-      window.log.warn(`trying to setPublicSource on non public chat conversation ${this.id}`);
-      return;
-    }
-    if (this.get('server') !== newServer || this.get('channelId') !== newChannelId) {
-      // mark active so it's not in the contacts list but in the conversation list
-      this.set({
-        server: newServer,
-        channelId: newChannelId,
-        active_at: Date.now(),
-      });
-      await this.commit();
-    }
-  }
-  public getPublicSource() {
-    if (!this.isPublic()) {
-      window.log.warn(`trying to getPublicSource on non public chat conversation ${this.id}`);
-      return null;
-    }
-    return {
-      server: this.get('server'),
-      channelId: this.get('channelId'),
-      conversationId: this.get('id'),
-    };
-  }
-  public async getPublicSendData() {
-    const channelAPI = await window.lokiPublicChatAPI.findOrCreateChannel(
-      this.get('server'),
-      this.get('channelId'),
-      this.id
-    );
-    return channelAPI;
-  }
-  public getLastRetrievedMessage() {
-    if (!this.isPublic()) {
-      return null;
-    }
-    const lastMessageId = this.get('lastPublicMessage') || 0;
-    return lastMessageId;
-  }
-  public async setLastRetrievedMessage(newLastMessageId: any) {
-    if (!this.isPublic()) {
-      return;
-    }
-    if (this.get('lastPublicMessage') !== newLastMessageId) {
-      this.set({ lastPublicMessage: newLastMessageId });
-      await this.commit();
-    }
-  }
+
   public isAdmin(pubKey?: string) {
     if (!this.isPublic()) {
       return false;
@@ -1223,11 +1151,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     // Not sure if we care about updating the database
   }
 
-  public async setProfileAvatar(avatar: any, avatarHash?: string) {
+  public async setProfileAvatar(avatar: null | { path: string }, avatarHash?: string) {
     const profileAvatar = this.get('avatar');
     const existingHash = this.get('avatarHash');
     let shouldCommit = false;
-    if (profileAvatar !== avatar) {
+    if (!_.isEqual(profileAvatar, avatar)) {
       this.set({ avatar });
       shouldCommit = true;
     }
@@ -1270,7 +1198,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       const accessKey = fromArrayBufferToBase64(accessKeyBuffer);
       this.set({ accessKey });
     } catch (e) {
-      window.log.warn(`Failed to derive access key for ${this.id}`);
+      window?.log?.warn(`Failed to derive access key for ${this.id}`);
     }
   }
 
@@ -1494,6 +1422,25 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     }
     const conversationId = this.id;
 
+    // make sure the notifications are not muted for this convo (and not the source convo)
+    const convNotif = this.get('triggerNotificationsFor');
+    if (convNotif === 'disabled') {
+      window?.log?.info('notifications disabled for convo', this.idForLogging());
+      return;
+    }
+    if (convNotif === 'mentions_only') {
+      // check if the message has ourselves as mentions
+      const regex = new RegExp(`@${PubKey.regexForPubkeys}`, 'g');
+      const text = message.get('body');
+      const mentions = text?.match(regex) || ([] as Array<string>);
+      const mentionMe = mentions && mentions.some(m => UserUtils.isUsFromCache(m.slice(1)));
+      if (!mentionMe) {
+        window?.log?.info('notifications disabled for non mentions for convo', conversationId);
+
+        return;
+      }
+    }
+
     const convo = await ConversationController.getInstance().getOrCreateAndWait(
       message.get('source'),
       ConversationTypeEnum.PRIVATE
@@ -1506,7 +1453,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const messageId = message.id;
     const isExpiringMessage = this.isExpiringMessage(messageJSON);
 
-    // window.log.info('Add notification', {
+    // window?.log?.info('Add notification', {
     //   conversationId: this.idForLogging(),
     //   isExpiringMessage,
     //   messageSentAt,

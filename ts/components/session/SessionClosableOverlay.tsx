@@ -10,6 +10,7 @@ import { SessionSpinner } from './SessionSpinner';
 import { DefaultTheme } from 'styled-components';
 import { ConversationTypeEnum } from '../../models/conversation';
 import { SessionJoinableRooms } from './SessionJoinableDefaultRooms';
+import { SpacerLG, SpacerMD } from '../basic/Text';
 
 export enum SessionClosableOverlayType {
   Message = 'message',
@@ -125,7 +126,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
         title = window.i18n('newSession');
         buttonText = window.i18n('next');
         descriptionLong = window.i18n('usersCanShareTheir...');
-        subtitle = window.i18n('enterSessionID');
+        subtitle = window.i18n('enterSessionIDOrONSName');
         placeholder = window.i18n('enterSessionIDOfRecipient');
         break;
       case 'open-group':
@@ -162,7 +163,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
           />
         </div>
 
-        <div className="spacer-md" />
+        <SpacerMD />
 
         <h2>{title}</h2>
 
@@ -188,7 +189,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
         ) : (
           <SessionIdEditable
             ref={this.inputRef}
-            editable={true}
+            editable={!showLoadingSpinner}
             placeholder={placeholder}
             onChange={onChangeSessionID}
           />
@@ -198,7 +199,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
 
         {isClosedGroupView && (
           <>
-            <div className="spacer-lg" />
+            <SpacerLG />
             <div className="group-member-list__container">
               {noContactsForClosedGroup ? (
                 <div className="group-member-list__no-contacts">
@@ -211,7 +212,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
               )}
             </div>
 
-            <div className="spacer-lg" />
+            <SpacerLG />
           </>
         )}
 

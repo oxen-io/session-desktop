@@ -1,6 +1,5 @@
 import React from 'react';
-import { LocalizerType } from '../../../types/Util';
-import { TimerOption } from '../../conversation/ConversationHeader';
+import { NotificationForConvoOption, TimerOption } from '../../conversation/ConversationHeader';
 import { Item, Submenu } from 'react-contexify';
 import { SessionNicknameDialog } from '../SessionNicknameDialog';
 import { useDispatch } from 'react-redux';
@@ -8,6 +7,8 @@ import { updateConfirmModal } from '../../../state/ducks/modalDialog';
 import { ConversationController } from '../../../session/conversations';
 import { UserUtils } from '../../../session/utils';
 import { AdminLeaveClosedGroupDialog } from '../../conversation/AdminLeaveClosedGroupDialog';
+import { ConversationNotificationSettingType } from '../../../models/conversation';
+import { LocalizerType } from '../../../types/Util';
 
 function showTimerOptions(
   isPublic: boolean,
@@ -16,6 +17,14 @@ function showTimerOptions(
   isBlocked: boolean
 ): boolean {
   return !isPublic && !left && !isKickedFromGroup && !isBlocked;
+}
+
+function showNotificationConvo(
+  isKickedFromGroup: boolean,
+  left: boolean,
+  isBlocked: boolean
+): boolean {
+  return !left && !isKickedFromGroup && !isBlocked;
 }
 
 function showMemberMenu(isPublic: boolean, isGroup: boolean): boolean {
@@ -84,11 +93,10 @@ function showInviteContact(isGroup: boolean, isPublic: boolean): boolean {
 export function getInviteContactMenuItem(
   isGroup: boolean | undefined,
   isPublic: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showInviteContact(Boolean(isGroup), Boolean(isPublic))) {
-    return <Item onClick={action}>{i18n('inviteContacts')}</Item>;
+    return <Item onClick={action}>{window.i18n('inviteContacts')}</Item>;
   }
   return null;
 }
@@ -206,11 +214,10 @@ export function getUpdateGroupNameMenuItem(
   isAdmin: boolean | undefined,
   isKickedFromGroup: boolean | undefined,
   left: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showUpdateGroupName(Boolean(isAdmin), Boolean(isKickedFromGroup), Boolean(left))) {
-    return <Item onClick={action}>{i18n('editGroup')}</Item>;
+    return <Item onClick={action}>{window.i18n('editGroup')}</Item>;
   }
   return null;
 }
@@ -218,11 +225,10 @@ export function getUpdateGroupNameMenuItem(
 export function getRemoveModeratorsMenuItem(
   isAdmin: boolean | undefined,
   isKickedFromGroup: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showRemoveModerators(Boolean(isAdmin), Boolean(isKickedFromGroup))) {
-    return <Item onClick={action}>{i18n('removeModerators')}</Item>;
+    return <Item onClick={action}>{window.i18n('removeModerators')}</Item>;
   }
   return null;
 }
@@ -230,11 +236,10 @@ export function getRemoveModeratorsMenuItem(
 export function getAddModeratorsMenuItem(
   isAdmin: boolean | undefined,
   isKickedFromGroup: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showAddModerators(Boolean(isAdmin), Boolean(isKickedFromGroup))) {
-    return <Item onClick={action}>{i18n('addModerators')}</Item>;
+    return <Item onClick={action}>{window.i18n('addModerators')}</Item>;
   }
   return null;
 }
@@ -242,18 +247,17 @@ export function getAddModeratorsMenuItem(
 export function getCopyMenuItem(
   isPublic: boolean | undefined,
   isGroup: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showCopyId(Boolean(isPublic), Boolean(isGroup))) {
-    const copyIdLabel = isPublic ? i18n('copyOpenGroupURL') : i18n('copySessionID');
+    const copyIdLabel = isPublic ? window.i18n('copyOpenGroupURL') : window.i18n('copySessionID');
     return <Item onClick={action}>{copyIdLabel}</Item>;
   }
   return null;
 }
 
-export function getMarkAllReadMenuItem(action: any, i18n: LocalizerType): JSX.Element | null {
-  return <Item onClick={action}>{i18n('markAllAsRead')}</Item>;
+export function getMarkAllReadMenuItem(action: any): JSX.Element | null {
+  return <Item onClick={action}>{window.i18n('markAllAsRead')}</Item>;
 }
 
 export function getDisappearingMenuItem(
@@ -262,8 +266,7 @@ export function getDisappearingMenuItem(
   left: boolean | undefined,
   isBlocked: boolean | undefined,
   timerOptions: Array<TimerOption>,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (
     showTimerOptions(
@@ -277,8 +280,8 @@ export function getDisappearingMenuItem(
     return (
       // Remove the && false to make context menu work with RTL support
       <Submenu
-        label={i18n('disappearingMessages') as any}
-      // rtl={isRtlMode && false}
+        label={window.i18n('disappearingMessages') as any}
+        // rtl={isRtlMode && false}
       >
         {(timerOptions || []).map(item => (
           <Item
@@ -296,6 +299,40 @@ export function getDisappearingMenuItem(
   return null;
 }
 
+export function getNotificationForConvoMenuItem(
+  isKickedFromGroup: boolean | undefined,
+  left: boolean | undefined,
+  isBlocked: boolean | undefined,
+  notificationForConvoOptions: Array<NotificationForConvoOption>,
+  currentNotificationSetting: ConversationNotificationSettingType,
+  action: (selected: ConversationNotificationSettingType) => any
+): JSX.Element | null {
+  if (showNotificationConvo(Boolean(isKickedFromGroup), Boolean(left), Boolean(isBlocked))) {
+    // const isRtlMode = isRtlBody();
+    return (
+      // Remove the && false to make context menu work with RTL support
+      <Submenu
+        label={window.i18n('notificationForConvo') as any}
+        // rtl={isRtlMode && false}
+      >
+        {(notificationForConvoOptions || []).map(item => (
+          // tslint:disable-next-line: use-simple-attributes
+          <Item
+            key={item.value}
+            onClick={() => {
+              action(item.value);
+            }}
+            disabled={item.value === currentNotificationSetting}
+          >
+            {item.name}
+          </Item>
+        ))}
+      </Submenu>
+    );
+  }
+  return null;
+}
+
 export function isRtlBody(): boolean {
   return ($('body') as any).hasClass('rtl');
 }
@@ -303,11 +340,10 @@ export function isRtlBody(): boolean {
 export function getShowMemberMenuItem(
   isPublic: boolean | undefined,
   isGroup: boolean | undefined,
-  action: any,
-  i18n: LocalizerType
+  action: any
 ): JSX.Element | null {
   if (showMemberMenu(Boolean(isPublic), Boolean(isGroup))) {
-    return <Item onClick={action}>{i18n('groupMembers')}</Item>;
+    return <Item onClick={action}>{window.i18n('groupMembers')}</Item>;
   }
   return null;
 }
@@ -317,11 +353,10 @@ export function getBlockMenuItem(
   isPrivate: boolean | undefined,
   isBlocked: boolean | undefined,
   actionBlock: any,
-  actionUnblock: any,
-  i18n: LocalizerType
+  actionUnblock: any
 ): JSX.Element | null {
   if (showBlock(Boolean(isMe), Boolean(isPrivate))) {
-    const blockTitle = isBlocked ? i18n('unblockUser') : i18n('blockUser');
+    const blockTitle = isBlocked ? window.i18n('unblockUser') : window.i18n('blockUser');
     const blockHandler = isBlocked ? actionUnblock : actionBlock;
     return <Item onClick={blockHandler}>{blockTitle}</Item>;
   }
@@ -332,11 +367,10 @@ export function getClearNicknameMenuItem(
   isMe: boolean | undefined,
   hasNickname: boolean | undefined,
   action: any,
-  isGroup: boolean | undefined,
-  i18n: LocalizerType
+  isGroup: boolean | undefined
 ): JSX.Element | null {
   if (showClearNickname(Boolean(isMe), Boolean(hasNickname), Boolean(isGroup))) {
-    return <Item onClick={action}>{i18n('clearNickname')}</Item>;
+    return <Item onClick={action}>{window.i18n('clearNickname')}</Item>;
   }
   return null;
 }
@@ -345,7 +379,7 @@ export function getChangeNicknameMenuItem(
   isMe: boolean | undefined,
   action: any,
   isGroup: boolean | undefined,
-  i18n: LocalizerType,
+  i18n?: LocalizerType,
   conversationId?: string,
   setModal?: any
 ): JSX.Element | null {
@@ -361,7 +395,7 @@ export function getChangeNicknameMenuItem(
 
     return (
       <>
-        <Item onClick={onClickCustom}>{i18n('changeNickname')}</Item>
+        <Item onClick={onClickCustom}>{window.i18n('changeNickname')}</Item>
       </>
     );
   }
