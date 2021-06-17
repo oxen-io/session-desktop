@@ -703,8 +703,6 @@ export class SessionConversation extends React.Component<Props, State> {
             theme={this.props.theme}
           />)
         })
-
-        // warrick: delete old code
       },
       onInviteContacts: () => {
         this.setState({

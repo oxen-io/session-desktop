@@ -1,15 +1,13 @@
-import React, { Dispatch } from 'react';
+import React from 'react';
 import { LocalizerType } from '../../../types/Util';
 import { TimerOption } from '../../conversation/ConversationHeader';
 import { Item, Submenu } from 'react-contexify';
 import { SessionNicknameDialog } from '../SessionNicknameDialog';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updateConfirmModal } from '../../../state/ducks/modalDialog';
 import { ConversationController } from '../../../session/conversations';
-import { useTheme } from 'styled-components';
 import { UserUtils } from '../../../session/utils';
 import { AdminLeaveClosedGroupDialog } from '../../conversation/AdminLeaveClosedGroupDialog';
-import { getTheme } from '../../../state/selectors/theme';
 
 function showTimerOptions(
   isPublic: boolean,

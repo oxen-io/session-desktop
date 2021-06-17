@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ConversationController } from '../../session/conversations/ConversationController';
-import { SessionModal } from './SessionModal';
 import { SessionButton } from './SessionButton';
 import { DefaultTheme, withTheme, useTheme } from 'styled-components';
 
@@ -64,7 +63,7 @@ const SessionNicknameInner = (props: Props) => {
         title={window.i18n('changeNickname')}
         onClose={onClickClose}
         showExitIcon={false}
-        // showHeader={true}
+        showHeader={true}
         theme={theme}
       >
 
