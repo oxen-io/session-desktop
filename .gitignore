@@ -50,3 +50,6 @@ yarn-error.log
 
 # editor
 .vscode/
+
+# this was an old submodule. Uneeded now but github action keep complaining
+session-file-server/
