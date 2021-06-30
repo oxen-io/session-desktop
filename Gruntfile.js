@@ -43,8 +43,7 @@ module.exports = grunt => {
       util_worker: {
         src: [
           'node_modules/bytebuffer/dist/bytebuffer.js',
-          'components/JSBI/dist/jsbi.mjs',
-          'node_modules/long/dist/long.js',
+          'js/libtextsecure.js',
           'js/util_worker_tasks.js',
         ],
         dest: 'js/util_worker.js',
@@ -119,12 +118,7 @@ module.exports = grunt => {
         tasks: ['concat:libtextsecure'],
       },
       utilworker: {
-        files: [
-          'node_modules/bytebuffer/dist/bytebuffer.js',
-          'components/JSBI/dist/jsbi.mjs',
-          'node_modules/long/dist/long.js',
-          'js/util_worker_tasks.js',
-        ],
+        files: ['js/libtextsecure.js', 'node_modules/long/dist/long.js', 'js/util_worker_tasks.js'],
         tasks: ['concat:util_worker'],
       },
       libloki: {

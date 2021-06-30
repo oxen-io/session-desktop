@@ -291,7 +291,7 @@ window.Signal = Signal.setup({
 
 window.SwarmPolling = require('./ts/session/snode_api/swarmPolling').SwarmPolling.getInstance();
 
-const WorkerInterface = require('./js/modules/util_worker_interface');
+const WorkerInterface = require('./ts/workers/util_worker_interface');
 
 // A Worker with a 3 minute timeout
 const utilWorkerPath = path.join(app.getAppPath(), 'js', 'util_worker.js');

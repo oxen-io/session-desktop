@@ -18,7 +18,6 @@ sql/
 
 # generated files
 js/components.js
-js/util_worker.js
 js/libtextsecure.js
 js/libloki.js
 libtextsecure/components.js

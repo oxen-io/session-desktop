@@ -1,9 +1,7 @@
-/* global Worker, window, setTimeout */
-
 const WORKER_TIMEOUT = 60 * 1000; // one minute
 
 class TimedOutError extends Error {
-  constructor(message) {
+  constructor(message: any) {
     super(message);
     this.name = this.constructor.name;
     if (typeof Error.captureStackTrace === 'function') {
@@ -15,11 +13,17 @@ class TimedOutError extends Error {
 }
 
 class WorkerInterface {
-  constructor(path, timeout = WORKER_TIMEOUT) {
+  _utilWorker: Worker;
+  timeout: number;
+  _jobs: Record<number, any>;
+  _DEBUG: boolean;
+  _jobCounter: number;
+
+  constructor(path: string, timeout = WORKER_TIMEOUT) {
     this._utilWorker = new Worker(path);
     this.timeout = timeout;
     this._jobs = Object.create(null);
-    this._DEBUG = false;
+    this._DEBUG = true;
     this._jobCounter = 0;
 
     this._utilWorker.onmessage = e => {
@@ -44,7 +48,7 @@ class WorkerInterface {
     };
   }
 
-  _makeJob(fnName) {
+  _makeJob(fnName: string) {
     this._jobCounter += 1;
     const id = this._jobCounter;
 
@@ -59,14 +63,14 @@ class WorkerInterface {
     return id;
   }
 
-  _updateJob(id, data) {
+  _updateJob(id: number, data: any) {
     const { resolve, reject } = data;
     const { fnName, start } = this._jobs[id];
 
     this._jobs[id] = {
       ...this._jobs[id],
       ...data,
-      resolve: value => {
+      resolve: (value: any) => {
         this._removeJob(id);
         const end = Date.now();
         if (this._DEBUG) {
@@ -74,7 +78,7 @@ class WorkerInterface {
         }
         return resolve(value);
       },
-      reject: error => {
+      reject: (error: any) => {
         this._removeJob(id);
         const end = Date.now();
         window.log.info(`Worker job ${id} (${fnName}) failed in ${end - start}ms`);
@@ -83,7 +87,7 @@ class WorkerInterface {
     };
   }
 
-  _removeJob(id) {
+  _removeJob(id: number) {
     if (this._DEBUG) {
       this._jobs[id].complete = true;
     } else {
@@ -91,11 +95,11 @@ class WorkerInterface {
     }
   }
 
-  _getJob(id) {
+  _getJob(id: number) {
     return this._jobs[id];
   }
 
-  callWorker(fnName, ...args) {
+  callWorker(fnName: string, ...args: any) {
     const jobId = this._makeJob(fnName);
 
     return new Promise((resolve, reject) => {

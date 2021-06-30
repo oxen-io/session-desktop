@@ -65,8 +65,16 @@ export const parseMessages = async (
           }
           // Validate the message signature
           const senderPubKey = PubKey.cast(opengroupv2Message.sender).withoutPrefix();
-          const signature = fromBase64ToArrayBuffer(opengroupv2Message.base64EncodedSignature);
-          const messageData = fromBase64ToArrayBuffer(opengroupv2Message.base64EncodedData);
+          const signature = opengroupv2Message.base64EncodedSignature;
+          const messageData = opengroupv2Message.base64EncodedData;
+          const ret = await window.callWorker(
+            'verifyOpenGroupV2MessageSignature',
+            senderPubKey,
+            messageData,
+            signature
+          );
+          debugger;
+
           // throws if signature failed
           await window.libsignal.Curve.async.verifySignature(
             fromHex(senderPubKey),

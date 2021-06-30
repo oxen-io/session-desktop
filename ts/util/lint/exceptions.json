@@ -176,22 +176,6 @@
     "reasonDetail": "Interacting with already-existing DOM nodes"
   },
   {
-    "rule": "jQuery-wrap(",
-    "path": "js/util_worker_tasks.js",
-    "line": "  return dcodeIO.ByteBuffer.wrap(string, 'base64').toArrayBuffer();",
-    "lineNumber": 40,
-    "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
-  },
-  {
-    "rule": "jQuery-wrap(",
-    "path": "js/util_worker_tasks.js",
-    "line": "  return dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('base64');",
-    "lineNumber": 43,
-    "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
-  },
-  {
     "rule": "DOM-innerHTML",
     "path": "js/views/app_view.js",
     "line": "      this.el.innerHTML = '';",
