@@ -241,6 +241,7 @@ export interface MessageRegularProps {
   firstMessageOfSeries: boolean;
   isUnread: boolean;
   isQuotedMessageToAnimate?: boolean;
+  isTrustedForAttachmentDownload: boolean;
 
   onClickAttachment?: (attachment: AttachmentType) => void;
   onClickLinkPreview?: (url: string) => void;
@@ -252,4 +253,8 @@ export interface MessageRegularProps {
   onShowDetail: () => void;
   markRead: (readAt: number) => Promise<void>;
   theme: DefaultTheme;
+
+  playableMessageIndex?: number;
+  nextMessageToPlay?: number;
+  playNextMessage?: (value: number) => any;
 }

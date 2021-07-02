@@ -450,9 +450,6 @@
     }, window.CONSTANTS.NOTIFICATION_ENABLE_TIMEOUT_SECONDS * 1000);
 
     window.NewReceiver.queueAllCached();
-    window.SwarmPolling.addPubkey(window.libsession.Utils.UserUtils.getOurPubKeyStrFromCache());
-
-    window.SwarmPolling.start();
     window.libsession.Utils.AttachmentDownloads.start({
       logger: window.log,
     });

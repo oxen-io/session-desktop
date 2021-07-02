@@ -41,6 +41,7 @@ import { updateUserDetailsModal } from '../../state/ducks/modalDialog';
 import { MessageInteraction } from '../../interactions';
 import autoBind from 'auto-bind';
 import { AudioPlayerWithEncryptedFile } from './H5AudioPlayer';
+import { ClickToTrustSender } from './message/ClickToTrustSender';
 
 // Same as MIN_WIDTH in ImageGrid.tsx
 const MINIMUM_LINK_PREVIEW_IMAGE_WIDTH = 200;
@@ -49,7 +50,6 @@ interface State {
   expiring: boolean;
   expired: boolean;
   imageBroken: boolean;
-  playbackSpeed: number;
 }
 
 const EXPIRATION_CHECK_MINIMUM = 2000;
@@ -68,7 +68,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
       expiring: false,
       expired: false,
       imageBroken: false,
-      playbackSpeed: 1,
     };
     this.ctxMenuID = `ctx-menu-message-${uuid()}`;
   }
@@ -146,6 +145,7 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
       onClickAttachment,
       multiSelectMode,
       onSelectMessage,
+      isTrustedForAttachmentDownload,
     } = this.props;
     const { imageBroken } = this.state;
 
@@ -159,6 +159,10 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
     const withContentAbove =
       Boolean(quote) || (conversationType === 'group' && direction === 'incoming');
     const displayImage = canDisplayImage(attachments);
+
+    if (!isTrustedForAttachmentDownload) {
+      return <ClickToTrustSender messageId={id} />;
+    }
 
     if (
       displayImage &&
@@ -199,9 +203,11 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
           }}
         >
           <AudioPlayerWithEncryptedFile
-            playbackSpeed={this.state.playbackSpeed}
             src={firstAttachment.url}
             contentType={firstAttachment.contentType}
+            playNextMessage={this.props.playNextMessage}
+            playableMessageIndex={this.props.playableMessageIndex}
+            nextMessageToPlay={this.props.nextMessageToPlay}
           />
         </div>
       );
@@ -567,11 +573,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
           </Item>
         ) : null}
 
-        {isAudio(attachments) ? (
-          <Item onClick={this.updatePlaybackSpeed}>
-            {window.i18n('playAtCustomSpeed', this.state.playbackSpeed === 1 ? 2 : 1)}
-          </Item>
-        ) : null}
         <Item
           onClick={() => {
             MessageInteraction.copyBodyToClipboard(text);
@@ -816,15 +817,6 @@ class MessageInner extends React.PureComponent<MessageRegularProps, State> {
         </div>
       </InView>
     );
-  }
-
-  /**
-   * Doubles / halves the playback speed based on the current playback speed.
-   */
-  private updatePlaybackSpeed() {
-    this.setState(prevState => ({
-      playbackSpeed: prevState.playbackSpeed === 1 ? 2 : 1,
-    }));
   }
 
   private handleContextMenu(e: any) {

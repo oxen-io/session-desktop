@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ConversationModel } from '../../models/conversation';
-import { ConversationController } from '../../session/conversations';
+import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { createStore } from '../../state/createStore';
 import { actions as conversationActions } from '../../state/ducks/conversations';
@@ -13,10 +13,15 @@ import { initialOnionPathState } from '../../state/ducks/onion';
 import { initialSearchState } from '../../state/ducks/search';
 import { initialSectionState } from '../../state/ducks/section';
 import { initialThemeState } from '../../state/ducks/theme';
+import { initialUserConfigState } from '../../state/ducks/userConfig';
 import { StateType } from '../../state/reducer';
 import { makeLookup } from '../../util';
 import { LeftPane } from '../LeftPane';
 import { SessionMainPanel } from '../SessionMainPanel';
+
+// tslint:disable-next-line: no-submodule-imports
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
 
 // Workaround: A react component's required properties are filtering up through connect()
 //   https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31363
@@ -53,13 +58,17 @@ export class SessionInboxView extends React.Component<any, State> {
       return <></>;
     }
 
+    const persistor = persistStore(this.store);
+
     return (
       <Provider store={this.store}>
-        <div className="gutter">
-          <div className="network-status-container" />
-          {this.renderLeftPane()}
-        </div>
-        <SessionMainPanel />
+        <PersistGate loading={null} persistor={persistor}>
+          <div className="gutter">
+            <div className="network-status-container" />
+            {this.renderLeftPane()}
+          </div>
+          <SessionMainPanel />
+        </PersistGate>
       </Provider>
     );
   }
@@ -70,7 +79,7 @@ export class SessionInboxView extends React.Component<any, State> {
 
   private async setupLeftPane() {
     // Here we set up a full redux store with initial state for our LeftPane Root
-    const convoCollection = ConversationController.getInstance().getConversations();
+    const convoCollection = getConversationController().getConversations();
     const conversations = convoCollection.map((conversation: ConversationModel) =>
       conversation.getProps()
     );
@@ -96,6 +105,7 @@ export class SessionInboxView extends React.Component<any, State> {
       mentionsInput: initialMentionsState,
       onionPaths: initialOnionPathState,
       modals: initialModalState,
+      userConfig: initialUserConfigState,
     };
 
     this.store = createStore(initialState);

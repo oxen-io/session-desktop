@@ -12,7 +12,7 @@ import {
 } from '../../../ts/data/data';
 import { MessageModel } from '../../models/message';
 import { downloadAttachment, downloadAttachmentOpenGroupV2 } from '../../receiver/attachments';
-import { MessageController } from '../messages';
+import { getMessageController } from '../messages';
 
 const MAX_ATTACHMENT_JOB_PARALLELISM = 3;
 
@@ -90,7 +90,6 @@ export async function addJob(attachment: any, job: any = {}) {
   };
 }
 
-// tslint:disable: function-name
 async function _tick() {
   await _maybeStartJob();
   timeout = setTimeout(_tick, TICK_INTERVAL);
@@ -145,6 +144,13 @@ async function _runJob(job: any) {
       await _finishJob(null, id);
       return;
     }
+    const isTrusted = found.isTrustedForAttachmentDownload();
+
+    if (!isTrusted) {
+      logger.info('_runJob: sender conversation not trusted yet, deleting job');
+      await _finishJob(null, id);
+      return;
+    }
 
     if (isOpenGroupV2 && (!openGroupV2Details?.serverUrl || !openGroupV2Details.roomId)) {
       window?.log?.warn(
@@ -155,7 +161,7 @@ async function _runJob(job: any) {
       return;
     }
 
-    message = MessageController.getInstance().register(found.id, found);
+    message = getMessageController().register(found.id, found);
 
     const pending = true;
     await setAttachmentDownloadJobPending(id, pending);

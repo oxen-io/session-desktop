@@ -9,7 +9,7 @@ import {
   changeNickNameModal,
   updateConfirmModal,
 } from '../../../state/ducks/modalDialog';
-import { ConversationController } from '../../../session/conversations';
+import { getConversationController } from '../../../session/conversations';
 import {
   blockConvoById,
   clearNickNameByConvoId,
@@ -25,6 +25,7 @@ import {
   showUpdateGroupNameByConvoId,
   unblockConvoById,
 } from '../../../interactions/conversationInteractions';
+import { SessionButtonColor } from '../SessionButton';
 
 function showTimerOptions(
   isPublic: boolean,
@@ -162,9 +163,9 @@ export function getDeleteContactMenuItem(
             ? window.i18n('leaveGroupConfirmation')
             : window.i18n('deleteContactConfirmation'),
           onClickClose,
-          onClickOk: () => {
-            void ConversationController.getInstance().deleteContact(conversationId);
-            onClickClose();
+          okTheme: SessionButtonColor.Danger,
+          onClickOk: async () => {
+            await getConversationController().deleteContact(conversationId);
           },
         })
       );

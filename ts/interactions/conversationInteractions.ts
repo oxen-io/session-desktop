@@ -14,7 +14,7 @@ import { MessageModel } from '../models/message';
 import { ApiV2 } from '../opengroup/opengroupV2';
 
 import _ from 'lodash';
-import { ConversationController } from '../session/conversations';
+import { getConversationController } from '../session/conversations';
 import { BlockedNumberController } from '../util/blockedNumberController';
 import {
   adminLeaveClosedGroup,
@@ -36,6 +36,7 @@ import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsMana
 import { IMAGE_JPEG } from '../types/MIME';
 import { FSv2 } from '../fileserver';
 import { fromBase64ToArray, toHex } from '../session/utils/String';
+import { SessionButtonColor } from '../components/session/SessionButton';
 
 export const getCompleteUrlForV2ConvoId = async (convoId: string) => {
   if (convoId.match(openGroupV2ConversationIdRegex)) {
@@ -136,7 +137,7 @@ export async function deleteOpenGroupMessages(
 }
 
 export async function blockConvoById(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   if (!conversation.id || conversation.isPublic()) {
     return;
@@ -151,7 +152,7 @@ export async function blockConvoById(conversationId: string) {
 }
 
 export async function unblockConvoById(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   if (!conversation) {
     // we assume it's a block contact and not group.
@@ -172,37 +173,33 @@ export async function unblockConvoById(conversationId: string) {
 }
 
 export async function showUpdateGroupNameByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
   if (conversation.isMediumGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
         .get('members')
-        .map(m =>
-          ConversationController.getInstance().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE)
-        )
+        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
     );
   }
   window.inboxStore?.dispatch(updateGroupNameModal({ conversationId }));
 }
 
 export async function showUpdateGroupMembersByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
   if (conversation.isMediumGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
         .get('members')
-        .map(m =>
-          ConversationController.getInstance().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE)
-        )
+        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
     );
   }
   window.inboxStore?.dispatch(updateGroupMembersModal({ conversationId }));
 }
 
 export function showLeaveGroupByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   if (!conversation.isGroup()) {
     throw new Error('showLeaveGroupDialog() called with a non group convo.');
@@ -223,8 +220,8 @@ export function showLeaveGroupByConvoId(conversationId: string) {
       updateConfirmModal({
         title,
         message,
-        onClickOk: () => {
-          void conversation.leaveClosedGroup();
+        onClickOk: async () => {
+          await conversation.leaveClosedGroup();
           onClickClose();
         },
         onClickClose,
@@ -242,7 +239,7 @@ export function showInviteContactByConvoId(conversationId: string) {
   window.inboxStore?.dispatch(updateInviteContactModal({ conversationId }));
 }
 export async function onMarkAllReadByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   await conversation.markReadBouncy(Date.now());
 }
@@ -256,7 +253,7 @@ export function showRemoveModeratorsByConvoId(conversationId: string) {
 }
 
 export async function markAllReadByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
   await conversation.markReadBouncy(Date.now());
 }
 
@@ -264,7 +261,7 @@ export async function setNotificationForConvoId(
   conversationId: string,
   selected: ConversationNotificationSettingType
 ) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   const existingSettings = conversation.get('triggerNotificationsFor');
   if (existingSettings !== selected) {
@@ -273,7 +270,7 @@ export async function setNotificationForConvoId(
   }
 }
 export async function clearNickNameByConvoId(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
   await conversation.setNickname('');
 }
 
@@ -282,7 +279,7 @@ export function showChangeNickNameByConvoId(conversationId: string) {
 }
 
 export async function deleteMessagesByConvoIdNoConfirmation(conversationId: string) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
   await removeAllMessagesInConversation(conversationId);
   window.inboxStore?.dispatch(
     conversationReset({
@@ -306,8 +303,8 @@ export function deleteMessagesByConvoIdWithConfirmation(conversationId: string) 
     window?.inboxStore?.dispatch(updateConfirmModal(null));
   };
 
-  const onClickOk = () => {
-    void deleteMessagesByConvoIdNoConfirmation(conversationId);
+  const onClickOk = async () => {
+    await deleteMessagesByConvoIdNoConfirmation(conversationId);
     onClickClose();
   };
 
@@ -316,6 +313,7 @@ export function deleteMessagesByConvoIdWithConfirmation(conversationId: string) 
       title: window.i18n('deleteMessages'),
       message: window.i18n('deleteConversationConfirmation'),
       onClickOk,
+      okTheme: SessionButtonColor.Danger,
       onClickClose,
     })
   );
@@ -325,7 +323,7 @@ export async function setDisappearingMessagesByConvoId(
   conversationId: string,
   seconds: number | undefined
 ) {
-  const conversation = ConversationController.getInstance().get(conversationId);
+  const conversation = getConversationController().get(conversationId);
 
   if (!seconds || seconds <= 0) {
     await conversation.updateExpirationTimer(null);
@@ -340,7 +338,7 @@ export async function setDisappearingMessagesByConvoId(
  * If this is a reupload, the old profileKey is used, otherwise a new one is generated
  */
 export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
-  const ourConvo = ConversationController.getInstance().get(UserUtils.getOurPubKeyStrFromCache());
+  const ourConvo = getConversationController().get(UserUtils.getOurPubKeyStrFromCache());
   if (!ourConvo) {
     window.log.warn('ourConvo not found... This is not a valid case');
     return;
