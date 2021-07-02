@@ -203,6 +203,7 @@ export class ConfigurationMessageClosedGroup {
       },
       members: this.members.map(fromHexToArray),
       admins: this.admins.map(fromHexToArray),
+      expirationTimer: this.expireTimer,
     });
   }
 }
