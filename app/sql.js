@@ -80,6 +80,7 @@ module.exports = {
 
   getUnprocessedCount,
   getAllUnprocessed,
+  saveUnprocessedBatch,
   saveUnprocessed,
   updateUnprocessedAttempts,
   updateUnprocessedWithData,
@@ -1546,7 +1547,7 @@ async function updateConversation(data) {
     members = $members,
     name = $name,
     profileName = $profileName
-  WHERE id = $id;`,
+    WHERE id = $id;`,
     {
       $id: id,
       $json: objectToJSON(data),
@@ -2170,6 +2171,20 @@ async function getNextExpiringMessage() {
   `);
 
   return map(rows, row => jsonToObject(row.json));
+}
+
+async function saveUnprocessedBatch(dataArray) {
+  let promise;
+
+  db.serialize(() => {
+    promise = Promise.all([
+      db.run('BEGIN TRANSACTION;'),
+      ...map(dataArray, data => saveUnprocessed(data)),
+      db.run('COMMIT TRANSACTION;'),
+    ]);
+  });
+
+  await promise;
 }
 
 /* Unproccessed a received messages not yet processed */

@@ -18,7 +18,7 @@ import {
 } from './messageType';
 
 import autoBind from 'auto-bind';
-import { saveMessage } from '../../ts/data/data';
+import { saveMessage, saveMessages } from '../../ts/data/data';
 import { ConversationModel, ConversationTypeEnum } from './conversation';
 import { actions as conversationActions } from '../state/ducks/conversations';
 import { VisibleMessage } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
@@ -1035,7 +1035,19 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     await this.commit();
   }
 
+  public async commitBatch(messageAttributes: MessageAttributes[]) {
+    console.log('Commit batch count');
+    if (!this.attributes.id) {
+      throw new Error('A message always needs an id');
+    }
+    
+    await saveMessages(messageAttributes);
+    this.generateProps();
+    return;
+  }
+
   public async commit() {
+    console.count('commit count');
     if (!this.attributes.id) {
       throw new Error('A message always needs an id');
     }

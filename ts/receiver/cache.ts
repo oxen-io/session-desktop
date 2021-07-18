@@ -8,6 +8,7 @@ import {
   removeAllUnprocessed,
   removeUnprocessed,
   saveUnprocessed,
+  saveUnprocessedBatch,
   UnprocessedParameter,
   updateUnprocessedAttempts,
   updateUnprocessedWithData,
@@ -18,6 +19,51 @@ export async function removeFromCache(envelope: EnvelopePlus) {
   window?.log?.info(`removing from cache envelope: ${id}`);
 
   return removeUnprocessed(id);
+}
+
+export async function removeBatchFromCache(envelopes: Array<EnvelopePlus>) {
+  // const { id } = envelope;
+  const ids = envelopes.map(e => e.id);
+  // window?.log?.info(`removing from cache envelope: ${id}`);
+  window?.log?.info(`removing ${ids.length} envelopes from cache`);
+
+  return removeUnprocessed(ids);
+}
+
+
+
+
+export async function addBatchToCache(envelopes: Array<EnvelopePlus>, plaintexts: Array<ArrayBuffer>) {
+  const { id } = envelopes[0];
+  window?.log?.info(`adding ${envelopes.length} envelopes to cache. Starting with ${id}`);
+
+  const dataToCache: any[] = [];
+
+  const createCacheData = (envelope: EnvelopePlus, plaintext: ArrayBuffer) => {
+    const encodedEnvelope = StringUtils.decode(plaintext, 'base64');
+    const data: UnprocessedParameter = {
+      id,
+      version: 2,
+      envelope: encodedEnvelope,
+      timestamp: Date.now(),
+      attempts: 1,
+    };
+
+    if (envelope.senderIdentity) {
+      data.senderIdentity = envelope.senderIdentity;
+    }
+    return data;
+  }
+
+  for (let index = 0; index < envelopes.length; index++) {
+    const envelope = envelopes[index];
+    const plaintext = plaintexts[index];
+    dataToCache.push(createCacheData(envelope, plaintext));
+  }
+
+  window?.log?.info(`Caching ${dataToCache.length} data messages`)
+
+  return saveUnprocessedBatch(dataToCache);
 }
 
 export async function addToCache(envelope: EnvelopePlus, plaintext: ArrayBuffer) {

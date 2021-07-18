@@ -4,12 +4,12 @@ import { EnvelopePlus } from './types';
 export { downloadAttachment } from './attachments';
 import { v4 as uuidv4 } from 'uuid';
 
-import { addToCache, getAllFromCache, getAllFromCacheForSource, removeFromCache } from './cache';
+import { addBatchToCache, addToCache, getAllFromCache, getAllFromCacheForSource, removeBatchFromCache, removeFromCache } from './cache';
 import { processMessage } from '../session/snode_api/swarmPolling';
 import { onError } from './errors';
 
 // innerHandleContentMessage is only needed because of code duplication in handleDecryptedEnvelope...
-import { handleContentMessage, innerHandleContentMessage } from './contentMessage';
+import { handleContentMessage, handleContentMessageBatch, innerHandleContentMessage } from './contentMessage';
 import _, { noop } from 'lodash';
 
 export { processMessage };
@@ -47,6 +47,18 @@ interface ReqOptions {
 }
 
 const incomingMessagePromises: Array<Promise<any>> = [];
+
+const handleEnvelopeBatch = async (envelopes: Array<EnvelopePlus>) => {
+  const contentMessageBatch = envelopes.filter(env => {
+    return env.content && env.content.length > 0;
+  })
+
+  if (contentMessageBatch.length > 0) {
+    return handleContentMessageBatch(contentMessageBatch);
+  }
+  await removeBatchFromCache(envelopes);
+  throw new Error('Received no messages with no content and no legacyMessage');
+}
 
 async function handleEnvelope(envelope: EnvelopePlus) {
   // TODO: enable below
@@ -108,6 +120,94 @@ function queueEnvelope(envelope: EnvelopePlus) {
   }
 }
 
+
+function queueEnvelopeBatch(envelopes: Array<EnvelopePlus>) {
+  // just get last id for now.
+  let id: string = '';
+  if (envelopes.length > 0) {
+    id = getEnvelopeId(envelopes[0]);
+  }
+  window?.log?.info('queueing envelope', id);
+
+  const task = handleEnvelopeBatch.bind(null, envelopes);
+  const taskWithTimeout = createTaskWithTimeout(task, `queueEnvelope ${id}`);
+
+  try {
+    envelopeQueue.add(taskWithTimeout);
+  } catch (error) {
+    window?.log?.error(
+      'queueEnvelope error handling envelope',
+      id,
+      ':',
+      error && error.stack ? error.stack : error
+    );
+  }
+}
+
+
+
+async function handleBatchRequestDetails(
+  plaintexts: Array<Uint8Array>,
+  options: ReqOptions,
+  lastPromise: Promise<any>
+): Promise<void> {
+
+  const processEnvelope = (plaintext: Uint8Array) => {
+    const envelope: any = SignalService.Envelope.decode(plaintext);
+
+    // After this point, decoding errors are not the server's
+    //   fault, and we should handle them gracefully and tell the
+    //   user they received an invalid message
+
+    // The message is for a medium size group
+    if (options.conversationId) {
+      const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+      const senderIdentity = envelope.source;
+
+      if (senderIdentity === ourNumber) {
+        return;
+      }
+
+      // Sender identity will be lost if we load from cache, because
+      // plaintext (and protobuf.Envelope) does not have that field...
+      envelope.source = options.conversationId;
+      // tslint:disable-next-line no-parameter-reassignment
+      plaintext = SignalService.Envelope.encode(envelope).finish();
+      envelope.senderIdentity = senderIdentity;
+    }
+
+    envelope.id = envelope.serverGuid || uuidv4();
+    envelope.serverTimestamp = envelope.serverTimestamp ? envelope.serverTimestamp.toNumber() : null;
+    return envelope;
+  }
+
+  let envelopes = plaintexts.map(plaintext => processEnvelope(plaintext));
+
+  try {
+    // NOTE: Annoyngly we add plaintext to the cache
+    // after we've already processed some of it (thus the
+    // need to handle senderIdentity separately)...
+
+    await addBatchToCache(envelopes, plaintexts);
+
+    // TODO: This is the glue between the first and the last part of the
+    // receiving pipeline refactor. It is to be implemented in the next PR.
+
+    // To ensure that we queue in the same order we receive messages
+
+    await lastPromise;
+
+    queueEnvelopeBatch(envelopes);
+  } catch (error) {
+    window?.log?.error(
+      'handleRequest error trying to add message to cache:',
+      error && error.stack ? error.stack : error
+    );
+  }
+}
+
+
+
 async function handleRequestDetail(
   plaintext: Uint8Array,
   options: ReqOptions,
@@ -160,6 +260,19 @@ async function handleRequestDetail(
       error && error.stack ? error.stack : error
     );
   }
+}
+
+export function handleBatchRequest(bodies: Array<Uint8Array>, options: ReqOptions): void {
+  // tslint:disable-next-line no-promise-as-boolean
+  const lastPromise = _.last(incomingMessagePromises) || Promise.resolve();
+
+  const promise = handleBatchRequestDetails(bodies, options, lastPromise).catch(e => {
+    window?.log?.error('Error handling incoming message:', e && e.stack ? e.stack : e);
+
+    void onError(e);
+  });
+
+  incomingMessagePromises.push(promise);
 }
 
 export function handleRequest(body: any, options: ReqOptions): void {

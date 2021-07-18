@@ -14,7 +14,7 @@ import {
 
 import { StringUtils, UserUtils } from '../../session/utils';
 import { ConversationModel } from '../../models/conversation';
-import { DURATION, SWARM_POLLING_TIMEOUT } from '../constants';
+import { DURATION, SWARM_POLLING_ACTIVITY, SWARM_POLLING_TIMEOUT } from '../constants';
 import { getConversationController } from '../conversations';
 
 type PubkeyToHash = { [key: string]: string };
@@ -42,6 +42,40 @@ export function processMessage(message: string, options: any = {}) {
   }
 }
 
+/**
+ * Converts a message into an array buffer
+ * @param message Message to be converted
+ * @returns Array buffer
+ */
+export const messageToWebsocketMessage = (message: string) => {
+  const dataPlaintext = new Uint8Array(StringUtils.encode(message, 'base64'));
+  const messageBuf = SignalService.WebSocketMessage.decode(dataPlaintext);
+  return messageBuf;
+}
+
+/**
+ * Converts an array of messages into an array of array buffers
+ * @param messages List of messages
+ * @returns List of array buffers
+ */
+export const messagesToArrayBuffers = (messages: Message[]): Array<Uint8Array> => {
+  const messageBodies: Array<Uint8Array> = [];
+  for (let index = 0; index < messages.length; index++) {
+    const message = messages[index];
+    const wMessage = messageToWebsocketMessage(message.data);
+    const body = wMessage.request?.body;
+    if (body) {
+      messageBodies.push(body);
+    }
+  }
+  return messageBodies;
+}
+
+export const processMessages = (messages: Array<Message>, options: any) => {
+  let messageBodies = messagesToArrayBuffers(messages);
+  Receiver.handleBatchRequest(messageBodies, options);
+}
+
 let instance: SwarmPolling | undefined;
 export const getSwarmPollingInstance = () => {
   if (!instance) {
@@ -53,10 +87,12 @@ export const getSwarmPollingInstance = () => {
 export class SwarmPolling {
   private groupPolling: Array<{ pubkey: PubKey; lastPolledTimestamp: number }>;
   private readonly lastHashes: { [key: string]: PubkeyToHash };
+  private groupPollsSinceActive: { [key: string]: number };
 
   constructor() {
     this.groupPolling = [];
     this.lastHashes = {};
+    this.groupPollsSinceActive = {};
   }
 
   public async start(waitForFirstPoll = false): Promise<void> {
@@ -108,38 +144,48 @@ export class SwarmPolling {
 
     const currentTimestamp = Date.now();
 
+    const lastActive = currentTimestamp - activeAt;
+    // Handle case to load when a user is updating on a lot of messages
+    if (lastActive < SWARM_POLLING_ACTIVITY.MOST_ACTIVE) {
+      return SWARM_POLLING_TIMEOUT.MOST_ACTIVE;
+    }
     // consider that this is an active group if activeAt is less than an hour old
-    if (currentTimestamp - activeAt <= DURATION.HOURS * 1) {
+    if (lastActive <= SWARM_POLLING_ACTIVITY.ACTIVE) {
       return SWARM_POLLING_TIMEOUT.ACTIVE;
     }
-
-    if (currentTimestamp - activeAt <= DURATION.DAYS * 1) {
+    if (lastActive <= SWARM_POLLING_ACTIVITY.MEDIUM_ACTIVE) {
       return SWARM_POLLING_TIMEOUT.MEDIUM_ACTIVE;
     }
-
     return SWARM_POLLING_TIMEOUT.INACTIVE;
   }
 
   /**
    * Only public for testing
    */
-  public async TEST_pollForAllKeys() {
+  public async TEST_pollForAllKeys(repollIds?: Array<string>): Promise<boolean | void> {
     // we always poll as often as possible for our pubkey
+
+    const getLoggingId = (group: { pubkey: PubKey }) => {
+      return getConversationController()
+        .get(group.pubkey.key)
+        ?.idForLogging() || group.pubkey.key;
+    }
+
     const ourPubkey = UserUtils.getOurPubKeyFromCache();
     const directPromise = this.TEST_pollOnceForKey(ourPubkey, false);
+    let nextPollTimeout = SWARM_POLLING_TIMEOUT.ACTIVE;
+    const idsToRepoll: Array<string> = [];
 
     const now = Date.now();
-    const groupPromises = this.groupPolling.map(async group => {
+    const groupPromises = this.groupPolling.map(async (group, index: number) => {
       const convoPollingTimeout = this.TEST_getPollingTimeout(group.pubkey);
+      // const convoPollingTimeout = 500;
+      this.loadGroupIds();
 
       const diff = now - group.lastPolledTimestamp;
+      const loggingId = getLoggingId(group);
 
-      const loggingId =
-        getConversationController()
-          .get(group.pubkey.key)
-          ?.idForLogging() || group.pubkey.key;
-
-      if (diff >= convoPollingTimeout) {
+      if (diff >= convoPollingTimeout || this.groupPollsSinceActive[loggingId] <= 15) {
         (window?.log?.info || console.warn)(
           `Polling for ${loggingId}; timeout: ${convoPollingTimeout} ; diff: ${diff}`
         );
@@ -149,22 +195,42 @@ export class SwarmPolling {
         `Not polling for ${loggingId}; timeout: ${convoPollingTimeout} ; diff: ${diff}`
       );
 
-      return Promise.resolve();
+      return Promise.resolve(false);
     });
     try {
-      await Promise.all(_.concat(directPromise, groupPromises));
+      await Promise.all([directPromise, ...groupPromises]);
+      const groupResults = await Promise.all(groupPromises);
+      for (let i = 0; i < groupResults.length; i++) {
+        const groupId = getLoggingId(this.groupPolling[i]);
+        window.log.info(`groupId: ${groupId}`)
+        if (groupResults[i] === true) {
+          window.log.info(`group received messages, resetting count to 0`)
+          this.groupPollsSinceActive[groupId] = 0;
+        } else {
+          if (!this.groupPollsSinceActive[groupId]) {
+            window.log.info(`group doesnt exist, initialising`)
+            this.groupPollsSinceActive[groupId] = 1;
+          } else {
+            window.log.info(`group exists, incrementing`)
+            this.groupPollsSinceActive[groupId]++;
+          }
+        }
+      }
+      console.table(this.groupPollsSinceActive);
     } catch (e) {
       (window?.log?.info || console.warn)('pollForAllKeys swallowing exception: ', e);
       throw e;
     } finally {
+      // setTimeout(this.TEST_pollForAllKeys.bind(this), 500);
       setTimeout(this.TEST_pollForAllKeys.bind(this), SWARM_POLLING_TIMEOUT.ACTIVE);
     }
   }
 
+
   /**
    * Only exposed as public for testing
    */
-  public async TEST_pollOnceForKey(pubkey: PubKey, isGroup: boolean) {
+  public async TEST_pollOnceForKey(pubkey: PubKey, isGroup: boolean): Promise<boolean> {
     // NOTE: sometimes pubkey is string, sometimes it is object, so
     // accept both until this is fixed:
     const pkStr = pubkey.key;
@@ -177,18 +243,19 @@ export class SwarmPolling {
     // If we need more nodes, select randomly from the remaining nodes:
 
     // Use 1 node for now:
-    const COUNT = 1;
 
-    let nodesToPoll = _.sampleSize(alreadyPolled, COUNT);
+    // const COUNT = 1;
+    // const COUNT = snodes.length;
+    const COUNT = this.groupPollsSinceActive ? snodes.length : this.groupPollsSinceActive[pubkey.key] ? 3 : 1;
+
+    // let nodesToPoll = _.sampleSize(alreadyPolled, COUNT);
+    let nodesToPoll = _.sampleSize(snodes, COUNT);
 
     if (nodesToPoll.length < COUNT) {
       const notPolled = _.difference(snodes, alreadyPolled);
-
       const newNeeded = COUNT - alreadyPolled.length;
-
       const newNodes = _.sampleSize(notPolled, newNeeded);
-
-      nodesToPoll = _.concat(nodesToPoll, newNodes);
+      nodesToPoll = [...nodesToPoll, ...newNodes];
     }
 
     const results = await Promise.all(
@@ -215,10 +282,24 @@ export class SwarmPolling {
 
     const newMessages = await this.handleSeenMessages(messages);
 
-    newMessages.forEach((m: Message) => {
-      const options = isGroup ? { conversationId: pkStr } : {};
-      processMessage(m.data, options);
-    });
+
+    const options = isGroup ? { conversationId: pkStr } : {};
+
+    // newMessages.forEach((m: Message) => {
+    //   processMessage(m.data, options);
+    // });
+
+    console.count(`@@ poll node once for key. newMessages length: ${newMessages.length}`);
+    if (newMessages.length > 10) {
+      console.count(`@@ new messages calling process message batch: ${newMessages.length}`)
+      processMessages(newMessages, options);
+    } else {
+      newMessages.forEach((m: Message) => {
+        processMessage(m.data, options);
+      });
+    }
+
+    return newMessages.length > 0;
   }
 
   // Fetches messages for `pubkey` from `node` potentially updating

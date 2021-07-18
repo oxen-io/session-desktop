@@ -859,7 +859,28 @@ export class SessionCompositionBox extends React.Component<Props, State> {
 
     try {
       const attachments = await this.getFiles();
-      await this.props.sendMessage(
+     if (messagePlaintext.includes('-test')) {
+        let amount = parseInt(messagePlaintext.split('-')[0]);
+        for (let index = 0; index < amount; index++) {
+          await this.props.sendMessage(
+            messagePlaintext + `- ${index}`,
+            attachments,
+            extractedQuotedMessageProps,
+            linkPreviews,
+            null,
+            {}
+          );
+        }
+      } else {
+        await this.props.sendMessage(
+          messagePlaintext,
+          attachments,
+          extractedQuotedMessageProps,
+          linkPreviews,
+          null,
+          {}
+        );
+      } await this.props.sendMessage(
         messagePlaintext,
         attachments,
         extractedQuotedMessageProps,

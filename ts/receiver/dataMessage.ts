@@ -4,7 +4,7 @@ import { EnvelopePlus } from './types';
 import { getEnvelopeId } from './common';
 
 import { PubKey } from '../session/types';
-import { handleMessageJob } from './queuedJob';
+import { handleMessageBatchJob, handleMessageJob, MessageJobType } from './queuedJob';
 import { downloadAttachment } from './attachments';
 import _ from 'lodash';
 import { StringUtils, UserUtils } from '../session/utils';
@@ -248,6 +248,108 @@ export function isMessageEmpty(message: SignalService.DataMessage) {
 
 function isBodyEmpty(body: string) {
   return _.isEmpty(body);
+}
+
+
+/**
+ * We have a few origins possible
+ *    - if the message is from a private conversation with a friend and he wrote to us,
+ *        the conversation to add the message to is our friend pubkey, so envelope.source
+ *    - if the message is from a medium group conversation
+ *        * envelope.source is the medium group pubkey
+ *        * envelope.senderIdentity is the author pubkey (the one who sent the message)
+ *    - at last, if the message is a syncMessage,
+ *        * envelope.source is our pubkey (our other device has the same pubkey as us)
+ *        * dataMessage.syncTarget is either the group public key OR the private conversation this message is about.
+ */
+export async function handleDataMessageBatch(
+  envelopes: Array<EnvelopePlus>,
+  dataMessages: Array<SignalService.IDataMessage>
+): Promise<void> {
+
+  console.count(`handleDataMessageBatch envelopes length: ${envelopes.length}  dataMessages Length${dataMessages.length} count: `);
+
+  const eventBatch: Array<MessageEvent> = [];
+
+  for (let index = 0; index < envelopes.length; index++) {
+    const envelope = envelopes[index];
+    const dataMessage = dataMessages[index];
+
+    // we handle group updates from our other devices in handleClosedGroupControlMessage()
+    if (dataMessage.closedGroupControlMessage) {
+      await handleClosedGroupControlMessage(
+        envelope,
+        dataMessage.closedGroupControlMessage as SignalService.DataMessage.ClosedGroupControlMessage
+      );
+      continue;
+    }
+
+    const message = await processDecrypted(envelope, dataMessage);
+    const source = dataMessage.syncTarget || envelope.source;
+    const senderPubKey = envelope.senderIdentity || envelope.source;
+    const isMe = UserUtils.isUsFromCache(senderPubKey);
+    const isSyncMessage = Boolean(dataMessage.syncTarget?.length);
+
+    window?.log?.info(`Handle dataMessage from ${source} `);
+
+    if (isSyncMessage && !isMe) {
+      window?.log?.warn('Got a sync message from someone else than me. Dropping it.');
+      removeFromCache(envelope);
+      await removeFromCache(envelope);
+      continue;
+    } else if (isSyncMessage && dataMessage.syncTarget) {
+      // override the envelope source
+      envelope.source = dataMessage.syncTarget;
+    }
+
+    const senderConversation = await getConversationController().getOrCreateAndWait(
+      senderPubKey,
+      ConversationTypeEnum.PRIVATE
+    );
+
+    // Check if we need to update any profile names
+    if (!isMe && senderConversation && message.profile) {
+      // do not await this
+      void updateProfileOneAtATime(senderConversation, message.profile, message.profileKey);
+    }
+    if (isMessageEmpty(message)) {
+      window?.log?.warn(`Message ${getEnvelopeId(envelope)} ignored; it was empty`);
+      await removeFromCache(envelope);
+      continue;
+    }
+
+    const ev: any = {};
+    if (isMe) {
+      // Data messages for medium groups don't arrive as sync messages. Instead,
+      // linked devices poll for group messages independently, thus they need
+      // to recognise some of those messages at their own.
+      ev.type = 'sent';
+    } else {
+      ev.type = 'message';
+    }
+
+    if (envelope.senderIdentity) {
+      message.group = {
+        id: envelope.source as any, // FIXME Uint8Array vs string
+      };
+    }
+
+    ev.confirm = () => removeFromCache(envelope);
+
+    ev.data = {
+      source: senderPubKey,
+      destination: isMe ? message.syncTarget : undefined,
+      sourceDevice: 1,
+      timestamp: _.toNumber(envelope.timestamp),
+      receivedAt: envelope.receivedAt,
+      message,
+    };
+
+    eventBatch.push(ev);
+  }
+
+  await handleMessageBatchEvent(eventBatch);
+
 }
 
 /**
@@ -631,4 +733,99 @@ export async function handleMessageEvent(event: MessageEvent): Promise<void> {
     }
     await handleMessageJob(msg, conversation, message, ourNumber, confirm, source);
   });
+}
+
+
+// tslint:disable:cyclomatic-complexity max-func-body-length */
+export async function handleMessageBatchEvent(events: Array<MessageEvent>): Promise<void> {
+
+  console.count(`handleMessageBatchEvent events length: ${events.length} count: `);
+
+  const handleMessageBatch: MessageJobType[] = [];
+
+  let convo;
+
+  for (let index = 0; index < events.length; index++) {
+    const event = events[index];
+    const { data, confirm } = event;
+
+    const isIncoming = event.type === 'message';
+
+    if (!data || !data.message) {
+      window?.log?.warn('Invalid data passed to handleMessageEvent.', event);
+      confirm();
+      continue;
+    }
+
+    const { message: initialMessage, destination } = data;
+
+    let { source } = data;
+
+    const isGroupMessage = Boolean(initialMessage.group);
+
+    const type = isGroupMessage ? ConversationTypeEnum.GROUP : ConversationTypeEnum.PRIVATE;
+
+    let conversationId = isIncoming ? source : destination || source; // for synced message
+    if (!conversationId) {
+      window?.log?.error('We cannot handle a message without a conversationId');
+      confirm();
+      continue;
+    }
+    if (initialMessage.profileKey?.length) {
+      await handleProfileUpdate(initialMessage.profileKey, conversationId, type, isIncoming);
+    }
+
+    const message = createMessage(data, isIncoming);
+
+    // if the message is `sent` (from secondary device) we have to set the sender manually... (at least for now)
+    source = source || message.get('source');
+
+    // Conversation Id is:
+    //  - primarySource if it is an incoming DM message,
+    //  - destination if it is an outgoing message,
+    //  - group.id if it is a group message
+    if (isGroupMessage) {
+      // remove the prefix from the source object so this is correct for all other
+      initialMessage.group.id = PubKey.removeTextSecurePrefixIfNeeded(initialMessage.group.id);
+
+      conversationId = initialMessage.group.id;
+    }
+
+    if (!conversationId) {
+      window?.log?.warn('Invalid conversation id for incoming message', conversationId);
+    }
+    const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+
+    // =========================================
+
+    if (!isGroupMessage && source !== ourNumber) {
+      // Ignore auth from our devices
+      conversationId = source;
+    }
+
+    const conversation = await getConversationController().getOrCreateAndWait(conversationId, type);
+    convo = conversation;
+
+    if (!conversation) {
+      window?.log?.warn('Skipping handleJob for unknown convo: ', conversationId);
+      confirm();
+      continue;
+    }
+
+    // filtering out duplicates from the batch
+    if (await isMessageDuplicate(data)) {
+      window?.log?.info('Received duplicate message. Dropping it.');
+      confirm();
+      continue;
+    } else {
+      handleMessageBatch.push({ message: message, conversation, initialMessage: initialMessage, ourNumber, confirm, source });
+    }
+  }
+
+  if (convo) {
+    convo.queueJob(async () => {
+      await handleMessageBatchJob(handleMessageBatch);
+    });
+  }
+
 }

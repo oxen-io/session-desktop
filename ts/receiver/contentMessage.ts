@@ -1,5 +1,5 @@
 import { EnvelopePlus } from './types';
-import { handleDataMessage } from './dataMessage';
+import { handleDataMessage, handleDataMessageBatch } from './dataMessage';
 
 import { removeFromCache, updateCache } from './cache';
 import { SignalService } from '../protobuf';
@@ -16,6 +16,38 @@ import { ECKeyPair } from './keypairs';
 import { handleConfigurationMessage } from './configMessage';
 import { ConversationTypeEnum } from '../models/conversation';
 import { removeMessagePadding } from '../session/crypto/BufferPadding';
+
+export async function handleContentMessageBatch(envelopes: Array<EnvelopePlus>) {
+
+  console.count(`handleContentMessageBatch length: ${envelopes.length} count: `);
+
+
+  const plaintexts: Array<ArrayBuffer> = [];
+
+  for (let index = 0; index < envelopes.length; index++) {
+    const envelope = envelopes[index];
+
+    try {
+      const plaintext = await decrypt(envelope, envelope.content);
+
+      if (!plaintext) {
+        // window?.log?.warn('handleContentMessage: plaintext was falsey');
+        // return;
+        continue;
+      } else if (plaintext instanceof ArrayBuffer && plaintext.byteLength === 0) {
+        // is array but empty
+        continue;
+      }
+      plaintexts.push(plaintext);
+    } catch (e) {
+      window?.log?.warn(e);
+      // return;
+      continue;
+    }
+  }
+
+  await innerHandleContentMessageBatch(envelopes, plaintexts);
+}
 
 export async function handleContentMessage(envelope: EnvelopePlus) {
   try {
@@ -293,6 +325,87 @@ function shouldDropBlockedUserMessage(content: SignalService.Content): boolean {
     !data.quote;
 
   return !isControlDataMessageOnly;
+}
+
+export async function innerHandleContentMessageBatch(
+  envelopes: Array<EnvelopePlus>,
+  plaintexts: Array<ArrayBuffer>
+): Promise<void> {
+
+  console.count(`innerHandleContentMessageBatch envelopes length: ${envelopes.length} ${plaintexts.length} count: `);
+
+  try {
+    const dataMessageEnvelopes: Array<EnvelopePlus> = [];
+    const dataMessages: Array<SignalService.IDataMessage> = [];
+
+    for (let index = 0; index < envelopes.length; index++) {
+      const envelope = envelopes[index];
+      const plaintext = plaintexts[index];
+
+      // TODO: Warrick - batching just data message for now
+
+      try {
+        const content = SignalService.Content.decode(new Uint8Array(plaintext));
+
+        const blocked = await isBlocked(envelope.source);
+        if (blocked) {
+          // We want to allow a blocked user message if that's a control message for a known group and the group is not blocked
+          if (shouldDropBlockedUserMessage(content)) {
+            window?.log?.info('Dropping blocked user message');
+            continue;
+          } else {
+            window?.log?.info('Allowing group-control message only from blocked user');
+          }
+        }
+
+        await getConversationController().getOrCreateAndWait(
+          envelope.source,
+          ConversationTypeEnum.PRIVATE
+        );
+
+        if (content.dataMessage) {
+          if (content.dataMessage.profileKey && content.dataMessage.profileKey.length === 0) {
+            content.dataMessage.profileKey = null;
+          }
+          // dataMessages.push({ envelope, content: content.dataMessage })
+          dataMessages.push(content.dataMessage)
+          dataMessageEnvelopes.push(envelope);
+          // await handleDataMessage(envelope, content.dataMessage);
+          continue;
+        }
+
+        if (content.receiptMessage) {
+          await handleReceiptMessage(envelope, content.receiptMessage);
+          continue;
+        }
+        if (content.typingMessage) {
+          await handleTypingMessage(envelope, content.typingMessage as SignalService.TypingMessage);
+          continue;
+        }
+        if (content.configurationMessage) {
+          // this one can be quite long (downloads profilePictures and everything, is do not block)
+          void handleConfigurationMessage(
+            envelope,
+            content.configurationMessage as SignalService.ConfigurationMessage
+          );
+          continue;
+        }
+        if (content.dataExtractionNotification) {
+          await handleDataExtractionNotification(
+            envelope,
+            content.dataExtractionNotification as SignalService.DataExtractionNotification
+          );
+          continue;
+        }
+      } catch (e) {
+        window?.log?.warn(e);
+      }
+    }
+
+    handleDataMessageBatch(dataMessageEnvelopes, dataMessages);
+  } catch (err) {
+    window?.log?.info(`Error handling message batch of length ${envelopes.length}`)
+  }
 }
 
 export async function innerHandleContentMessage(
