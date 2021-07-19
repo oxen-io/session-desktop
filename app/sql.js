@@ -60,6 +60,7 @@ module.exports = {
   removeMessage,
   getUnreadByConversation,
   getUnreadCountByConversation,
+  getMessagesCountByConversation,
   getMessageBySender,
   getMessageBySenderAndServerId,
   getMessageBySenderAndServerTimestamp,
@@ -1043,12 +1044,8 @@ function updateToLokiSchemaVersion9(currentVersion, db) {
         );
         // We have another conversation with the same future name.
         // We decided to keep only the conversation with the higher number of messages
-        const countMessagesOld = getMessagesCountByConversation(db, oldId, {
-          limit: Number.MAX_VALUE,
-        });
-        const countMessagesNew = getMessagesCountByConversation(db, newId, {
-          limit: Number.MAX_VALUE,
-        });
+        const countMessagesOld = getMessagesCountByConversation(oldId, db);
+        const countMessagesNew = getMessagesCountByConversation(newId, db);
 
         console.log(`countMessagesOld: ${countMessagesOld}, countMessagesNew: ${countMessagesNew}`);
 
@@ -2586,10 +2583,12 @@ function removeKnownAttachments(allAttachments) {
   return Object.keys(lookup);
 }
 
-function getMessagesCountByConversation(instance, conversationId) {
-  const row = instance
+function getMessagesCountByConversation(conversationId, instance) {
+  const row = (globalInstance || instance)
     .prepare(`SELECT count(*) from ${MESSAGES_TABLE} WHERE conversationId = $conversationId;`)
     .get({ conversationId });
+
+  console.log('row', row);
 
   return row ? row['count(*)'] : 0;
 }

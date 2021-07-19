@@ -3,7 +3,7 @@ import _, { omit } from 'lodash';
 import { Constants } from '../../session';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getConversationController } from '../../session/conversations';
-import { getMessagesByConversation } from '../../data/data';
+import { getMessagesByConversation, getMessagesCountByConversation } from '../../data/data';
 import {
   ConversationNotificationSettingType,
   ConversationTypeEnum,
@@ -233,6 +233,7 @@ export type ConversationsStateType = {
   conversationLookup: ConversationLookupType;
   selectedConversation?: string;
   messages: Array<SortedMessageModelProps>;
+  fullCountOfMessages: number | undefined;
   messageDetailProps: MessagePropsDetails | undefined;
   showRightPanel: boolean;
   selectedMessageIds: Array<string>;
@@ -322,6 +323,7 @@ const updateFirstMessageOfSeriesAndUnread = (
 type FetchedMessageResults = {
   conversationKey: string;
   messagesProps: Array<SortedMessageModelProps>;
+  fullCountOfMessages: number;
 };
 
 const getFirstMessageUnreadIndex = (messages: Array<SortedMessageModelProps>) => {
@@ -356,6 +358,9 @@ export const fetchMessagesForConversation = createAsyncThunk(
   }): Promise<FetchedMessageResults> => {
     const beforeTimestamp = Date.now();
     const messagesProps = await getMessages(conversationKey, count);
+    const fullCountOfMessages = await getMessagesCountByConversation(conversationKey);
+    console.warn('asynchtunk fullCountOfMessages', fullCountOfMessages);
+
     const firstUnreadIndex = getFirstMessageUnreadIndex(messagesProps);
     const afterTimestamp = Date.now();
 
@@ -380,6 +385,7 @@ export const fetchMessagesForConversation = createAsyncThunk(
     return {
       conversationKey,
       messagesProps: mapped,
+      fullCountOfMessages,
     };
   }
 );
@@ -394,6 +400,7 @@ function getEmptyState(): ConversationsStateType {
     showRightPanel: false,
     selectedMessageIds: [],
     areMoreMessagesBeingFetched: false,
+    fullCountOfMessages: undefined,
   };
 }
 
@@ -715,6 +722,7 @@ const conversationsSlice = createSlice({
       state.messages = [];
       state.quotedMessage = undefined;
       state.lightBox = undefined;
+      state.fullCountOfMessages = undefined;
       return state;
     },
     showLightBox(
@@ -738,29 +746,18 @@ const conversationsSlice = createSlice({
       fetchMessagesForConversation.fulfilled,
       (state: ConversationsStateType, action: any) => {
         // this is called once the messages are loaded from the db for the currently selected conversation
-        const { messagesProps, conversationKey } = action.payload as FetchedMessageResults;
+        const {
+          messagesProps,
+          conversationKey,
+          fullCountOfMessages,
+        } = action.payload as FetchedMessageResults;
         // double check that this update is for the shown convo
         if (conversationKey === state.selectedConversation) {
           return {
             ...state,
             messages: messagesProps,
             areMoreMessagesBeingFetched: false,
-          };
-        }
-        return state;
-      }
-    );
-    builder.addCase(
-      fetchMessagesForConversation.fulfilled,
-      (state: ConversationsStateType, action: any) => {
-        // this is called once the messages are loaded from the db for the currently selected conversation
-        const { messagesProps, conversationKey } = action.payload as FetchedMessageResults;
-        // double check that this update is for the shown convo
-        if (conversationKey === state.selectedConversation) {
-          return {
-            ...state,
-            messages: messagesProps,
-            areMoreMessagesBeingFetched: false,
+            fullCountOfMessages,
           };
         }
         return state;
@@ -771,6 +768,7 @@ const conversationsSlice = createSlice({
     });
     builder.addCase(fetchMessagesForConversation.rejected, (state: ConversationsStateType) => {
       state.areMoreMessagesBeingFetched = false;
+      state.fullCountOfMessages = 0;
     });
   },
 });

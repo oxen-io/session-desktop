@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Message } from '../../conversation/Message';
 import { TimerNotification } from '../../conversation/TimerNotification';
 
 import { SessionScrollButton } from '../SessionScrollButton';
-import { Constants } from '../../../session';
 import _ from 'lodash';
 import { contextMenu } from 'react-contexify';
 import { GroupNotification } from '../../conversation/GroupNotification';
@@ -34,11 +33,24 @@ import { DataExtractionNotification } from '../../conversation/DataExtractionNot
 import { StateType } from '../../../state/reducer';
 import { connect, useSelector } from 'react-redux';
 import {
+  areMoreMessagesLoading,
   getMessagesOfSelectedConversation,
   getSelectedConversation,
   getSelectedConversationKey,
+  getFullCountOfMessages,
   isMessageSelectionMode,
 } from '../../../state/selectors/conversations';
+
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  Index,
+  IndexRange,
+  InfiniteLoader,
+  List,
+  ListRowProps,
+} from 'react-virtualized';
 
 interface State {
   showScrollButton: boolean;
@@ -130,7 +142,7 @@ const GenericMessageItem = (props: {
 
   const messageId = props.messageId;
 
-  console.warn('FIXME audric');
+  console.info('FIXME audric');
 
   // const onQuoteClick = props.messageProps.propsForMessage.quote
   //   ? this.scrollToQuoteMessage
@@ -160,88 +172,177 @@ const GenericMessageItem = (props: {
   );
 };
 
-const MessageList = ({ hasNextPage: boolean, isNextPageLoading, list, loadNextPage }) => {
-  const messagesProps = useSelector(getMessagesOfSelectedConversation);
+const cellHeightCache = new CellMeasurerCache({
+  fixedWidth: true,
+  minHeight: 10,
+});
+
+const VirtualizedMessageList = () => {
+  const items = useSelector(getMessagesOfSelectedConversation);
+  const isNextPageLoading = useSelector(areMoreMessagesLoading);
+  const totalMessageCount = useSelector(getFullCountOfMessages);
+  const loadedMessageCount = items.length;
+  const conversationKey = useSelector(getSelectedConversationKey);
+
   let playableMessageIndex = 0;
 
+  // If there are more items to be loaded then add an extra row to hold a loading indicator.
+
+  if (!conversationKey) {
+    return null;
+  }
+
+  const totalMessageCountInit = totalMessageCount === undefined ? 1 : totalMessageCount;
+
+  const loadNextPage = async (indexes: IndexRange) => {
+    console.warn('loadNextPage');
+    return (window.inboxStore?.dispatch as any)(
+      fetchMessagesForConversation({ conversationKey, count: items.length + 30 })
+    );
+  };
+
+  // Only load 1 page of items at a time.
+  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+  const loadMoreRows = isNextPageLoading ? async (_indexes: IndexRange) => {} : loadNextPage;
+
+  console.info('isNextPageLoading', isNextPageLoading);
+  console.info('totalMessageCountInit', totalMessageCountInit);
+  console.warn('loadedMessageCount', loadedMessageCount);
+
+  // Every row is loaded except for our loading indicator row.
+  const isRowLoaded = (index: Index) => {
+    console.info(`isItemLoaded ${index.index}: ${index.index < loadedMessageCount}`);
+    return index.index < loadedMessageCount;
+  };
+
+  // Render an item or a loading indicator.
+  const Item = ({ index, style, key, parent }: ListRowProps) => {
+    console.warn('renderred item', index);
+
+    if (!isRowLoaded({ index })) {
+      return 'Loading ';
+    }
+
+    const indexStartingAfterLoadingIndicator = index;
+
+    return (
+      <CellMeasurer
+        cache={cellHeightCache}
+        columnIndex={0}
+        key={key}
+        rowIndex={indexStartingAfterLoadingIndicator}
+        parent={parent}
+      >
+        {({ measure }) => (
+          <div style={style}>
+            <MessageBasedOnPropsType {...items[indexStartingAfterLoadingIndicator]} />
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  };
+
   return (
-    <>
-      {messagesProps.map((messageProps: SortedMessageModelProps) => {
-        const timerProps = messageProps.propsForTimerNotification;
-        const propsForGroupInvitation = messageProps.propsForGroupInvitation;
-        const propsForDataExtractionNotification = messageProps.propsForDataExtractionNotification;
+    <AutoSizer>
+      {({ height, width }) => (
+        <InfiniteLoader
+          isRowLoaded={isRowLoaded}
+          rowCount={totalMessageCountInit}
+          loadMoreRows={loadMoreRows}
 
-        const groupNotificationProps = messageProps.propsForGroupNotification;
+          // threshold={2}
+        >
+          {({ onRowsRendered, registerChild }) => (
+            <List
+              rowCount={totalMessageCountInit}
+              rowHeight={cellHeightCache.rowHeight}
+              ref={registerChild}
+              rowRenderer={Item}
+              onRowsRendered={onRowsRendered}
+              width={width}
+              height={height}
+              deferredMeasurementCache={cellHeightCache}
+              overscanRowCount={10}
+            ></List>
+          )}
+        </InfiniteLoader>
+      )}
+    </AutoSizer>
+  );
+};
 
-        // IF we found the first unread message
-        // AND we are not scrolled all the way to the bottom
-        // THEN, show the unread banner for the current message
-        const showUnreadIndicator = Boolean(messageProps.firstUnread);
-        console.warn('&& this.getScrollOffsetBottomPx() !== 0');
+const MessageBasedOnPropsType = (messageProps: SortedMessageModelProps) => {
+  const timerProps = messageProps.propsForTimerNotification;
+  const propsForGroupInvitation = messageProps.propsForGroupInvitation;
+  const propsForDataExtractionNotification = messageProps.propsForDataExtractionNotification;
 
-        if (groupNotificationProps) {
-          return (
-            <GroupUpdateItem
-              key={messageProps.propsForMessage.id}
-              groupNotificationProps={groupNotificationProps}
-              messageId={messageProps.propsForMessage.id}
-              showUnreadIndicator={showUnreadIndicator}
-            />
-          );
-        }
+  const groupNotificationProps = messageProps.propsForGroupNotification;
 
-        if (propsForGroupInvitation) {
-          return (
-            <GroupInvitationItem
-              key={messageProps.propsForMessage.id}
-              propsForGroupInvitation={propsForGroupInvitation}
-              messageId={messageProps.propsForMessage.id}
-              showUnreadIndicator={showUnreadIndicator}
-            />
-          );
-        }
+  // IF we found the first unread message
+  // AND we are not scrolled all the way to the bottom
+  // THEN, show the unread banner for the current message
+  const showUnreadIndicator = Boolean(messageProps.firstUnread);
 
-        if (propsForDataExtractionNotification) {
-          return (
-            <DataExtractionNotificationItem
-              key={messageProps.propsForMessage.id}
-              propsForDataExtractionNotification={propsForDataExtractionNotification}
-              messageId={messageProps.propsForMessage.id}
-              showUnreadIndicator={showUnreadIndicator}
-            />
-          );
-        }
+  if (groupNotificationProps) {
+    return (
+      <GroupUpdateItem
+        key={messageProps.propsForMessage.id}
+        groupNotificationProps={groupNotificationProps}
+        messageId={messageProps.propsForMessage.id}
+        showUnreadIndicator={showUnreadIndicator}
+      />
+    );
+  }
 
-        if (timerProps) {
-          return (
-            <TimerNotificationItem
-              key={messageProps.propsForMessage.id}
-              timerProps={timerProps}
-              messageId={messageProps.propsForMessage.id}
-              showUnreadIndicator={showUnreadIndicator}
-            />
-          );
-        }
+  if (propsForGroupInvitation) {
+    return (
+      <GroupInvitationItem
+        key={messageProps.propsForMessage.id}
+        propsForGroupInvitation={propsForGroupInvitation}
+        messageId={messageProps.propsForMessage.id}
+        showUnreadIndicator={showUnreadIndicator}
+      />
+    );
+  }
 
-        if (!messageProps) {
-          return;
-        }
+  if (propsForDataExtractionNotification) {
+    return (
+      <DataExtractionNotificationItem
+        key={messageProps.propsForMessage.id}
+        propsForDataExtractionNotification={propsForDataExtractionNotification}
+        messageId={messageProps.propsForMessage.id}
+        showUnreadIndicator={showUnreadIndicator}
+      />
+    );
+  }
 
-        playableMessageIndex++;
+  if (timerProps) {
+    return (
+      <TimerNotificationItem
+        key={messageProps.propsForMessage.id}
+        timerProps={timerProps}
+        messageId={messageProps.propsForMessage.id}
+        showUnreadIndicator={showUnreadIndicator}
+      />
+    );
+  }
 
-        // firstMessageOfSeries tells us to render the avatar only for the first message
-        // in a series of messages from the same user
-        return (
-          <GenericMessageItem
-            key={messageProps.propsForMessage.id}
-            playableMessageIndex={playableMessageIndex}
-            messageId={messageProps.propsForMessage.id}
-            messageProps={messageProps}
-            showUnreadIndicator={showUnreadIndicator}
-          />
-        );
-      })}
-    </>
+  if (!messageProps) {
+    return null;
+  }
+
+  // playableMessageIndex++;
+
+  // firstMessageOfSeries tells us to render the avatar only for the first message
+  // in a series of messages from the same user
+  return (
+    <GenericMessageItem
+      key={messageProps.propsForMessage.id}
+      // playableMessageIndex={playableMessageIndex}
+      messageId={messageProps.propsForMessage.id}
+      messageProps={messageProps}
+      showUnreadIndicator={showUnreadIndicator}
+    />
   );
 };
 
@@ -345,8 +446,9 @@ class SessionMessagesListInner extends React.Component<Props, State> {
           key="typing-bubble"
         />
 
-        <MessageList />
-
+        <div style={{ flex: '1 1 auto' }}>
+          <VirtualizedMessageList />
+        </div>
         <SessionScrollButton
           show={showScrollButton}
           onClick={this.scrollToBottom}
@@ -454,21 +556,21 @@ class SessionMessagesListInner extends React.Component<Props, State> {
     }
 
     // Fetch more messages when nearing the top of the message list
-    const shouldFetchMoreMessages = scrollTop <= Constants.UI.MESSAGE_CONTAINER_BUFFER_OFFSET_PX;
+    // const shouldFetchMoreMessages = scrollTop <= Constants.UI.MESSAGE_CONTAINER_BUFFER_OFFSET_PX;
 
-    if (shouldFetchMoreMessages) {
-      const { messagesProps } = this.props;
-      const numMessages = messagesProps.length + Constants.CONVERSATION.DEFAULT_MESSAGE_FETCH_COUNT;
-      const oldLen = messagesProps.length;
-      const previousTopMessage = messagesProps[oldLen - 1]?.propsForMessage.id;
+    // if (shouldFetchMoreMessages) {
+    //   const { messagesProps } = this.props;
+    //   const numMessages = messagesProps.length + Constants.CONVERSATION.DEFAULT_MESSAGE_FETCH_COUNT;
+    //   const oldLen = messagesProps.length;
+    //   const previousTopMessage = messagesProps[oldLen - 1]?.propsForMessage.id;
 
-      (window.inboxStore?.dispatch as any)(
-        fetchMessagesForConversation({ conversationKey, count: numMessages })
-      );
-      if (previousTopMessage && oldLen !== messagesProps.length) {
-        this.scrollToMessage(previousTopMessage);
-      }
-    }
+    //   (window.inboxStore?.dispatch as any)(
+    //     fetchMessagesForConversation({ conversationKey, count: numMessages })
+    //   );
+    //   if (previousTopMessage && oldLen !== messagesProps.length) {
+    //     this.scrollToMessage(previousTopMessage);
+    //   }
+    // }
   }
 
   private scrollToUnread() {

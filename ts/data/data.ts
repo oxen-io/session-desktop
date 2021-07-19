@@ -108,6 +108,7 @@ const channelsToMake = {
   _removeMessages,
   getUnreadByConversation,
   getUnreadCountByConversation,
+  getMessagesCountByConversation,
 
   removeAllMessagesInConversation,
 
@@ -751,6 +752,11 @@ export async function getMessagesByConversation(
     type,
   });
   return new MessageCollection(messages);
+}
+
+export async function getMessagesCountByConversation(conversationId: string): Promise<number> {
+  const count = await channels.getMessagesCountByConversation(conversationId);
+  return count || 0;
 }
 
 export async function getLastHashBySnode(convoId: string, snode: string): Promise<string> {

@@ -11,7 +11,7 @@ import { ConversationHeaderWithDetails } from '../../conversation/ConversationHe
 import { SessionRightPanelWithDetails } from './SessionRightPanel';
 import { SessionTheme } from '../../../state/ducks/SessionTheme';
 import { DefaultTheme } from 'styled-components';
-import { SessionMessageListProps, SessionMessagesList } from './SessionMessagesList';
+import { SessionMessagesList } from './SessionMessagesList';
 import { LightboxGallery, MediaItemType } from '../../LightboxGallery';
 
 import { AttachmentType, AttachmentTypeWithPath, save } from '../../../types/Attachment';
@@ -19,24 +19,17 @@ import { ToastUtils } from '../../../session/utils';
 import * as MIME from '../../../types/MIME';
 import { SessionFileDropzone } from './SessionFileDropzone';
 import {
-  fetchMessagesForConversation,
-  PropsForMessage,
   quoteMessage,
   ReduxConversationType,
   resetSelectedMessageIds,
-  showLightBox,
   SortedMessageModelProps,
 } from '../../../state/ducks/conversations';
 import { MessageView } from '../../MainViewController';
-import { pushUnblockToSend } from '../../../session/utils/Toast';
 import { MessageDetail } from '../../conversation/MessageDetail';
 import { getConversationController } from '../../../session/conversations';
-import { getMessageById, getPubkeysInPublicConversation } from '../../../data/data';
+import { getPubkeysInPublicConversation } from '../../../data/data';
 import autoBind from 'auto-bind';
-import { getDecryptedMediaUrl } from '../../../session/crypto/DecryptedAttachmentsManager';
 import { updateMentionsMembers } from '../../../state/ducks/mentionsInput';
-import { sendDataExtractionNotification } from '../../../session/messages/outgoing/controlMessage/DataExtractionNotificationMessage';
-
 interface State {
   unreadCount: number;
 
@@ -266,23 +259,22 @@ export class SessionConversation extends React.Component<Props, State> {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public async loadInitialMessages() {
-    const { selectedConversation, selectedConversationKey } = this.props;
-
-    if (!selectedConversation) {
-      return;
-    }
-    const conversationModel = getConversationController().get(selectedConversationKey);
-    const unreadCount = await conversationModel.getUnreadCount();
-    const messagesToFetch = Math.max(
-      Constants.CONVERSATION.DEFAULT_MESSAGE_FETCH_COUNT,
-      unreadCount
-    );
-    (window.inboxStore?.dispatch as any)(
-      fetchMessagesForConversation({
-        conversationKey: selectedConversationKey,
-        count: messagesToFetch,
-      })
-    );
+    // const { selectedConversation, selectedConversationKey } = this.props;
+    // if (!selectedConversation) {
+    //   return;
+    // }
+    // const conversationModel = getConversationController().get(selectedConversationKey);
+    // const unreadCount = await conversationModel.getUnreadCount();
+    // const messagesToFetch = Math.max(
+    //   Constants.CONVERSATION.DEFAULT_MESSAGE_FETCH_COUNT,
+    //   unreadCount
+    // );
+    // (window.inboxStore?.dispatch as any)(
+    //   fetchMessagesForConversation({
+    //     conversationKey: selectedConversationKey,
+    //     count: messagesToFetch,
+    //   })
+    // );
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
