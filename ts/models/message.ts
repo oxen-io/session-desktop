@@ -1045,19 +1045,20 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   }
 
   public async markRead(readAt: number) {
-    this.markReadNoCommit(readAt);
+    await this.markReadNoCommit(readAt);
 
     this.getConversation()?.markRead(this.attributes.received_at);
 
     await this.commit();
   }
 
-  public markReadNoCommit(readAt: number) {
+  public async markReadNoCommit(readAt: number) {
     this.set({ unread: 0 });
 
     if (this.get('expireTimer') && !this.get('expirationStartTimestamp')) {
       const expirationStartTimestamp = Math.min(Date.now(), readAt || Date.now());
       this.set({ expirationStartTimestamp });
+      await this.setToExpire(false);
     }
 
     window.Whisper.Notifications.remove(
@@ -1092,7 +1093,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     return msFromNow;
   }
 
-  public async setToExpire(force = false) {
+  public async setToExpire(commit = true, force = false) {
     if (this.isExpiring() && (force || !this.get('expires_at'))) {
       const start = this.get('expirationStartTimestamp');
       const delta = this.get('expireTimer') * 1000;
@@ -1103,7 +1104,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
 
       this.set({ expires_at: expiresAt });
       const id = this.get('id');
-      if (id) {
+      if (id && commit) {
         await this.commit();
       }
 
