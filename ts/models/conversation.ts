@@ -43,7 +43,10 @@ import { OpenGroupRequestCommonType } from '../opengroup/opengroupV2/ApiUtil';
 import { getOpenGroupV2FromConversationId } from '../opengroup/utils/OpenGroupUtils';
 import { createTaskWithTimeout } from '../session/utils/TaskWithTimeout';
 import { perfEnd, perfStart } from '../session/utils/Performance';
-import { ReplyingToMessageProps } from '../components/session/conversation/SessionCompositionBox';
+import {
+  ReplyingToMessageProps,
+  SendMessageType,
+} from '../components/session/conversation/SessionCompositionBox';
 import { ed25519Str } from '../session/onions/onionPath';
 
 export enum ConversationTypeEnum {
@@ -614,7 +617,12 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public async sendMessageJob(message: MessageModel, expireTimer: number | undefined) {
     try {
-      const uploads = await message.uploadData();
+      const {
+        body,
+        attachments: uploadedAttachments,
+        quote: uploadedQuote,
+        preview: uploadedPreview,
+      } = await message.uploadData();
       const { id } = message;
       const destination = this.id;
 
@@ -629,13 +637,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       }
       // an OpenGroupV2 message is just a visible message
       const chatMessageParams: VisibleMessageParams = {
-        body: uploads.body,
+        body,
         identifier: id,
         timestamp: sentAt,
-        attachments: uploads.attachments,
+        attachments: uploadedAttachments,
         expireTimer,
-        preview: uploads.preview,
-        quote: uploads.quote,
+        preview: uploadedPreview,
+        quote: uploadedQuote,
         lokiProfile: UserUtils.getOurProfile(),
       };
 
@@ -702,13 +710,8 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return null;
     }
   }
-  public async sendMessage(
-    body: string,
-    attachments: any,
-    quote: any,
-    preview: any,
-    groupInvitation: any = null
-  ) {
+  public async sendMessage(msg: SendMessageType) {
+    const { attachments, body, groupInvitation, preview, quote } = msg;
     this.clearTypingTimers();
 
     const destination = this.id;
@@ -745,20 +748,32 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
     if (!this.isPublic()) {
       messageWithSchema.destination = destination;
+      // set the serverTimestamp only if this conversation is a public one.
+
+      messageWithSchema.serverTimestamp = new Date().getTime();
     }
     messageWithSchema.source = UserUtils.getOurPubKeyStrFromCache();
     messageWithSchema.sourceDevice = 1;
 
-    // set the serverTimestamp only if this conversation is a public one.
     const attributes: MessageAttributesOptionals = {
       ...messageWithSchema,
       groupInvitation,
       conversationId: this.id,
       destination: isPrivate ? destination : undefined,
-      serverTimestamp: this.isPublic() ? new Date().getTime() : undefined,
     };
 
     const messageModel = await this.addSingleMessage(attributes);
+
+    // We're offline!
+    if (!window.textsecure.messaging) {
+      const error = new Error('Network is not available');
+      error.name = 'SendMessageNetworkError';
+      (error as any).number = this.id;
+      await messageModel.saveErrors([error]);
+      await this.commit();
+
+      return;
+    }
 
     this.set({
       lastMessage: messageModel.getNotificationText(),
@@ -767,18 +782,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     });
     await this.commit();
 
-    // We're offline!
-    if (!window.textsecure.messaging) {
-      const error = new Error('Network is not available');
-      error.name = 'SendMessageNetworkError';
-      (error as any).number = this.id;
-      await messageModel.saveErrors([error]);
-      return null;
-    }
     this.queueJob(async () => {
       await this.sendMessageJob(messageModel, expireTimer);
     });
-    return null;
   }
 
   public async bouncyUpdateLastMessage() {

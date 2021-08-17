@@ -1,5 +1,3 @@
-import { Attachment } from '../../types/Attachment';
-
 import { OpenGroupRequestCommonType } from '../../opengroup/opengroupV2/ApiUtil';
 import {
   AttachmentPointer,
@@ -10,38 +8,42 @@ import {
 } from '../messages/outgoing/visibleMessage/VisibleMessage';
 import { uploadFileOpenGroupV2 } from '../../opengroup/opengroupV2/OpenGroupAPIV2';
 import { addAttachmentPadding } from '../crypto/BufferPadding';
-import { RawPreview, RawQuote } from './Attachments';
+import { StagedPreview, StagedQuote } from './Attachments';
 import _ from 'lodash';
+import { StagedAttachmentType } from '../../components/session/conversation/SessionCompositionBox';
+import { SignalService } from '../../protobuf';
 
 interface UploadParamsV2 {
-  attachment: Attachment;
+  stagedAttachment: StagedAttachmentType;
   openGroup: OpenGroupRequestCommonType;
 }
 
 export async function uploadV2(params: UploadParamsV2): Promise<AttachmentPointerWithUrl> {
-  const { attachment, openGroup } = params;
+  const { stagedAttachment: attachment, openGroup } = params;
   if (typeof attachment !== 'object' || attachment == null) {
     throw new Error('Invalid attachment passed.');
   }
 
-  if (!(attachment.data instanceof ArrayBuffer)) {
-    throw new TypeError(
-      `attachment.data must be an ArrayBuffer but got: ${typeof attachment.data}`
-    );
+  if (!attachment.objectUrl) {
+    throw new TypeError('attachment.objectURl must be set');
   }
+
+  const fetched = await fetch(attachment.objectUrl);
+  const blob = await fetched.blob();
+  const data = await blob.arrayBuffer();
 
   const pointer: AttachmentPointer = {
     contentType: attachment.contentType || undefined,
     size: attachment.size,
     fileName: attachment.fileName,
-    flags: attachment.flags,
+    flags: attachment.isVoiceMessage ? SignalService.AttachmentPointer.Flags.VOICE_MESSAGE : 0,
     caption: attachment.caption,
   };
 
   const paddedAttachment: ArrayBuffer =
     window.lokiFeatureFlags.padOutgoingAttachments && !openGroup
-      ? addAttachmentPadding(attachment.data)
-      : attachment.data;
+      ? addAttachmentPadding(data)
+      : data;
 
   const fileDetails = await uploadFileOpenGroupV2(new Uint8Array(paddedAttachment), openGroup);
 
@@ -57,10 +59,10 @@ export async function uploadV2(params: UploadParamsV2): Promise<AttachmentPointe
 }
 
 export async function uploadAttachmentsV2(
-  attachments: Array<Attachment>,
+  stagedAttachments: Array<StagedAttachmentType>,
   openGroup: OpenGroupRequestCommonType
 ): Promise<Array<AttachmentPointerWithUrl>> {
-  const promises = (attachments || []).map(async attachment =>
+  const promises = (stagedAttachments || []).map(async attachment =>
     exports.uploadV2({
       attachment,
       openGroup,
@@ -71,7 +73,7 @@ export async function uploadAttachmentsV2(
 }
 
 export async function uploadLinkPreviewsV2(
-  previews: Array<RawPreview>,
+  previews: Array<StagedPreview>,
   openGroup: OpenGroupRequestCommonType
 ): Promise<Array<PreviewWithAttachmentUrl>> {
   const promises = (previews || []).map(async preview => {
@@ -97,7 +99,7 @@ export async function uploadLinkPreviewsV2(
 
 export async function uploadQuoteThumbnailsV2(
   openGroup: OpenGroupRequestCommonType,
-  quote?: RawQuote
+  quote?: StagedQuote
 ): Promise<Quote | undefined> {
   if (!quote) {
     return undefined;

@@ -1,22 +1,17 @@
 import React from 'react';
 import _, { debounce } from 'lodash';
 
-import { Attachment, AttachmentType } from '../../../types/Attachment';
+import { AttachmentType } from '../../../types/Attachment';
 import * as MIME from '../../../types/MIME';
 
 import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import { SessionEmojiPanel } from './SessionEmojiPanel';
 import { SessionRecording } from './SessionRecording';
 
-import { SignalService } from '../../../protobuf';
-
-import { Constants } from '../../../session';
-
 import { toArray } from 'react-emoji-render';
 import { Flex } from '../../basic/Flex';
-import { StagedAttachmentList } from '../../conversation/AttachmentList';
+import { StagedAttachmentList } from '../../conversation/StagedAttachmentList';
 import { ToastUtils } from '../../../session/utils';
-import { AttachmentUtil } from '../../../util';
 import {
   getPreview,
   LINK_PREVIEW_TIMEOUT,
@@ -56,6 +51,8 @@ import {
 import { connect } from 'react-redux';
 import { StateType } from '../../../state/reducer';
 import { getTheme } from '../../../state/selectors/theme';
+import { getStagedAttachmentsForCurrentConversation } from '../../../state/selectors/stagedAttachments';
+import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
 
 export interface ReplyingToMessageProps {
   convoId: string;
@@ -76,11 +73,20 @@ export interface StagedLinkPreviewData {
 }
 
 export interface StagedAttachmentType extends AttachmentType {
-  file: File;
+  objectUrl: string; // when we add an attachment to the staged list of attachment, we scale the content if needed and store it under this objectUrl
+  fullPath: string;
 }
 
+export type SendMessageType = {
+  body: string;
+  attachments: Array<StagedAttachmentType> | undefined;
+  quote: any | undefined;
+  preview: any | undefined;
+  groupInvitation: { url: string | undefined; name: string } | undefined;
+};
+
 interface Props {
-  sendMessage: any;
+  sendMessage: (msg: SendMessageType) => Promise<void>;
   draft: string;
 
   onLoadVoiceNoteView: any;
@@ -88,9 +94,7 @@ interface Props {
   selectedConversationKey: string;
   selectedConversation: ReduxConversationType | undefined;
   quotedMessageProps?: ReplyingToMessageProps;
-  stagedAttachments: Array<StagedAttachmentType>;
-  clearAttachments: () => any;
-  removeAttachment: (toRemove: AttachmentType) => void;
+  stagedAttachments?: Array<StagedAttachmentType>;
   onChoseAttachments: (newAttachments: Array<File>) => void;
 }
 
@@ -101,7 +105,7 @@ interface State {
   voiceRecording?: Blob;
   ignoredLink?: string; // set the the ignored url when users closed the link preview
   stagedLinkPreview?: StagedLinkPreviewData;
-  showCaptionEditor?: AttachmentType;
+  showCaptionEditorFor?: StagedAttachmentType;
 }
 
 const sendMessageStyle = {
@@ -133,7 +137,7 @@ const getDefaultState = () => {
     showEmojiPanel: false,
     ignoredLink: undefined,
     stagedLinkPreview: undefined,
-    showCaptionEditor: undefined,
+    showCaptionEditorFor: undefined,
   };
 };
 
@@ -545,7 +549,7 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
     const { ignoredLink } = this.state;
 
     // Don't render link previews if quoted message or attachments are already added
-    if (stagedAttachments.length !== 0 || quotedMessageProps?.id) {
+    if (!stagedAttachments || stagedAttachments.length !== 0 || quotedMessageProps?.id) {
       return <></>;
     }
     // we try to match the first link found in the current message
@@ -686,11 +690,13 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
       });
   }
 
-  private onClickAttachment(attachment: AttachmentType) {
-    this.setState({ showCaptionEditor: attachment });
+  private onClickAttachment(_attachment: AttachmentType) {
+    debugger;
+    console.warn('TODO');
+    // this.setState({ showCaptionEditorFor: attachment });
   }
 
-  private renderCaptionEditor(attachment?: AttachmentType) {
+  private renderCaptionEditor(attachment?: StagedAttachmentType) {
     if (attachment) {
       const onSave = (caption: string) => {
         // eslint-disable-next-line no-param-reassign
@@ -698,11 +704,11 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
         ToastUtils.pushToastInfo('saved', window.i18n('saved'));
         // close the lightbox on save
         this.setState({
-          showCaptionEditor: undefined,
+          showCaptionEditorFor: undefined,
         });
       };
 
-      const url = attachment.videoUrl || attachment.url;
+      const url = attachment.objectUrl || attachment.url;
       return (
         <CaptionEditor
           attachment={attachment}
@@ -711,7 +717,7 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
           caption={attachment.caption}
           onClose={() => {
             this.setState({
-              showCaptionEditor: undefined,
+              showCaptionEditorFor: undefined,
             });
           }}
         />
@@ -722,18 +728,15 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
 
   private renderAttachmentsStaged() {
     const { stagedAttachments } = this.props;
-    const { showCaptionEditor } = this.state;
+    const { showCaptionEditorFor } = this.state;
     if (stagedAttachments && stagedAttachments.length) {
       return (
         <>
           <StagedAttachmentList
-            attachments={stagedAttachments}
             onClickAttachment={this.onClickAttachment}
             onAddAttachment={this.onChooseAttachment}
-            onCloseAttachment={this.props.removeAttachment}
-            onClose={this.props.clearAttachments}
           />
-          {this.renderCaptionEditor(showCaptionEditor)}
+          {this.renderCaptionEditor(showCaptionEditorFor)}
         </>
       );
     }
@@ -871,17 +874,20 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
       [];
 
     try {
-      const attachments = await this.getFiles();
-      await this.props.sendMessage(
-        messagePlaintext,
+      const attachments = this.props.stagedAttachments;
+      await this.props.sendMessage({
+        body: messagePlaintext,
         attachments,
-        extractedQuotedMessageProps,
-        linkPreviews,
-        null,
-        {}
-      );
+        quote: extractedQuotedMessageProps,
+        preview: linkPreviews,
+        groupInvitation: undefined,
+      });
 
-      this.props.clearAttachments();
+      window.inboxStore?.dispatch(
+        removeAllStagedAttachmentsInConversation({
+          conversationKey: this.props.selectedConversationKey,
+        })
+      );
 
       // Empty composition box and stagedAttachments
       this.setState({
@@ -901,47 +907,32 @@ class SessionCompositionBoxInner extends React.Component<Props, State> {
     }
   }
 
-  // this function is called right before sending a message, to gather really the files behind attachments.
-  private async getFiles() {
-    const { stagedAttachments } = this.props;
-    // scale them down
-    const files = await Promise.all(
-      stagedAttachments.map(attachment =>
-        AttachmentUtil.getFile(attachment, {
-          maxSize: Constants.CONVERSATION.MAX_ATTACHMENT_FILESIZE_BYTES,
-        })
-      )
-    );
-    this.props.clearAttachments();
-    return files;
-  }
-
   private async sendVoiceMessage(audioBlob: Blob) {
-    if (!this.state.showRecordingView) {
+    if (!this.state.showRecordingView || !audioBlob || !audioBlob.size) {
       return;
     }
 
-    const fileBuffer = await new Response(audioBlob).arrayBuffer();
+    const objectUrl = URL.createObjectURL(audioBlob);
 
-    const audioAttachment: Attachment = {
-      data: fileBuffer,
-      flags: SignalService.AttachmentPointer.Flags.VOICE_MESSAGE,
+    const audioAttachment: StagedAttachmentType = {
+      objectUrl,
+      isVoiceMessage: true,
       contentType: MIME.AUDIO_MP3,
-      size: audioBlob.size,
+      url: '',
+      fullPath: 'audio-attachment',
+      fileName: 'audio-attachment',
+      fileSize: null,
+      thumbnail: null,
+      screenshot: null,
     };
 
-    const messageSuccess = this.props.sendMessage(
-      '',
-      [audioAttachment],
-      undefined,
-      undefined,
-      null,
-      {}
-    );
-
-    if (messageSuccess) {
-      // success!
-    }
+    await this.props.sendMessage({
+      body: '',
+      attachments: [audioAttachment],
+      quote: undefined,
+      preview: undefined,
+      groupInvitation: undefined,
+    });
 
     this.onExitVoiceNoteView();
   }
@@ -1091,6 +1082,7 @@ const mapStateToProps = (state: StateType) => {
     selectedConversation: getSelectedConversation(state),
     selectedConversationKey: getSelectedConversationKey(state),
     draft: getDraftForCurrentConversation(state),
+    stagedAttachments: getStagedAttachmentsForCurrentConversation(state),
     theme: getTheme(state),
   };
 };

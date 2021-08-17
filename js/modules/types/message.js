@@ -395,6 +395,7 @@ exports.processNewAttachment = async (
   const onDiskAttachment = await Attachment.migrateDataToFileSystem(rotatedAttachment, {
     writeNewAttachmentData,
   });
+  debugger;
   const finalAttachment = await Attachment.captureDimensionsAndScreenshot(onDiskAttachment, {
     writeNewAttachmentData,
     getAbsoluteAttachmentPath,

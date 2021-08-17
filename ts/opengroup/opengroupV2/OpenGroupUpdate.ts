@@ -31,7 +31,7 @@ export async function updateOpenGroupV2(convo: ConversationModel, groupName: str
     const withBlob = await AttachmentUtil.autoScale(
       {
         contentType: avatar.type,
-        file: new Blob([avatarAttachment.data], {
+        fileOrBlob: new Blob([avatarAttachment.data], {
           type: avatar.contentType,
         }),
       },
@@ -40,7 +40,7 @@ export async function updateOpenGroupV2(convo: ConversationModel, groupName: str
         maxSize: 1000 * 1024,
       }
     );
-    const dataResized = await arrayBufferFromFile(withBlob.file);
+    const dataResized = await arrayBufferFromFile(withBlob.fileOrBlob);
     const roomInfos = await getV2OpenGroupRoom(convo.id);
     if (!roomInfos || !dataResized.byteLength) {
       return false;

@@ -10,7 +10,7 @@ import { StagedLinkPreview } from '../../conversation/StagedLinkPreview';
 export interface StagedLinkPreviewProps extends StagedLinkPreviewData {
   onClose: (url: string) => void;
 }
-export const LINK_PREVIEW_TIMEOUT = 60 * 1000;
+export const LINK_PREVIEW_TIMEOUT = 20 * 1000;
 
 export interface GetLinkPreviewResultImage {
   data: ArrayBuffer;
@@ -62,18 +62,18 @@ export const getPreview = async (
 
       // Ensure that this file is either small enough or is resized to meet our
       //   requirements for attachments
-      const withBlob = await AttachmentUtil.autoScale(
+      const scaledImage = await AttachmentUtil.autoScale(
         {
           contentType: fullSizeImage.contentType,
-          file: new Blob([fullSizeImage.data], {
+          fileOrBlob: new Blob([fullSizeImage.data], {
             type: fullSizeImage.contentType,
           }),
         },
         { maxSize: 100 * 1000 } // this is a preview image. No need for it to be crazy big. 100k is big enough
       );
 
-      const data = await arrayBufferFromFile(withBlob.file);
-      objectUrl = URL.createObjectURL(withBlob.file);
+      const data = await arrayBufferFromFile(scaledImage.fileOrBlob);
+      objectUrl = URL.createObjectURL(scaledImage.fileOrBlob);
 
       const dimensions = await window.Signal.Types.VisualAttachment.getImageDimensions({
         objectUrl,
@@ -84,7 +84,7 @@ export const getPreview = async (
         data,
         size: data.byteLength,
         ...dimensions,
-        contentType: withBlob.file.type,
+        contentType: scaledImage.fileOrBlob.type,
       };
     } catch (error) {
       // We still want to show the preview if we failed to get an image

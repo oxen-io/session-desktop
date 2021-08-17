@@ -218,7 +218,7 @@ exports.captureDimensionsAndScreenshot = async (
   }
 ) => {
   const { contentType } = attachment;
-
+  debugger;
   if (
     !GoogleChrome.isImageTypeSupported(contentType) &&
     !GoogleChrome.isVideoTypeSupported(contentType)
@@ -227,22 +227,24 @@ exports.captureDimensionsAndScreenshot = async (
   }
 
   // If the attachment hasn't been downloaded yet, we won't have a path
-  if (!attachment.path) {
+  if (!attachment.path && !attachment.objectUrl) {
     return attachment;
   }
 
-  const absolutePath = await getAbsoluteAttachmentPath(attachment.path);
+  const objectUrl = attachment.path
+    ? await getAbsoluteAttachmentPath(attachment.path)
+    : attachment.objectUrl;
 
   if (GoogleChrome.isImageTypeSupported(contentType)) {
     try {
       const { width, height } = await getImageDimensions({
-        objectUrl: absolutePath,
+        objectUrl,
         logger,
       });
       const thumbnailBuffer = await blobToArrayBuffer(
         await makeImageThumbnail({
           size: THUMBNAIL_SIZE,
-          objectUrl: absolutePath,
+          objectUrl,
           contentType: THUMBNAIL_CONTENT_TYPE,
           logger,
         })
@@ -274,7 +276,7 @@ exports.captureDimensionsAndScreenshot = async (
   try {
     const screenshotBuffer = await blobToArrayBuffer(
       await makeVideoScreenshot({
-        objectUrl: absolutePath,
+        objectUrl,
         contentType: THUMBNAIL_CONTENT_TYPE,
         logger,
       })

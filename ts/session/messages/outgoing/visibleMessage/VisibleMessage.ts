@@ -27,6 +27,10 @@ export interface AttachmentPointerWithUrl extends AttachmentPointerCommon {
   id: number;
 }
 
+export interface AttachmentPointerWithUrlAndLocalPath extends AttachmentPointerWithUrl {
+  path: string;
+}
+
 export interface Preview {
   url: string;
   title?: string;

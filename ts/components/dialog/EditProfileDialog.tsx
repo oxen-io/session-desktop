@@ -326,7 +326,7 @@ export class EditProfileDialog extends React.Component<{}, State> {
         const withBlob = await AttachmentUtil.autoScale(
           {
             contentType: avatar.type,
-            file: new Blob([data.data], {
+            fileOrBlob: new Blob([data.data], {
               type: avatar.contentType,
             }),
           },
@@ -335,7 +335,9 @@ export class EditProfileDialog extends React.Component<{}, State> {
             maxSize: 1000 * 1024,
           }
         );
-        const dataResized = await window.Signal.Types.Attachment.arrayBufferFromFile(withBlob.file);
+        const dataResized = await window.Signal.Types.Attachment.arrayBufferFromFile(
+          withBlob.fileOrBlob
+        );
 
         // For simplicity we use the same attachment pointer that would send to
         // others, which means we need to wait for the database response.

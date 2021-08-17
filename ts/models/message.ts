@@ -54,6 +54,7 @@ import { isUsFromCache } from '../session/utils/User';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { AttachmentTypeWithPath } from '../types/Attachment';
 import _ from 'lodash';
+import { StagedAttachmentType } from '../components/session/conversation/SessionCompositionBox';
 
 export class MessageModel extends Backbone.Model<MessageAttributes> {
   constructor(attributes: MessageAttributesOptionals & { skipTimerInit?: boolean }) {
@@ -698,6 +699,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const isVoiceMessage =
       // tslint:disable-next-line: no-bitwise
       Boolean(flags && flags & SignalService.AttachmentPointer.Flags.VOICE_MESSAGE) || false;
+
     return {
       id,
       contentType,
@@ -791,14 +793,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
    * @returns The uploaded data which includes: body, attachments, preview and quote.
    */
   public async uploadData() {
-    // TODO: In the future it might be best if we cache the upload results if possible.
-    // This way we don't upload duplicated data.
-
-    const attachmentsWithData = await Promise.all(
-      (this.get('attachments') || []).map(window.Signal.Migrations.loadAttachmentData)
-    );
+    // at this point, this.get('attachments') has a field objectUrl with the full data in it (created with URL.createObjectURL)
+    const attachmentsWithData = this.get('attachments') as Array<StagedAttachmentType>; // await Promise.all(
+    //   ( || []).map(window.Signal.Migrations.loadAttachmentData)
+    // );
     const body = this.get('body');
-    const finalAttachments = attachmentsWithData as Array<any>;
 
     const quoteWithData = await window.Signal.Migrations.loadQuoteData(this.get('quote'));
     const previewWithData = await window.Signal.Migrations.loadPreviewData(this.get('preview'));
@@ -813,22 +812,28 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     // we want to go for the v1, if this is an OpenGroupV1 or not an open group at all
     if (conversation?.isOpenGroupV2()) {
       const openGroupV2 = conversation.toOpenGroupV2();
-      attachmentPromise = uploadAttachmentsV2(finalAttachments, openGroupV2);
+      attachmentPromise = uploadAttachmentsV2(attachmentsWithData, openGroupV2);
       linkPreviewPromise = uploadLinkPreviewsV2(previewWithData, openGroupV2);
       quotePromise = uploadQuoteThumbnailsV2(openGroupV2, quoteWithData);
     } else {
       // NOTE: we want to go for the v1 if this is an OpenGroupV1 or not an open group at all
       // because there is a fallback invoked on uploadV1() for attachments for not open groups attachments
-      attachmentPromise = AttachmentFsV2Utils.uploadAttachmentsToFsV2(finalAttachments);
+      attachmentPromise = AttachmentFsV2Utils.uploadAttachmentsToFsV2(attachmentsWithData);
       linkPreviewPromise = AttachmentFsV2Utils.uploadLinkPreviewsToFsV2(previewWithData);
       quotePromise = AttachmentFsV2Utils.uploadQuoteThumbnailsToFsV2(quoteWithData);
     }
 
+    // Here they got uploaded
     const [attachments, preview, quote] = await Promise.all([
       attachmentPromise,
       linkPreviewPromise,
       quotePromise,
     ]);
+
+    this.set('attachments', attachments);
+    this.set('quote', quote);
+    this.set('preview', preview);
+    await this.commit();
 
     return {
       body,

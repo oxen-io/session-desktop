@@ -1,10 +1,9 @@
-import { StagedAttachmentType } from '../components/session/conversation/SessionCompositionBox';
-import { SignalService } from '../protobuf';
 import { Constants } from '../session';
 import loadImage from 'blueimp-load-image';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { sendDataExtractionNotification } from '../session/messages/outgoing/controlMessage/DataExtractionNotificationMessage';
 import { AttachmentType, save } from '../types/Attachment';
+import _ from 'underscore';
 export interface MaxScaleSize {
   maxSize?: number;
   maxHeight?: number;
@@ -18,18 +17,18 @@ export interface MaxScaleSize {
  * @param attachment The attachment to scale down
  * @param maxMeasurements any of those will be used if set
  */
-export async function autoScale<T extends { contentType: string; file: any }>(
+export async function autoScale<T extends { contentType: string; fileOrBlob: File | Blob }>(
   attachment: T,
   maxMeasurements?: MaxScaleSize
 ): Promise<T> {
-  const { contentType, file } = attachment;
+  const { contentType, fileOrBlob } = attachment;
   if (contentType.split('/')[0] !== 'image' || contentType === 'image/tiff') {
     // nothing to do
     return Promise.resolve(attachment);
   }
 
   return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(fileOrBlob);
     const img = document.createElement('img');
     img.onerror = reject;
     // tslint:disable-next-line: cyclomatic-complexity
@@ -49,7 +48,7 @@ export async function autoScale<T extends { contentType: string; file: any }>(
       if (
         img.naturalWidth <= maxWidth &&
         img.naturalHeight <= maxHeight &&
-        file.size <= maxSize &&
+        fileOrBlob.size <= maxSize &&
         !makeSquare
       ) {
         resolve(attachment);
@@ -57,14 +56,14 @@ export async function autoScale<T extends { contentType: string; file: any }>(
       }
 
       if (
-        file.type === 'image/gif' &&
-        file.size <= Constants.CONVERSATION.MAX_ATTACHMENT_FILESIZE_BYTES
+        fileOrBlob.type === 'image/gif' &&
+        fileOrBlob.size <= Constants.CONVERSATION.MAX_ATTACHMENT_FILESIZE_BYTES
       ) {
         resolve(attachment);
         return;
       }
 
-      if (file.type === 'image/gif') {
+      if (fileOrBlob.type === 'image/gif') {
         reject(new Error('GIF is too large'));
         return;
       }
@@ -90,29 +89,11 @@ export async function autoScale<T extends { contentType: string; file: any }>(
 
       resolve({
         ...attachment,
-        file: blob,
+        fileOrBlob: blob,
       });
     };
     img.src = url;
   });
-}
-
-export async function getFile(attachment: StagedAttachmentType, maxMeasurements?: MaxScaleSize) {
-  if (!attachment) {
-    return Promise.resolve();
-  }
-
-  const attachmentFlags = attachment.isVoiceMessage
-    ? SignalService.AttachmentPointer.Flags.VOICE_MESSAGE
-    : null;
-
-  const scaled = await autoScale(attachment, maxMeasurements);
-  const fileRead = await readFile(scaled);
-  return {
-    ...fileRead,
-    url: undefined,
-    flags: attachmentFlags || null,
-  };
 }
 
 export type AttachmentFileType = {
