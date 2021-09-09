@@ -17,6 +17,7 @@ import {
 import AbortController from 'abort-controller';
 import * as Data from '../../../../../ts/data/data';
 import { pathFailureCount } from '../../../../session/onions/onionPath';
+import { SeedNodeAPI } from '../../../../session/seed_node_api';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -100,14 +101,14 @@ describe('OnionPathsErrors', () => {
     fakeSwarmForAssociatedWith = otherNodesPubkeys.slice(0, 6);
     // Stubs
     sandbox.stub(OnionPaths, 'selectGuardNodes').resolves(guardNodesArray);
-    sandbox.stub(SNodeAPI.SNodeAPI, 'getSnodePoolFromSnode').resolves(guardNodesArray);
+    sandbox.stub(SNodeAPI.SNodeAPI, 'TEST_getSnodePoolFromSnode').resolves(guardNodesArray);
     TestUtils.stubData('getGuardNodes').resolves([
       guardPubkeys[0],
       guardPubkeys[1],
       guardPubkeys[2],
     ]);
     TestUtils.stubWindow('getSeedNodeList', () => ['seednode1']);
-    sandbox.stub(SNodeAPI.SnodePool, 'refreshRandomPoolDetail').resolves(fakeSnodePool);
+    sandbox.stub(SeedNodeAPI, 'fetchSnodePoolFromSeedNodeWithRetries').resolves(fakeSnodePool);
     sandbox.stub(Data, 'getSwarmNodesForPubkey').resolves(fakeSwarmForAssociatedWith);
     updateGuardNodesStub = sandbox.stub(Data, 'updateGuardNodes').resolves();
 

@@ -12,6 +12,7 @@ import chaiAsPromised from 'chai-as-promised';
 import * as OnionPaths from '../../../../session/onions/onionPath';
 import { Snode } from '../../../../data/data';
 import { generateFakeSnodes, generateFakeSnodeWithEdKey } from '../../../test-utils/utils';
+import { SeedNodeAPI } from '../../../../session/seed_node_api';
 chai.use(chaiAsPromised as any);
 chai.should();
 
@@ -43,7 +44,7 @@ describe('OnionPaths', () => {
     OnionPaths.clearTestOnionPath();
 
     sandbox.stub(OnionPaths, 'selectGuardNodes').resolves(fakeGuardNodes);
-    sandbox.stub(SNodeAPI.SNodeAPI, 'getSnodePoolFromSnode').resolves(fakeGuardNodes);
+    sandbox.stub(SNodeAPI.SNodeAPI, 'TEST_getSnodePoolFromSnode').resolves(fakeGuardNodes);
     TestUtils.stubData('getGuardNodes').resolves(fakeGuardNodesEd25519);
     TestUtils.stubData('createOrUpdateItem').resolves();
     TestUtils.stubWindow('getSeedNodeList', () => ['seednode1']);
@@ -51,7 +52,7 @@ describe('OnionPaths', () => {
 
     TestUtils.stubWindowLog();
 
-    sandbox.stub(SNodeAPI.SnodePool, 'refreshRandomPoolDetail').resolves(fakeSnodePool);
+    sandbox.stub(SeedNodeAPI, 'fetchSnodePoolFromSeedNodeWithRetries').resolves(fakeSnodePool);
     SNodeAPI.Onions.resetSnodeFailureCount();
     OnionPaths.resetPathFailureCount();
     // get a copy of what old ones look like

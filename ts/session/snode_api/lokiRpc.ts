@@ -14,13 +14,19 @@ interface FetchOptions {
  * A small wrapper around node-fetch which deserializes response
  * returns insecureNodeFetch response or false
  */
-async function lokiFetch(
-  url: string,
-  options: FetchOptions,
-  targetNode?: Snode,
-  associatedWith?: string,
-  test?: string
-): Promise<undefined | SnodeResponse> {
+async function lokiFetch({
+  options,
+  disablePathRebuilds,
+  url,
+  associatedWith,
+  targetNode,
+}: {
+  url: string;
+  options: FetchOptions;
+  targetNode?: Snode;
+  associatedWith?: string;
+  disablePathRebuilds?: boolean;
+}): Promise<undefined | SnodeResponse> {
   const timeout = 10000;
   const method = options.method || 'GET';
 
@@ -38,7 +44,7 @@ async function lokiFetch(
         ? true
         : window.lokiFeatureFlags?.useOnionRequests;
     if (useOnionRequests && targetNode) {
-      const fetchResult = await lokiOnionFetch(targetNode, fetchOptions.body, associatedWith, test);
+      const fetchResult = await lokiOnionFetch(targetNode, fetchOptions.body, associatedWith);
       if (!fetchResult) {
         return undefined;
       }
@@ -84,10 +90,19 @@ async function lokiFetch(
  * The
  */
 export async function snodeRpc(
-  method: string,
-  params: any,
-  targetNode: Snode,
-  associatedWith?: string //the user pubkey this call is for. if the onion request fails, this is used to handle the error for this user swarm for instance
+  {
+    method,
+    params,
+    targetNode,
+    associatedWith,
+    disablePathRebuilds,
+  }: {
+    method: string;
+    params: any;
+    targetNode: Snode;
+    associatedWith?: string;
+    disablePathRebuilds?: boolean;
+  } //the user pubkey this call is for. if the onion request fails, this is used to handle the error for this user swarm for instance
 ): Promise<undefined | SnodeResponse> {
   const url = `https://${targetNode.ip}:${targetNode.port}/storage_rpc/v1`;
 
@@ -115,5 +130,12 @@ export async function snodeRpc(
     },
   };
 
-  return lokiFetch(url, fetchOptions, targetNode, associatedWith, method);
+  return lokiFetch({
+    url,
+    options: fetchOptions,
+    targetNode,
+    associatedWith,
+    method,
+    disablePathRebuilds,
+  });
 }
