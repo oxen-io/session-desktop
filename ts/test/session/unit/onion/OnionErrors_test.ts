@@ -129,7 +129,7 @@ describe('OnionPathsErrors', () => {
 
     OnionPaths.resetPathFailureCount();
 
-    await OnionPaths.getOnionPath();
+    await OnionPaths.getOnionPath({});
 
     oldOnionPaths = OnionPaths.TEST_getTestOnionPath();
     sandbox

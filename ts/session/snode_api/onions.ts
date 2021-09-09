@@ -836,35 +836,33 @@ export function getPathString(pathObjArr: Array<{ ip: string; port: number }>): 
   return pathObjArr.map(node => `${node.ip}:${node.port}`).join(', ');
 }
 
-async function onionFetchRetryable(
-  targetNode: Snode,
-  body?: string,
-  associatedWith?: string
-): Promise<SnodeResponse> {
-  // Get a path excluding `targetNode`:
-  const path = await OnionPaths.getOnionPath(targetNode);
-  const result = await sendOnionRequestSnodeDest(path, targetNode, body, associatedWith);
-  return result;
-}
-
 /**
  * If the fetch throws a retryable error we retry this call with a new path at most 3 times. If another error happens, we return it. If we have a result we just return it.
  */
-export async function lokiOnionFetch(
-  targetNode: Snode,
-  body?: string,
-  associatedWith?: string
-): Promise<SnodeResponse | undefined> {
+export async function lokiOnionFetch({
+  targetNode,
+  associatedWith,
+  body,
+  disablePathRebuilds,
+}: {
+  targetNode: Snode;
+  body?: string;
+  associatedWith?: string;
+  disablePathRebuilds?: boolean;
+}): Promise<SnodeResponse | undefined> {
   try {
     const retriedResult = await pRetry(
       async () => {
-        return onionFetchRetryable(targetNode, body, associatedWith);
+        // Get a path excluding `targetNode`:
+        // if disablePathRebuilds is true and we do not have enough path to make the request, this function will throw an exception straight away
+        const path = await OnionPaths.getOnionPath({ toExclude: targetNode, disablePathRebuilds });
+        const result = await sendOnionRequestSnodeDest(path, targetNode, body, associatedWith);
+        return result;
       },
       {
-        retries: 4,
+        retries: 3,
         factor: 1,
-        minTimeout: 1000,
-        maxTimeout: 2000,
+        minTimeout: 100,
         onFailedAttempt: e => {
           window?.log?.warn(
             `onionFetchRetryable attempt #${e.attemptNumber} failed. ${e.retriesLeft} retries left...`

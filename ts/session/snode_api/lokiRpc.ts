@@ -44,7 +44,12 @@ async function lokiFetch({
         ? true
         : window.lokiFeatureFlags?.useOnionRequests;
     if (useOnionRequests && targetNode) {
-      const fetchResult = await lokiOnionFetch(targetNode, fetchOptions.body, associatedWith);
+      const fetchResult = await lokiOnionFetch({
+        targetNode,
+        body: fetchOptions.body,
+        associatedWith,
+        disablePathRebuilds,
+      });
       if (!fetchResult) {
         return undefined;
       }
@@ -135,7 +140,6 @@ export async function snodeRpc(
     options: fetchOptions,
     targetNode,
     associatedWith,
-    method,
     disablePathRebuilds,
   });
 }

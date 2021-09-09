@@ -56,7 +56,7 @@ describe('OnionPaths', () => {
     SNodeAPI.Onions.resetSnodeFailureCount();
     OnionPaths.resetPathFailureCount();
     // get a copy of what old ones look like
-    await OnionPaths.getOnionPath();
+    await OnionPaths.getOnionPath({});
 
     oldOnionPaths = OnionPaths.TEST_getTestOnionPath();
     if (oldOnionPaths.length !== 3) {

@@ -121,59 +121,66 @@ export async function dropSnodeFromPath(snodeEd25519: string) {
   onionPaths[pathWithSnodeIndex] = pathtoPatchUp;
 }
 
-export async function getOnionPath(toExclude?: Snode): Promise<Array<Snode>> {
+export async function getOnionPath({
+  disablePathRebuilds,
+  toExclude,
+}: {
+  toExclude?: Snode;
+  disablePathRebuilds?: boolean;
+}): Promise<Array<Snode>> {
   let attemptNumber = 0;
 
-  while (onionPaths.length < minimumGuardCount) {
-    window?.log?.info(
-      `Must have at least ${minimumGuardCount} good onion paths, actual: ${onionPaths.length}, attempt #${attemptNumber} fetching more...`
-    );
-    // eslint-disable-next-line no-await-in-loop
-    await buildNewOnionPathsOneAtATime();
-    // should we add a delay? buildNewOnionPathsOneA  tATime should act as one
+  if (!disablePathRebuilds) {
+    while (onionPaths.length < minimumGuardCount) {
+      window?.log?.info(
+        `Must have at least ${minimumGuardCount} good onion paths, actual: ${onionPaths.length}, attempt #${attemptNumber} fetching more...`
+      );
+      // eslint-disable-next-line no-await-in-loop
+      await buildNewOnionPathsOneAtATime();
+      // should we add a delay? buildNewOnionPathsOneA  tATime should act as one
 
-    // reload goodPaths now
-    attemptNumber += 1;
+      // reload goodPaths now
+      attemptNumber += 1;
 
-    if (attemptNumber >= 10) {
-      window?.log?.error('Failed to get an onion path after 10 attempts');
-      throw new Error(`Failed to build enough onion paths, current count: ${onionPaths.length}`);
+      if (attemptNumber >= 10) {
+        window?.log?.error('Failed to get an onion path after 10 attempts');
+        throw new Error(`Failed to build enough onion paths, current count: ${onionPaths.length}`);
+      }
+    }
+
+    if (onionPaths.length === 0) {
+      if (!_.isEmpty(window.inboxStore?.getState().onionPaths.snodePaths)) {
+        window.inboxStore?.dispatch(updateOnionPaths([]));
+      }
+    } else {
+      const ipsOnly = onionPaths.map(m =>
+        m.map(c => {
+          return { ip: c.ip };
+        })
+      );
+      if (!_.isEqual(window.inboxStore?.getState().onionPaths.snodePaths, ipsOnly)) {
+        window.inboxStore?.dispatch(updateOnionPaths(ipsOnly));
+      }
     }
   }
 
-  if (onionPaths.length <= 0) {
-    if (!_.isEmpty(window.inboxStore?.getState().onionPaths.snodePaths)) {
-      window.inboxStore?.dispatch(updateOnionPaths([]));
+  if (!toExclude) {
+    // no need to exclude a node, then just return a random path from the list of path
+    if (onionPaths.length === 0) {
+      throw new Error('No onion paths available');
     }
-  } else {
-    const ipsOnly = onionPaths.map(m =>
-      m.map(c => {
-        return { ip: c.ip };
-      })
-    );
-    if (!_.isEqual(window.inboxStore?.getState().onionPaths.snodePaths, ipsOnly)) {
-      window.inboxStore?.dispatch(updateOnionPaths(ipsOnly));
-    }
+    return _.sample(onionPaths) as Array<Snode>;
   }
 
-  const onionPathsWithoutExcluded = toExclude
-    ? onionPaths.filter(
-        path => !_.some(path, node => node.pubkey_ed25519 === toExclude.pubkey_ed25519)
-      )
-    : onionPaths;
-
+  // here we got a snode to exclude from the returned path
+  const onionPathsWithoutExcluded = onionPaths.filter(
+    path => !_.some(path, node => node.pubkey_ed25519 === toExclude.pubkey_ed25519)
+  );
   if (!onionPathsWithoutExcluded) {
-    window?.log?.error('LokiSnodeAPI::getOnionPath - no path in', onionPathsWithoutExcluded);
-    return [];
-  }
-
-  const randomPath = _.sample(onionPathsWithoutExcluded);
-
-  if (!randomPath) {
     throw new Error('No onion paths available after filtering');
   }
 
-  return randomPath;
+  return _.sample(onionPathsWithoutExcluded) as Array<Snode>;
 }
 
 /**
@@ -429,6 +436,7 @@ async function buildNewOnionPathsWorker() {
     window?.log?.warn(
       'LokiSnodeAPI::buildNewOnionPaths - Too few nodes to build an onion path! Refreshing pool and retrying'
     );
+
     await SnodePool.refreshRandomPool();
     // this is a recursive call limited to only one call at a time. we use the timeout
     // here to make sure we retry this call if we cannot get enough otherNodes
