@@ -23,6 +23,11 @@ const minSwarmSnodeCount = 3;
 export const minSnodePoolCount = 12;
 
 /**
+ * If we get less than this amount of snodes, lets try to get an updated list from those while we can
+ */
+export const minSnodePoolCountBeforeRefreshFromSnodes = minSnodePoolCount * 2;
+
+/**
  * If we do a request to fetch nodes from snodes and they don't return at least
  * the same `requiredSnodesForAgreement` snodes we consider that this is not a valid return.
  *
@@ -99,8 +104,10 @@ export async function forceRefreshRandomSnodePool(): Promise<Array<Data.Snode>> 
   return randomSnodePool;
 }
 
-export async function getRandomSnodePool(): Promise<Array<Data.Snode>> {
-  if (randomSnodePool.length <= minSnodePoolCount) {
+export async function getRandomSnodePool(
+  disablePathRebuilds?: boolean
+): Promise<Array<Data.Snode>> {
+  if (randomSnodePool.length <= minSnodePoolCount && !disablePathRebuilds) {
     await refreshRandomPool();
   }
   return randomSnodePool;
@@ -156,7 +163,10 @@ async function tryToGetConsensusWithSnodesWithRetries() {
         );
         throw new Error('Not enough common nodes.');
       }
-      window?.log?.info('updating snode list with snode pool length:', commonNodes.length);
+      window?.log?.info(
+        'Got consensus: updating snode list with snode pool length:',
+        commonNodes.length
+      );
       randomSnodePool = commonNodes;
       await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
 

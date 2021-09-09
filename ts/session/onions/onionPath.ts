@@ -65,11 +65,11 @@ export const ed25519Str = (ed25519Key: string) => `(...${ed25519Key.substr(58)})
 
 let buildNewOnionPathsWorkerRetry = 0;
 
-export async function buildNewOnionPathsOneAtATime() {
+export async function buildNewOnionPathsOneAtATime(disablePathRebuilds?: boolean) {
   // this function may be called concurrently make sure we only have one inflight
   return allowOnlyOneAtATime('buildNewOnionPaths', async () => {
     buildNewOnionPathsWorkerRetry = 0;
-    await buildNewOnionPathsWorker();
+    await buildNewOnionPathsWorker(disablePathRebuilds);
   });
 }
 
@@ -130,57 +130,71 @@ export async function getOnionPath({
 }): Promise<Array<Snode>> {
   let attemptNumber = 0;
 
-  if (!disablePathRebuilds) {
-    while (onionPaths.length < minimumGuardCount) {
-      window?.log?.info(
-        `Must have at least ${minimumGuardCount} good onion paths, actual: ${onionPaths.length}, attempt #${attemptNumber} fetching more...`
-      );
-      // eslint-disable-next-line no-await-in-loop
-      await buildNewOnionPathsOneAtATime();
-      // should we add a delay? buildNewOnionPathsOneA  tATime should act as one
+  const snodePool = await SnodePool.getRandomSnodePool(disablePathRebuilds);
 
-      // reload goodPaths now
-      attemptNumber += 1;
+  if (
+    snodePool.length < SnodePool.minSnodePoolCountBeforeRefreshFromSnodes &&
+    !disablePathRebuilds
+  ) {
+    await SnodePool.refreshRandomPool();
+  }
 
-      if (attemptNumber >= 10) {
-        window?.log?.error('Failed to get an onion path after 10 attempts');
-        throw new Error(`Failed to build enough onion paths, current count: ${onionPaths.length}`);
-      }
+  while (onionPaths.length < minimumGuardCount) {
+    window?.log?.info(
+      `Must have at least ${minimumGuardCount} good onion paths, actual: ${onionPaths.length}, attempt #${attemptNumber} fetching more; disablePathRebuilds? ${disablePathRebuilds}`
+    );
+    // eslint-disable-next-line no-await-in-loop
+    await buildNewOnionPathsOneAtATime(disablePathRebuilds);
+    // should we add a delay? buildNewOnionPathsOneA  tATime should act as one
+
+    // reload goodPaths now
+    attemptNumber += 1;
+
+    if (attemptNumber >= 10) {
+      window?.log?.error('Failed to get an onion path after 10 attempts');
+      throw new Error(`Failed to build enough onion paths, current count: ${onionPaths.length}`);
     }
+  }
 
-    if (onionPaths.length === 0) {
-      if (!_.isEmpty(window.inboxStore?.getState().onionPaths.snodePaths)) {
-        window.inboxStore?.dispatch(updateOnionPaths([]));
-      }
-    } else {
-      const ipsOnly = onionPaths.map(m =>
-        m.map(c => {
-          return { ip: c.ip };
-        })
-      );
-      if (!_.isEqual(window.inboxStore?.getState().onionPaths.snodePaths, ipsOnly)) {
-        window.inboxStore?.dispatch(updateOnionPaths(ipsOnly));
-      }
+  if (onionPaths.length === 0) {
+    if (!_.isEmpty(window.inboxStore?.getState().onionPaths.snodePaths)) {
+      window.inboxStore?.dispatch(updateOnionPaths([]));
+    }
+  } else {
+    const ipsOnly = onionPaths.map(m =>
+      m.map(c => {
+        return { ip: c.ip };
+      })
+    );
+    if (!_.isEqual(window.inboxStore?.getState().onionPaths.snodePaths, ipsOnly)) {
+      window.inboxStore?.dispatch(updateOnionPaths(ipsOnly));
     }
   }
 
   if (!toExclude) {
     // no need to exclude a node, then just return a random path from the list of path
-    if (onionPaths.length === 0) {
+    if (!onionPaths || onionPaths.length === 0) {
       throw new Error('No onion paths available');
     }
-    return _.sample(onionPaths) as Array<Snode>;
+    const randomPathNoExclude = _.sample(onionPaths);
+    if (!randomPathNoExclude) {
+      throw new Error('No onion paths available');
+    }
+    return randomPathNoExclude;
   }
 
   // here we got a snode to exclude from the returned path
   const onionPathsWithoutExcluded = onionPaths.filter(
     path => !_.some(path, node => node.pubkey_ed25519 === toExclude.pubkey_ed25519)
   );
-  if (!onionPathsWithoutExcluded) {
+  if (!onionPathsWithoutExcluded || onionPathsWithoutExcluded.length === 0) {
     throw new Error('No onion paths available after filtering');
   }
-
-  return _.sample(onionPathsWithoutExcluded) as Array<Snode>;
+  const randomPath = _.sample(onionPathsWithoutExcluded);
+  if (!randomPath) {
+    throw new Error('No onion paths available after filtering');
+  }
+  return randomPath;
 }
 
 /**
@@ -325,11 +339,11 @@ async function testGuardNode(snode: Snode) {
 /**
  * Only exported for testing purpose. DO NOT use this directly
  */
-export async function selectGuardNodes(): Promise<Array<Snode>> {
+export async function selectGuardNodes(disablePathRebuilds?: boolean): Promise<Array<Snode>> {
   // `getRandomSnodePool` is expected to refresh itself on low nodes
-  const nodePool = await SnodePool.getRandomSnodePool();
+  const nodePool = await SnodePool.getRandomSnodePool(disablePathRebuilds);
   window.log.info('selectGuardNodes snodePool:', nodePool.length);
-  if (nodePool.length < desiredGuardCount) {
+  if (nodePool.length <= SnodePool.minSnodePoolCount) {
     window?.log?.error(
       `Could not select guard nodes. Not enough nodes in the pool: ${nodePool.length}`
     );
@@ -390,10 +404,18 @@ export async function selectGuardNodes(): Promise<Array<Snode>> {
   return guardNodes;
 }
 
-async function buildNewOnionPathsWorker() {
+/**
+ * disablePathRebuilds is used to disable all request to made.
+ * if disablePathRebuilds is true, we only want to re build a path with what we have locally, or throw an error
+ */
+async function buildNewOnionPathsWorker(disablePathRebuilds?: boolean) {
   window?.log?.info('LokiSnodeAPI::buildNewOnionPaths - building new onion paths...');
 
-  let allNodes = await SnodePool.getRandomSnodePool();
+  let allNodes = await SnodePool.getRandomSnodePool(disablePathRebuilds);
+
+  if (allNodes.length <= SnodePool.minSnodePoolCount) {
+    throw new Error(`Cannot rebuild path as we do not have enough snodes: ${allNodes.length}`);
+  }
 
   if (guardNodes.length === 0) {
     // Not cached, load from DB
@@ -418,26 +440,26 @@ async function buildNewOnionPathsWorker() {
   // If guard nodes is still empty (the old nodes are now invalid), select new ones:
   if (guardNodes.length < desiredGuardCount) {
     try {
-      guardNodes = await exports.selectGuardNodes();
+      guardNodes = await exports.selectGuardNodes(disablePathRebuilds);
     } catch (e) {
       window.log.warn('selectGuardNodes throw error. Not retrying.', e);
       return;
     }
   }
   // be sure to fetch again as that list might have been refreshed by selectGuardNodes
-  allNodes = await SnodePool.getRandomSnodePool();
+  allNodes = await SnodePool.getRandomSnodePool(disablePathRebuilds);
   window?.log?.info(
     'LokiSnodeAPI::buildNewOnionPaths - after refetch, snodePool length:',
     allNodes.length
   );
   // TODO: select one guard node and 2 other nodes randomly
   let otherNodes = _.differenceBy(allNodes, guardNodes, 'pubkey_ed25519');
-  if (otherNodes.length <= SnodePool.minSnodePoolCount) {
+  if (allNodes.length <= SnodePool.minSnodePoolCountBeforeRefreshFromSnodes) {
     window?.log?.warn(
       'LokiSnodeAPI::buildNewOnionPaths - Too few nodes to build an onion path! Refreshing pool and retrying'
     );
 
-    await SnodePool.refreshRandomPool();
+    await SnodePool.refreshRandomPool(disablePathRebuilds);
     // this is a recursive call limited to only one call at a time. we use the timeout
     // here to make sure we retry this call if we cannot get enough otherNodes
 
@@ -459,7 +481,7 @@ async function buildNewOnionPathsWorker() {
         `buildNewOnionPathsWorker failed to get otherNodes. Next attempt: ${buildNewOnionPathsWorkerRetry}`
       );
     }
-    await buildNewOnionPathsWorker();
+    await buildNewOnionPathsWorker(disablePathRebuilds);
     return;
   }
 

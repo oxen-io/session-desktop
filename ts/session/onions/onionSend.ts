@@ -72,7 +72,7 @@ const buildSendViaOnionPayload = (url: URL, fetchOptions: OnionFetchOptions): On
 export const getOnionPathForSending = async () => {
   let pathNodes: Array<Snode> = [];
   try {
-    pathNodes = await OnionPaths.getOnionPath({ disablePathRebuilds: false });
+    pathNodes = await OnionPaths.getOnionPath({});
   } catch (e) {
     window?.log?.error(`sendViaOnion - getOnionPath Error ${e.code} ${e.message}`);
   }

@@ -107,6 +107,9 @@ async function buildOnionCtxs(
   finalRelayOptions?: FinalRelayOptions
 ) {
   const ctxes = [destCtx];
+  if (!nodePath) {
+    throw new Error('buildOnionCtxs needs a valid path');
+  }
   // from (3) 2 to 0
   const firstPos = nodePath.length - 1;
 

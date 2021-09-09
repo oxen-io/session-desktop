@@ -14,7 +14,6 @@ import {
   removeConversation,
   removeOneOpenGroupV1Message,
 } from '../../data/data';
-import { OnionPaths } from '../../session/onions';
 import { getMessageQueue } from '../../session/sending';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOurNumber } from '../../state/selectors/user';
@@ -204,11 +203,6 @@ const triggerAvatarReUploadIfNeeded = async () => {
  * This function is called only once: on app startup with a logged in user
  */
 const doAppStartUp = () => {
-  if (window.lokiFeatureFlags.useOnionRequests || window.lokiFeatureFlags.useFileOnionRequests) {
-    // Initialize paths for onion requests
-    void OnionPaths.buildNewOnionPathsOneAtATime();
-  }
-
   // init the messageQueue. In the constructor, we add all not send messages
   // this call does nothing except calling the constructor, which will continue sending message in the pipeline
   void getMessageQueue().processAllPending();
