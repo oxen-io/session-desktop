@@ -79,7 +79,6 @@ describe('OnionPathsErrors', () => {
         port: fakePortCurrent,
         pubkey_ed25519: ed25519,
         pubkey_x25519: ed25519,
-        version: '',
       };
     });
     guardSnode1 = guardNodesArray[0];
@@ -91,7 +90,6 @@ describe('OnionPathsErrors', () => {
         port: fakePortCurrent,
         pubkey_ed25519: ed25519,
         pubkey_x25519: ed25519,
-        version: '',
       };
     });
 

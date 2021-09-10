@@ -10,6 +10,7 @@ import Electron from 'electron';
 import { sha256 } from '../crypto';
 import * as Data from '../../../ts/data/data';
 import pRetry from 'p-retry';
+import { SeedNodeAPI } from '.';
 
 const { remote } = Electron;
 // tslint:disable: function-name
@@ -34,15 +35,14 @@ export async function fetchSnodePoolFromSeedNodeWithRetries(
     snodes = _.shuffle(snodes);
     // commit changes to be live
     // we'll update the version (in case they upgrade) every cycle
-    const fetchSnodePool = snodes.map((snode: any) => ({
+    const fetchSnodePool = snodes.map(snode => ({
       ip: snode.public_ip,
       port: snode.storage_port,
       pubkey_x25519: snode.pubkey_x25519,
       pubkey_ed25519: snode.pubkey_ed25519,
-      version: '',
     }));
     window?.log?.info(
-      'LokiSeedNodeAPI::fetchSnodePoolFromSeedNodeWithRetries - Refreshed random snode pool with',
+      'SeedNodeAPI::fetchSnodePoolFromSeedNodeWithRetries - Refreshed random snode pool with',
       snodes.length,
       'snodes'
     );
@@ -134,12 +134,19 @@ const getSslAgentForSeedNode = (seedNodeHost: string, isSsl = false) => {
   return new https.Agent(sslOptions);
 };
 
+export interface SnodeFromSeed {
+  public_ip: string;
+  storage_port: number;
+  pubkey_x25519: string;
+  pubkey_ed25519: string;
+}
+
 /**
  * This call will try 4 times to contact a seed nodes (random) and get the snode list from it.
  * If all attempts fails, this function will throw the last error.
  * The returned list is not shuffled when returned.
  */
-async function getSnodeListFromSeednode(seedNodes: Array<SeedNode>): Promise<Array<Data.Snode>> {
+async function getSnodeListFromSeednode(seedNodes: Array<SeedNode>): Promise<Array<SnodeFromSeed>> {
   const SEED_NODE_RETRIES = 4;
 
   return pRetry(
@@ -150,14 +157,14 @@ async function getSnodeListFromSeednode(seedNodes: Array<SeedNode>): Promise<Arr
         throw new Error('getSnodeListFromSeednode - seedNodes are empty');
       }
       // do not try/catch, we do want exception to bubble up so pRetry, well, retries
-      const snodes = await fetchSnodePoolFromSeedNodeRetryable(seedNodes);
+      const snodes = await SeedNodeAPI.TEST_fetchSnodePoolFromSeedNodeRetryable(seedNodes);
 
       return snodes;
     },
     {
       retries: SEED_NODE_RETRIES - 1,
       factor: 2,
-      minTimeout: 3000,
+      minTimeout: SeedNodeAPI.getMinTimeout(),
       onFailedAttempt: e => {
         window?.log?.warn(
           `fetchSnodePoolFromSeedNodeRetryable attempt #${e.attemptNumber} failed. ${e.retriesLeft} retries left... Error: ${e.message}`
@@ -167,13 +174,17 @@ async function getSnodeListFromSeednode(seedNodes: Array<SeedNode>): Promise<Arr
   );
 }
 
+export function getMinTimeout() {
+  return 1000;
+}
+
 /**
  * This functions choose randonly a seed node from seedNodes and try to get the snodes from it, or throws.
  * This function is to be used with a pRetry caller
  */
-async function fetchSnodePoolFromSeedNodeRetryable(
+export async function TEST_fetchSnodePoolFromSeedNodeRetryable(
   seedNodes: Array<SeedNode>
-): Promise<Array<Data.Snode>> {
+): Promise<Array<SnodeFromSeed>> {
   window?.log?.info('fetchSnodePoolFromSeedNodeRetryable starting...');
 
   if (!seedNodes.length) {

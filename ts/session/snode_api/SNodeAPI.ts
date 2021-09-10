@@ -374,7 +374,6 @@ export async function TEST_getSnodePoolFromSnode(targetNode: Snode): Promise<Arr
         port: snode.storage_port,
         pubkey_x25519: snode.pubkey_x25519,
         pubkey_ed25519: snode.pubkey_ed25519,
-        version: '',
       })) as Array<Snode>;
 
     // we the return list by the snode is already made of uniq snodes

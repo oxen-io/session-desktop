@@ -8,7 +8,7 @@ import { allowOnlyOneAtATime } from '../utils/Promise';
 import pRetry from 'p-retry';
 import { ed25519Str } from '../onions/onionPath';
 import { OnionPaths } from '../onions';
-import { Onions } from '.';
+import { Onions, SnodePool } from '.';
 import { SeedNodeAPI } from '../seed_node_api';
 
 /**
@@ -23,7 +23,7 @@ const minSwarmSnodeCount = 3;
 export const minSnodePoolCount = 12;
 
 /**
- * If we get less than this amount of snodes, lets try to get an updated list from those while we can
+ * If we get less than this amount of snodes (24), lets try to get an updated list from those while we can
  */
 export const minSnodePoolCountBeforeRefreshFromSnodes = minSnodePoolCount * 2;
 
@@ -35,7 +35,13 @@ export const minSnodePoolCountBeforeRefreshFromSnodes = minSnodePoolCount * 2;
  */
 export const requiredSnodesForAgreement = 24;
 
-export let randomSnodePool: Array<Data.Snode> = [];
+let randomSnodePool: Array<Data.Snode> = [];
+
+// tslint:disable-next-line: function-name
+export function TEST_resetState() {
+  randomSnodePool = [];
+  swarmCache.clear();
+}
 
 // We only store nodes' identifiers here,
 const swarmCache: Map<string, Array<string>> = new Map();
@@ -104,6 +110,32 @@ export async function forceRefreshRandomSnodePool(): Promise<Array<Data.Snode>> 
   return randomSnodePool;
 }
 
+/**
+ * Fetches from DB if snode pool is not cached, and returns it if the length is >= 12.
+ * If length is < 12, fetches from seed an updated list of snodes
+ */
+export async function getSnodePoolFromDBOrFetchFromSeed(): Promise<Array<Data.Snode>> {
+  if (randomSnodePool && randomSnodePool.length > minSnodePoolCount) {
+    return randomSnodePool;
+  }
+  const fetchedFromDb = await Data.getSnodePoolFromDb();
+
+  if (!fetchedFromDb || fetchedFromDb.length < minSnodePoolCount) {
+    window?.log?.warn(
+      `getSnodePoolFromDBOrFetchFromSeed: not enough snodes in db (${fetchedFromDb?.length}), Fetching from seed node instead... `
+    );
+    // if that fails to get enough snodes, even after retries, well we just have to retry later.
+    // this call does not throw
+    await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
+    return randomSnodePool;
+  }
+
+  // write to memory only if it is valid.
+  randomSnodePool = fetchedFromDb;
+  window?.log?.info(`refreshRandomPool: fetched from db ${fetchedFromDb.length} snodes.`);
+  return randomSnodePool;
+}
+
 export async function getRandomSnodePool(
   disablePathRebuilds?: boolean
 ): Promise<Array<Data.Snode>> {
@@ -119,7 +151,8 @@ export async function getRandomSnodePool(
  * It also resets the onionpaths failure count and snode failure count.
  * This function does not throw.
  */
-async function fetchFromSeedWithRetriesAndWriteToDb() {
+// tslint:disable: function-name
+export async function TEST_fetchFromSeedWithRetriesAndWriteToDb() {
   const seedNodes = window.getSeedNodeList();
 
   if (!seedNodes || !seedNodes.length) {
@@ -137,8 +170,8 @@ async function fetchFromSeedWithRetriesAndWriteToDb() {
     Onions.resetSnodeFailureCount();
   } catch (e) {
     window?.log?.error(
-      'LokiSnodeAPI:::fetchFromSeedWithRetriesAndWriteToDb - Failed to fetch snode poll from seed node with retries',
-      e.message
+      'LokiSnodeAPI:::fetchFromSeedWithRetriesAndWriteToDb - Failed to fetch snode poll from seed node with retries. Error:',
+      e
     );
   }
 }
@@ -214,7 +247,7 @@ export async function refreshRandomPool(forceRefreshFromSnodeOrSeedNode = false)
           'refreshRandomPool: did not find snodes in db. Fetching from seed node instead'
         );
         // if that fails to get enough snodes, even after retries, well we just have to retry later.
-        await fetchFromSeedWithRetriesAndWriteToDb();
+        await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
         return;
       }
 
@@ -223,7 +256,7 @@ export async function refreshRandomPool(forceRefreshFromSnodeOrSeedNode = false)
           'refreshRandomPool: not enough snodes in db, Fetching from seed node instead'
         );
         // if that fails to get enough snodes, even after retries, well we just have to retry later.
-        await fetchFromSeedWithRetriesAndWriteToDb();
+        await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
         return;
       }
       // write to memory only if it is valid.
@@ -246,7 +279,7 @@ export async function refreshRandomPool(forceRefreshFromSnodeOrSeedNode = false)
       );
 
       // if that fails to get enough snodes, even after retries, well we just have to retry later.
-      await fetchFromSeedWithRetriesAndWriteToDb();
+      await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
       return;
     }
     try {
@@ -261,7 +294,7 @@ export async function refreshRandomPool(forceRefreshFromSnodeOrSeedNode = false)
       );
 
       // if that fails to get enough snodes, even after retries, well we just have to retry later.
-      await fetchFromSeedWithRetriesAndWriteToDb();
+      await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
     }
   });
 }

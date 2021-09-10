@@ -14,6 +14,8 @@ import { updateOnionPaths } from '../../state/ducks/onion';
 import { ERROR_CODE_NO_CONNECT } from '../snode_api/SNodeAPI';
 import { getStoragePubKey } from '../types/PubKey';
 
+import { OnionPaths } from './';
+
 const ONION_REQUEST_HOPS = 3;
 export let onionPaths: Array<Array<Snode>> = [];
 
@@ -69,7 +71,11 @@ export async function buildNewOnionPathsOneAtATime(disablePathRebuilds?: boolean
   // this function may be called concurrently make sure we only have one inflight
   return allowOnlyOneAtATime('buildNewOnionPaths', async () => {
     buildNewOnionPathsWorkerRetry = 0;
-    await buildNewOnionPathsWorker(disablePathRebuilds);
+    try {
+      await buildNewOnionPathsWorker(disablePathRebuilds);
+    } catch (e) {
+      window?.log?.warn(`buildNewOnionPathsWorker failed with ${e.message}`);
+    }
   });
 }
 
@@ -143,8 +149,12 @@ export async function getOnionPath({
     window?.log?.info(
       `Must have at least ${minimumGuardCount} good onion paths, actual: ${onionPaths.length}, attempt #${attemptNumber} fetching more; disablePathRebuilds? ${disablePathRebuilds}`
     );
-    // eslint-disable-next-line no-await-in-loop
-    await buildNewOnionPathsOneAtATime(disablePathRebuilds);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await buildNewOnionPathsOneAtATime(disablePathRebuilds);
+    } catch (e) {
+      window?.log?.warn(`buildNewOnionPathsOneAtATime failed with ${e.message}`);
+    }
     // should we add a delay? buildNewOnionPathsOneA  tATime should act as one
 
     // reload goodPaths now
@@ -337,12 +347,15 @@ async function testGuardNode(snode: Snode) {
 }
 
 /**
- * Only exported for testing purpose. DO NOT use this directly
+ * Only exported for testing purpose.
+ * If the random snode p
  */
-export async function selectGuardNodes(disablePathRebuilds?: boolean): Promise<Array<Snode>> {
-  // `getRandomSnodePool` is expected to refresh itself on low nodes
-  const nodePool = await SnodePool.getRandomSnodePool(disablePathRebuilds);
-  window.log.info('selectGuardNodes snodePool:', nodePool.length);
+export async function selectGuardNodes(): Promise<Array<Snode>> {
+  // `getSnodePoolFromDBOrFetchFromSeed` does not refetch stuff. It just throws.
+  // this is to avoid having circular dependencies of path building, needing new snodes, which needs new paths building...
+  const nodePool = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
+
+  window.log.info('selectGuardNodes snodePool length:', nodePool.length);
   if (nodePool.length <= SnodePool.minSnodePoolCount) {
     window?.log?.error(
       `Could not select guard nodes. Not enough nodes in the pool: ${nodePool.length}`
@@ -366,9 +379,9 @@ export async function selectGuardNodes(disablePathRebuilds?: boolean): Promise<A
       window?.log?.error('selectedGuardNodes: offline');
       throw new Error('selectedGuardNodes: offline');
     }
-    if (shuffled.length < desiredGuardCount) {
-      window?.log?.error('Not enough nodes in the pool');
-      break;
+    if (shuffled.length <= SnodePool.minSnodePoolCount) {
+      window?.log?.error(`Not enough nodes in the pool ${shuffled.length}`);
+      throw new Error(`selectGuardNodes Not enough nodes in the pool ${shuffled.length}`);
     }
 
     const candidateNodes = shuffled.splice(0, desiredGuardCount);
@@ -394,14 +407,53 @@ export async function selectGuardNodes(disablePathRebuilds?: boolean): Promise<A
     attempts++;
   }
 
-  if (selectedGuardNodes.length < desiredGuardCount) {
-    window?.log?.error(`Cound't get enough guard nodes, only have: ${guardNodes.length}`);
-  }
   guardNodes = selectedGuardNodes;
+
+  if (guardNodes.length < desiredGuardCount) {
+    window?.log?.error(`Cound't get enough guard nodes, only have: ${guardNodes.length}`);
+    throw new Error(`Cound't get enough guard nodes, only have: ${guardNodes.length}`);
+  }
 
   await internalUpdateGuardNodes(guardNodes);
 
   return guardNodes;
+}
+
+/**
+ * Fetches from db if needed the current guard nodes.
+ * If we do find in the snode pool (cached or got from seed in here) those guard nodes, use them.
+ * Otherwise select new guard nodes (might refetch from seed if needed).
+ */
+export async function getGuardNodeOrSelectNewOnes() {
+  if (guardNodes.length === 0) {
+    // Not cached, load from DB
+    const guardNodesFromDb = await getGuardNodes();
+
+    if (guardNodesFromDb.length === 0) {
+      window?.log?.warn(
+        'LokiSnodeAPI::getGuardNodeOrSelectNewOnes - no guard nodes in DB. Will be selecting new guards nodes...'
+      );
+    } else {
+      const allNodes = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
+      // We only store the nodes' keys, need to find full entries:
+      const edKeys = guardNodesFromDb.map(x => x.ed25519PubKey);
+      guardNodes = allNodes.filter(x => edKeys.indexOf(x.pubkey_ed25519) !== -1);
+      if (guardNodes.length < edKeys.length) {
+        window?.log?.warn(
+          `LokiSnodeAPI::getGuardNodeOrSelectNewOnes - could not find some guard nodes: ${guardNodes.length}/${edKeys.length} left`
+        );
+      }
+    }
+  }
+  // If guard nodes is still empty (the old nodes are now invalid), select new ones:
+  if (guardNodes.length < desiredGuardCount) {
+    try {
+      guardNodes = await OnionPaths.selectGuardNodes();
+    } catch (e) {
+      window.log.warn('selectGuardNodes throw error. Not retrying.', e);
+      return;
+    }
+  }
 }
 
 /**
@@ -411,50 +463,28 @@ export async function selectGuardNodes(disablePathRebuilds?: boolean): Promise<A
 async function buildNewOnionPathsWorker(disablePathRebuilds?: boolean) {
   window?.log?.info('LokiSnodeAPI::buildNewOnionPaths - building new onion paths...');
 
-  let allNodes = await SnodePool.getRandomSnodePool(disablePathRebuilds);
+  let allNodes = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
 
   if (allNodes.length <= SnodePool.minSnodePoolCount) {
     throw new Error(`Cannot rebuild path as we do not have enough snodes: ${allNodes.length}`);
   }
 
-  if (guardNodes.length === 0) {
-    // Not cached, load from DB
-    const nodes = await getGuardNodes();
+  await OnionPaths.getGuardNodeOrSelectNewOnes();
 
-    if (nodes.length === 0) {
-      window?.log?.warn(
-        'LokiSnodeAPI::buildNewOnionPaths - no guard nodes in DB. Will be selecting new guards nodes...'
-      );
-    } else {
-      // We only store the nodes' keys, need to find full entries:
-      const edKeys = nodes.map(x => x.ed25519PubKey);
-      guardNodes = allNodes.filter(x => edKeys.indexOf(x.pubkey_ed25519) !== -1);
-
-      if (guardNodes.length < edKeys.length) {
-        window?.log?.warn(
-          `LokiSnodeAPI::buildNewOnionPaths - could not find some guard nodes: ${guardNodes.length}/${edKeys.length} left`
-        );
-      }
-    }
-  }
-  // If guard nodes is still empty (the old nodes are now invalid), select new ones:
-  if (guardNodes.length < desiredGuardCount) {
-    try {
-      guardNodes = await exports.selectGuardNodes(disablePathRebuilds);
-    } catch (e) {
-      window.log.warn('selectGuardNodes throw error. Not retrying.', e);
-      return;
-    }
-  }
   // be sure to fetch again as that list might have been refreshed by selectGuardNodes
-  allNodes = await SnodePool.getRandomSnodePool(disablePathRebuilds);
+  allNodes = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
   window?.log?.info(
-    'LokiSnodeAPI::buildNewOnionPaths - after refetch, snodePool length:',
-    allNodes.length
+    `LokiSnodeAPI::buildNewOnionPaths - after refetch, snodePool length: ${allNodes.length}`
   );
   // TODO: select one guard node and 2 other nodes randomly
   let otherNodes = _.differenceBy(allNodes, guardNodes, 'pubkey_ed25519');
   if (allNodes.length <= SnodePool.minSnodePoolCountBeforeRefreshFromSnodes) {
+    if (disablePathRebuilds) {
+      window?.log?.warn(
+        'LokiSnodeAPI::buildNewOnionPaths - Too few nodes to build an onion path, but disablePathRebuilds is true'
+      );
+      throw new Error('Too few nodes to build an onion path but disablePathRebuilds is true ');
+    }
     window?.log?.warn(
       'LokiSnodeAPI::buildNewOnionPaths - Too few nodes to build an onion path! Refreshing pool and retrying'
     );
