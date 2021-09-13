@@ -94,10 +94,11 @@ export async function dropSnodeFromPath(snodeEd25519: string) {
   );
 
   if (pathWithSnodeIndex === -1) {
-    window?.log?.warn(
-      `Could not drop ${ed25519Str(snodeEd25519)} from path index: ${pathWithSnodeIndex}`
-    );
-    throw new Error(`Could not drop snode ${ed25519Str(snodeEd25519)} from path: not in any paths`);
+    window?.log?.warn(`Could not drop ${ed25519Str(snodeEd25519)} as it is not in any paths`);
+    // this can happen for instance if the snode given is the destination snode.
+    // like a `retrieve` request returns node not found being the request the snode is made to.
+    // in this case, nothing bad is happening for the path. We just have to use another snode to do the request
+    return;
   }
   window?.log?.info(
     `dropping snode ${ed25519Str(snodeEd25519)} from path index: ${pathWithSnodeIndex}`
@@ -203,11 +204,11 @@ export async function incrementBadPathCountOrDrop(snodeEd25519: string) {
   );
 
   if (pathWithSnodeIndex === -1) {
-    window?.log?.info('Did not find any path containing this snode');
-    // this can only be bad. throw an abortError so we use another path if needed
-    throw new pRetry.AbortError(
-      'incrementBadPathCountOrDrop: Did not find any path containing this snode'
-    );
+    window?.log?.info('incrementBadPathCountOrDrop: Did not find any path containing this snode');
+    // this might happen if the snodeEd25519 is the one of the target snode, just increment the target snode count by 1
+    await incrementBadSnodeCountOrDrop({ snodeEd25519 });
+
+    return;
   }
 
   const guardNodeEd25519 = onionPaths[pathWithSnodeIndex][0].pubkey_ed25519;
@@ -228,7 +229,7 @@ export async function incrementBadPathCountOrDrop(snodeEd25519: string) {
   // a guard node is dropped when the path is dropped completely (in dropPathStartingWithGuardNode)
   for (let index = 1; index < pathWithIssues.length; index++) {
     const snode = pathWithIssues[index];
-    await incrementBadSnodeCountOrDrop({ snodeEd25519: snode.pubkey_ed25519, guardNodeEd25519 });
+    await incrementBadSnodeCountOrDrop({ snodeEd25519: snode.pubkey_ed25519 });
   }
 
   if (newPathFailureCount >= pathFailureThreshold) {
@@ -244,7 +245,8 @@ export async function incrementBadPathCountOrDrop(snodeEd25519: string) {
  * @param ed25519Key the guard node ed25519 pubkey
  */
 async function dropPathStartingWithGuardNode(guardNodeEd25519: string) {
-  // we are dropping it. Reset the counter in case this same guard gets choosen later
+  await SnodePool.dropSnodeFromSnodePool(guardNodeEd25519);
+
   const failingPathIndex = onionPaths.findIndex(p => p[0].pubkey_ed25519 === guardNodeEd25519);
   if (failingPathIndex === -1) {
     window?.log?.warn('No such path starts with this guard node ');
@@ -259,13 +261,13 @@ async function dropPathStartingWithGuardNode(guardNodeEd25519: string) {
 
   // make sure to drop the guard node even if the path starting with this guard node is not found
   guardNodes = guardNodes.filter(g => g.pubkey_ed25519 !== guardNodeEd25519);
+  // write the updates guard nodes to the db.
+  await internalUpdateGuardNodes(guardNodes);
+  // we are dropping it. Reset the counter in case this same guard gets choosen later
   pathFailureCount[guardNodeEd25519] = 0;
 
-  await SnodePool.dropSnodeFromSnodePool(guardNodeEd25519);
-
-  // write the updates guard nodes to the db.
-  // the next call to getOnionPath will trigger a rebuild of the path
-  await internalUpdateGuardNodes(guardNodes);
+  // trigger path rebuilding for the dropped path. This will throw if anything happens
+  await buildNewOnionPathsOneAtATime();
 }
 
 async function internalUpdateGuardNodes(updatedGuardNodes: Array<Data.Snode>) {

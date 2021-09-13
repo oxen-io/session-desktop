@@ -222,14 +222,12 @@ function processOxenServerError(_statusCode: number, body?: string) {
 async function process421Error(
   statusCode: number,
   body: string,
-  guardNodeEd25519: string,
   associatedWith?: string,
   lsrpcEd25519Key?: string
 ) {
   if (statusCode === 421) {
     await handle421InvalidSwarm({
       snodeEd25519: lsrpcEd25519Key,
-      guardNodeEd25519,
       body,
       associatedWith,
     });
@@ -245,13 +243,11 @@ async function process421Error(
 async function processOnionRequestErrorAtDestination({
   statusCode,
   body,
-  guardNodeEd25519,
   destinationEd25519,
   associatedWith,
 }: {
   statusCode: number;
   body: string;
-  guardNodeEd25519: string;
   destinationEd25519?: string;
   associatedWith?: string;
 }) {
@@ -261,17 +257,32 @@ async function processOnionRequestErrorAtDestination({
   window?.log?.info('processOnionRequestErrorAtDestination. statusCode nok:', statusCode);
 
   process406Error(statusCode);
-  await process421Error(statusCode, body, guardNodeEd25519, associatedWith, destinationEd25519);
+  await process421Error(statusCode, body, associatedWith, destinationEd25519);
   processOxenServerError(statusCode, body);
   if (destinationEd25519) {
-    await processAnyOtherErrorAtDestination(
-      statusCode,
-      body,
-      guardNodeEd25519,
-      destinationEd25519,
-      associatedWith
-    );
+    await processAnyOtherErrorAtDestination(statusCode, body, destinationEd25519, associatedWith);
   }
+}
+
+async function handleNodeNotFound({
+  ed25519NotFound,
+  associatedWith,
+}: {
+  ed25519NotFound: string;
+  associatedWith?: string;
+}) {
+  const shortNodeNotFound = ed25519Str(ed25519NotFound);
+  window?.log?.warn('Handling NODE NOT FOUND with: ', shortNodeNotFound);
+
+  if (associatedWith) {
+    await dropSnodeFromSwarmIfNeeded(associatedWith, ed25519NotFound);
+  }
+
+  await dropSnodeFromSnodePool(ed25519NotFound);
+  snodeFailureCount[ed25519NotFound] = 0;
+  // try to remove the not found snode from any of the paths if it's there.
+  // it may not be here, as the snode note found might be the target snode of the request.
+  await OnionPaths.dropSnodeFromPath(ed25519NotFound);
 }
 
 async function processAnyOtherErrorOnPath(
@@ -280,38 +291,24 @@ async function processAnyOtherErrorOnPath(
   ciphertext?: string,
   associatedWith?: string
 ) {
-  // this test checks for on error in your path.
-  if (
-    // response.status === 502 ||
-    // response.status === 503 ||
-    // response.status === 504 ||
-    // response.status === 404 ||
-    status !== 200 // this is pretty strong. a 400 (Oxen server error) will be handled as a bad path.
-  ) {
+  // this test checks for an error in your path.
+  if (status !== 200) {
     window?.log?.warn(`[path] Got status: ${status}`);
-    //
-    let nodeNotFound;
+
+    // If we have a specific node in fault we can exclude just this node.
     if (ciphertext?.startsWith(NEXT_NODE_NOT_FOUND_PREFIX)) {
-      nodeNotFound = ciphertext.substr(NEXT_NODE_NOT_FOUND_PREFIX.length);
+      const nodeNotFound = ciphertext.substr(NEXT_NODE_NOT_FOUND_PREFIX.length);
+      // we are checking errors on the path, a nodeNotFound on the path should trigger a rebuild
+
+      await handleNodeNotFound({ ed25519NotFound: nodeNotFound, associatedWith });
+    } else {
+      // Otherwise we increment the whole path failure count
+
+      await incrementBadPathCountOrDrop(guardNodeEd25519);
     }
 
     processOxenServerError(status, ciphertext);
 
-    // If we have a specific node in fault we can exclude just this node.
-    // Otherwise we increment the whole path failure count
-    if (nodeNotFound) {
-      window?.log?.warn('node not found error with: ', ed25519Str(nodeNotFound));
-      await Onions.incrementBadSnodeCountOrDrop({
-        snodeEd25519: nodeNotFound,
-        guardNodeEd25519,
-        associatedWith,
-        isNodeNotFound: true,
-      });
-
-      // we are checking errors on the path, a nodeNotFound on the path should trigger a rebuild
-    } else {
-      await incrementBadPathCountOrDrop(guardNodeEd25519);
-    }
     throw new Error(`Bad Path handled. Retry this request. Status: ${status}`);
   }
 }
@@ -319,7 +316,6 @@ async function processAnyOtherErrorOnPath(
 async function processAnyOtherErrorAtDestination(
   status: number,
   body: string,
-  guardNodeEd25519: string,
   destinationEd25519: string,
   associatedWith?: string
 ) {
@@ -331,32 +327,23 @@ async function processAnyOtherErrorAtDestination(
   ) {
     window?.log?.warn(`[path] Got status at destination: ${status}`);
 
-    let nodeNotFound;
     if (body?.startsWith(NEXT_NODE_NOT_FOUND_PREFIX)) {
-      nodeNotFound = body.substr(NEXT_NODE_NOT_FOUND_PREFIX.length);
+      const nodeNotFound = body.substr(NEXT_NODE_NOT_FOUND_PREFIX.length);
+      // if we get a nodeNotFound at the destination. it means the targetNode to which we made the request is not found.
+      await handleNodeNotFound({
+        ed25519NotFound: nodeNotFound,
+        associatedWith,
+      });
 
-      if (nodeNotFound) {
-        await Onions.incrementBadSnodeCountOrDrop({
-          snodeEd25519: destinationEd25519,
-          guardNodeEd25519,
-          associatedWith,
-          isNodeNotFound: true,
-        });
-        // if we get a nodeNotFound at the desitnation. it means the targetNode to which we made the request is not found.
-        // We have to retry with another targetNode so it's not just rebuilding the path. We have to go one lever higher (lokiOnionFetch).
-        // status is 502 for a node not found
-        throw new pRetry.AbortError(
-          `Bad Path handled. Retry this request with another targetNode. Status: ${status}`
-        );
-      }
+      // We have to retry with another targetNode so it's not just rebuilding the path. We have to go one lever higher (lokiOnionFetch).
+      // status is 502 for a node not found
+      throw new pRetry.AbortError(
+        `Bad Path handled. Retry this request with another targetNode. Status: ${status}`
+      );
     }
 
-    // If we have a specific node in fault we can exclude just this node.
-    // Otherwise we increment the whole path failure count
-    // if (nodeNotFound) {
     await Onions.incrementBadSnodeCountOrDrop({
       snodeEd25519: destinationEd25519,
-      guardNodeEd25519,
       associatedWith,
     });
 
@@ -375,13 +362,7 @@ async function processOnionRequestErrorOnPath(
     window?.log?.warn('errorONpath:', ciphertext);
   }
   process406Error(httpStatusCode);
-  await process421Error(
-    httpStatusCode,
-    ciphertext,
-    guardNodeEd25519,
-    associatedWith,
-    lsrpcEd25519Key
-  );
+  await process421Error(httpStatusCode, ciphertext, associatedWith, lsrpcEd25519Key);
   await processAnyOtherErrorOnPath(httpStatusCode, guardNodeEd25519, ciphertext, associatedWith);
 }
 
@@ -502,7 +483,6 @@ export async function processOnionResponse({
     await processOnionRequestErrorAtDestination({
       statusCode: status,
       body: jsonRes?.body, // this is really important. the `.body`. the .body should be a string. for isntance for nodeNotFound but is most likely a dict (Record<string,any>))
-      guardNodeEd25519: guardNode.pubkey_ed25519,
       destinationEd25519: lsrpcEd25519Key,
       associatedWith,
     });
@@ -539,11 +519,9 @@ export type DestinationContext = {
 async function handle421InvalidSwarm({
   body,
   snodeEd25519,
-  guardNodeEd25519,
   associatedWith,
 }: {
   body: string;
-  guardNodeEd25519: string;
   snodeEd25519?: string;
   associatedWith?: string;
 }) {
@@ -581,7 +559,7 @@ async function handle421InvalidSwarm({
       await dropSnodeFromSwarmIfNeeded(associatedWith, snodeEd25519);
     }
   }
-  await Onions.incrementBadSnodeCountOrDrop({ snodeEd25519, guardNodeEd25519, associatedWith });
+  await Onions.incrementBadSnodeCountOrDrop({ snodeEd25519, associatedWith });
 
   // this is important we throw so another retry is made and we exit the handling of that reponse
   throw new pRetry.AbortError(exceptionMessage);
@@ -601,54 +579,26 @@ async function handle421InvalidSwarm({
  */
 export async function incrementBadSnodeCountOrDrop({
   snodeEd25519,
-  guardNodeEd25519,
   associatedWith,
-  isNodeNotFound,
 }: {
   snodeEd25519: string;
-  guardNodeEd25519: string;
   associatedWith?: string;
-  isNodeNotFound?: boolean;
 }) {
-  if (!guardNodeEd25519) {
-    window?.log?.warn('We need a guardNodeEd25519 at all times');
-  }
   const oldFailureCount = snodeFailureCount[snodeEd25519] || 0;
   const newFailureCount = oldFailureCount + 1;
   snodeFailureCount[snodeEd25519] = newFailureCount;
-  if (newFailureCount >= snodeFailureThreshold || isNodeNotFound) {
-    if (isNodeNotFound) {
-      window?.log?.warn(
-        `Got a node not found about node: ${ed25519Str(snodeEd25519)}; dropping it.`
-      );
-    } else {
-      window?.log?.warn(`Failure threshold reached for: ${ed25519Str(snodeEd25519)}; dropping it.`);
-    }
+  if (newFailureCount >= snodeFailureThreshold) {
+    window?.log?.warn(
+      `Failure threshold reached for snode: ${ed25519Str(snodeEd25519)}; dropping it.`
+    );
+
     if (associatedWith) {
-      window?.log?.warn(
-        `Dropping ${ed25519Str(snodeEd25519)} from swarm of ${ed25519Str(associatedWith)}`
-      );
       await dropSnodeFromSwarmIfNeeded(associatedWith, snodeEd25519);
     }
-    window?.log?.info(`Dropping ${ed25519Str(snodeEd25519)} from snodepool`);
-
     await dropSnodeFromSnodePool(snodeEd25519);
-    // the snode was ejected from the pool so it won't be used again.
-    // in case of snode pool refresh, we need to be able to try to contact this node again so reset its failure count to 0.
     snodeFailureCount[snodeEd25519] = 0;
 
-    try {
-      await OnionPaths.dropSnodeFromPath(snodeEd25519);
-    } catch (e) {
-      window?.log?.warn(
-        'dropSnodeFromPath, got error while patching up... incrementing the whole path as bad',
-        e.message
-      );
-      // If dropSnodeFromPath throws, it means there is an issue patching up the path, increment the whole path issues count
-      // but using the guardNode we got instead of the snodeEd25519.
-      //
-      await OnionPaths.incrementBadPathCountOrDrop(guardNodeEd25519);
-    }
+    await OnionPaths.dropSnodeFromPath(snodeEd25519);
   } else {
     window?.log?.warn(
       `Couldn't reach snode at: ${ed25519Str(

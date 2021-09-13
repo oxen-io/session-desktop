@@ -10,6 +10,7 @@ import { OnionPaths } from '../onions';
 import { Onions, SnodePool } from '.';
 import { SeedNodeAPI } from '../seed_node_api';
 
+// this is just for testing.
 (window as any).forceHardCodeReset = async (count: number) => {
   randomSnodePool = randomSnodePool.slice(0, count);
   await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
@@ -61,13 +62,12 @@ export async function dropSnodeFromSnodePool(snodeEd25519: string) {
   const exists = _.some(randomSnodePool, x => x.pubkey_ed25519 === snodeEd25519);
   if (exists) {
     _.remove(randomSnodePool, x => x.pubkey_ed25519 === snodeEd25519);
-    await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
-
     window?.log?.warn(
-      `Marking ${ed25519Str(snodeEd25519)} as unreachable, ${
+      `Droppping ${ed25519Str(snodeEd25519)} from snode pool. ${
         randomSnodePool.length
       } snodes remaining in randomPool`
     );
+    await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
   }
 }
 
@@ -77,10 +77,11 @@ export async function dropSnodeFromSnodePool(snodeEd25519: string) {
  * Useful to rebuild a path excluding existing node already in a path
  */
 export async function getRandomSnode(excludingEd25519Snode?: Array<string>): Promise<Data.Snode> {
-  if (randomSnodePool.length <= minSnodePoolCount) {
-    await getSnodePoolFromDBOrFetchFromSeed();
+  // make sure we have a few snodes in the pool excluding the one passed as args
+  if (randomSnodePool.length - (excludingEd25519Snode?.length || 0) <= minSnodePoolCount) {
+    await getSnodePoolFromDBOrFetchFromSeed(excludingEd25519Snode?.length);
 
-    if (randomSnodePool.length <= minSnodePoolCount) {
+    if (randomSnodePool.length - (excludingEd25519Snode?.length || 0) <= minSnodePoolCount) {
       window?.log?.warn(
         `getRandomSnode: failed to fetch snodes from seed. Current pool: ${randomSnodePool.length}`
       );
@@ -147,13 +148,15 @@ export async function forceRefreshRandomSnodePool(): Promise<Array<Data.Snode>> 
  * Fetches from DB if snode pool is not cached, and returns it if the length is >= 12.
  * If length is < 12, fetches from seed an updated list of snodes
  */
-export async function getSnodePoolFromDBOrFetchFromSeed(): Promise<Array<Data.Snode>> {
-  if (randomSnodePool && randomSnodePool.length > minSnodePoolCount) {
+export async function getSnodePoolFromDBOrFetchFromSeed(
+  countToAddToRequirement = 0
+): Promise<Array<Data.Snode>> {
+  if (randomSnodePool && randomSnodePool.length > minSnodePoolCount + countToAddToRequirement) {
     return randomSnodePool;
   }
   const fetchedFromDb = await Data.getSnodePoolFromDb();
 
-  if (!fetchedFromDb || fetchedFromDb.length < minSnodePoolCount) {
+  if (!fetchedFromDb || fetchedFromDb.length <= minSnodePoolCount + countToAddToRequirement) {
     window?.log?.warn(
       `getSnodePoolFromDBOrFetchFromSeed: not enough snodes in db (${fetchedFromDb?.length}), Fetching from seed node instead... `
     );
@@ -259,6 +262,10 @@ export async function dropSnodeFromSwarmIfNeeded(
   snodeToDropEd25519: string
 ): Promise<void> {
   // this call either used the cache or fetch the swarm from the db
+  window?.log?.warn(
+    `Dropping ${ed25519Str(snodeToDropEd25519)} from swarm of ${ed25519Str(pubkey)}`
+  );
+
   const existingSwarm = await getSwarmFromCacheOrDb(pubkey);
 
   if (!existingSwarm.includes(snodeToDropEd25519)) {
