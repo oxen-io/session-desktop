@@ -16,8 +16,10 @@ import {
 } from '../../data/data';
 import { getMessageQueue } from '../../session/sending';
 import { useDispatch, useSelector } from 'react-redux';
-// tslint:disable-next-line: no-submodule-imports
+// tslint:disable: no-submodule-imports
 import useInterval from 'react-use/lib/useInterval';
+import useTimeoutFn from 'react-use/lib/useTimeoutFn';
+
 import { getOurNumber } from '../../state/selectors/user';
 import {
   getOurPrimaryConversation,
@@ -266,8 +268,15 @@ export const ActionsPanel = () => {
   }, DURATION.DAYS * 2);
 
   useInterval(() => {
+    // trigger an updates from the snodes every hour
+
     void forceRefreshRandomSnodePool();
   }, DURATION.HOURS * 1);
+
+  useTimeoutFn(() => {
+    // trigger an updates from the snodes after 5 minutes, once
+    void forceRefreshRandomSnodePool();
+  }, DURATION.MINUTES * 5);
 
   useInterval(() => {
     // this won't be run every days, but if the app stays open for more than 10 days

@@ -14,6 +14,7 @@ let snodeFailureCount: Record<string, number> = {};
 
 import { Snode } from '../../data/data';
 import { ERROR_CODE_NO_CONNECT } from './SNodeAPI';
+import { Onions } from '.';
 
 export const resetSnodeFailureCount = () => {
   snodeFailureCount = {};
@@ -197,6 +198,9 @@ async function buildOnionGuardNodePayload(
   return encodeCiphertextPlusJson(guardCtx.ciphertext, guardPayloadObj);
 }
 
+/**
+ * 406 is a clock out of sync error
+ */
 function process406Error(statusCode: number) {
   if (statusCode === 406) {
     // clock out of sync
@@ -212,6 +216,9 @@ function processOxenServerError(_statusCode: number, body?: string) {
   }
 }
 
+/**
+ * 421 is a invalid swarm error
+ */
 async function process421Error(
   statusCode: number,
   body: string,
@@ -294,10 +301,11 @@ async function processAnyOtherErrorOnPath(
     // Otherwise we increment the whole path failure count
     if (nodeNotFound) {
       window?.log?.warn('node not found error with: ', ed25519Str(nodeNotFound));
-      await exports.incrementBadSnodeCountOrDrop({
+      await Onions.incrementBadSnodeCountOrDrop({
         snodeEd25519: nodeNotFound,
         guardNodeEd25519,
         associatedWith,
+        isNodeNotFound: true,
       });
 
       // we are checking errors on the path, a nodeNotFound on the path should trigger a rebuild
@@ -328,10 +336,11 @@ async function processAnyOtherErrorAtDestination(
       nodeNotFound = body.substr(NEXT_NODE_NOT_FOUND_PREFIX.length);
 
       if (nodeNotFound) {
-        await exports.incrementBadSnodeCountOrDrop({
+        await Onions.incrementBadSnodeCountOrDrop({
           snodeEd25519: destinationEd25519,
           guardNodeEd25519,
           associatedWith,
+          isNodeNotFound: true,
         });
         // if we get a nodeNotFound at the desitnation. it means the targetNode to which we made the request is not found.
         // We have to retry with another targetNode so it's not just rebuilding the path. We have to go one lever higher (lokiOnionFetch).
@@ -345,7 +354,7 @@ async function processAnyOtherErrorAtDestination(
     // If we have a specific node in fault we can exclude just this node.
     // Otherwise we increment the whole path failure count
     // if (nodeNotFound) {
-    await exports.incrementBadSnodeCountOrDrop({
+    await Onions.incrementBadSnodeCountOrDrop({
       snodeEd25519: destinationEd25519,
       guardNodeEd25519,
       associatedWith,
@@ -572,7 +581,7 @@ async function handle421InvalidSwarm({
       await dropSnodeFromSwarmIfNeeded(associatedWith, snodeEd25519);
     }
   }
-  await exports.incrementBadSnodeCountOrDrop({ snodeEd25519, guardNodeEd25519, associatedWith });
+  await Onions.incrementBadSnodeCountOrDrop({ snodeEd25519, guardNodeEd25519, associatedWith });
 
   // this is important we throw so another retry is made and we exit the handling of that reponse
   throw new pRetry.AbortError(exceptionMessage);
@@ -594,10 +603,12 @@ export async function incrementBadSnodeCountOrDrop({
   snodeEd25519,
   guardNodeEd25519,
   associatedWith,
+  isNodeNotFound,
 }: {
   snodeEd25519: string;
   guardNodeEd25519: string;
   associatedWith?: string;
+  isNodeNotFound?: boolean;
 }) {
   if (!guardNodeEd25519) {
     window?.log?.warn('We need a guardNodeEd25519 at all times');
@@ -605,9 +616,14 @@ export async function incrementBadSnodeCountOrDrop({
   const oldFailureCount = snodeFailureCount[snodeEd25519] || 0;
   const newFailureCount = oldFailureCount + 1;
   snodeFailureCount[snodeEd25519] = newFailureCount;
-  if (newFailureCount >= snodeFailureThreshold) {
-    window?.log?.warn(`Failure threshold reached for: ${ed25519Str(snodeEd25519)}; dropping it.`);
-
+  if (newFailureCount >= snodeFailureThreshold || isNodeNotFound) {
+    if (isNodeNotFound) {
+      window?.log?.warn(
+        `Got a node not found about node: ${ed25519Str(snodeEd25519)}; dropping it.`
+      );
+    } else {
+      window?.log?.warn(`Failure threshold reached for: ${ed25519Str(snodeEd25519)}; dropping it.`);
+    }
     if (associatedWith) {
       window?.log?.warn(
         `Dropping ${ed25519Str(snodeEd25519)} from swarm of ${ed25519Str(associatedWith)}`
@@ -680,10 +696,18 @@ export const sendOnionRequestHandlingSnodeEject = async ({
     });
 
     response = result.response;
+    if (
+      !_.isEmpty(finalRelayOptions) &&
+      response.status === 502 &&
+      response.statusText === 'Bad Gateway'
+    ) {
+      // it's an opengroup server and his is not responding. Consider this as a ENETUNREACH
+      throw new pRetry.AbortError('ENETUNREACH');
+    }
     decodingSymmetricKey = result.decodingSymmetricKey;
   } catch (e) {
-    window.log.warn('sendOnionRequest', e);
-    if (e.code === 'ENETUNREACH') {
+    window?.log?.warn('sendOnionRequest error message: ', e.message);
+    if (e.code === 'ENETUNREACH' || e.message === 'ENETUNREACH') {
       throw e;
     }
   }

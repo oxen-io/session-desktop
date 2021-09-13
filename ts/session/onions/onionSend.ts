@@ -92,39 +92,6 @@ const initOptionsWithDefaults = (options: OnionFetchBasicOptions) => {
   return _.defaults(options, defaultFetchBasicOptions);
 };
 
-const sendViaOnionToNonSnodeRetryable = async ({
-  castedDestinationX25519Key,
-  finalRelayOptions,
-  payloadObj,
-  abortSignal,
-}: {
-  castedDestinationX25519Key: string;
-  finalRelayOptions: FinalRelayOptions;
-  payloadObj: OnionPayloadObj;
-  abortSignal?: AbortSignal;
-}) => {
-  const pathNodes = await getOnionPathForSending();
-
-  if (!pathNodes) {
-    throw new Error('getOnionPathForSending is emtpy');
-  }
-
-  /**
-   * This call handles ejecting a snode or a path if needed. If that happens, it throws a retryable error and the pRetry
-   * call above will call us again with the same params but a different path.
-   * If the error is not recoverable, it throws a pRetry.AbortError.
-   */
-  const result: SnodeResponse = await sendOnionRequestHandlingSnodeEject({
-    nodePath: pathNodes,
-    destX25519Any: castedDestinationX25519Key,
-    finalDestOptions: payloadObj,
-    finalRelayOptions,
-    abortSignal,
-  });
-
-  return result;
-};
-
 /**
  *
  * This function can be used to make a request via onion to a non snode server.
@@ -173,18 +140,28 @@ export const sendViaOnionToNonSnode = async (
   try {
     result = await pRetry(
       async () => {
-        return sendViaOnionToNonSnodeRetryable({
-          castedDestinationX25519Key,
+        const pathNodes = await getOnionPathForSending();
+
+        if (!pathNodes) {
+          throw new Error('getOnionPathForSending is emtpy');
+        }
+
+        /**
+         * This call handles ejecting a snode or a path if needed. If that happens, it throws a retryable error and the pRetry
+         * call above will call us again with the same params but a different path.
+         * If the error is not recoverable, it throws a pRetry.AbortError.
+         */
+        return sendOnionRequestHandlingSnodeEject({
+          nodePath: pathNodes,
+          destX25519Any: castedDestinationX25519Key,
+          finalDestOptions: payloadObj,
           finalRelayOptions,
-          payloadObj,
           abortSignal,
         });
       },
       {
-        retries: 4, // each path can fail 3 times before being dropped, we have 3 paths at most
-        factor: 1,
-        minTimeout: 100,
-        maxTimeout: 4000,
+        retries: 2, // retry 3 (2+1) times at most
+        minTimeout: 500,
         onFailedAttempt: e => {
           window?.log?.warn(
             `sendViaOnionToNonSnodeRetryable attempt #${e.attemptNumber} failed. ${e.retriesLeft} retries left...`
@@ -193,7 +170,7 @@ export const sendViaOnionToNonSnode = async (
       }
     );
   } catch (e) {
-    window?.log?.warn('sendViaOnionToNonSnodeRetryable failed ', e);
+    window?.log?.warn('sendViaOnionToNonSnodeRetryable failed ', e.message);
     return null;
   }
 
