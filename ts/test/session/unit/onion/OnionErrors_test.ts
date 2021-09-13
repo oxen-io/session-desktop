@@ -68,7 +68,7 @@ describe('OnionPathsErrors', () => {
 
   beforeEach(async () => {
     guardPubkeys = TestUtils.generateFakePubKeys(3).map(n => n.key);
-    otherNodesPubkeys = TestUtils.generateFakePubKeys(13).map(n => n.key);
+    otherNodesPubkeys = TestUtils.generateFakePubKeys(20).map(n => n.key);
 
     SNodeAPI.Onions.resetSnodeFailureCount();
 
@@ -279,7 +279,6 @@ describe('OnionPathsErrors', () => {
           expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
           expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
             snodeEd25519: targetNode,
-            guardNodeEd25519: guardSnode1.pubkey_ed25519,
             associatedWith,
           });
         });
@@ -324,7 +323,6 @@ describe('OnionPathsErrors', () => {
           expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
           expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
             snodeEd25519: targetNode,
-            guardNodeEd25519: guardSnode1.pubkey_ed25519,
             associatedWith,
           });
         });
@@ -362,7 +360,6 @@ describe('OnionPathsErrors', () => {
           expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
           expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
             snodeEd25519: targetNode,
-            guardNodeEd25519: guardSnode1.pubkey_ed25519,
             associatedWith,
           });
         });
@@ -402,7 +399,6 @@ describe('OnionPathsErrors', () => {
           expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
           expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
             snodeEd25519: targetNode,
-            guardNodeEd25519: guardSnode1.pubkey_ed25519,
             associatedWith,
           });
         });
@@ -469,19 +465,25 @@ describe('OnionPathsErrors', () => {
         expect(e.name).to.not.equal('AbortError');
       }
       expect(updateSwarmSpy.callCount).to.eq(0);
-      // now we make sure that this bad snode was dropped from this pubkey's swarm
-      expect(dropSnodeFromSwarmIfNeededSpy.callCount).to.eq(0);
 
-      // this specific node failed just once
-      expect(dropSnodeFromSnodePool.callCount).to.eq(0);
-      expect(dropSnodeFromPathSpy.callCount).to.eq(0);
-      expect(incrementBadPathCountOrDropSpy.callCount).to.eq(0);
-      expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
-      expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
-        snodeEd25519: failingSnode.pubkey_ed25519,
-        guardNodeEd25519: guardSnode1.pubkey_ed25519,
-        associatedWith,
-      });
+      // this specific node failed just once but it was a node not found error. Force drop it
+      expect(
+        dropSnodeFromSwarmIfNeededSpy.callCount,
+        'dropSnodeFromSwarmIfNeededSpy should have been called'
+      ).to.eq(1);
+      expect(
+        dropSnodeFromSnodePool.callCount,
+        'dropSnodeFromSnodePool should have been called'
+      ).to.eq(1);
+      expect(dropSnodeFromPathSpy.callCount, 'dropSnodeFromPath should have been called').to.eq(1);
+      expect(
+        incrementBadPathCountOrDropSpy.callCount,
+        'incrementBadPathCountOrDrop should not have been called'
+      ).to.eq(0);
+      expect(
+        incrementBadSnodeCountOrDropSpy.callCount,
+        'incrementBadSnodeCountOrDrop should not have been called'
+      ).to.eq(0);
     });
 
     it('throws a retryable error on 502 on last snode', async () => {
@@ -504,20 +506,23 @@ describe('OnionPathsErrors', () => {
         expect(e.name).to.not.equal('AbortError');
       }
       expect(updateSwarmSpy.callCount).to.eq(0);
-      // now we make sure that this bad snode was dropped from this pubkey's swarm
-      expect(dropSnodeFromSwarmIfNeededSpy.callCount).to.eq(0);
 
-      // this specific node failed just once
-      expect(dropSnodeFromSnodePool.callCount).to.eq(0);
-      expect(dropSnodeFromPathSpy.callCount).to.eq(0);
-      // we have a specific failing node so don't increment path errors
-      expect(incrementBadPathCountOrDropSpy.callCount).to.eq(0);
-      expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(1);
-      expect(incrementBadSnodeCountOrDropSpy.firstCall.args[0]).to.deep.eq({
-        snodeEd25519: failingSnode.pubkey_ed25519,
-        guardNodeEd25519: guardSnode1.pubkey_ed25519,
-        associatedWith,
-      });
+      // this specific node failed just once but it was a node not found error. Force drop it
+      expect(dropSnodeFromSwarmIfNeededSpy.callCount).to.eq(1);
+
+      expect(
+        dropSnodeFromSnodePool.callCount,
+        'dropSnodeFromSnodePool should have been called'
+      ).to.eq(1);
+      expect(dropSnodeFromPathSpy.callCount, 'dropSnodeFromPath should have been called').to.eq(1);
+      expect(
+        incrementBadPathCountOrDropSpy.callCount,
+        'incrementBadPathCountOrDrop should not have been called'
+      ).to.eq(0);
+      expect(
+        incrementBadSnodeCountOrDropSpy.callCount,
+        'incrementBadSnodeCountOrDrop should not have been called'
+      ).to.eq(0);
     });
 
     it('drop a snode from pool, swarm and path if it keep failing', async () => {
@@ -544,34 +549,23 @@ describe('OnionPathsErrors', () => {
 
       expect(updateSwarmSpy.callCount).to.eq(0);
       // now we make sure that this bad snode was dropped from this pubkey's swarm
-      expect(dropSnodeFromSwarmIfNeededSpy.callCount).to.eq(1);
+      expect(dropSnodeFromSwarmIfNeededSpy.callCount).to.eq(3);
       expect(dropSnodeFromSwarmIfNeededSpy.firstCall.args[0]).to.eq(associatedWith);
       expect(dropSnodeFromSwarmIfNeededSpy.firstCall.args[1]).to.eq(failingSnode.pubkey_ed25519);
 
-      // this specific node failed just once
-      expect(dropSnodeFromSnodePool.callCount).to.eq(1);
-      expect(dropSnodeFromSnodePool.firstCall.args[0]).to.eq(failingSnode.pubkey_ed25519);
-      expect(dropSnodeFromPathSpy.callCount).to.eq(1);
-      expect(dropSnodeFromPathSpy.firstCall.args[0]).to.eq(failingSnode.pubkey_ed25519);
-
-      // we expect incrementBadSnodeCountOrDropSpy to be called three times with the same failing snode as we know who it is
-      expect(incrementBadSnodeCountOrDropSpy.callCount).to.eq(3);
-      expect(incrementBadSnodeCountOrDropSpy.args[0][0]).to.deep.eq({
-        snodeEd25519: failingSnode.pubkey_ed25519,
-        guardNodeEd25519: guardSnode1.pubkey_ed25519,
-        associatedWith,
-      });
-      expect(incrementBadSnodeCountOrDropSpy.args[1][0]).to.deep.eq({
-        snodeEd25519: failingSnode.pubkey_ed25519,
-        guardNodeEd25519: guardSnode1.pubkey_ed25519,
-        associatedWith,
-      });
-      expect(incrementBadSnodeCountOrDropSpy.args[2][0]).to.deep.eq({
-        snodeEd25519: failingSnode.pubkey_ed25519,
-        guardNodeEd25519: guardSnode1.pubkey_ed25519,
-        associatedWith,
-      });
-      expect(incrementBadPathCountOrDropSpy.callCount).to.eq(0);
+      expect(
+        dropSnodeFromSnodePool.callCount,
+        'dropSnodeFromSnodePool should have been called'
+      ).to.eq(3);
+      expect(dropSnodeFromPathSpy.callCount, 'dropSnodeFromPath should have been called').to.eq(3);
+      expect(
+        incrementBadPathCountOrDropSpy.callCount,
+        'incrementBadPathCountOrDrop should not have been called'
+      ).to.eq(0);
+      expect(
+        incrementBadSnodeCountOrDropSpy.callCount,
+        'incrementBadSnodeCountOrDrop should not have been called'
+      ).to.eq(0);
     });
   });
   it('drop a path if it keep failing without a specific node in fault', async () => {
@@ -611,7 +605,6 @@ describe('OnionPathsErrors', () => {
     for (let index = 0; index < 6; index++) {
       expect(incrementBadSnodeCountOrDropSpy.args[index][0]).to.deep.eq({
         snodeEd25519: oldOnionPaths[0][(index % 2) + 1].pubkey_ed25519,
-        guardNodeEd25519: guardNode.pubkey_ed25519,
       });
     }
 

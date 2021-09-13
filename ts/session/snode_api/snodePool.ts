@@ -5,19 +5,10 @@ import { getSnodePoolFromSnodes, requestSnodesForPubkey } from './SNodeAPI';
 import * as Data from '../../../ts/data/data';
 
 import pRetry from 'p-retry';
-import { clearTestOnionPath, ed25519Str } from '../onions/onionPath';
+import { ed25519Str } from '../onions/onionPath';
 import { OnionPaths } from '../onions';
 import { Onions, SnodePool } from '.';
 import { SeedNodeAPI } from '../seed_node_api';
-
-// this is just for testing.
-(window as any).forceHardCodeReset = async (count: number) => {
-  randomSnodePool = randomSnodePool.slice(0, count);
-  await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
-
-  clearTestOnionPath();
-};
-
 /**
  * If we get less than this snode in a swarm, we fetch new snodes for this pubkey
  */
@@ -78,16 +69,17 @@ export async function dropSnodeFromSnodePool(snodeEd25519: string) {
  */
 export async function getRandomSnode(excludingEd25519Snode?: Array<string>): Promise<Data.Snode> {
   // make sure we have a few snodes in the pool excluding the one passed as args
-  if (randomSnodePool.length - (excludingEd25519Snode?.length || 0) <= minSnodePoolCount) {
+  const requiredCount = minSnodePoolCount + (excludingEd25519Snode?.length || 0);
+  if (randomSnodePool.length < requiredCount) {
     await getSnodePoolFromDBOrFetchFromSeed(excludingEd25519Snode?.length);
 
-    if (randomSnodePool.length - (excludingEd25519Snode?.length || 0) <= minSnodePoolCount) {
+    if (randomSnodePool.length < requiredCount) {
       window?.log?.warn(
         `getRandomSnode: failed to fetch snodes from seed. Current pool: ${randomSnodePool.length}`
       );
 
       throw new Error(
-        `getRandomSnode: failed to fetch snodes from seed. Current pool: ${randomSnodePool.length}`
+        `getRandomSnode: failed to fetch snodes from seed. Current pool: ${randomSnodePool.length}, required count: ${requiredCount}`
       );
     }
   }
@@ -163,6 +155,7 @@ export async function getSnodePoolFromDBOrFetchFromSeed(
     // if that fails to get enough snodes, even after retries, well we just have to retry later.
     // this call does not throw
     await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
+
     return randomSnodePool;
   }
 

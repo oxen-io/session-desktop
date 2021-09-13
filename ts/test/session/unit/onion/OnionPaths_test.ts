@@ -28,7 +28,7 @@ const fakeSnodePool: Array<Snode> = [
   generateFakeSnodeWithEdKey(guard1ed),
   generateFakeSnodeWithEdKey(guard2ed),
   generateFakeSnodeWithEdKey(guard3ed),
-  ...generateFakeSnodes(3),
+  ...generateFakeSnodes(9),
 ];
 
 const fakeGuardNodesEd25519 = [guard1ed, guard2ed, guard3ed];

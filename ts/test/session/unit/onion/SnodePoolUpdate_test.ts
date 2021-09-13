@@ -71,23 +71,10 @@ describe('OnionPaths', () => {
       expect(fetched).to.deep.equal(fakeSnodePool);
     });
 
-    it('if the cached snode pool has exactly 12 snodes, just return it without fetching from seed', async () => {
+    it('if the cached snode pool 12 or less snodes, trigger a fetch from the seed nodes', async () => {
       const length12 = fakeSnodePool.slice(0, 12);
+      expect(length12.length).to.eq(12);
       getSnodePoolFromDb = sandbox.stub(Data, 'getSnodePoolFromDb').resolves(length12);
-      fetchFromSeedWithRetriesAndWriteToDb = sandbox.stub(
-        SnodePool,
-        'TEST_fetchFromSeedWithRetriesAndWriteToDb'
-      );
-
-      const fetched = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
-      expect(getSnodePoolFromDb.callCount).to.be.eq(1);
-      expect(fetchFromSeedWithRetriesAndWriteToDb.callCount).to.be.eq(0);
-      expect(fetched).to.deep.equal(length12);
-    });
-
-    it('if the cached snode pool has less than 12 snodes, trigger a fetch from the seed nodes', async () => {
-      const length11 = fakeSnodePool.slice(0, 11);
-      getSnodePoolFromDb = sandbox.stub(Data, 'getSnodePoolFromDb').resolves(length11);
 
       sandbox.stub(Data, 'updateSnodePoolOnDb').resolves();
       fetchFromSeedWithRetriesAndWriteToDb = sandbox
