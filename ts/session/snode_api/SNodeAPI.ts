@@ -2,7 +2,6 @@ import { snodeRpc } from './lokiRpc';
 
 import {
   getRandomSnode,
-  getRandomSnodePool,
   getSwarmFor,
   minSnodePoolCount,
   requiredSnodesForAgreement,
@@ -21,6 +20,7 @@ import { Snode } from '../../data/data';
 import { updateIsOnline } from '../../state/ducks/onion';
 import { ed25519Str } from '../onions/onionPath';
 import { StringUtils, UserUtils } from '../utils';
+import { SnodePool } from '.';
 
 // ONS name can have [a-zA-Z0-9_-] except that - is not allowed as start or end
 // do not define a regex but rather create it on the fly to avoid https://stackoverflow.com/questions/3891641/regex-test-only-works-every-other-time
@@ -280,14 +280,14 @@ export async function getSessionIDForOnsName(onsNameCase: string) {
  * Return the list of nodes all snodes agreed on.
  */
 export async function getSnodePoolFromSnodes() {
-  const existingSnodePool = await getRandomSnodePool();
+  const existingSnodePool = await SnodePool.getSnodePoolFromDBOrFetchFromSeed();
   if (existingSnodePool.length <= minSnodePoolCount) {
     window?.log?.warn(
       'getSnodePoolFromSnodes: Cannot get snodes list from snodes; not enough snodes',
       existingSnodePool.length
     );
     throw new Error(
-      `Cannot get snodes list from snodes; not enough snodes', ${existingSnodePool.length}`
+      `Cannot get snodes list from snodes; not enough snodes even after refetching from seed', ${existingSnodePool.length}`
     );
   }
 
@@ -349,7 +349,6 @@ export async function TEST_getSnodePoolFromSnode(targetNode: Snode): Promise<Arr
     method: 'oxend_request',
     params,
     targetNode,
-    disablePathRebuilds: true,
   });
   if (!result || result.status !== 200) {
     throw new Error('Invalid result');

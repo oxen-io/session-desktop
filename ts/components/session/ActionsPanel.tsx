@@ -16,6 +16,8 @@ import {
 } from '../../data/data';
 import { getMessageQueue } from '../../session/sending';
 import { useDispatch, useSelector } from 'react-redux';
+// tslint:disable-next-line: no-submodule-imports
+import useInterval from 'react-use/lib/useInterval';
 import { getOurNumber } from '../../state/selectors/user';
 import {
   getOurPrimaryConversation,
@@ -23,7 +25,6 @@ import {
 } from '../../state/selectors/conversations';
 import { applyTheme } from '../../state/ducks/theme';
 import { getFocusedSection } from '../../state/selectors/section';
-import { useInterval } from '../../hooks/useInterval';
 import { clearSearch } from '../../state/ducks/search';
 import { SectionType, showLeftPaneSection } from '../../state/ducks/section';
 
@@ -266,7 +267,7 @@ export const ActionsPanel = () => {
 
   useInterval(() => {
     void forceRefreshRandomSnodePool();
-  }, DURATION.DAYS * 1);
+  }, DURATION.HOURS * 1);
 
   useInterval(() => {
     // this won't be run every days, but if the app stays open for more than 10 days

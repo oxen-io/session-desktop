@@ -71,7 +71,7 @@ describe('SeedNodeAPI', () => {
         .onSecondCall()
         .resolves(fakeSnodePoolFromSeedNode);
 
-        sandbox.stub(SeedNodeAPI, 'getMinTimeout').returns(20)
+      sandbox.stub(SeedNodeAPI, 'getMinTimeout').returns(20);
 
       // run the command
       const fetched = await SeedNodeAPI.fetchSnodePoolFromSeedNodeWithRetries([

@@ -16,7 +16,6 @@ interface FetchOptions {
  */
 async function lokiFetch({
   options,
-  disablePathRebuilds,
   url,
   associatedWith,
   targetNode,
@@ -25,7 +24,6 @@ async function lokiFetch({
   options: FetchOptions;
   targetNode?: Snode;
   associatedWith?: string;
-  disablePathRebuilds?: boolean;
 }): Promise<undefined | SnodeResponse> {
   const timeout = 10000;
   const method = options.method || 'GET';
@@ -48,7 +46,6 @@ async function lokiFetch({
         targetNode,
         body: fetchOptions.body,
         associatedWith,
-        disablePathRebuilds,
       });
       if (!fetchResult) {
         return undefined;
@@ -100,13 +97,11 @@ export async function snodeRpc(
     params,
     targetNode,
     associatedWith,
-    disablePathRebuilds,
   }: {
     method: string;
     params: any;
     targetNode: Snode;
     associatedWith?: string;
-    disablePathRebuilds?: boolean;
   } //the user pubkey this call is for. if the onion request fails, this is used to handle the error for this user swarm for instance
 ): Promise<undefined | SnodeResponse> {
   const url = `https://${targetNode.ip}:${targetNode.port}/storage_rpc/v1`;
@@ -140,6 +135,5 @@ export async function snodeRpc(
     options: fetchOptions,
     targetNode,
     associatedWith,
-    disablePathRebuilds,
   });
 }

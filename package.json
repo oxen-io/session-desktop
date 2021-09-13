@@ -36,7 +36,7 @@
     "clean-protobuf": "yarn clean-module-protobuf",
     "test": "yarn test-node",
     "test-node": "mocha --recursive --exit --timeout 10000  \"./ts/test/**/*_test.js\" ",
-    "test-audric": "mocha --recursive --exit --timeout 10000  \"ts/test/session/unit/onion/SnodePoolUpdate_test.js\"  \"ts/test/session/unit/onion/SeedNodeAPI_test.js\" ",
+    "test-audric": "mocha --recursive --exit --timeout 10000  \"ts/test/session/unit/onion/SnodePoolUpdate_test.js\"  \"ts/test/session/unit/onion/SeedNodeAPI_test.js\" \"ts/test/session/unit/onion/GuardNodes_test.js\" ",
     "eslint-full": "eslint .",
     "lint-full": "yarn format-full && yarn lint-files-full",
     "lint-files-full": "yarn eslint-full && yarn tslint",

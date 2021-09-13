@@ -4,12 +4,18 @@ import { getSnodePoolFromSnodes, requestSnodesForPubkey } from './SNodeAPI';
 
 import * as Data from '../../../ts/data/data';
 
-import { allowOnlyOneAtATime } from '../utils/Promise';
 import pRetry from 'p-retry';
-import { ed25519Str } from '../onions/onionPath';
+import { clearTestOnionPath, ed25519Str } from '../onions/onionPath';
 import { OnionPaths } from '../onions';
 import { Onions, SnodePool } from '.';
 import { SeedNodeAPI } from '../seed_node_api';
+
+(window as any).forceHardCodeReset = async (count: number) => {
+  randomSnodePool = randomSnodePool.slice(0, count);
+  await Data.updateSnodePoolOnDb(JSON.stringify(randomSnodePool));
+
+  clearTestOnionPath();
+};
 
 /**
  * If we get less than this snode in a swarm, we fetch new snodes for this pubkey
@@ -72,7 +78,7 @@ export async function dropSnodeFromSnodePool(snodeEd25519: string) {
  */
 export async function getRandomSnode(excludingEd25519Snode?: Array<string>): Promise<Data.Snode> {
   if (randomSnodePool.length <= minSnodePoolCount) {
-    await refreshRandomPool();
+    await getSnodePoolFromDBOrFetchFromSeed();
 
     if (randomSnodePool.length <= minSnodePoolCount) {
       window?.log?.warn(
@@ -105,7 +111,34 @@ export async function getRandomSnode(excludingEd25519Snode?: Array<string>): Pro
  * This should be called once in a day or so for when the app it kept on.
  */
 export async function forceRefreshRandomSnodePool(): Promise<Array<Data.Snode>> {
-  await refreshRandomPool(true);
+  try {
+    await getSnodePoolFromDBOrFetchFromSeed();
+
+    window?.log?.info(
+      `forceRefreshRandomSnodePool: enough snodes to fetch from them, so we try using them ${randomSnodePool.length}`
+    );
+
+    // this function throws if it does not have enough snodes to do it
+    await tryToGetConsensusWithSnodesWithRetries();
+    if (randomSnodePool.length < minSnodePoolCountBeforeRefreshFromSnodes) {
+      throw new Error('forceRefreshRandomSnodePool still too small after refetching from snodes');
+    }
+  } catch (e) {
+    window?.log?.warn(
+      'forceRefreshRandomSnodePool: Failed to fetch snode pool from snodes. Fetching from seed node instead:',
+      e.message
+    );
+
+    // if that fails to get enough snodes, even after retries, well we just have to retry later.
+    try {
+      await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
+    } catch (e) {
+      window?.log?.warn(
+        'forceRefreshRandomSnodePool: Failed to fetch snode pool from seed. Fetching from seed node instead:',
+        e.message
+      );
+    }
+  }
 
   return randomSnodePool;
 }
@@ -132,15 +165,12 @@ export async function getSnodePoolFromDBOrFetchFromSeed(): Promise<Array<Data.Sn
 
   // write to memory only if it is valid.
   randomSnodePool = fetchedFromDb;
-  window?.log?.info(`refreshRandomPool: fetched from db ${fetchedFromDb.length} snodes.`);
   return randomSnodePool;
 }
 
-export async function getRandomSnodePool(
-  disablePathRebuilds?: boolean
-): Promise<Array<Data.Snode>> {
-  if (randomSnodePool.length <= minSnodePoolCount && !disablePathRebuilds) {
-    await refreshRandomPool();
+export async function getRandomSnodePool(): Promise<Array<Data.Snode>> {
+  if (randomSnodePool.length <= minSnodePoolCount) {
+    await getSnodePoolFromDBOrFetchFromSeed();
   }
   return randomSnodePool;
 }
@@ -217,86 +247,6 @@ async function tryToGetConsensusWithSnodesWithRetries() {
       },
     }
   );
-}
-
-/**
- * This function runs only once at a time, and fetches the snode pool from
- * ->  if we have enough snodes, fetches the snode pool from one of the snode.
- * ->  or from random seed node.
- *  This function already handle retries.
- *
- * if forceRefreshFromSnodeOrSeedNode is set, it means we want to force fetching up to date data from snode or seed nodes
- */
-export async function refreshRandomPool(forceRefreshFromSnodeOrSeedNode = false): Promise<void> {
-  window?.log?.info("right before allowOnlyOneAtATime 'refreshRandomPool'");
-
-  return allowOnlyOneAtATime('refreshRandomPool', async () => {
-    window?.log?.info("running allowOnlyOneAtATime 'refreshRandomPool'");
-
-    /**
-     * First, fetch the snode pool from the db.
-     * the only case where we don't want to do that first is when
-     * forceRefreshFromSnodeOrSeedNode is set, as this field indicated that we should
-     * force-fetch the up to date data remotely (snode if possible or seed node)
-     */
-    if (!forceRefreshFromSnodeOrSeedNode) {
-      const fetchedFromDb = await Data.getSnodePoolFromDb();
-
-      if (!fetchedFromDb) {
-        window?.log?.warn(
-          'refreshRandomPool: did not find snodes in db. Fetching from seed node instead'
-        );
-        // if that fails to get enough snodes, even after retries, well we just have to retry later.
-        await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
-        return;
-      }
-
-      if (fetchedFromDb.length <= minSnodePoolCount) {
-        window?.log?.warn(
-          'refreshRandomPool: not enough snodes in db, Fetching from seed node instead'
-        );
-        // if that fails to get enough snodes, even after retries, well we just have to retry later.
-        await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
-        return;
-      }
-      // write to memory only if it is valid.
-      // if the size is not enough. we will contact a seed node.
-      randomSnodePool = fetchedFromDb;
-      window?.log?.info(`refreshRandomPool: fetched from db ${fetchedFromDb.length} snodes.`);
-    }
-
-    /**
-     *  Starting here,
-     *  1. if forceRefreshFromSnodeOrSeedNode was not set, we can only be here if the pool in db had enough snodes to request from them the full list of snodes. Otherwise, we fetched from seed and returned early
-     *  2. if forceRefreshFromSnodeOrSeedNode was set, we never fetched from db, and so we have to check if we have enough snodes to fetch from them.
-     *
-     */
-
-    // if we don't have nodes to fetch the pool from them, call the seed node instead and return early
-    if (randomSnodePool.length <= minSnodePoolCount) {
-      window?.log?.info(
-        `refreshRandomPool: NOT enough snodes to fetch from them ${randomSnodePool.length} <= ${minSnodePoolCount}, so falling back to seedNodes.`
-      );
-
-      // if that fails to get enough snodes, even after retries, well we just have to retry later.
-      await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
-      return;
-    }
-    try {
-      window?.log?.info(
-        `refreshRandomPool: enough snodes to fetch from them, so we try using them ${randomSnodePool.length}`
-      );
-      await tryToGetConsensusWithSnodesWithRetries();
-    } catch (e) {
-      window?.log?.warn(
-        'Failed to fetch snode pool from snodes. Fetching from seed node instead:',
-        e.message
-      );
-
-      // if that fails to get enough snodes, even after retries, well we just have to retry later.
-      await SnodePool.TEST_fetchFromSeedWithRetriesAndWriteToDb();
-    }
-  });
 }
 
 /**

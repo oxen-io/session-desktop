@@ -846,19 +846,16 @@ export async function lokiOnionFetch({
   targetNode,
   associatedWith,
   body,
-  disablePathRebuilds,
 }: {
   targetNode: Snode;
   body?: string;
   associatedWith?: string;
-  disablePathRebuilds?: boolean;
 }): Promise<SnodeResponse | undefined> {
   try {
     const retriedResult = await pRetry(
       async () => {
         // Get a path excluding `targetNode`:
-        // if disablePathRebuilds is true and we do not have enough path to make the request, this function will throw an exception straight away
-        const path = await OnionPaths.getOnionPath({ toExclude: targetNode, disablePathRebuilds });
+        const path = await OnionPaths.getOnionPath({ toExclude: targetNode });
         const result = await sendOnionRequestSnodeDest(path, targetNode, body, associatedWith);
         return result;
       },
