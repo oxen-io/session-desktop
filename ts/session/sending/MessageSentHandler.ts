@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { getMessageById } from '../../data/data';
 import { SignalService } from '../../protobuf';
 import { PnServer } from '../../pushnotification';
-import { getMessageController } from '../messages';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
 import { EncryptionType, RawMessage } from '../types';
 import { UserUtils } from '../utils';
@@ -177,23 +176,11 @@ export class MessageSentHandler {
    * If the message is found on the db, it will also register it to the MessageController so our subsequent calls are quicker.
    */
   private static async fetchHandleMessageSentData(m: RawMessage | OpenGroupVisibleMessage) {
-    // if a message was sent and this message was sent after the last app restart,
-    // this message is still in memory in the MessageController
-    const msg = getMessageController().get(m.identifier);
+    const dbMessage = await getMessageById(m.identifier);
 
-    if (!msg || !msg.message) {
-      // otherwise, look for it in the database
-      // nobody is listening to this freshly fetched message .trigger calls
-      // so we can just update the fields on the database
-      const dbMessage = await getMessageById(m.identifier);
-
-      if (!dbMessage) {
-        return null;
-      }
-      getMessageController().register(m.identifier, dbMessage);
-      return dbMessage;
+    if (!dbMessage) {
+      return null;
     }
-
-    return msg.message;
+    return dbMessage;
   }
 }

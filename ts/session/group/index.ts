@@ -16,7 +16,6 @@ import { ClosedGroupMemberLeftMessage } from '../messages/outgoing/controlMessag
 import { ConversationModel, ConversationTypeEnum } from '../../models/conversation';
 import { MessageModel } from '../../models/message';
 import { MessageModelType } from '../../models/messageType';
-import { getMessageController } from '../messages';
 import {
   addKeyPairToCacheAndDBIfNeeded,
   distributingClosedGroupEncryptionKeyPairs,
@@ -109,21 +108,18 @@ export async function initiateGroupUpdate(
   if (diff.newName?.length) {
     const nameOnlyDiff: GroupDiff = { newName: diff.newName };
     const dbMessageName = await addUpdateMessage(convo, nameOnlyDiff, 'outgoing', Date.now());
-    getMessageController().register(dbMessageName.id as string, dbMessageName);
     await sendNewName(convo, diff.newName, dbMessageName.id as string);
   }
 
   if (diff.joiningMembers?.length) {
     const joiningOnlyDiff: GroupDiff = { joiningMembers: diff.joiningMembers };
     const dbMessageAdded = await addUpdateMessage(convo, joiningOnlyDiff, 'outgoing', Date.now());
-    getMessageController().register(dbMessageAdded.id as string, dbMessageAdded);
     await sendAddedMembers(convo, diff.joiningMembers, dbMessageAdded.id as string, updateObj);
   }
 
   if (diff.leavingMembers?.length) {
     const leavingOnlyDiff: GroupDiff = { leavingMembers: diff.leavingMembers };
     const dbMessageLeaving = await addUpdateMessage(convo, leavingOnlyDiff, 'outgoing', Date.now());
-    getMessageController().register(dbMessageLeaving.id as string, dbMessageLeaving);
     const stillMembers = members;
     await sendRemovedMembers(
       convo,
@@ -322,7 +318,6 @@ export async function leaveClosedGroup(groupId: string) {
     received_at: now,
     expireTimer: 0,
   });
-  getMessageController().register(dbMessage.id as string, dbMessage);
   // Send the update to the group
   const ourLeavingMessage = new ClosedGroupMemberLeftMessage({
     timestamp: Date.now(),

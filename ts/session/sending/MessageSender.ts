@@ -16,6 +16,7 @@ import _ from 'lodash';
 import { getLatestTimestampOffset, storeOnNode } from '../snode_api/SNodeAPI';
 import { getSwarmFor } from '../snode_api/snodePool';
 import { firstTrue } from '../utils/Promise';
+import { MessageSender } from '.';
 const DEFAULT_CONNECTIONS = 3;
 
 // ================ SNODE STORE ================
@@ -40,6 +41,7 @@ export async function send(
       const contentDecoded = SignalService.Content.decode(plainTextBuffer);
       const { dataMessage } = contentDecoded;
       if (dataMessage && dataMessage.timestamp && dataMessage.timestamp > 0) {
+        dataMessage.timestamp = diffTimestamp;
       }
       const { envelopeType, cipherText } = await MessageEncrypter.encrypt(
         device,
@@ -49,7 +51,7 @@ export async function send(
       const envelope = await buildEnvelope(envelopeType, device.key, diffTimestamp, cipherText);
 
       const data = wrapEnvelope(envelope);
-      await exports.TEST_sendMessageToSnode(device.key, data, ttl, diffTimestamp);
+      await MessageSender.TEST_sendMessageToSnode(device.key, data, ttl, diffTimestamp);
       return data;
     },
     {
