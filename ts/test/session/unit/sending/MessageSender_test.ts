@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as crypto from 'crypto';
 import * as sinon from 'sinon';
 import { toNumber } from 'lodash';
-import { LokiMessageApi, MessageSender } from '../../../../session/sending';
+import { MessageSender } from '../../../../session/sending';
 import { TestUtils } from '../../../test-utils';
 import { MessageEncrypter } from '../../../../session/crypto';
 import { SignalService } from '../../../../protobuf';
@@ -26,7 +26,7 @@ describe('MessageSender', () => {
     let encryptStub: sinon.SinonStub<[PubKey, Uint8Array, EncryptionType]>;
 
     beforeEach(() => {
-      lokiMessageAPISendStub = sandbox.stub(LokiMessageApi, 'sendMessage').resolves();
+      lokiMessageAPISendStub = sandbox.stub(MessageSender, 'TEST_sendMessageToSnode').resolves();
 
       encryptStub = sandbox.stub(MessageEncrypter, 'encrypt').resolves({
         envelopeType: SignalService.Envelope.Type.SESSION_MESSAGE,
@@ -96,7 +96,6 @@ describe('MessageSender', () => {
           device,
           plainTextBuffer: crypto.randomBytes(10),
           encryption: EncryptionType.Fallback,
-          timestamp,
           ttl,
         });
 
@@ -119,7 +118,6 @@ describe('MessageSender', () => {
           device,
           plainTextBuffer,
           encryption: EncryptionType.Fallback,
-          timestamp,
           ttl: 1,
         });
 
@@ -150,14 +148,12 @@ describe('MessageSender', () => {
           // This test assumes the encryption stub returns the plainText passed into it.
           const device = TestUtils.generateFakePubKey().key;
           const plainTextBuffer = crypto.randomBytes(10);
-          const timestamp = Date.now();
 
           await MessageSender.send({
             identifier: '1',
             device,
             plainTextBuffer,
             encryption: EncryptionType.Fallback,
-            timestamp,
             ttl: 1,
           });
 

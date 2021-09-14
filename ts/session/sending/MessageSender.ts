@@ -11,10 +11,14 @@ import { postMessage } from '../../opengroup/opengroupV2/OpenGroupAPIV2';
 import { OpenGroupMessageV2 } from '../../opengroup/opengroupV2/OpenGroupMessageV2';
 import { fromUInt8ArrayToBase64 } from '../utils/String';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import * as LokiMessageApi from './LokiMessageApi';
 import { addMessagePadding } from '../crypto/BufferPadding';
+import _ from 'lodash';
+import { getLatestTimestampOffset, storeOnNode } from '../snode_api/SNodeAPI';
+import { getSwarmFor } from '../snode_api/snodePool';
+import { firstTrue } from '../utils/Promise';
+const DEFAULT_CONNECTIONS = 3;
 
-// ================ Regular ================
+// ================ SNODE STORE ================
 
 /**
  * Send a message via service nodes.
@@ -27,20 +31,25 @@ export async function send(
   attempts: number = 3,
   retryMinTimeout?: number // in ms
 ): Promise<Uint8Array> {
-  const device = PubKey.cast(message.device);
-  const { plainTextBuffer, encryption, timestamp, ttl } = message;
-  const { envelopeType, cipherText } = await MessageEncrypter.encrypt(
-    device,
-    plainTextBuffer,
-    encryption
-  );
-  const envelope = await buildEnvelope(envelopeType, device.key, timestamp, cipherText);
-  window?.log?.debug('Sending envelope with timestamp: ', envelope.timestamp, ' to ', device.key);
-  const data = wrapEnvelope(envelope);
-
   return pRetry(
     async () => {
-      await LokiMessageApi.sendMessage(device.key, data, timestamp, ttl);
+      const device = PubKey.cast(message.device);
+      const diffTimestamp = Date.now() - getLatestTimestampOffset();
+
+      const { plainTextBuffer, encryption, ttl } = message;
+      const contentDecoded = SignalService.Content.decode(plainTextBuffer);
+      const { dataMessage } = contentDecoded;
+      if (dataMessage && dataMessage.timestamp && dataMessage.timestamp > 0) {
+      }
+      const { envelopeType, cipherText } = await MessageEncrypter.encrypt(
+        device,
+        plainTextBuffer,
+        encryption
+      );
+      const envelope = await buildEnvelope(envelopeType, device.key, diffTimestamp, cipherText);
+
+      const data = wrapEnvelope(envelope);
+      await exports.TEST_sendMessageToSnode(device.key, data, ttl, diffTimestamp);
       return data;
     },
     {
@@ -48,6 +57,58 @@ export async function send(
       factor: 1,
       minTimeout: retryMinTimeout || 1000,
     }
+  );
+}
+
+export async function TEST_sendMessageToSnode(
+  pubKey: string,
+  data: Uint8Array,
+  ttl: number,
+  timestamp: number
+): Promise<void> {
+  const data64 = window.dcodeIO.ByteBuffer.wrap(data).toString('base64');
+  const swarm = await getSwarmFor(pubKey);
+
+  window?.log?.debug('Sending envelope with timestamp: ', timestamp, ' to ', pubKey);
+  // send parameters
+  const params = {
+    pubKey,
+    ttl: `${ttl}`,
+    timestamp: `${timestamp}`,
+    data: data64,
+  };
+
+  const usedNodes = _.slice(swarm, 0, DEFAULT_CONNECTIONS);
+
+  const promises = usedNodes.map(async usedNode => {
+    // TODO: Revert back to using snode address instead of IP
+    // No pRetry here as if this is a bad path it will be handled and retried in lokiOnionFetch.
+    // the only case we could care about a retry would be when the usedNode is not correct,
+    // but considering we trigger this request with a few snode in //, this should be fine.
+    const successfulSend = await storeOnNode(usedNode, params);
+    if (successfulSend) {
+      return usedNode;
+    }
+    // should we mark snode as bad if it can't store our message?
+    return undefined;
+  });
+
+  let snode;
+  try {
+    snode = await firstTrue(promises);
+  } catch (e) {
+    const snodeStr = snode ? `${snode.ip}:${snode.port}` : 'null';
+    window?.log?.warn(
+      `loki_message:::sendMessage - ${e.code} ${e.message} to ${pubKey} via snode:${snodeStr}`
+    );
+    throw e;
+  }
+  if (!usedNodes || usedNodes.length === 0) {
+    throw new window.textsecure.EmptySwarmError(pubKey, 'Ran out of swarm nodes to query');
+  }
+
+  window?.log?.info(
+    `loki_message:::sendMessage - Successfully stored message to ${pubKey} via ${snode.ip}:${snode.port}`
   );
 }
 

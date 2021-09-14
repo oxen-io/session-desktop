@@ -68,7 +68,6 @@ describe('PendingMessageCache', () => {
 
     const addedMessage = finalCache[0];
     expect(addedMessage.device).to.deep.equal(rawMessage.device);
-    expect(addedMessage.timestamp).to.deep.equal(rawMessage.timestamp);
   });
 
   it('can add multiple messages belonging to the same user', async () => {

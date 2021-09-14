@@ -40,13 +40,11 @@ describe('Message Utils', () => {
       expect(rawMessage.device).to.exist;
       expect(rawMessage.encryption).to.exist;
       expect(rawMessage.plainTextBuffer).to.exist;
-      expect(rawMessage.timestamp).to.exist;
       expect(rawMessage.ttl).to.exist;
 
       expect(rawMessage.identifier).to.equal(message.identifier);
       expect(rawMessage.device).to.equal(device.key);
       expect(rawMessage.plainTextBuffer).to.deep.equal(message.plainTextBuffer());
-      expect(rawMessage.timestamp).to.equal(message.timestamp);
       expect(rawMessage.ttl).to.equal(message.ttl());
     });
 

@@ -145,7 +145,7 @@ export class MessageQueue {
 
     const jobQueue = this.getJobQueue(device);
     messages.forEach(async message => {
-      const messageId = String(message.timestamp);
+      const messageId = message.identifier;
 
       if (!jobQueue.has(messageId)) {
         // We put the event handling inside this job to avoid sending duplicate events
