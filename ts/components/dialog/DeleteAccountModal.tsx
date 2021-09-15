@@ -133,8 +133,6 @@ export const DeleteAccountModal = () => {
 
   const dispatch = useDispatch();
 
-  console.warn('DeleteAccountModal isloading:', isLoading);
-
   const onDeleteEverythingLocallyOnly = async () => {
     if (!isLoading) {
       setIsLoading(true);
