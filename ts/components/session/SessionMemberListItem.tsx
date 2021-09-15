@@ -66,6 +66,7 @@ export const SessionMemberListItem = (props: Props) => {
       )}
       onClick={handleSelectionAction}
       role="button"
+      style={{ overflowY: 'auto' }}
     >
       <div className="session-member-item__info">
         <span className="session-member-item__avatar">{renderAvatar()}</span>

@@ -75,6 +75,11 @@
   border-left: 4px solid $session-color-green !important;
 }
 
+.mentions__suggestions__list {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
 .at-symbol {
   background-color: var(--color-accent);
 
