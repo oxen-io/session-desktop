@@ -41,6 +41,7 @@ export class MessageSentHandler {
 
   public static async handleMessageSentSuccess(
     sentMessage: RawMessage,
+    effectiveTimestamp: number,
     wrappedEnvelope?: Uint8Array
   ) {
     // The wrappedEnvelope will be set only if the message is not one of OpenGroupV2Message type.
@@ -106,7 +107,7 @@ export class MessageSentHandler {
         try {
           await fetchedMessage.sendSyncMessage(
             dataMessage as SignalService.DataMessage,
-            sentMessage.timestamp
+            effectiveTimestamp
           );
         } catch (e) {
           window?.log?.warn('Got an error while trying to sendSyncMessage():', e);
@@ -122,7 +123,7 @@ export class MessageSentHandler {
       sent_to: sentTo,
       sent: true,
       expirationStartTimestamp: Date.now(),
-      sent_at: sentMessage.timestamp,
+      sent_at: effectiveTimestamp,
     });
 
     await fetchedMessage.commit();

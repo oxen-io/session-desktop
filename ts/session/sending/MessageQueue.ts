@@ -129,8 +129,12 @@ export class MessageQueue {
     let rawMessage;
     try {
       rawMessage = await MessageUtils.toRawMessage(user, message);
-      const wrappedEnvelope = await MessageSender.send(rawMessage);
-      await MessageSentHandler.handleMessageSentSuccess(rawMessage, wrappedEnvelope);
+      const { wrappedEnvelope, effectiveTimestamp } = await MessageSender.send(rawMessage);
+      await MessageSentHandler.handleMessageSentSuccess(
+        rawMessage,
+        effectiveTimestamp,
+        wrappedEnvelope
+      );
       return !!wrappedEnvelope;
     } catch (error) {
       if (rawMessage) {
@@ -151,8 +155,13 @@ export class MessageQueue {
         // We put the event handling inside this job to avoid sending duplicate events
         const job = async () => {
           try {
-            const wrappedEnvelope = await MessageSender.send(message);
-            await MessageSentHandler.handleMessageSentSuccess(message, wrappedEnvelope);
+            const { wrappedEnvelope, effectiveTimestamp } = await MessageSender.send(message);
+
+            await MessageSentHandler.handleMessageSentSuccess(
+              message,
+              effectiveTimestamp,
+              wrappedEnvelope
+            );
 
             const cb = this.pendingMessageCache.callbacks.get(message.identifier);
 

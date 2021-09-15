@@ -29,6 +29,7 @@ import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group
 import { ClosedGroupRemovedMembersMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupRemovedMembersMessage';
 import { updateOpenGroupV2 } from '../../opengroup/opengroupV2/OpenGroupUpdate';
 import { getSwarmPollingInstance } from '../snode_api';
+import { getLatestTimestampOffset } from '../snode_api/SNodeAPI';
 
 export type GroupInfo = {
   id: string;
@@ -308,13 +309,14 @@ export async function leaveClosedGroup(groupId: string) {
   await convo.commit();
 
   const source = UserUtils.getOurPubKeyStrFromCache();
+  const diffTimestamp = Date.now() - getLatestTimestampOffset();
 
   const dbMessage = await convo.addSingleMessage({
     group_update: { left: 'You' },
     conversationId: groupId,
     source,
     type: 'outgoing',
-    sent_at: now,
+    sent_at: diffTimestamp,
     received_at: now,
     expireTimer: 0,
   });

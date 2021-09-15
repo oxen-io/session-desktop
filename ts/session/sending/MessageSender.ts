@@ -13,13 +13,43 @@ import { fromUInt8ArrayToBase64 } from '../utils/String';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
 import { addMessagePadding } from '../crypto/BufferPadding';
 import _ from 'lodash';
-import { getLatestTimestampOffset, storeOnNode } from '../snode_api/SNodeAPI';
+import { storeOnNode } from '../snode_api/SNodeAPI';
 import { getSwarmFor } from '../snode_api/snodePool';
 import { firstTrue } from '../utils/Promise';
 import { MessageSender } from '.';
+import * as Data from '../../../ts/data/data';
+import { SNodeAPI } from '../snode_api';
+
 const DEFAULT_CONNECTIONS = 3;
 
 // ================ SNODE STORE ================
+
+function overwriteOutgoingTimestampWithNetworkTimestamp(message: RawMessage) {
+  const diffTimestamp = Date.now() - SNodeAPI.getLatestTimestampOffset();
+
+  const { plainTextBuffer } = message;
+  const contentDecoded = SignalService.Content.decode(plainTextBuffer);
+  const { dataMessage, dataExtractionNotification, typingMessage } = contentDecoded;
+  if (dataMessage && dataMessage.timestamp && dataMessage.timestamp > 0) {
+    dataMessage.timestamp = diffTimestamp;
+  }
+  if (
+    dataExtractionNotification &&
+    dataExtractionNotification.timestamp &&
+    dataExtractionNotification.timestamp > 0
+  ) {
+    dataExtractionNotification.timestamp = diffTimestamp;
+  }
+  if (typingMessage && typingMessage.timestamp && typingMessage.timestamp > 0) {
+    typingMessage.timestamp = diffTimestamp;
+  }
+  const overRiddenTimestampBuffer = SignalService.Content.encode(contentDecoded).finish();
+  return { overRiddenTimestampBuffer, diffTimestamp };
+}
+
+export function getMinRetryTimeout() {
+  return 1000;
+}
 
 /**
  * Send a message via service nodes.
@@ -31,33 +61,42 @@ export async function send(
   message: RawMessage,
   attempts: number = 3,
   retryMinTimeout?: number // in ms
-): Promise<Uint8Array> {
+): Promise<{ wrappedEnvelope: Uint8Array; effectiveTimestamp: number }> {
   return pRetry(
     async () => {
       const device = PubKey.cast(message.device);
-      const diffTimestamp = Date.now() - getLatestTimestampOffset();
+      const { encryption, ttl } = message;
 
-      const { plainTextBuffer, encryption, ttl } = message;
-      const contentDecoded = SignalService.Content.decode(plainTextBuffer);
-      const { dataMessage } = contentDecoded;
-      if (dataMessage && dataMessage.timestamp && dataMessage.timestamp > 0) {
-        dataMessage.timestamp = diffTimestamp;
-      }
+      const {
+        overRiddenTimestampBuffer,
+        diffTimestamp,
+      } = overwriteOutgoingTimestampWithNetworkTimestamp(message);
+
       const { envelopeType, cipherText } = await MessageEncrypter.encrypt(
         device,
-        plainTextBuffer,
+        overRiddenTimestampBuffer,
         encryption
       );
+
       const envelope = await buildEnvelope(envelopeType, device.key, diffTimestamp, cipherText);
 
       const data = wrapEnvelope(envelope);
+      // make sure to update the local sent_at timestamp, because sometimes, we will get the just pushed message in the receiver side
+      // before we return from the await below.
+      // and the isDuplicate messages relies on sent_at timestamp to be valid.
+      const found = await Data.getMessageById(message.identifier);
+
+      if (found) {
+        found.set({ sent_at: diffTimestamp });
+        await found.commit();
+      }
       await MessageSender.TEST_sendMessageToSnode(device.key, data, ttl, diffTimestamp);
-      return data;
+      return { wrappedEnvelope: data, effectiveTimestamp: diffTimestamp };
     },
     {
       retries: Math.max(attempts - 1, 0),
       factor: 1,
-      minTimeout: retryMinTimeout || 1000,
+      minTimeout: retryMinTimeout || MessageSender.getMinRetryTimeout(),
     }
   );
 }

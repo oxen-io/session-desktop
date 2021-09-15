@@ -35,7 +35,7 @@
     "build-protobuf": "yarn build-module-protobuf",
     "clean-protobuf": "yarn clean-module-protobuf",
     "test": "yarn test-node",
-    "test-node": "mocha --recursive --exit --timeout 10000  test/app test/modules \"./ts/test/**/*_test.js\" ",
+    "test-node": "mocha --recursive --exit --timeout 500  test/app test/modules \"./ts/test/**/*_test.js\" ",
     "eslint-full": "eslint .",
     "lint-full": "yarn format-full && yarn lint-files-full",
     "lint-files-full": "yarn eslint-full && yarn tslint",

@@ -200,7 +200,7 @@ function handleTimestampOffset(request: string, snodeTimestamp: number) {
   if (snodeTimestamp && _.isNumber(snodeTimestamp) && snodeTimestamp > 1609419600 * 1000) {
     // first january 2021. Arbitrary, just want to make sure the return timestamp is somehow valid and not some crazy low value
     const now = Date.now();
-    console.warn(`timestamp offset from request ${request}:  ${now - snodeTimestamp}ms`);
+    window?.log?.info(`timestamp offset from request ${request}:  ${now - snodeTimestamp}ms`);
     latestTimestampOffset = now - snodeTimestamp;
   }
 }
@@ -553,7 +553,6 @@ export async function storeOnNode(targetNode: Snode, params: SendParams): Promis
     // no retry here. If an issue is with the path this is handled in lokiOnionFetch
     // if there is an issue with the targetNode, we still send a few times this request to a few snodes in // already so it's handled
     const result = await snodeRpc('store', params, targetNode, params.pubKey);
-    debugger;
     if (!result || result.status !== 200 || !result.body) {
       return false;
     }
