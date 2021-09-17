@@ -603,9 +603,14 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
 
     const firstAttachment = quote.attachments && quote.attachments[0];
 
+    // do not show text of not found messages.
+    // if the message was deleted better not show it's text content in the message
     return {
-      text: this.createNonBreakingLastSeparator(quote.text),
-      attachment: firstAttachment ? this.processQuoteAttachment(firstAttachment) : null,
+      text: !referencedMessageNotFound ? this.createNonBreakingLastSeparator(quote.text) : '',
+      attachment:
+        !referencedMessageNotFound && firstAttachment
+          ? this.processQuoteAttachment(firstAttachment)
+          : null,
       isFromMe,
       authorPhoneNumber: author,
       messageId: id,
