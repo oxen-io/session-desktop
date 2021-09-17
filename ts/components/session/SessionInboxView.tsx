@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { ConversationModel } from '../../models/conversation';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { createStore } from '../../state/createStore';
@@ -74,16 +73,12 @@ export class SessionInboxView extends React.Component<any, State> {
 
   private async setupLeftPane() {
     // Here we set up a full redux store with initial state for our LeftPane Root
-    const convoCollection = getConversationController().getConversations();
-    const conversations = convoCollection.map((conversation: ConversationModel) =>
-      conversation.getConversationModelProps()
-    );
+    const conversations = getConversationController()
+      .getConversations()
+      .map(conversation => conversation.getConversationModelProps());
 
-    const filledConversations = conversations.map((conv: any) => {
-      return { ...conv, messages: [] };
-    });
-
-    const fullFilledConversations = await Promise.all(filledConversations);
+    // don't ask me why, but if we don't await that thing below the app does not start
+    await Promise.all(conversations);
 
     const timerOptions: TimerOptionsArray = window.Whisper.ExpirationTimerOptions.map(
       (item: any) => ({
@@ -95,7 +90,7 @@ export class SessionInboxView extends React.Component<any, State> {
     const initialState: StateType = {
       conversations: {
         ...getEmptyConversationState(),
-        conversationLookup: makeLookup(fullFilledConversations, 'id'),
+        conversationLookup: makeLookup(conversations, 'id'),
       },
       user: {
         ourNumber: UserUtils.getOurPubKeyStrFromCache(),

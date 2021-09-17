@@ -365,8 +365,8 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     }
 
     return {
-      phoneNumber: pubkey as string,
-      avatarPath: (contactModel ? contactModel.getAvatarPath() : null) as string | null,
+      pubkey: pubkey,
+      avatarPath: contactModel ? contactModel.getAvatarPath() : null,
       name: (contactModel ? contactModel.getName() : null) as string | null,
       profileName: profileName as string | null,
       title: (contactModel ? contactModel.getTitle() : null) as string | null,
@@ -393,7 +393,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         type: 'add',
         contacts: _.map(
           Array.isArray(groupUpdate.joined) ? groupUpdate.joined : [groupUpdate.joined],
-          phoneNumber => this.findAndFormatContact(phoneNumber)
+          pubkey => this.findAndFormatContact(pubkey)
         ),
       };
       changes.push(change);
@@ -411,7 +411,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         isMe: false,
         contacts: _.map(
           Array.isArray(groupUpdate.kicked) ? groupUpdate.kicked : [groupUpdate.kicked],
-          phoneNumber => this.findAndFormatContact(phoneNumber)
+          pubkey => this.findAndFormatContact(pubkey)
         ),
       };
       changes.push(change);
@@ -443,7 +443,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
           isMe: false,
           contacts: _.map(
             Array.isArray(groupUpdate.left) ? groupUpdate.left : [groupUpdate.left],
-            phoneNumber => this.findAndFormatContact(phoneNumber)
+            pubkey => this.findAndFormatContact(pubkey)
           ),
         };
         changes.push(change);
@@ -713,7 +713,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     //   first; otherwise it's alphabetical
     const sortedContacts = _.sortBy(
       finalContacts,
-      contact => `${contact.isPrimaryDevice ? '0' : '1'}${contact.phoneNumber}`
+      contact => `${contact.isPrimaryDevice ? '0' : '1'}${contact.pubkey}`
     );
     const toRet: MessagePropsDetails = {
       sentAt: this.get('sent_at') || 0,

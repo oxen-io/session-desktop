@@ -31,7 +31,7 @@ export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
 
 export type ContactPropsMessageDetail = {
   status: string | null;
-  phoneNumber: string;
+  pubkey: string;
   name?: string | null;
   profileName?: string | null;
   avatarPath?: string | null;
@@ -53,7 +53,7 @@ export type MessagePropsDetails = {
 export type LastMessageStatusType = MessageDeliveryStatus | null;
 
 export type FindAndFormatContactType = {
-  phoneNumber: string;
+  pubkey: string;
   avatarPath: string | null;
   name: string | null;
   profileName: string | null;
@@ -64,7 +64,7 @@ export type FindAndFormatContactType = {
 export type PropsForExpirationTimer = {
   timespan: string;
   disabled: boolean;
-  phoneNumber: string;
+  pubkey: string;
   avatarPath: string | null;
   name: string | null;
   profileName: string | null;
@@ -209,35 +209,36 @@ export interface ReduxConversationType {
   id: string;
   name?: string;
   profileName?: string;
-  hasNickname: boolean;
+  hasNickname?: boolean;
 
   activeAt?: number;
   lastMessage?: LastMessageType;
-  phoneNumber: string;
   type: ConversationTypeEnum;
-  isMe: boolean;
-  isPublic: boolean;
-  isGroup: boolean;
-  isPrivate: boolean;
-  weAreAdmin: boolean;
-  unreadCount: number;
-  mentionedUs: boolean;
-  isSelected: boolean;
-  expireTimer: number;
+  isMe?: boolean;
+  isPublic?: boolean;
+  isGroup?: boolean;
+  isPrivate?: boolean;
+  weAreAdmin?: boolean;
+  unreadCount?: number;
+  mentionedUs?: boolean;
+  isSelected?: boolean;
+  expireTimer?: number;
 
-  isTyping: boolean;
-  isBlocked: boolean;
-  isKickedFromGroup: boolean;
-  subscriberCount: number;
-  left: boolean;
-  avatarPath: string | null; // absolute filepath to the avatar
+  isTyping?: boolean;
+  isBlocked?: boolean;
+  isKickedFromGroup?: boolean;
+  subscriberCount?: number;
+  left?: boolean;
+  avatarPath?: string | null; // absolute filepath to the avatar
   groupAdmins?: Array<string>; // admins for closed groups and moderators for open groups
-  members: Array<string>; // members for closed groups only
+  members?: Array<string>; // members for closed groups only
 
-  currentNotificationSetting: ConversationNotificationSettingType;
-  notificationForConvo: Array<NotificationForConvoOption>;
+  /**
+   * If this is undefined, it means all notification are enabled
+   */
+  currentNotificationSetting?: ConversationNotificationSettingType;
 
-  isPinned: boolean;
+  isPinned?: boolean;
 }
 
 export interface NotificationForConvoOption {
