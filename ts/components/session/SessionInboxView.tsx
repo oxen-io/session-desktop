@@ -42,8 +42,10 @@ export class SessionInboxView extends React.Component<any, State> {
     this.state = {
       isInitialLoadComplete: false,
     };
+  }
 
-    void this.setupLeftPane();
+  public componentDidMount() {
+    this.setupLeftPane();
   }
 
   public render() {
@@ -71,14 +73,11 @@ export class SessionInboxView extends React.Component<any, State> {
     return <LeftPane />;
   }
 
-  private async setupLeftPane() {
+  private setupLeftPane() {
     // Here we set up a full redux store with initial state for our LeftPane Root
     const conversations = getConversationController()
       .getConversations()
       .map(conversation => conversation.getConversationModelProps());
-
-    // don't ask me why, but if we don't await that thing below the app does not start
-    await Promise.all(conversations);
 
     const timerOptions: TimerOptionsArray = window.Whisper.ExpirationTimerOptions.map(
       (item: any) => ({
