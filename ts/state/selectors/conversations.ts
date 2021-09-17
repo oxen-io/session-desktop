@@ -875,7 +875,7 @@ export const getMessageAttachmentProps = createSelector(getMessagePropsByMessage
     convoId,
   } = props.propsForMessage;
   const msgProps: MessageAttachmentSelectorProps = {
-    attachments,
+    attachments: attachments || [],
     direction,
     isTrustedForAttachmentDownload,
     timestamp,

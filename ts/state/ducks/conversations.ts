@@ -19,10 +19,10 @@ import { omit } from 'lodash';
 
 export type MessageModelPropsWithoutConvoProps = {
   propsForMessage: PropsForMessageWithoutConvoProps;
-  propsForGroupInvitation: PropsForGroupInvitation | null;
-  propsForTimerNotification: PropsForExpirationTimer | null;
-  propsForDataExtractionNotification: PropsForDataExtractionNotification | null;
-  propsForGroupNotification: PropsForGroupUpdate | null;
+  propsForGroupInvitation?: PropsForGroupInvitation;
+  propsForTimerNotification?: PropsForExpirationTimer;
+  propsForDataExtractionNotification?: PropsForDataExtractionNotification;
+  propsForGroupNotification?: PropsForGroupUpdate;
 };
 
 export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
@@ -30,7 +30,7 @@ export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
 };
 
 export type ContactPropsMessageDetail = {
-  status: string | null;
+  status: string | undefined;
   pubkey: string;
   name?: string | null;
   profileName?: string | null;
@@ -50,7 +50,7 @@ export type MessagePropsDetails = {
   direction: MessageModelType;
 };
 
-export type LastMessageStatusType = MessageDeliveryStatus | null;
+export type LastMessageStatusType = MessageDeliveryStatus | undefined;
 
 export type FindAndFormatContactType = {
   pubkey: string;
@@ -157,33 +157,34 @@ export type PropsForAttachment = {
 };
 
 export type PropsForMessageWithoutConvoProps = {
-  text: string | null;
   id: string; // messageId
   direction: MessageModelType;
   timestamp: number;
-  receivedAt: number | undefined;
-  serverTimestamp: number | undefined;
-  serverId: number | undefined;
-  status: LastMessageStatusType | null;
   authorPhoneNumber: string; // this is the sender
   convoId: string; // this is the conversation in which this message was sent
-  attachments: Array<PropsForAttachment>;
-  previews: Array<any>;
+  text?: string;
+
+  receivedAt?: number;
+  serverTimestamp?: number;
+  serverId?: number;
+  status?: LastMessageStatusType;
+  attachments?: Array<PropsForAttachment>;
+  previews?: Array<any>;
   quote?: {
-    text: string | null;
+    text?: string;
     attachment?: QuotedAttachmentType;
-    isFromMe: boolean;
+    isFromMe?: boolean;
     authorPhoneNumber: string;
     authorProfileName?: string;
     authorName?: string;
     messageId?: string;
-    referencedMessageNotFound: boolean;
+    referencedMessageNotFound?: boolean;
   } | null;
-  isUnread: boolean;
-  expirationLength: number;
-  expirationTimestamp: number | null;
-  isExpired: boolean;
-  isTrustedForAttachmentDownload: boolean;
+  isUnread?: boolean;
+  expirationLength?: number;
+  expirationTimestamp?: number | null;
+  isExpired?: boolean;
+  isTrustedForAttachmentDownload?: boolean;
 };
 
 export type PropsForMessageWithConvoProps = PropsForMessageWithoutConvoProps & {

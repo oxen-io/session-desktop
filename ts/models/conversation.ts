@@ -999,7 +999,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         id: this.id,
         data: {
           ...this.getConversationModelProps(),
-          isSelected: false,
         },
       })
     );
