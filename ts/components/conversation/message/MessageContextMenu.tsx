@@ -63,7 +63,8 @@ export const MessageContextMenu = (props: Props) => {
     isBlocked,
   } = selected;
   const { messageId, contextMenuId } = props;
-  const showRetry = status === 'error' && direction === 'outgoing';
+  const isOutgoing = direction === 'outgoing';
+  const showRetry = status === 'error' && isOutgoing;
   const isSent = status === 'sent';
   const multipleAttachments = attachments && attachments.length > 1;
 
@@ -154,7 +155,7 @@ export const MessageContextMenu = (props: Props) => {
   }, [messageId]);
 
   const onDelete = useCallback(() => {
-    void deleteMessagesById([messageId], convoId, false);
+    void deleteMessagesById([messageId], convoId, true);
   }, [convoId, messageId]);
 
   return (
@@ -169,7 +170,7 @@ export const MessageContextMenu = (props: Props) => {
       ) : null}
 
       <Item onClick={copyText}>{window.i18n('copyMessage')}</Item>
-      {isSent && <Item onClick={onReply}>{window.i18n('replyToMessage')}</Item>}
+      {(isSent || !isOutgoing) && <Item onClick={onReply}>{window.i18n('replyToMessage')}</Item>}
       <Item onClick={onShowDetail}>{window.i18n('moreInformation')}</Item>
       {showRetry ? <Item onClick={onRetry}>{window.i18n('resend')}</Item> : null}
       {isDeletable ? (
