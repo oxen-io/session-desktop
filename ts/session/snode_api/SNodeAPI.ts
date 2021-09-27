@@ -465,7 +465,13 @@ export async function retrieveNextMessages(
 
   // let exceptions bubble up
   // no retry for this one as this a call we do every few seconds while polling for messages
-  const result = await snodeRpc({ method: 'retrieve', params, targetNode, associatedWith });
+  const result = await snodeRpc({
+    method: 'retrieve',
+    params,
+    targetNode,
+    associatedWith,
+    timeout: 4000,
+  });
 
   if (!result) {
     window?.log?.warn(

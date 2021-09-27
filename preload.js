@@ -136,7 +136,7 @@ window.libsession = require('./ts/session');
 window.getConversationController = window.libsession.Conversations.getConversationController;
 
 // We never do these in our code, so we'll prevent it everywhere
-window.open = () => null;
+// window.open = () => null;
 // eslint-disable-next-line no-eval, no-multi-assign
 window.eval = global.eval = () => null;
 

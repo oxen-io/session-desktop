@@ -295,6 +295,7 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow(windowOptions);
+
   setupSpellChecker(mainWindow, locale.messages);
 
   electronLocalshortcut.register(mainWindow, 'F5', () => {
@@ -604,6 +605,48 @@ async function showDebugLogWindow() {
   debugLogWindow.once('ready-to-show', () => {
     addDarkOverlay();
     debugLogWindow.show();
+  });
+}
+
+let videoCallWindow;
+async function showVideoCallWindow() {
+  if (videoCallWindow) {
+    videoCallWindow.show();
+    return;
+  }
+
+  const theme = await getThemeFromMainWindow();
+  const options = {
+    width: 400,
+    height: 300,
+    resizable: true,
+    title: locale.messages.videoCall,
+    autoHideMenuBar: true,
+    backgroundColor: '#FFFFFF',
+    show: false,
+    modal: false,
+    webPreferences: {
+      nodeIntegration: false,
+      nodeIntegrationInWorker: false,
+      contextIsolation: false,
+      preload: path.join(__dirname, 'video_call_preload.js'),
+      nativeWindowOpen: true,
+    },
+    parent: mainWindow,
+  };
+
+  videoCallWindow = new BrowserWindow(options);
+
+  captureClicks(videoCallWindow);
+
+  videoCallWindow.loadURL(prepareURL([__dirname, 'video_call.html'], { theme }));
+
+  videoCallWindow.on('closed', () => {
+    videoCallWindow = null;
+  });
+
+  videoCallWindow.once('ready-to-show', () => {
+    videoCallWindow.show();
   });
 }
 
@@ -954,6 +997,16 @@ ipc.on('show-debug-log', showDebugLogWindow);
 ipc.on('close-debug-log', () => {
   if (debugLogWindow) {
     debugLogWindow.close();
+  }
+});
+
+// Video call-related IPC calls
+
+ipc.on('show-video-call', showVideoCallWindow);
+ipc.on('close-video-call', () => {
+  if (videoCallWindow) {
+    videoCallWindow.close();
+    videoCallWindow = null;
   }
 });
 
