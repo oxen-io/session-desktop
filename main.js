@@ -863,10 +863,6 @@ ipc.on('locale-data', event => {
   event.returnValue = locale.messages;
 });
 
-ipc.on('set-badge-count', (event, count) => {
-  app.setBadgeCount(count);
-});
-
 ipc.on('remove-setup-menu-items', () => {
   setupMenu();
 });
@@ -1011,18 +1007,6 @@ ipc.on('close-video-call', () => {
 });
 
 // Settings-related IPC calls
-
-function addDarkOverlay() {
-  if (mainWindow && mainWindow.webContents) {
-    mainWindow.webContents.send('add-dark-overlay');
-  }
-}
-function removeDarkOverlay() {
-  if (mainWindow && mainWindow.webContents) {
-    mainWindow.webContents.send('remove-dark-overlay');
-  }
-}
-
 // This should be called with an ipc sendSync
 ipc.on('get-media-permissions', event => {
   // eslint-disable-next-line no-param-reassign

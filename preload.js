@@ -2,16 +2,14 @@
 /* global Whisper: false */
 /* global window: false */
 const path = require('path');
-const electron = require('electron');
+const { webFrame, remote, clipboard, ipcRenderer, contextBridge } = require('electron');
 
-const { webFrame } = electron;
 const semver = require('semver');
 
 const { deferredToPromise } = require('./js/modules/deferred_to_promise');
 const { JobQueue } = require('./js/modules/job_queue');
 
-const { app } = electron.remote;
-const { clipboard } = electron;
+const { app } = remote;
 
 const config = require('url').parse(window.location.toString(), true).query;
 
@@ -81,7 +79,7 @@ window.versionInfo = {
 
 window.wrapDeferred = deferredToPromise;
 
-const ipc = electron.ipcRenderer;
+const ipc = ipcRenderer;
 const localeMessages = ipc.sendSync('locale-data');
 
 window.updateZoomFactor = () => {
@@ -96,8 +94,6 @@ window.setZoomFactor = number => {
 window.getZoomFactor = () => {
   webFrame.getZoomFactor();
 };
-
-window.setBadgeCount = count => ipc.send('set-badge-count', count);
 
 // Set the password for the database
 window.setPassword = (passPhrase, oldPhrase) =>
@@ -169,20 +165,6 @@ ipc.on('get-theme-setting', () => {
 });
 
 // Settings-related events
-
-ipc.on('add-dark-overlay', () => {
-  const { addDarkOverlay } = window.Events;
-  if (addDarkOverlay) {
-    addDarkOverlay();
-  }
-});
-ipc.on('remove-dark-overlay', () => {
-  const { removeDarkOverlay } = window.Events;
-  if (removeDarkOverlay) {
-    removeDarkOverlay();
-  }
-});
-
 window.getSettingValue = (settingID, comparisonValue = null) => {
   // Comparison value allows you to pull boolean values from any type.
   // Eg. window.getSettingValue('theme', 'light')
@@ -239,9 +221,6 @@ ipc.on('get-ready-for-shutdown', async () => {
     ipc.send('now-ready-for-shutdown', error && error.stack ? error.stack : error);
   }
 });
-
-window.addSetupMenuItems = () => ipc.send('add-setup-menu-items');
-window.removeSetupMenuItems = () => ipc.send('remove-setup-menu-items');
 
 // We pull these dependencies in now, from here, because they have Node.js dependencies
 
@@ -345,3 +324,5 @@ Promise.prototype.ignore = function() {
 const { BlockedNumberController } = require('./ts/util/blockedNumberController');
 
 window.BlockedNumberController = BlockedNumberController;
+
+window.showVideoCallWindow = () => ipcRenderer.send('show-video-call');

@@ -83,6 +83,7 @@ declare global {
     callWorker: (fnName: string, ...args: any) => Promise<any>;
     setStartInTray: (val: boolean) => Promise<void>;
     getStartInTray: () => Promise<boolean>;
+    showVideoCallWindow: () => void;
     libsession: any;
   }
 }

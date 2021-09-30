@@ -33,7 +33,6 @@ import {
 import { SessionButtonColor } from '../SessionButton';
 import { getTimerOptions } from '../../../state/selectors/timerOptions';
 import { CallManager, ToastUtils } from '../../../session/utils';
-import { ipcRenderer } from 'electron';
 
 const maxNumberOfPinnedConversations = 5;
 
@@ -338,7 +337,7 @@ export function getStartCallMenuItem(conversationId: string): JSX.Element | null
         }
 
         if (convo) {
-          ipcRenderer.send('show-video-call');
+          window.showVideoCallWindow();
           convo.callState = 'connecting';
           await convo.commit();
           await CallManager.USER_callRecipient(convo.id);

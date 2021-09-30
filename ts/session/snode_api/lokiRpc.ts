@@ -88,7 +88,6 @@ async function lokiFetch({
       throw new window.textsecure.NotFoundError('Failed to resolve address', e);
     }
     if (e.message === ERROR_421_HANDLED_RETRY_REQUEST) {
-      debugger;
       throw new pRetry.AbortError(ERROR_421_HANDLED_RETRY_REQUEST);
     }
     throw e;

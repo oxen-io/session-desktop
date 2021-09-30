@@ -149,15 +149,6 @@
         storage.put('spell-check', value);
       },
 
-      addDarkOverlay: () => {
-        if ($('.dark-overlay').length) {
-          return;
-        }
-        $(document.body).prepend('<div class="dark-overlay"></div>');
-        $('.dark-overlay').on('click', () => $('.dark-overlay').remove());
-      },
-      removeDarkOverlay: () => $('.dark-overlay').remove(),
-
       shutdown: async () => {
         // Stop background processing
         window.libsession.Utils.AttachmentDownloads.stop();
