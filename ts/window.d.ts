@@ -84,6 +84,5 @@ declare global {
     setStartInTray: (val: boolean) => Promise<void>;
     getStartInTray: () => Promise<boolean>;
     showVideoCallWindow: () => void;
-    libsession: any;
   }
 }

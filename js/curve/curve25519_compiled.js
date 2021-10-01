@@ -35584,316 +35584,6 @@ var MEMFS = {
   },
 };
 
-var IDBFS = {
-  dbs: {},
-  indexedDB: function() {
-    if (typeof indexedDB !== 'undefined') return indexedDB;
-    var ret = null;
-    if (typeof window === 'object')
-      ret =
-        window.indexedDB ||
-        window.mozIndexedDB ||
-        window.webkitIndexedDB ||
-        window.msIndexedDB;
-    assert(ret, 'IDBFS used, but indexedDB not supported');
-    return ret;
-  },
-  DB_VERSION: 21,
-  DB_STORE_NAME: 'FILE_DATA',
-  mount: function(mount) {
-    // reuse all of the core MEMFS functionality
-    return MEMFS.mount.apply(null, arguments);
-  },
-  syncfs: function(mount, populate, callback) {
-    IDBFS.getLocalSet(mount, function(err, local) {
-      if (err) return callback(err);
-
-      IDBFS.getRemoteSet(mount, function(err, remote) {
-        if (err) return callback(err);
-
-        var src = populate ? remote : local;
-        var dst = populate ? local : remote;
-
-        IDBFS.reconcile(src, dst, callback);
-      });
-    });
-  },
-  getDB: function(name, callback) {
-    // check the cache first
-    var db = IDBFS.dbs[name];
-    if (db) {
-      return callback(null, db);
-    }
-
-    var req;
-    try {
-      req = IDBFS.indexedDB().open(name, IDBFS.DB_VERSION);
-    } catch (e) {
-      return callback(e);
-    }
-    req.onupgradeneeded = function(e) {
-      var db = e.target.result;
-      var transaction = e.target.transaction;
-
-      var fileStore;
-
-      if (db.objectStoreNames.contains(IDBFS.DB_STORE_NAME)) {
-        fileStore = transaction.objectStore(IDBFS.DB_STORE_NAME);
-      } else {
-        fileStore = db.createObjectStore(IDBFS.DB_STORE_NAME);
-      }
-
-      fileStore.createIndex('timestamp', 'timestamp', { unique: false });
-    };
-    req.onsuccess = function() {
-      db = req.result;
-
-      // add to the cache
-      IDBFS.dbs[name] = db;
-      callback(null, db);
-    };
-    req.onerror = function() {
-      callback(this.error);
-    };
-  },
-  getLocalSet: function(mount, callback) {
-    var entries = {};
-
-    function isRealDir(p) {
-      return p !== '.' && p !== '..';
-    }
-    function toAbsolute(root) {
-      return function(p) {
-        return PATH.join2(root, p);
-      };
-    }
-
-    var check = FS.readdir(mount.mountpoint)
-      .filter(isRealDir)
-      .map(toAbsolute(mount.mountpoint));
-
-    while (check.length) {
-      var path = check.pop();
-      var stat;
-
-      try {
-        stat = FS.stat(path);
-      } catch (e) {
-        return callback(e);
-      }
-
-      if (FS.isDir(stat.mode)) {
-        check.push.apply(
-          check,
-          FS.readdir(path)
-            .filter(isRealDir)
-            .map(toAbsolute(path))
-        );
-      }
-
-      entries[path] = { timestamp: stat.mtime };
-    }
-
-    return callback(null, { type: 'local', entries: entries });
-  },
-  getRemoteSet: function(mount, callback) {
-    var entries = {};
-
-    IDBFS.getDB(mount.mountpoint, function(err, db) {
-      if (err) return callback(err);
-
-      var transaction = db.transaction([IDBFS.DB_STORE_NAME], 'readonly');
-      transaction.onerror = function() {
-        callback(this.error);
-      };
-
-      var store = transaction.objectStore(IDBFS.DB_STORE_NAME);
-      var index = store.index('timestamp');
-
-      index.openKeyCursor().onsuccess = function(event) {
-        var cursor = event.target.result;
-
-        if (!cursor) {
-          return callback(null, { type: 'remote', db: db, entries: entries });
-        }
-
-        entries[cursor.primaryKey] = { timestamp: cursor.key };
-
-        cursor.continue();
-      };
-    });
-  },
-  loadLocalEntry: function(path, callback) {
-    var stat, node;
-
-    try {
-      var lookup = FS.lookupPath(path);
-      node = lookup.node;
-      stat = FS.stat(path);
-    } catch (e) {
-      return callback(e);
-    }
-
-    if (FS.isDir(stat.mode)) {
-      return callback(null, { timestamp: stat.mtime, mode: stat.mode });
-    } else if (FS.isFile(stat.mode)) {
-      // Performance consideration: storing a normal JavaScript array to a IndexedDB is much slower than storing a typed array.
-      // Therefore always convert the file contents to a typed array first before writing the data to IndexedDB.
-      node.contents = MEMFS.getFileDataAsTypedArray(node);
-      return callback(null, {
-        timestamp: stat.mtime,
-        mode: stat.mode,
-        contents: node.contents,
-      });
-    } else {
-      return callback(new Error('node type not supported'));
-    }
-  },
-  storeLocalEntry: function(path, entry, callback) {
-    try {
-      if (FS.isDir(entry.mode)) {
-        FS.mkdir(path, entry.mode);
-      } else if (FS.isFile(entry.mode)) {
-        FS.writeFile(path, entry.contents, {
-          encoding: 'binary',
-          canOwn: true,
-        });
-      } else {
-        return callback(new Error('node type not supported'));
-      }
-
-      FS.chmod(path, entry.mode);
-      FS.utime(path, entry.timestamp, entry.timestamp);
-    } catch (e) {
-      return callback(e);
-    }
-
-    callback(null);
-  },
-  removeLocalEntry: function(path, callback) {
-    try {
-      var lookup = FS.lookupPath(path);
-      var stat = FS.stat(path);
-
-      if (FS.isDir(stat.mode)) {
-        FS.rmdir(path);
-      } else if (FS.isFile(stat.mode)) {
-        FS.unlink(path);
-      }
-    } catch (e) {
-      return callback(e);
-    }
-
-    callback(null);
-  },
-  loadRemoteEntry: function(store, path, callback) {
-    var req = store.get(path);
-    req.onsuccess = function(event) {
-      callback(null, event.target.result);
-    };
-    req.onerror = function() {
-      callback(this.error);
-    };
-  },
-  storeRemoteEntry: function(store, path, entry, callback) {
-    var req = store.put(entry, path);
-    req.onsuccess = function() {
-      callback(null);
-    };
-    req.onerror = function() {
-      callback(this.error);
-    };
-  },
-  removeRemoteEntry: function(store, path, callback) {
-    var req = store.delete(path);
-    req.onsuccess = function() {
-      callback(null);
-    };
-    req.onerror = function() {
-      callback(this.error);
-    };
-  },
-  reconcile: function(src, dst, callback) {
-    var total = 0;
-
-    var create = [];
-    Object.keys(src.entries).forEach(function(key) {
-      var e = src.entries[key];
-      var e2 = dst.entries[key];
-      if (!e2 || e.timestamp > e2.timestamp) {
-        create.push(key);
-        total++;
-      }
-    });
-
-    var remove = [];
-    Object.keys(dst.entries).forEach(function(key) {
-      var e = dst.entries[key];
-      var e2 = src.entries[key];
-      if (!e2) {
-        remove.push(key);
-        total++;
-      }
-    });
-
-    if (!total) {
-      return callback(null);
-    }
-
-    var errored = false;
-    var completed = 0;
-    var db = src.type === 'remote' ? src.db : dst.db;
-    var transaction = db.transaction([IDBFS.DB_STORE_NAME], 'readwrite');
-    var store = transaction.objectStore(IDBFS.DB_STORE_NAME);
-
-    function done(err) {
-      if (err) {
-        if (!done.errored) {
-          done.errored = true;
-          return callback(err);
-        }
-        return;
-      }
-      if (++completed >= total) {
-        return callback(null);
-      }
-    }
-
-    transaction.onerror = function() {
-      done(this.error);
-    };
-
-    // sort paths in ascending order so directory entries are created
-    // before the files inside them
-    create.sort().forEach(function(path) {
-      if (dst.type === 'local') {
-        IDBFS.loadRemoteEntry(store, path, function(err, entry) {
-          if (err) return done(err);
-          IDBFS.storeLocalEntry(path, entry, done);
-        });
-      } else {
-        IDBFS.loadLocalEntry(path, function(err, entry) {
-          if (err) return done(err);
-          IDBFS.storeRemoteEntry(store, path, entry, done);
-        });
-      }
-    });
-
-    // sort paths in descending order so files are deleted before their
-    // parent directories
-    remove
-      .sort()
-      .reverse()
-      .forEach(function(path) {
-        if (dst.type === 'local') {
-          IDBFS.removeLocalEntry(path, done);
-        } else {
-          IDBFS.removeRemoteEntry(store, path, done);
-        }
-      });
-  },
-};
-
 var NODEFS = {
   isWindows: false,
   staticInit: function() {
@@ -36211,11 +35901,11 @@ var FS = {
   tracking: { openFlags: { READ: 1, WRITE: 2 } },
   ErrnoError: null,
   genericErrors: {},
-  handleFSError: function(e) {
+  handleFSError: function (e) {
     if (!(e instanceof FS.ErrnoError)) throw e + ' : ' + stackTrace();
     return ___setErrNo(e.errno);
   },
-  lookupPath: function(path, opts) {
+  lookupPath: function (path, opts) {
     path = PATH.resolve(FS.cwd(), path);
     opts = opts || {};
 
@@ -36238,7 +35928,7 @@ var FS = {
 
     // split the path
     var parts = PATH.normalizeArray(
-      path.split('/').filter(function(p) {
+      path.split('/').filter(function (p) {
         return !!p;
       }),
       false
@@ -36288,7 +35978,7 @@ var FS = {
 
     return { path: current_path, node: current };
   },
-  getPath: function(node) {
+  getPath: function (node) {
     var path;
     while (true) {
       if (FS.isRoot(node)) {
@@ -36302,7 +35992,7 @@ var FS = {
       node = node.parent;
     }
   },
-  hashName: function(parentid, name) {
+  hashName: function (parentid, name) {
     var hash = 0;
 
     for (var i = 0; i < name.length; i++) {
@@ -36310,12 +36000,12 @@ var FS = {
     }
     return ((parentid + hash) >>> 0) % FS.nameTable.length;
   },
-  hashAddNode: function(node) {
+  hashAddNode: function (node) {
     var hash = FS.hashName(node.parent.id, node.name);
     node.name_next = FS.nameTable[hash];
     FS.nameTable[hash] = node;
   },
-  hashRemoveNode: function(node) {
+  hashRemoveNode: function (node) {
     var hash = FS.hashName(node.parent.id, node.name);
     if (FS.nameTable[hash] === node) {
       FS.nameTable[hash] = node.name_next;
@@ -36330,7 +36020,7 @@ var FS = {
       }
     }
   },
-  lookupNode: function(parent, name) {
+  lookupNode: function (parent, name) {
     var err = FS.mayLookup(parent);
     if (err) {
       throw new FS.ErrnoError(err, parent);
@@ -36345,9 +36035,9 @@ var FS = {
     // if we failed to find it in the cache, call into the VFS
     return FS.lookup(parent, name);
   },
-  createNode: function(parent, name, mode, rdev) {
+  createNode: function (parent, name, mode, rdev) {
     if (!FS.FSNode) {
-      FS.FSNode = function(parent, name, mode, rdev) {
+      FS.FSNode = function (parent, name, mode, rdev) {
         if (!parent) {
           parent = this; // root node sets parent to itself
         }
@@ -36372,28 +36062,28 @@ var FS = {
       // Object.defineProperty in order to make closure compiler happy
       Object.defineProperties(FS.FSNode.prototype, {
         read: {
-          get: function() {
+          get: function () {
             return (this.mode & readMode) === readMode;
           },
-          set: function(val) {
+          set: function (val) {
             val ? (this.mode |= readMode) : (this.mode &= ~readMode);
           },
         },
         write: {
-          get: function() {
+          get: function () {
             return (this.mode & writeMode) === writeMode;
           },
-          set: function(val) {
+          set: function (val) {
             val ? (this.mode |= writeMode) : (this.mode &= ~writeMode);
           },
         },
         isFolder: {
-          get: function() {
+          get: function () {
             return FS.isDir(this.mode);
           },
         },
         isDevice: {
-          get: function() {
+          get: function () {
             return FS.isChrdev(this.mode);
           },
         },
@@ -36406,34 +36096,34 @@ var FS = {
 
     return node;
   },
-  destroyNode: function(node) {
+  destroyNode: function (node) {
     FS.hashRemoveNode(node);
   },
-  isRoot: function(node) {
+  isRoot: function (node) {
     return node === node.parent;
   },
-  isMountpoint: function(node) {
+  isMountpoint: function (node) {
     return !!node.mounted;
   },
-  isFile: function(mode) {
+  isFile: function (mode) {
     return (mode & 61440) === 32768;
   },
-  isDir: function(mode) {
+  isDir: function (mode) {
     return (mode & 61440) === 16384;
   },
-  isLink: function(mode) {
+  isLink: function (mode) {
     return (mode & 61440) === 40960;
   },
-  isChrdev: function(mode) {
+  isChrdev: function (mode) {
     return (mode & 61440) === 8192;
   },
-  isBlkdev: function(mode) {
+  isBlkdev: function (mode) {
     return (mode & 61440) === 24576;
   },
-  isFIFO: function(mode) {
+  isFIFO: function (mode) {
     return (mode & 61440) === 4096;
   },
-  isSocket: function(mode) {
+  isSocket: function (mode) {
     return (mode & 49152) === 49152;
   },
   flagModes: {
@@ -36453,14 +36143,14 @@ var FS = {
     'ax+': 1218,
     'xa+': 1218,
   },
-  modeStringToFlags: function(str) {
+  modeStringToFlags: function (str) {
     var flags = FS.flagModes[str];
     if (typeof flags === 'undefined') {
       throw new Error('Unknown file open mode: ' + str);
     }
     return flags;
   },
-  flagsToPermissionString: function(flag) {
+  flagsToPermissionString: function (flag) {
     var accmode = flag & 2097155;
     var perms = ['r', 'w', 'rw'][accmode];
     if (flag & 512) {
@@ -36468,7 +36158,7 @@ var FS = {
     }
     return perms;
   },
-  nodePermissions: function(node, perms) {
+  nodePermissions: function (node, perms) {
     if (FS.ignorePermissions) {
       return 0;
     }
@@ -36482,20 +36172,20 @@ var FS = {
     }
     return 0;
   },
-  mayLookup: function(dir) {
+  mayLookup: function (dir) {
     var err = FS.nodePermissions(dir, 'x');
     if (err) return err;
     if (!dir.node_ops.lookup) return ERRNO_CODES.EACCES;
     return 0;
   },
-  mayCreate: function(dir, name) {
+  mayCreate: function (dir, name) {
     try {
       var node = FS.lookupNode(dir, name);
       return ERRNO_CODES.EEXIST;
-    } catch (e) {}
+    } catch (e) { }
     return FS.nodePermissions(dir, 'wx');
   },
-  mayDelete: function(dir, name, isdir) {
+  mayDelete: function (dir, name, isdir) {
     var node;
     try {
       node = FS.lookupNode(dir, name);
@@ -36520,7 +36210,7 @@ var FS = {
     }
     return 0;
   },
-  mayOpen: function(node, flags) {
+  mayOpen: function (node, flags) {
     if (!node) {
       return ERRNO_CODES.ENOENT;
     }
@@ -36537,7 +36227,7 @@ var FS = {
     return FS.nodePermissions(node, FS.flagsToPermissionString(flags));
   },
   MAX_OPEN_FDS: 4096,
-  nextfd: function(fd_start, fd_end) {
+  nextfd: function (fd_start, fd_end) {
     fd_start = fd_start || 0;
     fd_end = fd_end || FS.MAX_OPEN_FDS;
     for (var fd = fd_start; fd <= fd_end; fd++) {
@@ -36547,35 +36237,35 @@ var FS = {
     }
     throw new FS.ErrnoError(ERRNO_CODES.EMFILE);
   },
-  getStream: function(fd) {
+  getStream: function (fd) {
     return FS.streams[fd];
   },
-  createStream: function(stream, fd_start, fd_end) {
+  createStream: function (stream, fd_start, fd_end) {
     if (!FS.FSStream) {
-      FS.FSStream = function() {};
+      FS.FSStream = function () { };
       FS.FSStream.prototype = {};
       // compatibility
       Object.defineProperties(FS.FSStream.prototype, {
         object: {
-          get: function() {
+          get: function () {
             return this.node;
           },
-          set: function(val) {
+          set: function (val) {
             this.node = val;
           },
         },
         isRead: {
-          get: function() {
+          get: function () {
             return (this.flags & 2097155) !== 1;
           },
         },
         isWrite: {
-          get: function() {
+          get: function () {
             return (this.flags & 2097155) !== 0;
           },
         },
         isAppend: {
-          get: function() {
+          get: function () {
             return this.flags & 1024;
           },
         },
@@ -36592,17 +36282,17 @@ var FS = {
     FS.streams[fd] = stream;
     return stream;
   },
-  closeStream: function(fd) {
+  closeStream: function (fd) {
     FS.streams[fd] = null;
   },
-  getStreamFromPtr: function(ptr) {
+  getStreamFromPtr: function (ptr) {
     return FS.streams[ptr - 1];
   },
-  getPtrForStream: function(stream) {
+  getPtrForStream: function (stream) {
     return stream ? stream.fd + 1 : 0;
   },
   chrdev_stream_ops: {
-    open: function(stream) {
+    open: function (stream) {
       var device = FS.getDevice(stream.node.rdev);
       // override node's stream ops with the device's
       stream.stream_ops = device.stream_ops;
@@ -36611,26 +36301,26 @@ var FS = {
         stream.stream_ops.open(stream);
       }
     },
-    llseek: function() {
+    llseek: function () {
       throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
     },
   },
-  major: function(dev) {
+  major: function (dev) {
     return dev >> 8;
   },
-  minor: function(dev) {
+  minor: function (dev) {
     return dev & 0xff;
   },
-  makedev: function(ma, mi) {
+  makedev: function (ma, mi) {
     return (ma << 8) | mi;
   },
-  registerDevice: function(dev, ops) {
+  registerDevice: function (dev, ops) {
     FS.devices[dev] = { stream_ops: ops };
   },
-  getDevice: function(dev) {
+  getDevice: function (dev) {
     return FS.devices[dev];
   },
-  getMounts: function(mount) {
+  getMounts: function (mount) {
     var mounts = [];
     var check = [mount];
 
@@ -36644,7 +36334,7 @@ var FS = {
 
     return mounts;
   },
-  syncfs: function(populate, callback) {
+  syncfs: function (populate, callback) {
     if (typeof populate === 'function') {
       callback = populate;
       populate = false;
@@ -36667,14 +36357,14 @@ var FS = {
     }
 
     // sync all mounts
-    mounts.forEach(function(mount) {
+    mounts.forEach(function (mount) {
       if (!mount.type.syncfs) {
         return done(null);
       }
       mount.type.syncfs(mount, populate, done);
     });
   },
-  mount: function(type, opts, mountpoint) {
+  mount: function (type, opts, mountpoint) {
     var root = mountpoint === '/';
     var pseudo = !mountpoint;
     var node;
@@ -36722,7 +36412,7 @@ var FS = {
 
     return mountRoot;
   },
-  unmount: function(mountpoint) {
+  unmount: function (mountpoint) {
     var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
 
     if (!FS.isMountpoint(lookup.node)) {
@@ -36734,7 +36424,7 @@ var FS = {
     var mount = node.mounted;
     var mounts = FS.getMounts(mount);
 
-    Object.keys(FS.nameTable).forEach(function(hash) {
+    Object.keys(FS.nameTable).forEach(function (hash) {
       var current = FS.nameTable[hash];
 
       while (current) {
@@ -36756,10 +36446,10 @@ var FS = {
     assert(idx !== -1);
     node.mount.mounts.splice(idx, 1);
   },
-  lookup: function(parent, name) {
+  lookup: function (parent, name) {
     return parent.node_ops.lookup(parent, name);
   },
-  mknod: function(path, mode, dev) {
+  mknod: function (path, mode, dev) {
     var lookup = FS.lookupPath(path, { parent: true });
     var parent = lookup.node;
     var name = PATH.basename(path);
@@ -36775,19 +36465,19 @@ var FS = {
     }
     return parent.node_ops.mknod(parent, name, mode, dev);
   },
-  create: function(path, mode) {
+  create: function (path, mode) {
     mode = mode !== undefined ? mode : 438 /* 0666 */;
     mode &= 4095;
     mode |= 32768;
     return FS.mknod(path, mode, 0);
   },
-  mkdir: function(path, mode) {
+  mkdir: function (path, mode) {
     mode = mode !== undefined ? mode : 511 /* 0777 */;
     mode &= 511 | 512;
     mode |= 16384;
     return FS.mknod(path, mode, 0);
   },
-  mkdev: function(path, mode, dev) {
+  mkdev: function (path, mode, dev) {
     if (typeof dev === 'undefined') {
       dev = mode;
       mode = 438 /* 0666 */;
@@ -36795,7 +36485,7 @@ var FS = {
     mode |= 8192;
     return FS.mknod(path, mode, dev);
   },
-  symlink: function(oldpath, newpath) {
+  symlink: function (oldpath, newpath) {
     if (!PATH.resolve(oldpath)) {
       throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
     }
@@ -36814,7 +36504,7 @@ var FS = {
     }
     return parent.node_ops.symlink(parent, newname, oldpath);
   },
-  rename: function(old_path, new_path) {
+  rename: function (old_path, new_path) {
     var old_dirname = PATH.dirname(old_path);
     var new_dirname = PATH.dirname(new_path);
     var old_name = PATH.basename(old_path);
@@ -36891,11 +36581,11 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['willMovePath']('" +
-          old_path +
-          "', '" +
-          new_path +
-          "') threw an exception: " +
-          e.message
+        old_path +
+        "', '" +
+        new_path +
+        "') threw an exception: " +
+        e.message
       );
     }
     // remove the node from the lookup hash
@@ -36916,15 +36606,15 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['onMovePath']('" +
-          old_path +
-          "', '" +
-          new_path +
-          "') threw an exception: " +
-          e.message
+        old_path +
+        "', '" +
+        new_path +
+        "') threw an exception: " +
+        e.message
       );
     }
   },
-  rmdir: function(path) {
+  rmdir: function (path) {
     var lookup = FS.lookupPath(path, { parent: true });
     var parent = lookup.node;
     var name = PATH.basename(path);
@@ -36946,9 +36636,9 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['willDeletePath']('" +
-          path +
-          "') threw an exception: " +
-          e.message
+        path +
+        "') threw an exception: " +
+        e.message
       );
     }
     parent.node_ops.rmdir(parent, name);
@@ -36959,13 +36649,13 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['onDeletePath']('" +
-          path +
-          "') threw an exception: " +
-          e.message
+        path +
+        "') threw an exception: " +
+        e.message
       );
     }
   },
-  readdir: function(path) {
+  readdir: function (path) {
     var lookup = FS.lookupPath(path, { follow: true });
     var node = lookup.node;
     if (!node.node_ops.readdir) {
@@ -36973,7 +36663,7 @@ var FS = {
     }
     return node.node_ops.readdir(node);
   },
-  unlink: function(path) {
+  unlink: function (path) {
     var lookup = FS.lookupPath(path, { parent: true });
     var parent = lookup.node;
     var name = PATH.basename(path);
@@ -36997,9 +36687,9 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['willDeletePath']('" +
-          path +
-          "') threw an exception: " +
-          e.message
+        path +
+        "') threw an exception: " +
+        e.message
       );
     }
     parent.node_ops.unlink(parent, name);
@@ -37010,13 +36700,13 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['onDeletePath']('" +
-          path +
-          "') threw an exception: " +
-          e.message
+        path +
+        "') threw an exception: " +
+        e.message
       );
     }
   },
-  readlink: function(path) {
+  readlink: function (path) {
     var lookup = FS.lookupPath(path);
     var link = lookup.node;
     if (!link) {
@@ -37027,7 +36717,7 @@ var FS = {
     }
     return link.node_ops.readlink(link);
   },
-  stat: function(path, dontFollow) {
+  stat: function (path, dontFollow) {
     var lookup = FS.lookupPath(path, { follow: !dontFollow });
     var node = lookup.node;
     if (!node) {
@@ -37038,10 +36728,10 @@ var FS = {
     }
     return node.node_ops.getattr(node);
   },
-  lstat: function(path) {
+  lstat: function (path) {
     return FS.stat(path, true);
   },
-  chmod: function(path, mode, dontFollow) {
+  chmod: function (path, mode, dontFollow) {
     var node;
     if (typeof path === 'string') {
       var lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -37057,17 +36747,17 @@ var FS = {
       timestamp: Date.now(),
     });
   },
-  lchmod: function(path, mode) {
+  lchmod: function (path, mode) {
     FS.chmod(path, mode, true);
   },
-  fchmod: function(fd, mode) {
+  fchmod: function (fd, mode) {
     var stream = FS.getStream(fd);
     if (!stream) {
       throw new FS.ErrnoError(ERRNO_CODES.EBADF);
     }
     FS.chmod(stream.node, mode);
   },
-  chown: function(path, uid, gid, dontFollow) {
+  chown: function (path, uid, gid, dontFollow) {
     var node;
     if (typeof path === 'string') {
       var lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -37083,17 +36773,17 @@ var FS = {
       // we ignore the uid / gid for now
     });
   },
-  lchown: function(path, uid, gid) {
+  lchown: function (path, uid, gid) {
     FS.chown(path, uid, gid, true);
   },
-  fchown: function(fd, uid, gid) {
+  fchown: function (fd, uid, gid) {
     var stream = FS.getStream(fd);
     if (!stream) {
       throw new FS.ErrnoError(ERRNO_CODES.EBADF);
     }
     FS.chown(stream.node, uid, gid);
   },
-  truncate: function(path, len) {
+  truncate: function (path, len) {
     if (len < 0) {
       throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
     }
@@ -37122,7 +36812,7 @@ var FS = {
       timestamp: Date.now(),
     });
   },
-  ftruncate: function(fd, len) {
+  ftruncate: function (fd, len) {
     var stream = FS.getStream(fd);
     if (!stream) {
       throw new FS.ErrnoError(ERRNO_CODES.EBADF);
@@ -37132,14 +36822,14 @@ var FS = {
     }
     FS.truncate(stream.node, len);
   },
-  utime: function(path, atime, mtime) {
+  utime: function (path, atime, mtime) {
     var lookup = FS.lookupPath(path, { follow: true });
     var node = lookup.node;
     node.node_ops.setattr(node, {
       timestamp: Math.max(atime, mtime),
     });
   },
-  open: function(path, flags, mode, fd_start, fd_end) {
+  open: function (path, flags, mode, fd_start, fd_end) {
     if (path === '') {
       throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
     }
@@ -37242,14 +36932,14 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['onOpenFile']('" +
-          path +
-          "', flags) threw an exception: " +
-          e.message
+        path +
+        "', flags) threw an exception: " +
+        e.message
       );
     }
     return stream;
   },
-  close: function(stream) {
+  close: function (stream) {
     try {
       if (stream.stream_ops.close) {
         stream.stream_ops.close(stream);
@@ -37260,7 +36950,7 @@ var FS = {
       FS.closeStream(stream.fd);
     }
   },
-  llseek: function(stream, offset, whence) {
+  llseek: function (stream, offset, whence) {
     if (!stream.seekable || !stream.stream_ops.llseek) {
       throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
     }
@@ -37268,7 +36958,7 @@ var FS = {
     stream.ungotten = [];
     return stream.position;
   },
-  read: function(stream, buffer, offset, length, position) {
+  read: function (stream, buffer, offset, length, position) {
     if (length < 0 || position < 0) {
       throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
     }
@@ -37298,7 +36988,7 @@ var FS = {
     if (!seeking) stream.position += bytesRead;
     return bytesRead;
   },
-  write: function(stream, buffer, offset, length, position, canOwn) {
+  write: function (stream, buffer, offset, length, position, canOwn) {
     if (length < 0 || position < 0) {
       throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
     }
@@ -37337,14 +37027,14 @@ var FS = {
     } catch (e) {
       console.log(
         "FS.trackingDelegate['onWriteToFile']('" +
-          path +
-          "') threw an exception: " +
-          e.message
+        path +
+        "') threw an exception: " +
+        e.message
       );
     }
     return bytesWritten;
   },
-  allocate: function(stream, offset, length) {
+  allocate: function (stream, offset, length) {
     if (offset < 0 || length <= 0) {
       throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
     }
@@ -37359,7 +37049,7 @@ var FS = {
     }
     stream.stream_ops.allocate(stream, offset, length);
   },
-  mmap: function(stream, buffer, offset, length, position, prot, flags) {
+  mmap: function (stream, buffer, offset, length, position, prot, flags) {
     // TODO if PROT is PROT_WRITE, make sure we have write access
     if ((stream.flags & 2097155) === 1) {
       throw new FS.ErrnoError(ERRNO_CODES.EACCES);
@@ -37377,13 +37067,13 @@ var FS = {
       flags
     );
   },
-  ioctl: function(stream, cmd, arg) {
+  ioctl: function (stream, cmd, arg) {
     if (!stream.stream_ops.ioctl) {
       throw new FS.ErrnoError(ERRNO_CODES.ENOTTY);
     }
     return stream.stream_ops.ioctl(stream, cmd, arg);
   },
-  readFile: function(path, opts) {
+  readFile: function (path, opts) {
     opts = opts || {};
     opts.flags = opts.flags || 'r';
     opts.encoding = opts.encoding || 'binary';
@@ -37408,7 +37098,7 @@ var FS = {
     FS.close(stream);
     return ret;
   },
-  writeFile: function(path, data, opts) {
+  writeFile: function (path, data, opts) {
     opts = opts || {};
     opts.flags = opts.flags || 'w';
     opts.encoding = opts.encoding || 'utf8';
@@ -37425,10 +37115,10 @@ var FS = {
     }
     FS.close(stream);
   },
-  cwd: function() {
+  cwd: function () {
     return FS.currentPath;
   },
-  chdir: function(path) {
+  chdir: function (path) {
     var lookup = FS.lookupPath(path, { follow: true });
     if (!FS.isDir(lookup.node.mode)) {
       throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
@@ -37439,20 +37129,20 @@ var FS = {
     }
     FS.currentPath = lookup.path;
   },
-  createDefaultDirectories: function() {
+  createDefaultDirectories: function () {
     FS.mkdir('/tmp');
     FS.mkdir('/home');
     FS.mkdir('/home/web_user');
   },
-  createDefaultDevices: function() {
+  createDefaultDevices: function () {
     // create /dev
     FS.mkdir('/dev');
     // setup /dev/null
     FS.registerDevice(FS.makedev(1, 3), {
-      read: function() {
+      read: function () {
         return 0;
       },
-      write: function() {
+      write: function () {
         return 0;
       },
     });
@@ -37469,18 +37159,18 @@ var FS = {
     if (typeof crypto !== 'undefined') {
       // for modern web browsers
       var randomBuffer = new Uint8Array(1);
-      random_device = function() {
+      random_device = function () {
         crypto.getRandomValues(randomBuffer);
         return randomBuffer[0];
       };
     } else if (ENVIRONMENT_IS_NODE) {
       // for nodejs
-      random_device = function() {
+      random_device = function () {
         return require('crypto').randomBytes(1)[0];
       };
     } else {
       // default for ES5 platforms
-      random_device = function() {
+      random_device = function () {
         return (Math.random() * 256) | 0;
       };
     }
@@ -37491,7 +37181,7 @@ var FS = {
     FS.mkdir('/dev/shm');
     FS.mkdir('/dev/shm/tmp');
   },
-  createStandardStreams: function() {
+  createStandardStreams: function () {
     // TODO deprecate the old functionality of a single
     // input / output callback and that utilizes FS.createDevice
     // and instead require a unique set of stream ops
@@ -37529,11 +37219,11 @@ var FS = {
     HEAP32[_stderr >> 2] = FS.getPtrForStream(stderr);
     assert(stderr.fd === 2, 'invalid handle for stderr (' + stderr.fd + ')');
   },
-  ensureErrnoError: function() {
+  ensureErrnoError: function () {
     if (FS.ErrnoError) return;
     FS.ErrnoError = function ErrnoError(errno, node) {
       this.node = node;
-      this.setErrno = function(errno) {
+      this.setErrno = function (errno) {
         this.errno = errno;
         for (var key in ERRNO_CODES) {
           if (ERRNO_CODES[key] === errno) {
@@ -37548,12 +37238,12 @@ var FS = {
     FS.ErrnoError.prototype = new Error();
     FS.ErrnoError.prototype.constructor = FS.ErrnoError;
     // Some errors may happen quite a bit, to avoid overhead we reuse them (and suffer a lack of stack info)
-    [ERRNO_CODES.ENOENT].forEach(function(code) {
+    [ERRNO_CODES.ENOENT].forEach(function (code) {
       FS.genericErrors[code] = new FS.ErrnoError(code);
       FS.genericErrors[code].stack = '<generic error, no stack>';
     });
   },
-  staticInit: function() {
+  staticInit: function () {
     FS.ensureErrnoError();
 
     FS.nameTable = new Array(4096);
@@ -37563,7 +37253,7 @@ var FS = {
     FS.createDefaultDirectories();
     FS.createDefaultDevices();
   },
-  init: function(input, output, error) {
+  init: function (input, output, error) {
     assert(
       !FS.init.initialized,
       'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)'
@@ -37579,7 +37269,7 @@ var FS = {
 
     FS.createStandardStreams();
   },
-  quit: function() {
+  quit: function () {
     FS.init.initialized = false;
     for (var i = 0; i < FS.streams.length; i++) {
       var stream = FS.streams[i];
@@ -37589,24 +37279,24 @@ var FS = {
       FS.close(stream);
     }
   },
-  getMode: function(canRead, canWrite) {
+  getMode: function (canRead, canWrite) {
     var mode = 0;
     if (canRead) mode |= 292 | 73;
     if (canWrite) mode |= 146;
     return mode;
   },
-  joinPath: function(parts, forceRelative) {
+  joinPath: function (parts, forceRelative) {
     var path = PATH.join.apply(null, parts);
     if (forceRelative && path[0] == '/') path = path.substr(1);
     return path;
   },
-  absolutePath: function(relative, base) {
+  absolutePath: function (relative, base) {
     return PATH.resolve(base, relative);
   },
-  standardizePath: function(path) {
+  standardizePath: function (path) {
     return PATH.normalize(path);
   },
-  findObject: function(path, dontResolveLastLink) {
+  findObject: function (path, dontResolveLastLink) {
     var ret = FS.analyzePath(path, dontResolveLastLink);
     if (ret.exists) {
       return ret.object;
@@ -37615,12 +37305,12 @@ var FS = {
       return null;
     }
   },
-  analyzePath: function(path, dontResolveLastLink) {
+  analyzePath: function (path, dontResolveLastLink) {
     // operate from within the context of the symlink's target
     try {
       var lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
       path = lookup.path;
-    } catch (e) {}
+    } catch (e) { }
     var ret = {
       isRoot: false,
       exists: false,
@@ -37649,7 +37339,7 @@ var FS = {
     }
     return ret;
   },
-  createFolder: function(parent, name, canRead, canWrite) {
+  createFolder: function (parent, name, canRead, canWrite) {
     var path = PATH.join2(
       typeof parent === 'string' ? parent : FS.getPath(parent),
       name
@@ -37657,7 +37347,7 @@ var FS = {
     var mode = FS.getMode(canRead, canWrite);
     return FS.mkdir(path, mode);
   },
-  createPath: function(parent, path, canRead, canWrite) {
+  createPath: function (parent, path, canRead, canWrite) {
     parent = typeof parent === 'string' ? parent : FS.getPath(parent);
     var parts = path.split('/').reverse();
     while (parts.length) {
@@ -37673,7 +37363,7 @@ var FS = {
     }
     return current;
   },
-  createFile: function(parent, name, properties, canRead, canWrite) {
+  createFile: function (parent, name, properties, canRead, canWrite) {
     var path = PATH.join2(
       typeof parent === 'string' ? parent : FS.getPath(parent),
       name
@@ -37681,12 +37371,12 @@ var FS = {
     var mode = FS.getMode(canRead, canWrite);
     return FS.create(path, mode);
   },
-  createDataFile: function(parent, name, data, canRead, canWrite, canOwn) {
+  createDataFile: function (parent, name, data, canRead, canWrite, canOwn) {
     var path = name
       ? PATH.join2(
-          typeof parent === 'string' ? parent : FS.getPath(parent),
-          name
-        )
+        typeof parent === 'string' ? parent : FS.getPath(parent),
+        name
+      )
       : parent;
     var mode = FS.getMode(canRead, canWrite);
     var node = FS.create(path, mode);
@@ -37706,7 +37396,7 @@ var FS = {
     }
     return node;
   },
-  createDevice: function(parent, name, input, output) {
+  createDevice: function (parent, name, input, output) {
     var path = PATH.join2(
       typeof parent === 'string' ? parent : FS.getPath(parent),
       name
@@ -37717,16 +37407,16 @@ var FS = {
     // Create a fake device that a set of stream ops to emulate
     // the old behavior.
     FS.registerDevice(dev, {
-      open: function(stream) {
+      open: function (stream) {
         stream.seekable = false;
       },
-      close: function(stream) {
+      close: function (stream) {
         // flush any pending line data
         if (output && output.buffer && output.buffer.length) {
           output(10);
         }
       },
-      read: function(stream, buffer, offset, length, pos /* ignored */) {
+      read: function (stream, buffer, offset, length, pos /* ignored */) {
         var bytesRead = 0;
         for (var i = 0; i < length; i++) {
           var result;
@@ -37747,7 +37437,7 @@ var FS = {
         }
         return bytesRead;
       },
-      write: function(stream, buffer, offset, length, pos) {
+      write: function (stream, buffer, offset, length, pos) {
         for (var i = 0; i < length; i++) {
           try {
             output(buffer[offset + i]);
@@ -37763,14 +37453,14 @@ var FS = {
     });
     return FS.mkdev(path, mode, dev);
   },
-  createLink: function(parent, name, target, canRead, canWrite) {
+  createLink: function (parent, name, target, canRead, canWrite) {
     var path = PATH.join2(
       typeof parent === 'string' ? parent : FS.getPath(parent),
       name
     );
     return FS.symlink(target, path);
   },
-  forceLoadFile: function(obj) {
+  forceLoadFile: function (obj) {
     if (obj.isDevice || obj.isFolder || obj.link || obj.contents) return true;
     var success = true;
     if (typeof XMLHttpRequest !== 'undefined') {
@@ -37793,7 +37483,7 @@ var FS = {
     if (!success) ___setErrNo(ERRNO_CODES.EIO);
     return success;
   },
-  createLazyFile: function(parent, name, url, canRead, canWrite) {
+  createLazyFile: function (parent, name, url, canRead, canWrite) {
     // Lazy chunked Uint8Array (implements get and length from Uint8Array). Actual getting is abstracted away for eventual reuse.
     function LazyUint8Array() {
       this.lengthKnown = false;
@@ -37828,7 +37518,7 @@ var FS = {
       if (!hasByteServing) chunkSize = datalength;
 
       // Function to get a range from the remote URL.
-      var doXHR = function(from, to) {
+      var doXHR = function (from, to) {
         if (from > to)
           throw new Error(
             'invalid range (' + from + ', ' + to + ') or no bytes requested!'
@@ -37860,7 +37550,7 @@ var FS = {
         }
       };
       var lazyArray = this;
-      lazyArray.setDataGetter(function(chunkNum) {
+      lazyArray.setDataGetter(function (chunkNum) {
         var start = chunkNum * chunkSize;
         var end = (chunkNum + 1) * chunkSize - 1; // including this byte
         end = Math.min(end, datalength - 1); // if datalength-1 is selected, this is the last block
@@ -37881,7 +37571,7 @@ var FS = {
         throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc';
       var lazyArray = new LazyUint8Array();
       Object.defineProperty(lazyArray, 'length', {
-        get: function() {
+        get: function () {
           if (!this.lengthKnown) {
             this.cacheLength();
           }
@@ -37889,7 +37579,7 @@ var FS = {
         },
       });
       Object.defineProperty(lazyArray, 'chunkSize', {
-        get: function() {
+        get: function () {
           if (!this.lengthKnown) {
             this.cacheLength();
           }
@@ -37914,14 +37604,14 @@ var FS = {
     }
     // Add a function that defers querying the file size until it is asked the first time.
     Object.defineProperty(node, 'usedBytes', {
-      get: function() {
+      get: function () {
         return this.contents.length;
       },
     });
     // override each stream op with one that tries to force load the lazy file first
     var stream_ops = {};
     var keys = Object.keys(node.stream_ops);
-    keys.forEach(function(key) {
+    keys.forEach(function (key) {
       var fn = node.stream_ops[key];
       stream_ops[key] = function forceLoadLazyFile() {
         if (!FS.forceLoadFile(node)) {
@@ -37961,7 +37651,7 @@ var FS = {
     node.stream_ops = stream_ops;
     return node;
   },
-  createPreloadedFile: function(
+  createPreloadedFile: function (
     parent,
     name,
     url,
@@ -37985,10 +37675,10 @@ var FS = {
         removeRunDependency('cp ' + fullname);
       }
       var handled = false;
-      Module['preloadPlugins'].forEach(function(plugin) {
+      Module['preloadPlugins'].forEach(function (plugin) {
         if (handled) return;
         if (plugin['canHandle'](fullname)) {
-          plugin['handle'](byteArray, fullname, finish, function() {
+          plugin['handle'](byteArray, fullname, finish, function () {
             if (onerror) onerror();
             removeRunDependency('cp ' + fullname);
           });
@@ -38001,7 +37691,7 @@ var FS = {
     if (typeof url == 'string') {
       Browser.asyncLoad(
         url,
-        function(byteArray) {
+        function (byteArray) {
           processData(byteArray);
         },
         onerror
@@ -38010,112 +37700,8 @@ var FS = {
       processData(url);
     }
   },
-  indexedDB: function() {
-    return (
-      window.indexedDB ||
-      window.mozIndexedDB ||
-      window.webkitIndexedDB ||
-      window.msIndexedDB
-    );
-  },
-  DB_NAME: function() {
-    return 'EM_FS_' + window.location.pathname;
-  },
-  DB_VERSION: 20,
-  DB_STORE_NAME: 'FILE_DATA',
-  saveFilesToDB: function(paths, onload, onerror) {
-    onload = onload || function() {};
-    onerror = onerror || function() {};
-    var indexedDB = FS.indexedDB();
-    try {
-      var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION);
-    } catch (e) {
-      return onerror(e);
-    }
-    openRequest.onupgradeneeded = function openRequest_onupgradeneeded() {
-      console.log('creating db');
-      var db = openRequest.result;
-      db.createObjectStore(FS.DB_STORE_NAME);
-    };
-    openRequest.onsuccess = function openRequest_onsuccess() {
-      var db = openRequest.result;
-      var transaction = db.transaction([FS.DB_STORE_NAME], 'readwrite');
-      var files = transaction.objectStore(FS.DB_STORE_NAME);
-      var ok = 0,
-        fail = 0,
-        total = paths.length;
-      function finish() {
-        if (fail == 0) onload();
-        else onerror();
-      }
-      paths.forEach(function(path) {
-        var putRequest = files.put(FS.analyzePath(path).object.contents, path);
-        putRequest.onsuccess = function putRequest_onsuccess() {
-          ok++;
-          if (ok + fail == total) finish();
-        };
-        putRequest.onerror = function putRequest_onerror() {
-          fail++;
-          if (ok + fail == total) finish();
-        };
-      });
-      transaction.onerror = onerror;
-    };
-    openRequest.onerror = onerror;
-  },
-  loadFilesFromDB: function(paths, onload, onerror) {
-    onload = onload || function() {};
-    onerror = onerror || function() {};
-    var indexedDB = FS.indexedDB();
-    try {
-      var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION);
-    } catch (e) {
-      return onerror(e);
-    }
-    openRequest.onupgradeneeded = onerror; // no database to load from
-    openRequest.onsuccess = function openRequest_onsuccess() {
-      var db = openRequest.result;
-      try {
-        var transaction = db.transaction([FS.DB_STORE_NAME], 'readonly');
-      } catch (e) {
-        onerror(e);
-        return;
-      }
-      var files = transaction.objectStore(FS.DB_STORE_NAME);
-      var ok = 0,
-        fail = 0,
-        total = paths.length;
-      function finish() {
-        if (fail == 0) onload();
-        else onerror();
-      }
-      paths.forEach(function(path) {
-        var getRequest = files.get(path);
-        getRequest.onsuccess = function getRequest_onsuccess() {
-          if (FS.analyzePath(path).exists) {
-            FS.unlink(path);
-          }
-          FS.createDataFile(
-            PATH.dirname(path),
-            PATH.basename(path),
-            getRequest.result,
-            true,
-            true,
-            true
-          );
-          ok++;
-          if (ok + fail == total) finish();
-        };
-        getRequest.onerror = function getRequest_onerror() {
-          fail++;
-          if (ok + fail == total) finish();
-        };
-      });
-      transaction.onerror = onerror;
-    };
-    openRequest.onerror = onerror;
-  },
 };
+
 var PATH = {
   splitPath: function(filename) {
     var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;

@@ -2,12 +2,11 @@
 /* global Whisper: false */
 /* global window: false */
 const path = require('path');
-const { webFrame, remote, clipboard, ipcRenderer, contextBridge } = require('electron');
+const { webFrame, remote, clipboard, ipcRenderer } = require('electron');
 
 const semver = require('semver');
 
 const { deferredToPromise } = require('./js/modules/deferred_to_promise');
-const { JobQueue } = require('./js/modules/job_queue');
 
 const { app } = remote;
 
@@ -39,7 +38,6 @@ window.getCommitHash = () => config.commitHash;
 window.getNodeVersion = () => config.node_version;
 window.getHostName = () => config.hostname;
 window.getServerTrustRoot = () => config.serverTrustRoot;
-window.JobQueue = JobQueue;
 window.isBehindProxy = () => Boolean(config.proxyUrl);
 
 window.lokiFeatureFlags = {
