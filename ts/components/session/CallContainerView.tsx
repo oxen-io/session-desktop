@@ -22,12 +22,11 @@ const CallWindowHeader = styled.div`
 `;
 
 const VideoContainer = styled.div`
-width: 100%;
-height: 100%;
+  width: 100%;
+  height: 100%;
 `;
 
 const VideoContainerRemote = styled.video`
-
   height: 100%;
   width: 100%;
 `;
@@ -41,7 +40,7 @@ const VideoContainerLocal = styled.video`
 
 const CallWindowInner = styled.div`
   text-align: center;
-  flex-grow:1;
+  flex-grow: 1;
   position: relative;
 `;
 

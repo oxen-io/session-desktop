@@ -324,17 +324,17 @@ export function getMarkAllReadMenuItem(conversationId: string): JSX.Element | nu
 
 export function getStartCallMenuItem(conversationId: string): JSX.Element | null {
   if (window?.lokiFeatureFlags.useCallMessage) {
-const canCall = !(useSelector(getHasIncomingCall) || useSelector(getHasOngoingCall));
+    const canCall = !(useSelector(getHasIncomingCall) || useSelector(getHasOngoingCall));
     return (
       <Item
         onClick={async () => {
           // TODO: either pass param to callRecipient or call different call methods based on item selected.
-        // TODO: one time redux-persisted permission modal?
+          // TODO: one time redux-persisted permission modal?
           const convo = getConversationController().get(conversationId);
-        if (!canCall) {
-          ToastUtils.pushUnableToCall();
-          return;
-        }
+          if (!canCall) {
+            ToastUtils.pushUnableToCall();
+            return;
+          }
           if (convo) {
             window.showVideoCallWindow();
             convo.callState = 'connecting';
@@ -348,7 +348,7 @@ const canCall = !(useSelector(getHasIncomingCall) || useSelector(getHasOngoingCa
       </Item>
     );
   }
-}
+
   return null;
 }
 

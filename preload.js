@@ -327,5 +327,6 @@ window.BlockedNumberController = BlockedNumberController;
 window.showVideoCallWindow = () => ipcRenderer.send('show-video-call');
 
 // those should be a SignalService.CallMessage
-window.forwardCallMessageToMain = (sender, callMesg) => ipcRenderer.send('video-call-data-cache', sender, callMesg);
+window.forwardCallMessageToMain = (sender, callMesg) =>
+  ipcRenderer.send('video-call-data-cache', sender, callMesg);
 window.clearCallCacheFromSender = sender => ipcRenderer.send('video-call-data-cache-empty', sender);

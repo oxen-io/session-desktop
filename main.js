@@ -1005,20 +1005,20 @@ ipc.on('close-video-call', () => {
   }
 });
 
-//Map<string, Array<SignalService.CallMessage>>
+// Map<string, Array<SignalService.CallMessage>>
 const callCache = new Map();
 
 ipc.on('video-call-data-cache', (sender, callMessage) => {
   console.warn('should add message to cache');
   if (!callCache.has(sender)) {
-    callCache.set(sender, new Array());
+    callCache.set(sender, []);
   }
-  callCache.get(sender)?.push(callMessage);
+  callCache.get(sender).push(callMessage);
 });
 
 ipc.on('video-call-data-cache-empty', sender => {
   console.warn('deleting call cache with: ', sender);
-    callCache.delete(sender);
+  callCache.delete(sender);
 });
 
 // Settings-related IPC calls
