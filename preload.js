@@ -323,4 +323,9 @@ const { BlockedNumberController } = require('./ts/util/blockedNumberController')
 
 window.BlockedNumberController = BlockedNumberController;
 
+// calling
 window.showVideoCallWindow = () => ipcRenderer.send('show-video-call');
+
+// those should be a SignalService.CallMessage
+window.forwardCallMessageToMain = (sender, callMesg) => ipcRenderer.send('video-call-data-cache', sender, callMesg);
+window.clearCallCacheFromSender = sender => ipcRenderer.send('video-call-data-cache-empty', sender);

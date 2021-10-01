@@ -14,7 +14,7 @@ const { Message } = require('../../ts/components/conversation/Message');
 const { SessionRegistrationView } = require('../../ts/components/session/SessionRegistrationView');
 
 const { SessionInboxView } = require('../../ts/components/session/SessionInboxView');
-
+const { CallContainerView } = require('../../ts/components/session/CallContainerView');
 // Types
 const AttachmentType = require('./types/attachment');
 const VisualAttachment = require('./types/visual_attachment');
@@ -120,6 +120,7 @@ exports.setup = (options = {}) => {
   const Components = {
     SessionInboxView,
     SessionRegistrationView,
+    CallContainerView,
     Message,
   };
 

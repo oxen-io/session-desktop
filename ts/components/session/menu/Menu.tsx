@@ -323,30 +323,33 @@ export function getMarkAllReadMenuItem(conversationId: string): JSX.Element | nu
 }
 
 export function getStartCallMenuItem(conversationId: string): JSX.Element | null {
-  const canCall = !(useSelector(getHasIncomingCall) || useSelector(getHasOngoingCall));
-  return (
-    <Item
-      onClick={async () => {
-        // TODO: either pass param to callRecipient or call different call methods based on item selected.
+  if (window?.lokiFeatureFlags.useCallMessage) {
+const canCall = !(useSelector(getHasIncomingCall) || useSelector(getHasOngoingCall));
+    return (
+      <Item
+        onClick={async () => {
+          // TODO: either pass param to callRecipient or call different call methods based on item selected.
         // TODO: one time redux-persisted permission modal?
-        const convo = getConversationController().get(conversationId);
-
+          const convo = getConversationController().get(conversationId);
         if (!canCall) {
           ToastUtils.pushUnableToCall();
           return;
         }
+          if (convo) {
+            window.showVideoCallWindow();
+            convo.callState = 'connecting';
+            await convo.commit();
 
-        if (convo) {
-          window.showVideoCallWindow();
-          convo.callState = 'connecting';
-          await convo.commit();
-          await CallManager.USER_callRecipient(convo.id);
-        }
-      }}
-    >
-      {window.i18n('startVideoCall')}
-    </Item>
-  );
+            await CallManager.USER_callRecipient(convo.id);
+          }
+        }}
+      >
+        {window.i18n('startVideoCall')}
+      </Item>
+    );
+  }
+}
+  return null;
 }
 
 export function getDisappearingMenuItem(

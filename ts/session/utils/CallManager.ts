@@ -351,8 +351,9 @@ export async function USER_rejectIncomingCallRequest(fromSender: string) {
     timestamp: Date.now(),
   });
   callCache.delete(fromSender);
+  window.clearCallCacheFromSender(fromSender);
 
-  window.inboxStore?.dispatch(endCall({ pubkey: fromSender }));
+  window.window.inboxStore?.dispatch(endCall({ pubkey: fromSender }));
   window.log.info('sending END_CALL MESSAGE');
 
   await getMessageQueue().sendToPubKeyNonDurably(PubKey.cast(fromSender), endCallMessage);
@@ -360,6 +361,8 @@ export async function USER_rejectIncomingCallRequest(fromSender: string) {
 
 export function handleEndCallMessage(sender: string) {
   callCache.delete(sender);
+  window.clearCallCacheFromSender(sender);
+
   if (videoEventsListener) {
     videoEventsListener(null, null);
   }
@@ -398,6 +401,7 @@ export async function handleOfferCallMessage(
     callCache.set(sender, new Array());
   }
   callCache.get(sender)?.push(callMessage);
+  window.forwardCallMessageToMain(sender, callMessage);
   window.inboxStore?.dispatch(incomingCall({ pubkey: sender }));
 }
 
@@ -432,6 +436,8 @@ export async function handleCallAnsweredMessage(
   }
 
   callCache.get(sender)?.push(callMessage);
+  window.forwardCallMessageToMain(sender, callMessage);
+
   window.inboxStore?.dispatch(answerCall({ pubkey: sender }));
   const remoteDesc = new RTCSessionDescription({ type: 'answer', sdp: callMessage.sdps[0] });
   if (peerConnection) {
@@ -457,6 +463,8 @@ export async function handleIceCandidatesMessage(
   }
 
   callCache.get(sender)?.push(callMessage);
+  window.forwardCallMessageToMain(sender, callMessage);
+
   // window.inboxStore?.dispatch(incomingCall({ pubkey: sender }));
   if (peerConnection) {
     // tslint:disable-next-line: prefer-for-of
@@ -484,4 +492,5 @@ export async function handleOtherCallMessage(
   callMessage: SignalService.CallMessage
 ) {
   callCache.get(sender)?.push(callMessage);
+  window.forwardCallMessageToMain(sender, callMessage);
 }

@@ -10,6 +10,7 @@ import { Store } from 'redux';
 
 import { ConversationCollection, ConversationModel } from './models/conversation';
 import { ConversationType } from './state/ducks/conversations';
+import { SignalService } from './protobuf';
 
 /*
 We declare window stuff here instead of global.d.ts because we are importing other declarations.
@@ -84,5 +85,7 @@ declare global {
     setStartInTray: (val: boolean) => Promise<void>;
     getStartInTray: () => Promise<boolean>;
     showVideoCallWindow: () => void;
+    forwardCallMessageToMain: (sender: string, msg: SignalService.CallMessage) => void;
+    clearCallCacheFromSender: (sender: string) => void;
   }
 }

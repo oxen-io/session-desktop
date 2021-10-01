@@ -598,12 +598,10 @@ async function showDebugLogWindow() {
   debugLogWindow.loadURL(prepareURL([__dirname, 'debug_log.html'], { theme }));
 
   debugLogWindow.on('closed', () => {
-    removeDarkOverlay();
     debugLogWindow = null;
   });
 
   debugLogWindow.once('ready-to-show', () => {
-    addDarkOverlay();
     debugLogWindow.show();
   });
 }
@@ -617,8 +615,8 @@ async function showVideoCallWindow() {
 
   const theme = await getThemeFromMainWindow();
   const options = {
-    width: 400,
-    height: 300,
+    width: 800,
+    height: 600,
     resizable: true,
     title: locale.messages.videoCall,
     autoHideMenuBar: true,
@@ -632,6 +630,7 @@ async function showVideoCallWindow() {
       preload: path.join(__dirname, 'video_call_preload.js'),
       nativeWindowOpen: true,
     },
+    openDevTools: 'bottom',
     parent: mainWindow,
   };
 
@@ -1004,6 +1003,22 @@ ipc.on('close-video-call', () => {
     videoCallWindow.close();
     videoCallWindow = null;
   }
+});
+
+//Map<string, Array<SignalService.CallMessage>>
+const callCache = new Map();
+
+ipc.on('video-call-data-cache', (sender, callMessage) => {
+  console.warn('should add message to cache');
+  if (!callCache.has(sender)) {
+    callCache.set(sender, new Array());
+  }
+  callCache.get(sender)?.push(callMessage);
+});
+
+ipc.on('video-call-data-cache-empty', sender => {
+  console.warn('deleting call cache with: ', sender);
+    callCache.delete(sender);
 });
 
 // Settings-related IPC calls

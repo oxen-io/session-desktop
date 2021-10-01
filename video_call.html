@@ -4,17 +4,21 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'none';
             child-src 'self';
-            connect-src 'self' https: wss:;
+            connect-src 'self' https: wss: blob: data:;
             font-src 'self';
             form-action 'self';
             frame-src 'none';
             img-src 'self' blob: data:;
             media-src 'self' blob:;
             object-src 'none';
-            script-src 'self';
+            script-src 'self' 'unsafe-eval';
             style-src 'self' 'unsafe-inline';"
     />
     <link href="stylesheets/manifest.css" rel="stylesheet" type="text/css" />
   </head>
-  <body class="video-call-window"></body>
+  <body style="--color-foreground-primary:#ffffff; --color-background-primary:#272726; --color-clickable-hovered:#dfdfdf;">
+    <div id="video-call-root" style="width:100%;height:100%; display:flex;flex-direction:column"></div>
+
+    <script type="text/javascript" src="js/views/video_call_view.js"></script>
+  </body>
 </html>

@@ -8,7 +8,16 @@ const config = url.parse(window.location.toString(), true).query;
 const { locale } = config;
 const localeMessages = ipcRenderer.sendSync('locale-data');
 window.libsession = require('./ts/session');
+window.React = require('react');
+window.ReactDOM = require('react-dom');
 
+const { CallContainerView } = require('./ts/components/session/CallContainerView');
+
+window.Signal = {
+  Components: {
+    CallContainerView,
+  },
+};
 window.getVersion = () => config.version;
 
 window.theme = config.theme;
