@@ -1009,11 +1009,12 @@ ipc.on('close-video-call', () => {
 const callCache = new Map();
 
 ipc.on('video-call-data-cache', (sender, callMessage) => {
-  console.warn('should add message to cache');
   if (!callCache.has(sender)) {
     callCache.set(sender, []);
   }
+
   callCache.get(sender).push(callMessage);
+  console.warn(`new callCache of ${sender} length: ${callCache.get(sender).length}`);
 });
 
 ipc.on('video-call-data-cache-empty', sender => {

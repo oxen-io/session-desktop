@@ -17,8 +17,6 @@ We declare window stuff here instead of global.d.ts because we are importing oth
 If you import anything in global.d.ts, the type system won't work correctly.
 */
 
-type UtilWorkerFunctionType = (fnName: string, ...args: any) => Promise<any>;
-
 declare global {
   interface Window {
     CONSTANTS: any;
@@ -27,9 +25,6 @@ declare global {
     LokiSnodeAPI: any;
     Session: any;
     Signal: SignalInterface;
-    StubAppDotNetApi: any;
-    StringView: any;
-    StubMessageAPI: any;
     Whisper: any;
     clearLocalData: any;
     clipboard: any;
@@ -37,7 +32,6 @@ declare global {
     displayNameRegex: any;
     friends: any;
     getConversations: any;
-    getFriendsFromContacts: any;
     getSettingValue: any;
     i18n: LocalizerType;
     libsignal: LibsignalProtocol;
@@ -69,7 +63,6 @@ declare global {
     versionInfo: any;
     getConversations: () => ConversationCollection;
     profileImages: any;
-    MediaRecorder: any;
     dataURLToBlobSync: any;
     autoOrientImage: (fileOrBlobOrURL: string | File | Blob, options: any = {}) => Promise<string>;
     contextMenuShown: boolean;
@@ -78,7 +71,6 @@ declare global {
       conversationKey: string;
       messageId?: string | undefined;
     }) => Promise<void>;
-    LokiPushNotificationServer: any;
     getGlobalOnlineStatus: () => boolean;
     confirmationDialog: any;
     callWorker: (fnName: string, ...args: any) => Promise<any>;
