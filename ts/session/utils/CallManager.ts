@@ -477,7 +477,7 @@ export async function handleIceCandidatesMessage(
         await peerConnection.addIceCandidate(candicate);
       } catch (err) {
         if (!ignoreOffer) {
-          window.log?.warn('Error handling ICE candidates message');
+          window.log?.warn('Error handling ICE candidates message', err);
         }
       }
     }
