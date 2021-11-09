@@ -25,3 +25,5 @@ const { _electron: electron } = require('playwright');
     // Exit app.
     await electronApp.close();
   })();
+
+  
