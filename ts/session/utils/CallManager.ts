@@ -41,7 +41,7 @@ export type CallManagerOptionsType = {
   isLocalVideoStreamMuted: boolean;
   isRemoteVideoStreamMuted: boolean;
   isAudioMuted: boolean;
-  isAudioOutputMuted: boolean;
+  currentSelectedAudioOutput: string;
 };
 
 export type CallManagerListener = ((options: CallManagerOptionsType) => void) | null;
@@ -59,7 +59,7 @@ function callVideoListeners() {
         isRemoteVideoStreamMuted: remoteVideoStreamIsMuted,
         isLocalVideoStreamMuted: selectedCameraId === DEVICE_DISABLED_DEVICE_ID,
         isAudioMuted: selectedAudioInputId === DEVICE_DISABLED_DEVICE_ID,
-        isAudioOutputMuted: selectedAudioOutputId === DEVICE_DISABLED_DEVICE_ID,
+        currentSelectedAudioOutput: selectedAudioOutputId,
       });
     });
   }
