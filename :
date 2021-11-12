@@ -1,0 +1,13 @@
+playwright testing
+wq:
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch testing
+# Changes to be committed:
+#	modified:   intro.png
+#	modified:   package-lock.json
+#	deleted:    tests/electron_test.js
+#	deleted:    tests/foo.spec.js
+#	renamed:    tests/new_user.js -> tests/new_user.spec.js
+#
