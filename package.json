@@ -179,7 +179,6 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-bytes": "^0.1.2",
-    "chair": "0.0.0",
     "css-loader": "^3.6.0",
     "dashdash": "1.14.1",
     "electron": "^13.1.9",
