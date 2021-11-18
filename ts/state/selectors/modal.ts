@@ -4,6 +4,7 @@ import { StateType } from '../reducer';
 import {
   AddModeratorsModalState,
   AdminLeaveClosedGroupModalState,
+  BanUserModalState,
   ChangeNickNameModalState,
   ConfirmModalState,
   DeleteAccountModalState,
@@ -14,6 +15,7 @@ import {
   RecoveryPhraseModalState,
   RemoveModeratorsModalState,
   SessionPasswordModalState,
+  UnbanUserModalState,
   UpdateGroupMembersModalState,
   UpdateGroupNameModalState,
   UserDetailsModalState,
@@ -41,6 +43,16 @@ export const getAddModeratorsModal = createSelector(
 export const getRemoveModeratorsModal = createSelector(
   getModal,
   (state: ModalState): RemoveModeratorsModalState => state.removeModeratorsModal
+);
+
+export const getUnbanUserModalState = createSelector(
+  getModal,
+  (state: ModalState): UnbanUserModalState => state.unbanUserModal
+);
+
+export const getBanUserModalState = createSelector(
+  getModal,
+  (state: ModalState): BanUserModalState => state.banUserModal
 );
 
 export const getUpdateGroupNameModal = createSelector(

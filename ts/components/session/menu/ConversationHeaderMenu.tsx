@@ -2,6 +2,7 @@ import React from 'react';
 import { animation, Menu } from 'react-contexify';
 import {
   getAddModeratorsMenuItem,
+  getBanMenuItem,
   getBlockMenuItem,
   getChangeNicknameMenuItem,
   getClearNicknameMenuItem,
@@ -82,6 +83,7 @@ const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
       {getDeleteMessagesMenuItem(conversationId)}
       {getAddModeratorsMenuItem(weAreAdmin, isPublic, isKickedFromGroup, conversationId)}
       {getRemoveModeratorsMenuItem(weAreAdmin, isPublic, isKickedFromGroup, conversationId)}
+      {getBanMenuItem(weAreAdmin, isPublic, isKickedFromGroup, conversationId)}
       {getUnbanMenuItem(weAreAdmin, isPublic, isKickedFromGroup, conversationId)}
       {getUpdateGroupNameMenuItem(weAreAdmin, isKickedFromGroup, left, conversationId)}
       {getLeaveGroupMenuItem(isKickedFromGroup, left, isGroup, isPublic, conversationId)}
