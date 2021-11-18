@@ -28,6 +28,7 @@ ts/protobuf/*.d.ts
 ts/**/*.js.map
 test/ts/**/*.js.map
 test/ts/**/*.js
+!ts/test/automation/*.js
 
 
 # Swapfiles
