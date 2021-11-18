@@ -2,11 +2,9 @@ import _ from 'lodash';
 import { SignalService } from '../protobuf';
 import { TTL_DEFAULT } from '../session/constants';
 import { SNodeAPI } from '../session/snode_api';
-import { CallManager } from '../session/utils';
+import { CallManager, UserUtils } from '../session/utils';
 import { removeFromCache } from './cache';
 import { EnvelopePlus } from './types';
-
-// audric FIXME: refactor this out to persistence, just to help debug the flow and send/receive in synchronous testing
 
 export async function handleCallMessage(
   envelope: EnvelopePlus,
@@ -19,10 +17,34 @@ export async function handleCallMessage(
 
   const { type } = callMessage;
 
+  // we just allow self send of ANSWER message to remove the incoming call dialog when we accepted it from another device
+  if (
+    sender === UserUtils.getOurPubKeyStrFromCache() &&
+    callMessage.type !== SignalService.CallMessage.Type.ANSWER
+  ) {
+    window.log.info('Dropping incoming call from ourself');
+    await removeFromCache(envelope);
+    return;
+  }
+
+  if (CallManager.isCallRejected(callMessage.uuid)) {
+    await removeFromCache(envelope);
+
+    window.log.info(`Dropping already rejected call ${callMessage.uuid}`);
+    return;
+  }
+
   if (type === SignalService.CallMessage.Type.PROVISIONAL_ANSWER) {
     await removeFromCache(envelope);
 
     window.log.info('Skipping callMessage PROVISIONAL_ANSWER');
+    return;
+  }
+
+  if (type === SignalService.CallMessage.Type.PRE_OFFER) {
+    await removeFromCache(envelope);
+
+    window.log.info('Skipping callMessage PRE_OFFER');
     return;
   }
 
@@ -43,7 +65,7 @@ export async function handleCallMessage(
   if (type === SignalService.CallMessage.Type.END_CALL) {
     await removeFromCache(envelope);
 
-    CallManager.handleCallTypeEndCall(sender);
+    CallManager.handleCallTypeEndCall(sender, callMessage.uuid);
 
     return;
   }

@@ -14,6 +14,10 @@ import {
   getConversationHeaderProps,
   getConversationHeaderTitleProps,
   getCurrentNotificationSettingText,
+  getHasIncomingCall,
+  getHasOngoingCall,
+  getIsSelectedNoteToSelf,
+  getIsSelectedPrivate,
   getSelectedConversation,
   getSelectedConversationIsPublic,
   getSelectedConversationKey,
@@ -35,6 +39,7 @@ import {
   openRightPanel,
   resetSelectedMessageIds,
 } from '../../state/ducks/conversations';
+import { callRecipient } from '../../interactions/conversationInteractions';
 
 export interface TimerOption {
   name: string;
@@ -102,7 +107,7 @@ const SelectionOverlay = () => {
   return (
     <div className="message-selection-overlay">
       <div className="close-button">
-        <SessionIconButton iconType="exit" iconSize={'medium'} onClick={onCloseOverlay} />
+        <SessionIconButton iconType="exit" iconSize="medium" onClick={onCloseOverlay} />
       </div>
 
       <div className="button-group">
@@ -128,7 +133,7 @@ const SelectionOverlay = () => {
 const TripleDotsMenu = (props: { triggerId: string; showBackButton: boolean }) => {
   const { showBackButton } = props;
   if (showBackButton) {
-    return <></>;
+    return null;
   }
   return (
     <div
@@ -140,7 +145,7 @@ const TripleDotsMenu = (props: { triggerId: string; showBackButton: boolean }) =
         });
       }}
     >
-      <SessionIconButton iconType="ellipses" iconSize={'medium'} />
+      <SessionIconButton iconType="ellipses" iconSize="medium" />
     </div>
   );
 };
@@ -199,6 +204,32 @@ const BackButton = (props: { onGoBack: () => void; showBackButton: boolean }) =>
 
   return (
     <SessionIconButton iconType="chevron" iconSize={'large'} iconRotation={90} onClick={onGoBack} />
+  );
+};
+
+const CallButton = () => {
+  const isPrivate = useSelector(getIsSelectedPrivate);
+  const isMe = useSelector(getIsSelectedNoteToSelf);
+  const selectedConvoKey = useSelector(getSelectedConversationKey);
+
+  const hasIncomingCall = useSelector(getHasIncomingCall);
+  const hasOngoingCall = useSelector(getHasOngoingCall);
+  const canCall = !(hasIncomingCall || hasOngoingCall);
+
+  if (!isPrivate || isMe || !selectedConvoKey) {
+    return null;
+  }
+
+  return (
+    <SessionIconButton
+      iconType="phone"
+      iconSize="large"
+      iconPadding="2px"
+      margin="0 10px 0 0"
+      onClick={() => {
+        void callRecipient(selectedConvoKey, canCall);
+      }}
+    />
   );
 };
 
@@ -362,17 +393,20 @@ export const ConversationHeaderWithDetails = () => {
         {!isKickedFromGroup && <ExpirationLength expirationSettingName={expirationSettingName} />}
 
         {!isSelectionMode && (
-          <AvatarHeader
-            onAvatarClick={() => {
-              dispatch(openRightPanel());
-            }}
-            pubkey={conversationKey}
-            showBackButton={isMessageDetailOpened}
-            avatarPath={avatarPath}
-            memberAvatars={memberDetails}
-            name={name}
-            profileName={profileName}
-          />
+          <>
+            <CallButton />
+            <AvatarHeader
+              onAvatarClick={() => {
+                dispatch(openRightPanel());
+              }}
+              pubkey={conversationKey}
+              showBackButton={isMessageDetailOpened}
+              avatarPath={avatarPath}
+              memberAvatars={memberDetails}
+              name={name}
+              profileName={profileName}
+            />
+          </>
         )}
 
         <MemoConversationHeaderMenu
