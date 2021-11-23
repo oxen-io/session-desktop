@@ -1,19 +1,30 @@
-const { _electron: electron, expect } = require('@playwright/test');   
-exports.cleanUp = class cleanUp {
+// import { any } from "underscore";
+// import { TestUtils } from "../test-utils";
+
+import { _electron as electron, ElectronApplication, Page } from 'playwright';   
+exports.CleanUp = class CleanUp {
+    window: any;
+    settingsTab: Element;
+    clearAllOption: Text;
+    deviceOnlyOption: Text;
+    confirmOption: Text;
 
   //locators
-    constructor(window) {
+    constructor(window: any) {
       this.window = window;
-      this.settingsTab = window.locator('.module-left-pane__sections-container > div:nth-child(4)');
+      this.settingsTab = window.getByTestId('settings-section');
       this.clearAllOption = window.locator('text=Clear All Data');
       this.deviceOnlyOption = window.locator('text=Device Only');
       this.confirmOption = window.locator('text=I am sure');
     }
     async deleteData() {
       await this.window.click(this.settingsTab);
-      await this.window.click
+      await this.window.click(this.clearAllOption);
+      await this.window.click(this.deviceOnlyOption);
+      await this.window.click(this.confirmOption);
     }
-}
+};
+
 
 // (async () => {   
 //   const electronApp = await electron.launch({ args: ['main.js'] });
