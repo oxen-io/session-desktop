@@ -2,9 +2,14 @@
 // import { TestUtils } from "../test-utils";
 
 import { _electron} from '@playwright/test'; 
-import { session } from 'electron';
+import fs from 'fs';
 
-session.unlink();
+
+
+
+fs.unlink(getAppPath, () => {
+
+});
 
 
 

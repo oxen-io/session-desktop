@@ -1,5 +1,3 @@
-import { TestUtils } from "./ts/test/test-utils";
-
 const config = {
   timeout: 300000,
   globalTimeout: 6000000,
@@ -9,6 +7,7 @@ const config = {
   use: {
     video:'retain-on-failure',
   },
+  path: require('path'),
 };
 
 module.exports = config;
