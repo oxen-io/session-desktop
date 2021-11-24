@@ -49,6 +49,7 @@ import { ed25519Str } from '../session/onions/onionPath';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { IMAGE_JPEG } from '../types/MIME';
 import { getLatestTimestampOffset } from '../session/snode_api/SNodeAPI';
+import { createLastMessageUpdate } from '../types/Conversation';
 
 export enum ConversationTypeEnum {
   GROUP = 'group',
@@ -885,9 +886,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const lastMessageJSON = lastMessageModel ? lastMessageModel.toJSON() : null;
     const lastMessageStatusModel = lastMessageModel
       ? lastMessageModel.getMessagePropStatus()
-      : null;
-    const lastMessageUpdate = window.Signal.Types.Conversation.createLastMessageUpdate({
-      currentTimestamp: this.get('active_at') || null,
+      : undefined;
+    const lastMessageUpdate = createLastMessageUpdate({
+      currentTimestamp: this.get('active_at'),
       lastMessage: lastMessageJSON,
       lastMessageStatus: lastMessageStatusModel,
       lastMessageNotificationText: lastMessageModel ? lastMessageModel.getNotificationText() : null,
