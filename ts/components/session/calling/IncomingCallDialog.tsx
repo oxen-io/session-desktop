@@ -24,7 +24,7 @@ export const CallWindow = styled.div`
   border: var(--session-border);
 `;
 
-const IncomingCallAvatatContainer = styled.div`
+const IncomingCallAvatarContainer = styled.div`
   padding: 0 0 2rem 0;
 `;
 
@@ -42,7 +42,7 @@ export const IncomingCallDialog = () => {
           window.log.info(
             `call missed with ${ed25519Str(
               incomingCallFromPubkey
-            )} as dialog was not interacted with for ${timeoutMs} ms`
+            )} as the dialog was not interacted with for ${timeoutMs} ms`
           );
           await CallManager.USER_rejectIncomingCallRequest(incomingCallFromPubkey);
         }
@@ -77,9 +77,9 @@ export const IncomingCallDialog = () => {
   if (hasIncomingCall) {
     return (
       <SessionWrapperModal title={window.i18n('incomingCallFrom', from)}>
-        <IncomingCallAvatatContainer>
+        <IncomingCallAvatarContainer>
           <Avatar size={AvatarSize.XL} pubkey={incomingCallFromPubkey} />
-        </IncomingCallAvatatContainer>
+        </IncomingCallAvatarContainer>
         <div className="session-modal__button-group">
           <SessionButton
             text={window.i18n('decline')}

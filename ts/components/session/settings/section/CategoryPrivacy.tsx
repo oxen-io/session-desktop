@@ -1,6 +1,7 @@
 import React from 'react';
 // tslint:disable-next-line: no-submodule-imports
 import useUpdate from 'react-use/lib/useUpdate';
+import { CallManager } from '../../../../session/utils';
 import { sessionPassword, updateConfirmModal } from '../../../../state/ducks/modalDialog';
 import { PasswordAction } from '../../../dialog/SessionPasswordDialog';
 import { SessionButtonColor } from '../../SessionButton';
@@ -20,6 +21,7 @@ const toggleCallMediaPermissions = async (triggerUIUpdate: () => void) => {
         onClickOk: async () => {
           await window.toggleCallMediaPermissionsTo(true);
           triggerUIUpdate();
+          CallManager.onTurnedOnCallMediaPermissions();
         },
         onClickCancel: async () => {
           await window.toggleCallMediaPermissionsTo(false);
