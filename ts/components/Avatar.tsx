@@ -1,11 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
-
-import { AvatarPlaceHolder, ClosedGroupAvatar } from './AvatarPlaceHolder';
 import { useEncryptedFileFetch } from '../hooks/useEncryptedFileFetch';
 import _ from 'underscore';
-import { useMembersAvatars } from '../hooks/useMembersAvatars';
-import { useAvatarPath, useConversationUsername } from '../hooks/useParamSelector';
+import {
+  useAvatarPath,
+  useConversationUsername,
+  useIsClosedGroup,
+} from '../hooks/useParamSelector';
+import { AvatarPlaceHolder } from './AvatarPlaceHolder/AvatarPlaceHolder';
+import { ClosedGroupAvatar } from './AvatarPlaceHolder/ClosedGroupAvatar';
 
 export enum AvatarSize {
   XS = 28,
@@ -19,7 +22,7 @@ export enum AvatarSize {
 type Props = {
   forcedAvatarPath?: string | null;
   forcedName?: string;
-  pubkey?: string;
+  pubkey: string;
   size: AvatarSize;
   base64Data?: string; // if this is not empty, it will be used to render the avatar with base64 encoded data
   onAvatarClick?: () => void;
@@ -31,15 +34,7 @@ const Identicon = (props: Props) => {
   const displayName = useConversationUsername(pubkey);
   const userName = forcedName || displayName || '0';
 
-  return (
-    <AvatarPlaceHolder
-      diameter={size}
-      name={userName}
-      pubkey={pubkey}
-      colors={['#5ff8b0', '#26cdb9', '#f3c615', '#fcac5a']}
-      borderColor={'#00000059'}
-    />
-  );
+  return <AvatarPlaceHolder diameter={size} name={userName} pubkey={pubkey} />;
 };
 
 const NoImage = (
@@ -91,7 +86,7 @@ const AvatarInner = (props: Props) => {
   const { base64Data, size, pubkey, forcedAvatarPath, forcedName, dataTestId } = props;
   const [imageBroken, setImageBroken] = useState(false);
 
-  const closedGroupMembers = useMembersAvatars(pubkey);
+  const isClosedGroupAvatar = useIsClosedGroup(pubkey);
 
   const avatarPath = useAvatarPath(pubkey);
   const name = useConversationUsername(pubkey);
@@ -107,7 +102,6 @@ const AvatarInner = (props: Props) => {
     setImageBroken(true);
   };
 
-  const isClosedGroupAvatar = Boolean(closedGroupMembers?.length);
   const hasImage = (base64Data || urlToLoad) && !imageBroken && !isClosedGroupAvatar;
 
   const isClickable = !!props.onAvatarClick;

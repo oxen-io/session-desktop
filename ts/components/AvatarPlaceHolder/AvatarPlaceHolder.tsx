@@ -4,13 +4,10 @@ import { getInitials } from '../../util/getInitials';
 type Props = {
   diameter: number;
   name: string;
-  pubkey?: string;
-  colors: Array<string>;
-  borderColor: string;
+  pubkey: string;
 };
 
 const sha512FromPubkey = async (pubkey: string): Promise<string> => {
-  // tslint:disable-next-line: await-promise
   const buf = await crypto.subtle.digest('SHA-512', new TextEncoder().encode(pubkey));
 
   // tslint:disable: prefer-template restrict-plus-operands
@@ -19,9 +16,12 @@ const sha512FromPubkey = async (pubkey: string): Promise<string> => {
     .join('');
 };
 
+const avatarPlaceHolderColors = ['#5ff8b0', '#26cdb9', '#f3c615', '#fcac5a'];
+const avatarBorderColor = '#00000059';
+
 export const AvatarPlaceHolder = (props: Props) => {
-  const { borderColor, colors, pubkey, diameter, name } = props;
-  const [sha512Seed, setSha512Seed] = useState(undefined as string | undefined);
+  const { pubkey, diameter, name } = props;
+  const [sha512Seed, setSha512Seed] = useState<string | undefined>(undefined);
   useEffect(() => {
     let isSubscribed = true;
 
@@ -57,7 +57,7 @@ export const AvatarPlaceHolder = (props: Props) => {
             r={rWithoutBorder}
             fill="#d2d2d3"
             shapeRendering="geometricPrecision"
-            stroke={borderColor}
+            stroke={avatarBorderColor}
             strokeWidth="1"
           />
         </g>
@@ -71,9 +71,9 @@ export const AvatarPlaceHolder = (props: Props) => {
   // Generate the seed simulate the .hashCode as Java
   const hash = parseInt(sha512Seed.substring(0, 12), 16) || 0;
 
-  const bgColorIndex = hash % colors.length;
+  const bgColorIndex = hash % avatarPlaceHolderColors.length;
 
-  const bgColor = colors[bgColorIndex];
+  const bgColor = avatarPlaceHolderColors[bgColorIndex];
 
   return (
     <svg viewBox={viewBox}>
@@ -84,7 +84,7 @@ export const AvatarPlaceHolder = (props: Props) => {
           r={rWithoutBorder}
           fill={bgColor}
           shapeRendering="geometricPrecision"
-          stroke={borderColor}
+          stroke={avatarBorderColor}
           strokeWidth="1"
         />
         <text

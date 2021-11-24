@@ -70,7 +70,7 @@ export const IncomingCallDialog = () => {
     }
   };
   const from = useConversationUsername(incomingCallFromPubkey);
-  if (!hasIncomingCall) {
+  if (!hasIncomingCall || !incomingCallFromPubkey) {
     return null;
   }
 
