@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { useEncryptedFileFetch } from '../hooks/useEncryptedFileFetch';
 import _ from 'underscore';
@@ -9,6 +9,7 @@ import {
 } from '../hooks/useParamSelector';
 import { AvatarPlaceHolder } from './AvatarPlaceHolder/AvatarPlaceHolder';
 import { ClosedGroupAvatar } from './AvatarPlaceHolder/ClosedGroupAvatar';
+import { useDisableDrag } from '../hooks/useDisableDrag';
 
 export enum AvatarSize {
   XS = 28,
@@ -62,10 +63,7 @@ const AvatarImage = (props: {
 }) => {
   const { avatarPath, base64Data, name, imageBroken, handleImageError } = props;
 
-  const onDragStart = useCallback((e: any) => {
-    e.preventDefault();
-    return false;
-  }, []);
+  const disableDrag = useDisableDrag();
 
   if ((!avatarPath && !base64Data) || imageBroken) {
     return null;
@@ -75,7 +73,7 @@ const AvatarImage = (props: {
   return (
     <img
       onError={handleImageError}
-      onDragStart={onDragStart}
+      onDragStart={disableDrag}
       alt={window.i18n('contactAvatarAlt', [name])}
       src={dataToDisplay}
     />

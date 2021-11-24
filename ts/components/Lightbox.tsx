@@ -1,6 +1,6 @@
 // tslint:disable:react-a11y-anchors
 
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 
 import is from '@sindresorhus/is';
 
@@ -14,6 +14,7 @@ import useUnmount from 'react-use/lib/useUnmount';
 import { useEncryptedFileFetch } from '../hooks/useEncryptedFileFetch';
 import { useDispatch } from 'react-redux';
 import { showLightBox } from '../state/ducks/conversations';
+import { useDisableDrag } from '../hooks/useDisableDrag';
 
 const Colors = {
   TEXT_SECONDARY: '#bbb',
@@ -208,11 +209,6 @@ export const LightboxObject = ({
 
   const isImageTypeSupported = GoogleChrome.isImageTypeSupported(contentType);
 
-  const onDragStart = useCallback((e: any) => {
-    e.preventDefault();
-    return false;
-  }, []);
-
   // auto play video on showing a video attachment
   useUnmount(() => {
     if (!renderedRef?.current) {
@@ -220,12 +216,13 @@ export const LightboxObject = ({
     }
     renderedRef.current.pause.pause();
   });
+  const disableDrag = useDisableDrag();
 
   if (isImageTypeSupported) {
     return (
       <img
         style={styles.object as any}
-        onDragStart={onDragStart}
+        onDragStart={disableDrag}
         alt={window.i18n('lightboxImageAlt')}
         src={urlToLoad}
         ref={renderedRef}

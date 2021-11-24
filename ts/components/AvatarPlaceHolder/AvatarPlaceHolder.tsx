@@ -16,28 +16,28 @@ const sha512FromPubkey = async (pubkey: string): Promise<string> => {
     .join('');
 };
 
-const avatarPlaceHolderColors = ['#5ff8b0', '#26cdb9', '#f3c615', '#fcac5a'];
+const avatarPlaceholderColors = ['#5ff8b0', '#26cdb9', '#f3c615', '#fcac5a'];
 const avatarBorderColor = '#00000059';
 
 export const AvatarPlaceHolder = (props: Props) => {
   const { pubkey, diameter, name } = props;
   const [sha512Seed, setSha512Seed] = useState<string | undefined>(undefined);
   useEffect(() => {
-    let isSubscribed = true;
+    let isInProgress = true;
 
     if (!pubkey) {
-      if (isSubscribed) {
+      if (isInProgress) {
         setSha512Seed(undefined);
       }
       return;
     }
     void sha512FromPubkey(pubkey).then(sha => {
-      if (isSubscribed) {
+      if (isInProgress) {
         setSha512Seed(sha);
       }
     });
     return () => {
-      isSubscribed = false;
+      isInProgress = false;
     };
   }, [pubkey, name]);
 
@@ -71,9 +71,9 @@ export const AvatarPlaceHolder = (props: Props) => {
   // Generate the seed simulate the .hashCode as Java
   const hash = parseInt(sha512Seed.substring(0, 12), 16) || 0;
 
-  const bgColorIndex = hash % avatarPlaceHolderColors.length;
+  const bgColorIndex = hash % avatarPlaceholderColors.length;
 
-  const bgColor = avatarPlaceHolderColors[bgColorIndex];
+  const bgColor = avatarPlaceholderColors[bgColorIndex];
 
   return (
     <svg viewBox={viewBox}>
