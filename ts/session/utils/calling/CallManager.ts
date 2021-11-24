@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { MessageUtils, ToastUtils, UserUtils } from '../';
 import { getCallMediaPermissionsSettings } from '../../../components/session/settings/SessionSettings';
-import { getConversationById } from '../../../data/data';
 import { MessageModelType } from '../../../models/messageType';
 import { SignalService } from '../../../protobuf';
 import { openConversationWithMessages } from '../../../state/ducks/conversations';
@@ -439,6 +438,7 @@ export async function USER_callRecipient(recipient: string) {
     return;
   }
   await updateConnectedDevices();
+  const now = Date.now();
   window?.log?.info(`starting call with ${ed25519Str(recipient)}..`);
   window.inboxStore?.dispatch(startingCallWith({ pubkey: recipient }));
   if (peerConnection) {
@@ -448,13 +448,23 @@ export async function USER_callRecipient(recipient: string) {
   peerConnection = createOrGetPeerConnection(recipient);
   // send a pre offer just to wake up the device on the remote side
   const preOfferMsg = new CallMessage({
-    timestamp: Date.now(),
+    timestamp: now,
     type: SignalService.CallMessage.Type.PRE_OFFER,
     uuid: currentCallUUID,
   });
 
   window.log.info('Sending preOffer message to ', ed25519Str(recipient));
-
+  const calledConvo = getConversationController().get(recipient);
+  await calledConvo?.addSingleMessage({
+    conversationId: calledConvo.id,
+    source: UserUtils.getOurPubKeyStrFromCache(),
+    type: 'outgoing',
+    sent_at: now,
+    received_at: now,
+    expireTimer: 0,
+    callNotificationType: 'started-call',
+    unread: 0,
+  });
   // we do it manually as the sendToPubkeyNonDurably rely on having a message saved to the db for MessageSentSuccess
   // which is not the case for a pre offer message (the message only exists in memory)
   const rawMessage = await MessageUtils.toRawMessage(PubKey.cast(recipient), preOfferMsg);
@@ -762,6 +772,18 @@ export async function USER_acceptIncomingCallRequest(fromSender: string) {
       await peerConnection.addIceCandidate(candicate);
     }
   }
+  const now = Date.now();
+  const callerConvo = getConversationController().get(fromSender);
+  await callerConvo?.addSingleMessage({
+    conversationId: callerConvo.id,
+    source: UserUtils.getOurPubKeyStrFromCache(),
+    type: 'incoming',
+    sent_at: now,
+    received_at: now,
+    expireTimer: 0,
+    callNotificationType: 'answered-a-call',
+    unread: 0,
+  });
   await buildAnswerAndSendIt(fromSender);
 }
 
@@ -809,6 +831,7 @@ export async function USER_rejectIncomingCallRequest(fromSender: string) {
   if (ongoingCallWith && ongoingCallStatus && ongoingCallWith === fromSender) {
     closeVideoCall();
   }
+  await addMissedCallMessage(fromSender, Date.now());
 }
 
 async function sendCallMessageAndSync(callmessage: CallMessage, user: string) {
@@ -991,7 +1014,7 @@ export async function handleMissedCall(
   incomingOfferTimestamp: number,
   isBecauseOfCallPermission: boolean
 ) {
-  const incomingCallConversation = await getConversationById(sender);
+  const incomingCallConversation = getConversationController().get(sender);
   setIsRinging(false);
   if (!isBecauseOfCallPermission) {
     ToastUtils.pushedMissedCall(
@@ -1007,19 +1030,23 @@ export async function handleMissedCall(
     );
   }
 
+  await addMissedCallMessage(sender, incomingOfferTimestamp);
+  return;
+}
+
+async function addMissedCallMessage(callerPubkey: string, sentAt: number) {
+  const incomingCallConversation = getConversationController().get(callerPubkey);
+
   await incomingCallConversation?.addSingleMessage({
-    conversationId: incomingCallConversation.id,
-    source: sender,
+    conversationId: callerPubkey,
+    source: callerPubkey,
     type: 'incoming' as MessageModelType,
-    sent_at: incomingOfferTimestamp,
+    sent_at: sentAt,
     received_at: Date.now(),
     expireTimer: 0,
-    isMissedCall: true,
+    callNotificationType: 'missed-call',
     unread: 1,
   });
-  incomingCallConversation?.updateLastMessage();
-
-  return;
 }
 
 function getOwnerOfCallUUID(callUUID: string) {

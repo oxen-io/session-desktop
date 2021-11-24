@@ -28,7 +28,8 @@ type Props = {
 
 const Identicon = (props: Props) => {
   const { size, forcedName, pubkey } = props;
-  const userName = forcedName || '0';
+  const displayName = useConversationUsername(pubkey);
+  const userName = forcedName || displayName || '0';
 
   return (
     <AvatarPlaceHolder

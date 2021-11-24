@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PubKey } from '../../session/types';
 
-import { PropsForMissedCallNotification } from '../../state/ducks/conversations';
+import { PropsForCallNotification } from '../../state/ducks/conversations';
 import { getSelectedConversation } from '../../state/selectors/conversations';
 import { ReadableMessage } from './ReadableMessage';
 
@@ -20,8 +20,8 @@ export const StyledFakeMessageBubble = styled.div`
   text-align: center;
 `;
 
-export const MissedCallNotification = (props: PropsForMissedCallNotification) => {
-  const { messageId, receivedAt, isUnread } = props;
+export const CallNotification = (props: PropsForCallNotification) => {
+  const { messageId, receivedAt, isUnread, notificationType } = props;
 
   const selectedConvoProps = useSelector(getSelectedConversation);
 
@@ -30,6 +30,15 @@ export const MissedCallNotification = (props: PropsForMissedCallNotification) =>
     selectedConvoProps?.name ||
     (selectedConvoProps?.id && PubKey.shorten(selectedConvoProps?.id));
 
+  let notificationText = '';
+  if (notificationType === 'missed-call') {
+    notificationText = window.i18n('callMissed', displayName);
+  } else if (notificationType === 'started-call') {
+    notificationText = window.i18n('startedACall', displayName);
+  } else if (notificationType === 'answered-a-call') {
+    notificationText = window.i18n('answeredACall', displayName);
+  }
+
   return (
     <ReadableMessage
       messageId={messageId}
@@ -37,7 +46,7 @@ export const MissedCallNotification = (props: PropsForMissedCallNotification) =>
       isUnread={isUnread}
       key={`readable-message-${messageId}`}
     >
-      <StyledFakeMessageBubble>{window.i18n('callMissed', displayName)}</StyledFakeMessageBubble>
+      <StyledFakeMessageBubble>{notificationText}</StyledFakeMessageBubble>
     </ReadableMessage>
   );
 };
