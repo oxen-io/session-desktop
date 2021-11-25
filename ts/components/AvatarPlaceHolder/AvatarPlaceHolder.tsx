@@ -16,37 +16,69 @@ const sha512FromPubkey = async (pubkey: string): Promise<string> => {
     .join('');
 };
 
+// do not do this on every avatar, just cache the values so we can reuse them accross the app
+// key is the pubkey, value is the hash
+const cachedHashes = new Map<string, number>();
+
 const avatarPlaceholderColors = ['#5ff8b0', '#26cdb9', '#f3c615', '#fcac5a'];
 const avatarBorderColor = '#00000059';
 
-export const AvatarPlaceHolder = (props: Props) => {
-  const { pubkey, diameter, name } = props;
-  const [sha512Seed, setSha512Seed] = useState<string | undefined>(undefined);
+function useHashBasedOnPubkey(pubkey: string) {
+  const [hash, setHash] = useState<number | undefined>(undefined);
+  const [loading, setIsLoading] = useState<boolean>(true);
+
   useEffect(() => {
+    const cachedHash = cachedHashes.get(pubkey);
+
+    if (cachedHash) {
+      setHash(cachedHash);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
     let isInProgress = true;
 
     if (!pubkey) {
       if (isInProgress) {
-        setSha512Seed(undefined);
+        setIsLoading(false);
+
+        setHash(undefined);
       }
       return;
     }
     void sha512FromPubkey(pubkey).then(sha => {
       if (isInProgress) {
-        setSha512Seed(sha);
+        setIsLoading(false);
+        // Generate the seed simulate the .hashCode as Java
+        if (sha) {
+          const hash = parseInt(sha.substring(0, 12), 16) || 0;
+          setHash(hash);
+          cachedHashes.set(pubkey, hash);
+
+          return;
+        }
+        setHash(undefined);
       }
     });
     return () => {
       isInProgress = false;
     };
-  }, [pubkey, name]);
+  }, [pubkey]);
+
+  return { loading, hash };
+}
+
+export const AvatarPlaceHolder = (props: Props) => {
+  const { pubkey, diameter, name } = props;
+
+  const { hash, loading } = useHashBasedOnPubkey(pubkey);
 
   const diameterWithoutBorder = diameter - 2;
   const viewBox = `0 0 ${diameter} ${diameter}`;
   const r = diameter / 2;
   const rWithoutBorder = diameterWithoutBorder / 2;
 
-  if (!sha512Seed) {
+  if (loading || !hash) {
     // return grey circle
     return (
       <svg viewBox={viewBox}>
@@ -67,9 +99,6 @@ export const AvatarPlaceHolder = (props: Props) => {
 
   const initial = getInitials(name)?.toLocaleUpperCase() || '0';
   const fontSize = diameter * 0.5;
-
-  // Generate the seed simulate the .hashCode as Java
-  const hash = parseInt(sha512Seed.substring(0, 12), 16) || 0;
 
   const bgColorIndex = hash % avatarPlaceholderColors.length;
 
