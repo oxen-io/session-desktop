@@ -205,7 +205,7 @@ export const LightboxObject = ({
   renderedRef: React.MutableRefObject<any>;
   onObjectClick: (event: any) => any;
 }) => {
-  const { urlToLoad } = useEncryptedFileFetch(objectURL, contentType);
+  const { urlToLoad } = useEncryptedFileFetch(objectURL, contentType, false);
 
   const isImageTypeSupported = GoogleChrome.isImageTypeSupported(contentType);
 

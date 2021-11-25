@@ -21,7 +21,7 @@ const MediaGridItemContent = (props: Props) => {
   const urlToDecrypt = mediaItem.thumbnailObjectUrl || '';
   const [imageBroken, setImageBroken] = useState(false);
 
-  const { loading, urlToLoad } = useEncryptedFileFetch(urlToDecrypt, contentType);
+  const { loading, urlToLoad } = useEncryptedFileFetch(urlToDecrypt, contentType, false);
 
   // data will be url if loading is finished and '' if not
   const srcData = !loading ? urlToLoad : '';

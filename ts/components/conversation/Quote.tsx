@@ -117,7 +117,7 @@ export const QuoteImage = (props: {
   const { url, icon, contentType, handleImageErrorBound } = props;
   const disableDrag = useDisableDrag();
 
-  const { loading, urlToLoad } = useEncryptedFileFetch(url, contentType);
+  const { loading, urlToLoad } = useEncryptedFileFetch(url, contentType, false);
   const srcData = !loading ? urlToLoad : '';
 
   const iconElement = icon ? (

@@ -65,7 +65,7 @@ export const Image = (props: Props) => {
   }
   const canClick = onClick && !pending;
   const role = canClick ? 'button' : undefined;
-  const { loading, urlToLoad } = useEncryptedFileFetch(url || '', attachment.contentType);
+  const { loading, urlToLoad } = useEncryptedFileFetch(url || '', attachment.contentType, false);
   // data will be url if loading is finished and '' if not
   const srcData = !loading ? urlToLoad : '';
 

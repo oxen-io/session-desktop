@@ -19,7 +19,7 @@ export const AudioPlayerWithEncryptedFile = (props: {
 }) => {
   const dispatch = useDispatch();
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
-  const { urlToLoad } = useEncryptedFileFetch(props.src, props.contentType);
+  const { urlToLoad } = useEncryptedFileFetch(props.src, props.contentType, false);
   const player = useRef<H5AudioPlayer | null>(null);
 
   const autoPlaySetting = useSelector(getAudioAutoplay);

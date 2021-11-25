@@ -1450,7 +1450,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const avatarUrl = this.getAvatarPath();
     const noIconUrl = 'images/session/session_icon_32.png';
     if (avatarUrl) {
-      const decryptedAvatarUrl = await getDecryptedMediaUrl(avatarUrl, IMAGE_JPEG);
+      const decryptedAvatarUrl = await getDecryptedMediaUrl(avatarUrl, IMAGE_JPEG, true);
 
       if (!decryptedAvatarUrl) {
         window.log.warn('Could not decrypt avatar stored locally for getNotificationIcon..');

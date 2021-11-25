@@ -90,7 +90,7 @@ const AvatarInner = (props: Props) => {
   const name = useConversationUsername(pubkey);
 
   // contentType is not important
-  const { urlToLoad } = useEncryptedFileFetch(forcedAvatarPath || avatarPath || '', '');
+  const { urlToLoad } = useEncryptedFileFetch(forcedAvatarPath || avatarPath || '', '', true);
   const handleImageError = () => {
     window.log.warn(
       'Avatar: Image failed to load; failing over to placeholder',

@@ -90,9 +90,9 @@ export function removeVideoEventsListener(uniqueId: string) {
 
 type CachedCallMessageType = {
   type: SignalService.CallMessage.Type;
-  sdps: string[];
-  sdpMLineIndexes: number[];
-  sdpMids: string[];
+  sdps: Array<string>;
+  sdpMLineIndexes: Array<number>;
+  sdpMids: Array<string>;
   uuid: string;
   timestamp: number;
 };
@@ -971,8 +971,8 @@ export async function handleCallTypeOffer(
     window.log.info('handling callMessage OFFER with uuid: ', remoteCallUUID);
 
     if (!getCallMediaPermissionsSettings()) {
-      const cachedMessage = getCachedMessageFromCallMessage(callMessage, incomingOfferTimestamp);
-      pushCallMessageToCallCache(sender, remoteCallUUID, cachedMessage);
+      const cachedMsg = getCachedMessageFromCallMessage(callMessage, incomingOfferTimestamp);
+      pushCallMessageToCallCache(sender, remoteCallUUID, cachedMsg);
 
       await handleMissedCall(sender, incomingOfferTimestamp, true);
       return;
@@ -1272,7 +1272,7 @@ export function onTurnedOnCallMediaPermissions() {
       for (const msg of msgs.reverse()) {
         if (
           msg.type === SignalService.CallMessage.Type.OFFER &&
-          Date.now() - msg.timestamp < 1 * DURATION.MINUTES
+          Date.now() - msg.timestamp < DURATION.MINUTES * 1
         ) {
           window.inboxStore?.dispatch(incomingCall({ pubkey: key }));
         }
