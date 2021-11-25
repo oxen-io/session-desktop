@@ -6,4 +6,5 @@ export const cleanUp = async (window: Page) => {
   await window.click('text=Device Only');
   await window.click('text=I am sure');
   console.log('data has been deleted');
-};  
+
+};

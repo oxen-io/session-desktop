@@ -1,11 +1,11 @@
-import { _electron, test, expect, Page }  from '@playwright/test';
+import { _electron, test, expect }  from '@playwright/test';
 import { cleanUp } from './clean_up';
 
 
 test('Create User', async() => {
   // Launch Electron app.
     const electronApp = await _electron.launch({ args: ['main.js'] });
-    const appPath = await electronApp.evaluate(async ({ app }) => {
+    await electronApp.evaluate(async ({ app }) => {
       return app.getAppPath();
     });
 
@@ -32,7 +32,7 @@ test('Create User', async() => {
     await window.click('.session-icon-button.small');
     // Cleanup device 
 
-    cleanUp(window);
+    await cleanUp(window);
     
     await window.waitForTimeout(10000);
   });
