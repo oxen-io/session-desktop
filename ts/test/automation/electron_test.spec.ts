@@ -2,6 +2,7 @@ import { _electron, test, expect }  from '@playwright/test';
 import { cleanUp } from './clean_up';
 import { newUser } from './new_user';
 import { openApp } from './open';
+import { sleepFor } from '../../session/utils/Promise';
 
 
 test('Create User', async() => {
@@ -11,6 +12,7 @@ test('Create User', async() => {
     const user = await newUser(window, 'testuser');
 
     await window.click('[data-testid=leftpane-primary-avatar]');
+    await sleepFor(100);
     //check username matches
     expect(await window.innerText('[data-testid=your-profile-name]')).toBe(user.userName);
     //check session id matches
