@@ -5,6 +5,6 @@ export const cleanUp = async (window: Page) => {
   await window.click('text=Clear All Data');
   await window.click('text=Device Only');
   await window.click('text=I am sure');
+  await window.waitForTimeout(10000);
   console.log('data has been deleted');
-
 };
