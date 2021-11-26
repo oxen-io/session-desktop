@@ -1,6 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const test_1 = require("@playwright/test");
+const clean_up_1 = require("./clean_up");
+const new_user_1 = require("./new_user");
+const open_1 = require("./open");
+test_1.test('Create User', async () => {
+    // Launch Electron app.
+    const window = await open_1.openApp();
+    // Create User
+    const userName = await new_user_1.newUser(window);
+    const sessionid = await new_user_1.newUser(window);
+    // await window.click('text=Create Session ID');
+    // // Wait for animation for finish creating ID 
+    // await window.waitForTimeout(1500);
+    // //Save session ID to a variable
+    // const sessionid = await window.inputValue('.session-id-editable-textarea');
+    // await window.click('text=Continue');
+    // // Input username = testuser
+    // await window.fill('#session-input-floating-label', 'testuser');
+    // await window.click('text=Get Started');
+    //OPen user info and verify username and session Id is correct
+    await window.click('[data-testid=leftpane-primary-avatar]');
+    //check username matches
+    test_1.expect(await window.innerText('[data-testid=your-profile-name]')).toBe(userName);
+    //check session id matches
+    test_1.expect(await window.innerText('[data-testid=your-session-id]')).toBe(sessionid);
+    // Exit profile module
+    await window.click('.session-icon-button.small');
+    // Cleanup device 
+    await clean_up_1.cleanUp(window);
+});
 // import fs from 'fs-extra';
 // import pify from 'pify';
 // import fs from 'fs';
@@ -26,39 +55,4 @@ const test_1 = require("@playwright/test");
 //     console.warn('Remove DB: Failed to remove configs.', e);
 //   }
 // }
-test_1.test('Create User', async () => {
-    // Launch Electron app.
-    const electronApp = await test_1._electron.launch({ args: ['main.js'] });
-    const appPath = await electronApp.evaluate(async ({ app }) => {
-        return app.getAppPath();
-    });
-    // await removeDB(appPath);
-    // Get the first window that the app opens, wait if necessary.
-    const window = await electronApp.firstWindow();
-    // Create User
-    await window.click('text=Create Session ID');
-    // Wait for animation for finish creating ID 
-    await window.waitForTimeout(1500);
-    //Save session ID to a variable
-    const sessionid = await window.inputValue('.session-id-editable-textarea');
-    await window.click('text=Continue');
-    // Input username = testuser
-    await window.fill('#session-input-floating-label', 'testuser');
-    await window.click('text=Get Started');
-    //OPen user info and verify username and session Id is correct
-    await window.click('[data-testid=leftpane-primary-avatar]');
-    //check username matches
-    test_1.expect(await window.innerText('[data-testid=your-profile-name]')).toBe('testuser');
-    //check session id matches
-    test_1.expect(await window.innerText('[data-testid=your-session-id]')).toBe(sessionid);
-    // Exit profile module
-    await window.click('.session-icon-button.small');
-    // Cleanup device 
-    await window.click('[data-testid=settings-section]');
-    await window.click('text=Clear All Data');
-    await window.click('text=Device Only');
-    await window.click('text=I am sure');
-    // Wait for data to delete 
-    await window.waitForTimeout(10000);
-});
 //# sourceMappingURL=electron_test.spec.js.map

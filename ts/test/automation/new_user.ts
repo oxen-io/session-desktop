@@ -1,12 +1,6 @@
-const { _electron: electron, test, expect } = require('@playwright/test');
+import { _electron, Page }  from '@playwright/test';
 
-export const newUser = async (window: Page) => {
-    const electronApp = await _electron.launch({ args: ['main.js'] });
-      await electronApp.evaluate(async ({ app }) => {
-        return app.getAppPath();
-      });
-      // Get the first window that the app opens, wait if necessary.
-      const window = await electronApp.firstWindow();
+export const newUser = async ( window: Page, userName: string) => {
       // Create User
       await window.click('text=Create Session ID');
       // Wait for animation for finish creating ID 
@@ -15,6 +9,9 @@ export const newUser = async (window: Page) => {
       const sessionid = await window.inputValue('.session-id-editable-textarea');
       await window.click('text=Continue');
       // Input username = testuser
-      await window.fill('#session-input-floating-label', 'testuser');
+      await window.fill( '#session-input-floating-label', userName );
       await window.click('text=Get Started');
+      
+      
+      return { userName, sessionid };
 }
