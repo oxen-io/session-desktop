@@ -20,7 +20,7 @@ import { PubKey } from '../../types';
 
 import { v4 as uuidv4 } from 'uuid';
 import { PnServer } from '../../../pushnotification';
-import { setIsRinging } from '../RingingManager';
+import { getIsRinging, setIsRinging } from '../RingingManager';
 import { getBlackSilenceMediaStream } from './Silence';
 import { getMessageQueue } from '../..';
 import { MessageSender } from '../../sending';
@@ -29,6 +29,8 @@ import { DURATION } from '../../constants';
 // tslint:disable: function-name
 
 export type InputItem = { deviceId: string; label: string };
+
+export const callTimeoutMs = 30000;
 
 /**
  * This uuid is set only once we accepted a call or started one.
@@ -302,6 +304,8 @@ export async function selectAudioInputByDeviceId(audioInputDeviceId: string) {
     if (sender?.track) {
       sender.track.enabled = false;
     }
+    const silence = getBlackSilenceMediaStream().getAudioTracks()[0];
+    sender?.replaceTrack(silence);
     // do the same changes locally
     localStream?.getAudioTracks().forEach(t => {
       t.stop();
@@ -454,11 +458,16 @@ export async function USER_callRecipient(recipient: string) {
   await updateConnectedDevices();
   const now = Date.now();
   window?.log?.info(`starting call with ${ed25519Str(recipient)}..`);
-  window.inboxStore?.dispatch(startingCallWith({ pubkey: recipient }));
+  window.inboxStore?.dispatch(
+    startingCallWith({
+      pubkey: recipient,
+    })
+  );
   if (peerConnection) {
     throw new Error('USER_callRecipient peerConnection is already initialized ');
   }
   currentCallUUID = uuidv4();
+  const justCreatedCallUUID = currentCallUUID;
   peerConnection = createOrGetPeerConnection(recipient);
   // send a pre offer just to wake up the device on the remote side
   const preOfferMsg = new CallMessage({
@@ -488,6 +497,17 @@ export async function USER_callRecipient(recipient: string) {
   await openMediaDevicesAndAddTracks();
   setIsRinging(true);
   await createOfferAndSendIt(recipient);
+
+  // close and end the call if callTimeoutMs is reached ans still not connected
+  global.setTimeout(async () => {
+    if (justCreatedCallUUID === currentCallUUID && getIsRinging()) {
+      window.log.info(
+        'calling timeout reached. hanging up the call we started:',
+        justCreatedCallUUID
+      );
+      await USER_hangup(recipient);
+    }
+  }, callTimeoutMs);
 }
 
 const iceCandidates: Array<RTCIceCandidate> = new Array();
