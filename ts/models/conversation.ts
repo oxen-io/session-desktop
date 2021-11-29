@@ -48,6 +48,7 @@ import {
 import { ed25519Str } from '../session/onions/onionPath';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { IMAGE_JPEG } from '../types/MIME';
+import { forceSyncConfigurationNowIfNeeded } from '../session/utils/syncUtils';
 import { getLatestTimestampOffset } from '../session/snode_api/SNodeAPI';
 import { createLastMessageUpdate } from '../types/Conversation';
 
@@ -104,6 +105,7 @@ export interface ConversationAttributes {
   triggerNotificationsFor: ConversationNotificationSettingType;
   isTrustedForAttachmentDownload: boolean;
   isPinned: boolean;
+  isApproved: boolean;
 }
 
 export interface ConversationAttributesOptionals {
@@ -144,6 +146,7 @@ export interface ConversationAttributesOptionals {
   triggerNotificationsFor?: ConversationNotificationSettingType;
   isTrustedForAttachmentDownload?: boolean;
   isPinned: boolean;
+  isApproved?: boolean;
 }
 
 /**
@@ -174,6 +177,7 @@ export const fillConvoAttributesWithDefaults = (
     triggerNotificationsFor: 'all', // if the settings is not set in the db, this is the default
     isTrustedForAttachmentDownload: false, // we don't trust a contact until we say so
     isPinned: false,
+    isApproved: false,
   });
 };
 
@@ -433,6 +437,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const isBlocked = this.isBlocked();
     const subscriberCount = this.get('subscriberCount');
     const isPinned = this.isPinned();
+    const isApproved = this.isApproved();
     const hasNickname = !!this.getNickname();
     const isKickedFromGroup = !!this.get('isKickedFromGroup');
     const left = !!this.get('left');
@@ -507,6 +512,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     }
     if (isPinned) {
       toRet.isPinned = isPinned;
+    }
+    if (isApproved) {
+      toRet.isApproved = isApproved;
     }
     if (subscriberCount) {
       toRet.subscriberCount = subscriberCount;
@@ -726,6 +734,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         quote: uploads.quote,
         lokiProfile: UserUtils.getOurProfile(),
       };
+
+      const updateApprovalNeeded =
+        !this.isApproved() && (this.isPrivate() || this.isMediumGroup() || this.isClosedGroup());
+      if (updateApprovalNeeded) {
+        await this.setIsApproved(true);
+        void forceSyncConfigurationNowIfNeeded();
+      }
 
       if (this.isOpenGroupV2()) {
         const chatMessageOpenGroupV2 = new OpenGroupVisibleMessage(chatMessageParams);
@@ -1018,6 +1033,16 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public async addSingleMessage(messageAttributes: MessageAttributesOptionals, setToExpire = true) {
     const model = new MessageModel(messageAttributes);
 
+    const isMe = messageAttributes.source === UserUtils.getOurPubKeyStrFromCache();
+
+    if (
+      isMe &&
+      window.lokiFeatureFlags.useMessageRequests &&
+      window.inboxStore?.getState().userConfig.messageRequests
+    ) {
+      await this.setIsApproved(true);
+    }
+
     // no need to trigger a UI update now, we trigger a messageAdded just below
     const messageId = await model.commit(false);
     model.set({ id: messageId });
@@ -1255,6 +1280,17 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     }
   }
 
+  public async setIsApproved(value: boolean) {
+    if (value !== this.get('isApproved')) {
+      window?.log?.info(`Setting ${this.attributes.profileName} isApproved to:: ${value}`);
+      this.set({
+        isApproved: value,
+      });
+
+      await this.commit();
+    }
+  }
+
   public async setGroupName(name: string) {
     const profileName = this.get('name');
     if (profileName !== name) {
@@ -1360,6 +1396,10 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public isPinned() {
     return this.get('isPinned');
+  }
+
+  public isApproved() {
+    return this.get('isApproved');
   }
 
   public getTitle() {
