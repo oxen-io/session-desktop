@@ -56,7 +56,7 @@ export const LeftPaneSectionHeader = (props: Props) => {
         {label && <Tab label={label} type={0} isSelected={true} key={label} />}
         {buttonIcon && (
           <SessionButton onClick={buttonClicked} key="compose">
-            <SessionIcon iconType={buttonIcon} iconSize={'small'} iconColor="white" />
+            <SessionIcon iconType={buttonIcon} iconSize="small" iconColor="white" />
           </SessionButton>
         )}
       </div>

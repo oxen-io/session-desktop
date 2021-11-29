@@ -89,7 +89,7 @@ export interface ConversationAttributes {
   sessionRestoreSeen?: boolean;
   is_medium_group?: boolean;
   type: string;
-  avatarPointer?: any;
+  avatarPointer?: string;
   avatar?: any;
   /* Avatar hash is currently used for opengroupv2. it's sha256 hash of the base64 avatar data. */
   avatarHash?: string;
@@ -130,7 +130,7 @@ export interface ConversationAttributesOptionals {
   sessionRestoreSeen?: boolean;
   is_medium_group?: boolean;
   type: string;
-  avatarPointer?: any;
+  avatarPointer?: string;
   avatar?: any;
   avatarHash?: string;
   server?: any;

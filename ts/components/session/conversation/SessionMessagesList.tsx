@@ -10,7 +10,7 @@ import {
   PropsForGroupUpdate,
 } from '../../../state/ducks/conversations';
 import { getSortedMessagesTypesOfSelectedConversation } from '../../../state/selectors/conversations';
-import { CallNotification } from '../../conversation/CallNotification';
+import { CallNotification } from '../../conversation/notification-bubble/CallNotification';
 import { DataExtractionNotification } from '../../conversation/DataExtractionNotification';
 import { GroupInvitation } from '../../conversation/GroupInvitation';
 import { GroupNotification } from '../../conversation/GroupNotification';
