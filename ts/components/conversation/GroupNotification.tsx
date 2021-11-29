@@ -27,7 +27,7 @@ function getPeople(change: TypeWithContacts) {
   return change.contacts?.map(c => c.profileName || c.pubkey).join(', ');
 }
 
-function ChangeItem(change: PropsForGroupUpdateType): string {
+const ChangeItem = (change: PropsForGroupUpdateType): string => {
   const people = isTypeWithContact(change) ? getPeople(change) : [];
 
   switch (change.type) {
@@ -70,7 +70,7 @@ function ChangeItem(change: PropsForGroupUpdateType): string {
     default:
       throw new Error('Missing case error');
   }
-}
+};
 
 export const GroupNotification = (props: PropsForGroupUpdate) => {
   const { changes, messageId, receivedAt, isUnread } = props;

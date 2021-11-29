@@ -80,6 +80,7 @@ const BannerInner = () => {
         buttonType={SessionButtonType.Default}
         text={window.i18n('recoveryPhraseRevealButtonText')}
         onClick={showRecoveryPhraseModal}
+        dataTestId="reveal-recovery-phrase"
       />
     </StyledBannerInner>
   );
