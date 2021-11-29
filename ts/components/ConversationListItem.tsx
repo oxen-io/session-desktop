@@ -20,7 +20,7 @@ import {
   ReduxConversationType,
 } from '../state/ducks/conversations';
 import _ from 'underscore';
-import { SessionIcon } from './session/icon';
+import { SessionIcon, SessionIconButton } from './session/icon';
 import { useDispatch, useSelector } from 'react-redux';
 import { SectionType } from '../state/ducks/section';
 import { getFocusedSection } from '../state/selectors/section';
