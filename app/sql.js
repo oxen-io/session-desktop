@@ -60,7 +60,6 @@ module.exports = {
   getUnreadByConversation,
   getUnreadCountByConversation,
   getMessageBySender,
-  getMessageBySenderAndServerId,
   getMessageBySenderAndServerTimestamp,
   getMessageBySenderAndTimestamp,
   getMessageIdsFromServerIds,
@@ -1613,7 +1612,7 @@ function updateConversation(data) {
     members = $members,
     name = $name,
     profileName = $profileName
-  WHERE id = $id;`
+    WHERE id = $id;`
     )
     .run({
       id,
@@ -2053,21 +2052,6 @@ function getMessageBySender({ source, sourceDevice, sentAt }) {
       source,
       sourceDevice,
       sent_at: sentAt,
-    });
-
-  return map(rows, row => jsonToObject(row.json));
-}
-
-function getMessageBySenderAndServerId({ source, serverId }) {
-  const rows = globalInstance
-    .prepare(
-      `SELECT json FROM ${MESSAGES_TABLE} WHERE
-      source = $source AND
-      serverId = $serverId;`
-    )
-    .all({
-      source,
-      serverId,
     });
 
   return map(rows, row => jsonToObject(row.json));

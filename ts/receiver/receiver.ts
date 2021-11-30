@@ -72,7 +72,7 @@ const envelopeQueue = new EnvelopeQueue();
 
 function queueEnvelope(envelope: EnvelopePlus, messageHash?: string) {
   const id = getEnvelopeId(envelope);
-  window?.log?.info('queueing envelope', id);
+  // window?.log?.info('queueing envelope', id);
 
   const task = handleEnvelope.bind(null, envelope, messageHash);
   const taskWithTimeout = createTaskWithTimeout(task, `queueEnvelope ${id}`);
@@ -161,12 +161,11 @@ export function handleRequest(body: any, options: ReqOptions, messageHash: strin
 
   incomingMessagePromises.push(promise);
 }
+
 // tslint:enable:cyclomatic-complexity max-func-body-length */
-
-// ***********************************************************************
-// ***********************************************************************
-// ***********************************************************************
-
+/**
+ * Used in background.js
+ */
 export async function queueAllCached() {
   const items = await getAllFromCache();
   items.forEach(async item => {

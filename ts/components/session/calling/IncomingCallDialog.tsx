@@ -3,10 +3,11 @@ import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
 import _ from 'underscore';
-import { useAvatarPath, useConversationUsername } from '../../../hooks/useParamSelector';
+import { useConversationUsername } from '../../../hooks/useParamSelector';
 import { ed25519Str } from '../../../session/onions/onionPath';
 import { CallManager } from '../../../session/utils';
-import { getHasIncomingCall, getHasIncomingCallFrom } from '../../../state/selectors/conversations';
+import { callTimeoutMs } from '../../../session/utils/calling/CallManager';
+import { getHasIncomingCall, getHasIncomingCallFrom } from '../../../state/selectors/call';
 import { Avatar, AvatarSize } from '../../Avatar';
 import { SessionButton, SessionButtonColor } from '../SessionButton';
 import { SessionWrapperModal } from '../SessionWrapperModal';
@@ -24,11 +25,9 @@ export const CallWindow = styled.div`
   border: var(--session-border);
 `;
 
-const IncomingCallAvatatContainer = styled.div`
+const IncomingCallAvatarContainer = styled.div`
   padding: 0 0 2rem 0;
 `;
-
-const timeoutMs = 60000;
 
 export const IncomingCallDialog = () => {
   const hasIncomingCall = useSelector(getHasIncomingCall);
@@ -42,11 +41,11 @@ export const IncomingCallDialog = () => {
           window.log.info(
             `call missed with ${ed25519Str(
               incomingCallFromPubkey
-            )} as dialog was not interacted with for ${timeoutMs} ms`
+            )} as the dialog was not interacted with for ${callTimeoutMs} ms`
           );
           await CallManager.USER_rejectIncomingCallRequest(incomingCallFromPubkey);
         }
-      }, timeoutMs);
+      }, callTimeoutMs);
     }
 
     return () => {
@@ -70,22 +69,16 @@ export const IncomingCallDialog = () => {
     }
   };
   const from = useConversationUsername(incomingCallFromPubkey);
-  const incomingAvatar = useAvatarPath(incomingCallFromPubkey);
-  if (!hasIncomingCall) {
+  if (!hasIncomingCall || !incomingCallFromPubkey) {
     return null;
   }
 
   if (hasIncomingCall) {
     return (
       <SessionWrapperModal title={window.i18n('incomingCallFrom', from)}>
-        <IncomingCallAvatatContainer>
-          <Avatar
-            size={AvatarSize.XL}
-            avatarPath={incomingAvatar}
-            name={from}
-            pubkey={incomingCallFromPubkey}
-          />
-        </IncomingCallAvatatContainer>
+        <IncomingCallAvatarContainer>
+          <Avatar size={AvatarSize.XL} pubkey={incomingCallFromPubkey} />
+        </IncomingCallAvatarContainer>
         <div className="session-modal__button-group">
           <SessionButton
             text={window.i18n('decline')}

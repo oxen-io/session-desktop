@@ -36,6 +36,7 @@ import { MessageAttachmentSelectorProps } from '../../components/conversation/me
 import { MessageContentSelectorProps } from '../../components/conversation/message/MessageContent';
 import { MessageContentWithStatusSelectorProps } from '../../components/conversation/message/MessageContentWithStatus';
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/GenericReadableMessage';
+import { getIsMessageRequestsEnabled } from './userConfig';
 
 export const getConversations = (state: StateType): ConversationsStateType => state.conversations;
 
@@ -80,112 +81,6 @@ export const getSelectedConversationIsPublic = createSelector(
   (state: ReduxConversationType | undefined): boolean => {
     return state?.isPublic || false;
   }
-);
-
-const getConversationId = (_whatever: any, id: string) => id;
-
-export const getConversationById = createSelector(
-  getConversations,
-  getConversationId,
-  (
-    state: ConversationsStateType,
-    convoId: string | undefined
-  ): ReduxConversationType | undefined => {
-    return convoId ? state.conversationLookup[convoId] : undefined;
-  }
-);
-
-export const getHasIncomingCallFrom = createSelector(
-  getConversations,
-  (state: ConversationsStateType): string | undefined => {
-    const foundEntry = Object.entries(state.conversationLookup).find(
-      ([_convoKey, convo]) => convo.callState === 'incoming'
-    );
-
-    if (!foundEntry) {
-      return undefined;
-    }
-    return foundEntry[1].id;
-  }
-);
-
-export const getHasOngoingCallWith = createSelector(
-  getConversations,
-  (state: ConversationsStateType): ReduxConversationType | undefined => {
-    const foundEntry = Object.entries(state.conversationLookup).find(
-      ([_convoKey, convo]) =>
-        convo.callState === 'connecting' ||
-        convo.callState === 'offering' ||
-        convo.callState === 'ongoing'
-    );
-
-    if (!foundEntry) {
-      return undefined;
-    }
-    return foundEntry[1];
-  }
-);
-
-export const getHasIncomingCall = createSelector(
-  getHasIncomingCallFrom,
-  (withConvo: string | undefined): boolean => !!withConvo
-);
-
-export const getHasOngoingCall = createSelector(
-  getHasOngoingCallWith,
-  (withConvo: ReduxConversationType | undefined): boolean => !!withConvo
-);
-
-export const getHasOngoingCallWithPubkey = createSelector(
-  getHasOngoingCallWith,
-  (withConvo: ReduxConversationType | undefined): string | undefined => withConvo?.id
-);
-
-export const getHasOngoingCallWithFocusedConvo = createSelector(
-  getHasOngoingCallWithPubkey,
-  getSelectedConversationKey,
-  (withPubkey, selectedPubkey) => {
-    return withPubkey && withPubkey === selectedPubkey;
-  }
-);
-
-export const getHasOngoingCallWithFocusedConvoIsOffering = createSelector(
-  getConversations,
-  getSelectedConversationKey,
-  (state: ConversationsStateType, selectedConvoPubkey?: string): boolean => {
-    if (!selectedConvoPubkey) {
-      return false;
-    }
-    const isOffering = state.conversationLookup[selectedConvoPubkey]?.callState === 'offering';
-
-    return Boolean(isOffering);
-  }
-);
-
-export const getHasOngoingCallWithFocusedConvosIsConnecting = createSelector(
-  getConversations,
-  getSelectedConversationKey,
-  (state: ConversationsStateType, selectedConvoPubkey?: string): boolean => {
-    if (!selectedConvoPubkey) {
-      return false;
-    }
-    const isOffering = state.conversationLookup[selectedConvoPubkey]?.callState === 'connecting';
-
-    return Boolean(isOffering);
-  }
-);
-
-export const getHasOngoingCallWithNonFocusedConvo = createSelector(
-  getHasOngoingCallWithPubkey,
-  getSelectedConversationKey,
-  (withPubkey, selectedPubkey) => {
-    return withPubkey && withPubkey !== selectedPubkey;
-  }
-);
-
-export const getCallIsInFullScreen = createSelector(
-  getConversations,
-  (state: ConversationsStateType): boolean => state.callIsInFullScreen
 );
 
 export const getIsTypingEnabled = createSelector(
@@ -282,7 +177,7 @@ export type MessagePropsType =
   | 'timer-notification'
   | 'regular-message'
   | 'unread-indicator'
-  | 'missed-call-notification';
+  | 'call-notification';
 
 export const getSortedMessagesTypesOfSelectedConversation = createSelector(
   getSortedMessagesOfSelectedConversation,
@@ -349,14 +244,14 @@ export const getSortedMessagesTypesOfSelectedConversation = createSelector(
         };
       }
 
-      if (msg.propsForMissedCall) {
+      if (msg.propsForCallNotification) {
         return {
           showUnreadIndicator: isFirstUnread,
           showDateBreak,
           message: {
-            messageType: 'missed-call-notification',
+            messageType: 'call-notification',
             props: {
-              ...msg.propsForMissedCall,
+              ...msg.propsForCallNotification,
               messageId: msg.propsForMessage.id,
             },
           },
@@ -418,25 +313,65 @@ export const _getConversationComparator = (testingi18n?: LocalizerType) => {
     return collator.compare(leftTitle, rightTitle);
   };
 };
+
 export const getConversationComparator = createSelector(getIntl, _getConversationComparator);
 
 // export only because we use it in some of our tests
+// tslint:disable-next-line: cyclomatic-complexity
 export const _getLeftPaneLists = (
-  lookup: ConversationLookupType,
-  comparator: (left: ReduxConversationType, right: ReduxConversationType) => number,
-  selectedConversation?: string
+  sortedConversations: Array<ReduxConversationType>,
+  isMessageRequestEnabled?: boolean
 ): {
   conversations: Array<ReduxConversationType>;
   contacts: Array<ReduxConversationType>;
   unreadCount: number;
 } => {
-  const values = Object.values(lookup);
-  const sorted = values.sort(comparator);
-
   const conversations: Array<ReduxConversationType> = [];
   const directConversations: Array<ReduxConversationType> = [];
 
   let unreadCount = 0;
+  for (const conversation of sortedConversations) {
+    const excludeUnapproved =
+      isMessageRequestEnabled && window.lokiFeatureFlags?.useMessageRequests;
+
+    if (conversation.activeAt !== undefined && conversation.type === ConversationTypeEnum.PRIVATE) {
+      directConversations.push(conversation);
+    }
+
+    if (excludeUnapproved && !conversation.isApproved && !conversation.isBlocked) {
+      // dont increase unread counter, don't push to convo list.
+      continue;
+    }
+
+    if (
+      unreadCount < 9 &&
+      conversation.unreadCount &&
+      conversation.unreadCount > 0 &&
+      conversation.currentNotificationSetting !== 'disabled'
+    ) {
+      unreadCount += conversation.unreadCount;
+    }
+
+    conversations.push(conversation);
+  }
+
+  return {
+    conversations,
+    contacts: directConversations,
+    unreadCount,
+  };
+};
+
+export const _getSortedConversations = (
+  lookup: ConversationLookupType,
+  comparator: (left: ReduxConversationType, right: ReduxConversationType) => number,
+  selectedConversation?: string
+): Array<ReduxConversationType> => {
+  const values = Object.values(lookup);
+  const sorted = values.sort(comparator);
+
+  const sortedConversations: Array<ReduxConversationType> = [];
+
   for (let conversation of sorted) {
     if (selectedConversation === conversation.id) {
       conversation = {
@@ -444,6 +379,7 @@ export const _getLeftPaneLists = (
         isSelected: true,
       };
     }
+
     const isBlocked =
       BlockedNumberController.isBlocked(conversation.id) ||
       BlockedNumberController.isGroupBlocked(conversation.id);
@@ -466,33 +402,39 @@ export const _getLeftPaneLists = (
       continue;
     }
 
-    if (conversation.activeAt !== undefined && conversation.type === ConversationTypeEnum.PRIVATE) {
-      directConversations.push(conversation);
-    }
-
-    if (
-      unreadCount < 9 &&
-      conversation.unreadCount &&
-      conversation.unreadCount > 0 &&
-      conversation.currentNotificationSetting !== 'disabled'
-    ) {
-      unreadCount += conversation.unreadCount;
-    }
-
-    conversations.push(conversation);
+    sortedConversations.push(conversation);
   }
 
-  return {
-    conversations,
-    contacts: directConversations,
-    unreadCount,
-  };
+  return sortedConversations;
 };
 
-export const getLeftPaneLists = createSelector(
+export const getSortedConversations = createSelector(
   getConversationLookup,
   getConversationComparator,
   getSelectedConversationKey,
+  _getSortedConversations
+);
+
+export const _getConversationRequests = (
+  sortedConversations: Array<ReduxConversationType>,
+  isMessageRequestEnabled?: boolean
+): Array<ReduxConversationType> => {
+  const pushToMessageRequests =
+    isMessageRequestEnabled && window?.lokiFeatureFlags?.useMessageRequests;
+  return _.filter(sortedConversations, conversation => {
+    return pushToMessageRequests && !conversation.isApproved && !conversation.isBlocked;
+  });
+};
+
+export const getConversationRequests = createSelector(
+  getSortedConversations,
+  getIsMessageRequestsEnabled,
+  _getConversationRequests
+);
+
+export const getLeftPaneLists = createSelector(
+  getSortedConversations,
+  getIsMessageRequestsEnabled,
   _getLeftPaneLists
 );
 

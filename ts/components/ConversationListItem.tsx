@@ -9,7 +9,6 @@ import { Timestamp } from './conversation/Timestamp';
 import { ContactName } from './conversation/ContactName';
 import { TypingAnimation } from './conversation/TypingAnimation';
 
-import { ConversationAvatar } from './session/usingClosedConversationDetails';
 import { MemoConversationListItemContextMenu } from './session/menu/ConversationListItemContextMenu';
 import { createPortal } from 'react-dom';
 import { OutgoingMessageStatus } from './conversation/message/OutgoingMessageStatus';
@@ -21,13 +20,16 @@ import {
   ReduxConversationType,
 } from '../state/ducks/conversations';
 import _ from 'underscore';
-import { useMembersAvatars } from '../hooks/useMembersAvatar';
-import { SessionIcon } from './session/icon';
+import { SessionIcon, SessionIconButton } from './session/icon';
 import { useDispatch, useSelector } from 'react-redux';
 import { SectionType } from '../state/ducks/section';
 import { getFocusedSection } from '../state/selectors/section';
 import { ConversationNotificationSettingType } from '../models/conversation';
+import { Flex } from './basic/Flex';
+import { forceSyncConfigurationNowIfNeeded } from '../session/utils/syncUtils';
 import { updateUserDetailsModal } from '../state/ducks/modalDialog';
+import { approveConversation, blockConvoById } from '../interactions/conversationInteractions';
+import { useAvatarPath, useConversationUsername, useIsMe } from '../hooks/useParamSelector';
 
 // tslint:disable-next-line: no-empty-interface
 export interface ConversationListItemProps extends ReduxConversationType {}
@@ -43,6 +45,7 @@ export const StyledConversationListItemIconWrapper = styled.div`
 
 type PropsHousekeeping = {
   style?: Object;
+  isMessageRequest?: boolean;
 };
 // tslint:disable: use-simple-attributes
 
@@ -54,11 +57,8 @@ const Portal = ({ children }: { children: any }) => {
 
 const HeaderItem = (props: {
   unreadCount: number;
-  isMe: boolean;
   mentionedUs: boolean;
   activeAt?: number;
-  name?: string;
-  profileName?: string;
   conversationId: string;
   isPinned: boolean;
   currentNotificationSetting: ConversationNotificationSettingType;
@@ -67,11 +67,8 @@ const HeaderItem = (props: {
     unreadCount,
     mentionedUs,
     activeAt,
-    isMe,
     isPinned,
     conversationId,
-    profileName,
-    name,
     currentNotificationSetting,
   } = props;
 
@@ -86,7 +83,7 @@ const HeaderItem = (props: {
 
   const pinIcon =
     isMessagesSection && isPinned ? (
-      <SessionIcon iconType="pin" iconColor={'var(--color-text-subtle)'} iconSize={'small'} />
+      <SessionIcon iconType="pin" iconColor={'var(--color-text-subtle)'} iconSize="small" />
     ) : null;
 
   const NotificationSettingIcon = () => {
@@ -99,11 +96,11 @@ const HeaderItem = (props: {
         return null;
       case 'disabled':
         return (
-          <SessionIcon iconType="mute" iconColor={'var(--color-text-subtle)'} iconSize={'small'} />
+          <SessionIcon iconType="mute" iconColor={'var(--color-text-subtle)'} iconSize="small" />
         );
       case 'mentions_only':
         return (
-          <SessionIcon iconType="bell" iconColor={'var(--color-text-subtle)'} iconSize={'small'} />
+          <SessionIcon iconType="bell" iconColor={'var(--color-text-subtle)'} iconSize="small" />
         );
       default:
         return null;
@@ -118,12 +115,7 @@ const HeaderItem = (props: {
           unreadCount > 0 ? 'module-conversation-list-item__header__name--with-unread' : null
         )}
       >
-        <UserItem
-          isMe={isMe}
-          conversationId={conversationId}
-          name={name}
-          profileName={profileName}
-        />
+        <UserItem conversationId={conversationId} />
       </div>
 
       <StyledConversationListItemIconWrapper>
@@ -145,21 +137,18 @@ const HeaderItem = (props: {
   );
 };
 
-const UserItem = (props: {
-  name?: string;
-  profileName?: string;
-  isMe: boolean;
-  conversationId: string;
-}) => {
-  const { name, conversationId, profileName, isMe } = props;
+const UserItem = (props: { conversationId: string }) => {
+  const { conversationId } = props;
 
   const shortenedPubkey = PubKey.shorten(conversationId);
+  const isMe = useIsMe(conversationId);
+  const username = useConversationUsername(conversationId);
 
-  const displayedPubkey = profileName ? shortenedPubkey : conversationId;
-  const displayName = isMe ? window.i18n('noteToSelf') : profileName;
+  const displayedPubkey = username ? shortenedPubkey : conversationId;
+  const displayName = isMe ? window.i18n('noteToSelf') : username;
 
   let shouldShowPubkey = false;
-  if ((!name || name.length === 0) && (!displayName || displayName.length === 0)) {
+  if ((!username || username.length === 0) && (!displayName || displayName.length === 0)) {
     shouldShowPubkey = true;
   }
 
@@ -167,7 +156,7 @@ const UserItem = (props: {
     <div className="module-conversation__user">
       <ContactName
         pubkey={displayedPubkey}
-        name={name}
+        name={username}
         profileName={displayName}
         module="module-conversation__user"
         boldProfileName={true}
@@ -214,33 +203,23 @@ const MessageItem = (props: {
   );
 };
 
-const AvatarItem = (props: {
-  avatarPath: string | null;
-  conversationId: string;
-  memberAvatars?: Array<ConversationAvatar>;
-  name?: string;
-  profileName?: string;
-  isPrivate: boolean;
-}) => {
-  const { avatarPath, name, isPrivate, conversationId, profileName, memberAvatars } = props;
-
-  const userName = name || profileName || conversationId;
+const AvatarItem = (props: { conversationId: string; isPrivate: boolean }) => {
+  const { isPrivate, conversationId } = props;
+  const userName = useConversationUsername(conversationId);
+  const avatarPath = useAvatarPath(conversationId);
   const dispatch = useDispatch();
 
   return (
     <div className="module-conversation-list-item__avatar-container">
       <Avatar
-        avatarPath={avatarPath}
-        name={userName}
         size={AvatarSize.S}
-        memberAvatars={memberAvatars}
         pubkey={conversationId}
         onAvatarClick={() => {
           if (isPrivate) {
             dispatch(
               updateUserDetailsModal({
                 conversationId: conversationId,
-                userName,
+                userName: userName || '',
                 authorAvatarPath: avatarPath,
               })
             );
@@ -251,6 +230,7 @@ const AvatarItem = (props: {
   );
 };
 
+// tslint:disable: max-func-body-length
 const ConversationListItem = (props: Props) => {
   const {
     activeAt,
@@ -261,9 +241,7 @@ const ConversationListItem = (props: Props) => {
     style,
     mentionedUs,
     isMe,
-    name,
     isPinned,
-    profileName,
     isTyping,
     lastMessage,
     hasNickname,
@@ -274,11 +252,10 @@ const ConversationListItem = (props: Props) => {
     avatarPath,
     isPrivate,
     currentNotificationSetting,
+    isMessageRequest,
   } = props;
   const triggerId = `conversation-item-${conversationId}-ctxmenu`;
   const key = `conversation-item-${conversationId}`;
-
-  const membersAvatar = useMembersAvatars(props);
 
   const openConvo = useCallback(
     async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -289,6 +266,15 @@ const ConversationListItem = (props: Props) => {
     },
     [conversationId]
   );
+
+  /**
+   * Removes conversation from requests list,
+   * adds ID to block list, syncs the block with linked devices.
+   */
+  const handleConversationBlock = async () => {
+    await blockConvoById(conversationId);
+    await forceSyncConfigurationNowIfNeeded();
+  };
 
   return (
     <div key={key}>
@@ -316,24 +302,14 @@ const ConversationListItem = (props: Props) => {
           isBlocked ? 'module-conversation-list-item--is-blocked' : null
         )}
       >
-        <AvatarItem
-          conversationId={conversationId}
-          avatarPath={avatarPath || null}
-          memberAvatars={membersAvatar}
-          profileName={profileName}
-          name={name}
-          isPrivate={isPrivate || false}
-        />
+        <AvatarItem conversationId={conversationId} isPrivate={isPrivate || false} />
         <div className="module-conversation-list-item__content">
           <HeaderItem
             mentionedUs={!!mentionedUs}
             unreadCount={unreadCount || 0}
             activeAt={activeAt}
-            isMe={!!isMe}
             isPinned={!!isPinned}
             conversationId={conversationId}
-            name={name}
-            profileName={profileName}
             currentNotificationSetting={currentNotificationSetting || 'all'}
           />
           <MessageItem
@@ -341,6 +317,35 @@ const ConversationListItem = (props: Props) => {
             unreadCount={unreadCount || 0}
             lastMessage={lastMessage}
           />
+          {isMessageRequest ? (
+            <Flex
+              className="module-conversation-list-item__button-container"
+              container={true}
+              flexDirection="row"
+              justifyContent="flex-end"
+            >
+              <SessionIconButton
+                iconType="exit"
+                iconSize="large"
+                onClick={handleConversationBlock}
+                backgroundColor="var(--color-destructive)"
+                iconColor="var(--color-foreground-primary)"
+                iconPadding="var(--margins-xs)"
+                borderRadius="2px"
+              />
+              <SessionIconButton
+                iconType="check"
+                iconSize="large"
+                onClick={async () => {
+                  await approveConversation(conversationId);
+                }}
+                backgroundColor="var(--color-accent)"
+                iconColor="var(--color-foreground-primary)"
+                iconPadding="var(--margins-xs)"
+                borderRadius="2px"
+              />
+            </Flex>
+          ) : null}
         </div>
       </div>
       <Portal>
@@ -357,8 +362,6 @@ const ConversationListItem = (props: Props) => {
           type={type}
           currentNotificationSetting={currentNotificationSetting || 'all'}
           avatarPath={avatarPath || null}
-          name={name}
-          profileName={profileName}
         />
       </Portal>
     </div>

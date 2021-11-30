@@ -110,7 +110,6 @@ const channelsToMake = {
   removeAllMessagesInConversation,
 
   getMessageBySender,
-  getMessageBySenderAndServerId,
   getMessageBySenderAndServerTimestamp,
   getMessageBySenderAndTimestamp,
   getMessageIdsFromServerIds,
@@ -522,7 +521,8 @@ export async function getConversationById(id: string): Promise<ConversationModel
 }
 
 export async function updateConversation(data: ReduxConversationType): Promise<void> {
-  await channels.updateConversation(data);
+  const cleanedData = _cleanData(data);
+  await channels.updateConversation(cleanedData);
 }
 
 export async function removeConversation(id: string): Promise<void> {
@@ -601,7 +601,6 @@ export async function cleanLastHashes(): Promise<void> {
   await channels.cleanLastHashes();
 }
 
-// TODO: Strictly type the following
 export async function saveSeenMessageHashes(
   data: Array<{
     expiresAt: number;
@@ -682,24 +681,6 @@ export async function getMessageBySender({
     source,
     sourceDevice,
     sentAt,
-  });
-  if (!messages || !messages.length) {
-    return null;
-  }
-
-  return new MessageModel(messages[0]);
-}
-
-export async function getMessageBySenderAndServerId({
-  source,
-  serverId,
-}: {
-  source: string;
-  serverId: number;
-}): Promise<MessageModel | null> {
-  const messages = await channels.getMessageBySenderAndServerId({
-    source,
-    serverId,
   });
   if (!messages || !messages.length) {
     return null;

@@ -5,25 +5,20 @@ import styled from 'styled-components';
 import _ from 'underscore';
 import { UserUtils } from '../../../session/utils';
 import {
-  getHasOngoingCallWith,
+  getCallIsInFullScreen,
   getHasOngoingCallWithFocusedConvo,
   getHasOngoingCallWithFocusedConvoIsOffering,
   getHasOngoingCallWithFocusedConvosIsConnecting,
   getHasOngoingCallWithPubkey,
-} from '../../../state/selectors/conversations';
+} from '../../../state/selectors/call';
 import { StyledVideoElement } from './DraggableCallContainer';
 import { Avatar, AvatarSize } from '../../Avatar';
 
 import { useVideoCallEventsListener } from '../../../hooks/useVideoEventListener';
-import {
-  useAvatarPath,
-  useOurAvatarPath,
-  useOurConversationUsername,
-} from '../../../hooks/useParamSelector';
 import { useModuloWithTripleDots } from '../../../hooks/useModuloWithTripleDots';
 import { CallWindowControls } from './CallButtons';
 import { SessionSpinner } from '../SessionSpinner';
-import { DEVICE_DISABLED_DEVICE_ID } from '../../../session/utils/CallManager';
+import { DEVICE_DISABLED_DEVICE_ID } from '../../../session/utils/calling/CallManager';
 
 const VideoContainer = styled.div`
   height: 100%;
@@ -117,20 +112,14 @@ export const VideoLoadingSpinner = (props: { fullWidth: boolean }) => {
 
 // tslint:disable-next-line: max-func-body-length
 export const InConversationCallContainer = () => {
-  const ongoingCallProps = useSelector(getHasOngoingCallWith);
+  const isInFullScreen = useSelector(getCallIsInFullScreen);
 
   const ongoingCallPubkey = useSelector(getHasOngoingCallWithPubkey);
   const ongoingCallWithFocused = useSelector(getHasOngoingCallWithFocusedConvo);
-  const ongoingCallUsername = ongoingCallProps?.profileName || ongoingCallProps?.name;
   const videoRefRemote = useRef<HTMLVideoElement>(null);
   const videoRefLocal = useRef<HTMLVideoElement>(null);
 
   const ourPubkey = UserUtils.getOurPubKeyStrFromCache();
-
-  const remoteAvatarPath = useAvatarPath(ongoingCallPubkey);
-  const ourAvatarPath = useOurAvatarPath();
-
-  const ourUsername = useOurConversationUsername();
 
   const {
     currentConnectedAudioInputs,
@@ -156,15 +145,20 @@ export const InConversationCallContainer = () => {
 
     if (videoRefRemote.current) {
       if (currentSelectedAudioOutput === DEVICE_DISABLED_DEVICE_ID) {
-        videoRefLocal.current.muted = true;
+        videoRefRemote.current.muted = true;
       } else {
-        // void videoRefLocal.current.setSinkId(currentSelectedAudioOutput);
-        videoRefLocal.current.muted = false;
+        void (videoRefRemote.current as any)?.setSinkId(currentSelectedAudioOutput);
+        videoRefRemote.current.muted = false;
       }
     }
   }
 
-  if (!ongoingCallWithFocused) {
+  if (isInFullScreen && videoRefRemote.current) {
+    // disable this video element so the one in fullscreen is the only one playing audio
+    videoRefRemote.current.muted = true;
+  }
+
+  if (!ongoingCallWithFocused || !ongoingCallPubkey) {
     return null;
   }
 
@@ -182,12 +176,7 @@ export const InConversationCallContainer = () => {
           />
           {remoteStreamVideoIsMuted && (
             <CenteredAvatarInConversation>
-              <Avatar
-                size={AvatarSize.XL}
-                avatarPath={remoteAvatarPath}
-                name={ongoingCallUsername}
-                pubkey={ongoingCallPubkey}
-              />
+              <Avatar size={AvatarSize.XL} pubkey={ongoingCallPubkey} />
             </CenteredAvatarInConversation>
           )}
         </VideoContainer>
@@ -200,12 +189,7 @@ export const InConversationCallContainer = () => {
           />
           {localStreamVideoIsMuted && (
             <CenteredAvatarInConversation>
-              <Avatar
-                size={AvatarSize.XL}
-                avatarPath={ourAvatarPath}
-                name={ourUsername}
-                pubkey={ourPubkey}
-              />
+              <Avatar size={AvatarSize.XL} pubkey={ourPubkey} />
             </CenteredAvatarInConversation>
           )}
         </VideoContainer>

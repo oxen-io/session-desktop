@@ -20,7 +20,8 @@ export async function handleCallMessage(
   // we just allow self send of ANSWER message to remove the incoming call dialog when we accepted it from another device
   if (
     sender === UserUtils.getOurPubKeyStrFromCache() &&
-    callMessage.type !== SignalService.CallMessage.Type.ANSWER
+    callMessage.type !== SignalService.CallMessage.Type.ANSWER &&
+    callMessage.type !== SignalService.CallMessage.Type.END_CALL
   ) {
     window.log.info('Dropping incoming call from ourself');
     await removeFromCache(envelope);
@@ -30,7 +31,7 @@ export async function handleCallMessage(
   if (CallManager.isCallRejected(callMessage.uuid)) {
     await removeFromCache(envelope);
 
-    window.log.info(`Dropping already rejected call ${callMessage.uuid}`);
+    window.log.info(`Dropping already rejected call from this device ${callMessage.uuid}`);
     return;
   }
 
@@ -65,7 +66,7 @@ export async function handleCallMessage(
   if (type === SignalService.CallMessage.Type.END_CALL) {
     await removeFromCache(envelope);
 
-    CallManager.handleCallTypeEndCall(sender, callMessage.uuid);
+    await CallManager.handleCallTypeEndCall(sender, callMessage.uuid);
 
     return;
   }
@@ -73,19 +74,19 @@ export async function handleCallMessage(
   if (type === SignalService.CallMessage.Type.ANSWER) {
     await removeFromCache(envelope);
 
-    await CallManager.handleCallTypeAnswer(sender, callMessage);
+    await CallManager.handleCallTypeAnswer(sender, callMessage, sentTimestamp);
 
     return;
   }
   if (type === SignalService.CallMessage.Type.ICE_CANDIDATES) {
     await removeFromCache(envelope);
 
-    await CallManager.handleCallTypeIceCandidates(sender, callMessage);
+    await CallManager.handleCallTypeIceCandidates(sender, callMessage, sentTimestamp);
 
     return;
   }
   await removeFromCache(envelope);
 
   // if this another type of call message, just add it to the manager
-  await CallManager.handleOtherCallTypes(sender, callMessage);
+  await CallManager.handleOtherCallTypes(sender, callMessage, sentTimestamp);
 }
