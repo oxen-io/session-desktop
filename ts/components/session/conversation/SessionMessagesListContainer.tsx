@@ -164,6 +164,7 @@ class SessionMessagesListContainerInner extends React.Component<Props> {
         className="messages-container"
         onScroll={this.handleScroll}
         ref={this.props.messageContainerRef}
+        data-testid="messages-container"
       >
         <UnreadAboveIndicator />
 
