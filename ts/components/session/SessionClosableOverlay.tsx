@@ -232,6 +232,7 @@ export class SessionClosableOverlay extends React.Component<Props, State> {
           text={buttonText}
           disabled={noContactsForClosedGroup}
           onClick={() => onButtonClick(groupName, selectedMembers)}
+          dataTestId='next-button'
         />
       </div>
     );
