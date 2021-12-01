@@ -37,6 +37,8 @@ export const callTimeoutMs = 30000;
  */
 let currentCallUUID: string | undefined;
 
+let currentCallStartTimestamp: number | undefined;
+
 const rejectedCallUUIDS: Set<string> = new Set();
 
 export type CallManagerOptionsType = {
@@ -591,12 +593,16 @@ function handleConnectionStateChanged(pubkey: string) {
     if (firstAudioOutput) {
       void selectAudioOutputByDeviceId(firstAudioOutput);
     }
+
+    currentCallStartTimestamp = Date.now();
+
     window.inboxStore?.dispatch(callConnected({ pubkey }));
   }
 }
 
 function closeVideoCall() {
   window.log.info('closingVideoCall ');
+  currentCallStartTimestamp = undefined;
   setIsRinging(false);
   if (peerConnection) {
     peerConnection.ontrack = null;
@@ -1299,4 +1305,10 @@ export function onTurnedOnCallMediaPermissions() {
       }
     });
   });
+}
+
+export function getCurrentCallDuration() {
+  return currentCallStartTimestamp
+    ? Math.floor((Date.now() - currentCallStartTimestamp) / 1000)
+    : undefined;
 }
