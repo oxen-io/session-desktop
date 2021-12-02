@@ -7,7 +7,7 @@ const open_1 = require("./open");
 const Promise_1 = require("../../session/utils/Promise");
 test_1.test('Create User', async () => {
     // Launch Electron app.
-    const window = await open_1.openApp();
+    const window = await open_1.openApp('1');
     // Create User
     const userA = await new_user_1.newUser(window, 'userA');
     await window.click('[data-testid=leftpane-primary-avatar]');
