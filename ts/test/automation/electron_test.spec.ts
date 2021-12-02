@@ -7,7 +7,7 @@ import { sleepFor } from '../../session/utils/Promise';
 
 test('Create User', async() => {
 // Launch Electron app.
-  const window = await openApp();
+  const window = await openApp('1');
   // Create User
   const userA = await newUser(window, 'userA');
 

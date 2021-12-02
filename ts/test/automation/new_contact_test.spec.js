@@ -5,15 +5,17 @@ const new_user_1 = require("./new_user");
 const log_in_1 = require("./log_in");
 const open_1 = require("./open");
 const clean_up_1 = require("./clean_up");
+const userADisplayName = 'userA';
+const userBDisplayName = 'userB';
 // Send message in one to one conversation with new contact
 test_1.test('Send message to new contact', async () => {
-    const window = await open_1.openApp();
+    const [window, window2] = await Promise.all([open_1.openApp('1'), open_1.openApp('2')]);
     // create userA 
-    const userA = await new_user_1.newUser(window, 'user A');
+    const userA = await new_user_1.newUser(window, userADisplayName);
     // log out of UserA
-    await clean_up_1.cleanUp(window);
+    // await cleanUp(window);
     // create userB
-    const userB = await new_user_1.newUser(window, 'user B');
+    const userB = await new_user_1.newUser(window2, userBDisplayName);
     // SEND MESSAGE TO USER A
     // Click + button for new conversation
     await window.click('[data-testid=new-conversation-button]');
@@ -26,14 +28,16 @@ test_1.test('Send message to new contact', async () => {
     // click up arrow (send)
     await window.click('[data-testid=send-message-button');
     // confirm that tick appears next to message
-    test_1.expect(await window.isVisible('.sc-fzplWN hRBsWH')).toBeTruthy();
+    await window.waitForSelector('[data-testid=msg-status-outgoing]');
+    await window.waitForSelector(`[data-test-name=convo-item-${userADisplayName}]`);
     // log out of User B
     await clean_up_1.cleanUp(window);
     // login as User A
     await log_in_1.logIn(window, userA.userName, userA.recoveryPhrase);
-    // Log into USER B account
-    // Navigate to conversation with USER A
+    // Navigate to conversation with USER B
+    await window.click('[data-testid=message-section');
     // check message was delivered correctly
+    await window.click();
     // Send message back to USER A
     // Check that USER A was correctly added as a contact
 });
