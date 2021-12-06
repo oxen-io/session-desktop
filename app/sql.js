@@ -1240,6 +1240,11 @@ function updateToLokiSchemaVersion17(currentVersion, db) {
       UPDATE ${CONVERSATIONS_TABLE} SET
       json = json_set(json, '$.isApproved', 1)
     `);
+    // remove the moderators field. As it was only used for opengroups a long time ago and whatever is there is probably unused
+    db.exec(`
+      UPDATE ${CONVERSATIONS_TABLE} SET
+      json = json_remove(json, '$.moderators', '$.dataMessage', '$.accessKey', '$.profileSharing', '$.sessionRestoreSeen')
+    `);
 
     writeLokiSchemaVersion(targetVersion, db);
   })();
