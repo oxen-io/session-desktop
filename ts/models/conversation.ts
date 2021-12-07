@@ -591,7 +591,8 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     return {
       author: quotedMessage.getSource(),
       id: `${quotedMessage.get('sent_at')}` || '',
-      text: body,
+      // no need to quote the full message length.
+      text: body?.slice(0, 100),
       attachments: quotedAttachments,
       timestamp: quotedMessage.get('sent_at') || 0,
       convoId: this.id,
