@@ -144,7 +144,7 @@ export class LeftPaneMessageSection extends React.Component<Props, State> {
 
     return (
       <div className="session-left-pane-section-content">
-        <LeftPaneSectionHeader />
+        <LeftPaneSectionHeader buttonClicked={this.handleNewSessionButtonClick} />
         {overlay ? this.renderClosableOverlay() : this.renderConversations()}
       </div>
     );

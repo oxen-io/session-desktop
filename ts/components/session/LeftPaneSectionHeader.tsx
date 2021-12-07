@@ -17,7 +17,7 @@ const SectionTitle = styled.h1`
   color: var(--color-text);
 `;
 
-export const LeftPaneSectionHeader = () => {
+export const LeftPaneSectionHeader = (props: { buttonClicked?: any }) => {
   const showRecoveryPhrasePrompt = useSelector(getShowRecoveryPhrasePrompt);
   const focusedSection = useSelector(getFocusedSection);
 
@@ -43,7 +43,7 @@ export const LeftPaneSectionHeader = () => {
       <div className="module-left-pane__header">
         <SectionTitle>{label}</SectionTitle>
         {isMessageSection && (
-          <SessionButton>
+          <SessionButton onClick={props.buttonClicked}>
             <SessionIcon iconType="plus" iconSize="small" iconColor="white" />
           </SessionButton>
         )}
