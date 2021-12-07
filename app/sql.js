@@ -1,5 +1,5 @@
 const path = require('path');
-const mkdirp = require('mkdirp');
+const fs = require('fs');
 const rimraf = require('rimraf');
 const SQL = require('better-sqlite3');
 const { app, dialog, clipboard } = require('electron');
@@ -1317,8 +1317,7 @@ let databaseFilePath;
 
 function _initializePaths(configDir) {
   const dbDir = path.join(configDir, 'sql');
-  mkdirp.sync(dbDir);
-
+  fs.mkdirSync(dbDir, { recursive: true });
   databaseFilePath = path.join(dbDir, 'db.sqlite');
 }
 
