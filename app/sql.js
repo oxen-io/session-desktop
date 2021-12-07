@@ -1246,7 +1246,6 @@ function updateToLokiSchemaVersion17(currentVersion, db) {
       UPDATE ${CONVERSATIONS_TABLE} SET
       json = json_remove(json, '$.moderators', '$.dataMessage', '$.accessKey', '$.profileSharing', '$.sessionRestoreSeen')
     `);
-
     writeLokiSchemaVersion(targetVersion, db);
   })();
   console.log(`updateToLokiSchemaVersion${targetVersion}: success!`);
