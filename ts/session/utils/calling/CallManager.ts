@@ -25,6 +25,7 @@ import { getBlackSilenceMediaStream } from './Silence';
 import { getMessageQueue } from '../..';
 import { MessageSender } from '../../sending';
 import { DURATION } from '../../constants';
+import { hasConversationOutgoingMessage } from '../../../data/data';
 
 // tslint:disable: function-name
 
@@ -993,6 +994,18 @@ function getCachedMessageFromCallMessage(
   };
 }
 
+async function isUserApprovedOrWeSentAMessage(user: string) {
+  const isApproved = getConversationController()
+    .get(user)
+    ?.isApproved();
+
+  if (isApproved) {
+    return true;
+  }
+
+  return hasConversationOutgoingMessage(user);
+}
+
 export async function handleCallTypeOffer(
   sender: string,
   callMessage: SignalService.CallMessage,
@@ -1009,7 +1022,16 @@ export async function handleCallTypeOffer(
       const cachedMsg = getCachedMessageFromCallMessage(callMessage, incomingOfferTimestamp);
       pushCallMessageToCallCache(sender, remoteCallUUID, cachedMsg);
 
-      await handleMissedCall(sender, incomingOfferTimestamp, true);
+      await handleMissedCall(sender, incomingOfferTimestamp, 'permissions');
+      return;
+    }
+
+    const shouldDisplayOffer = await isUserApprovedOrWeSentAMessage(sender);
+    if (!shouldDisplayOffer) {
+      const cachedMsg = getCachedMessageFromCallMessage(callMessage, incomingOfferTimestamp);
+      pushCallMessageToCallCache(sender, remoteCallUUID, cachedMsg);
+
+      await handleMissedCall(sender, incomingOfferTimestamp, 'not-approved');
       return;
     }
 
@@ -1022,7 +1044,7 @@ export async function handleCallTypeOffer(
         return;
       }
       // add a message in the convo with this user about the missed call.
-      await handleMissedCall(sender, incomingOfferTimestamp, false);
+      await handleMissedCall(sender, incomingOfferTimestamp, 'another-call-ongoing');
       // Here, we are in a call, and we got an offer from someone we are in a call with, and not one of his other devices.
       // Just hangup automatically the call on the calling side.
 
@@ -1079,22 +1101,27 @@ export async function handleCallTypeOffer(
 export async function handleMissedCall(
   sender: string,
   incomingOfferTimestamp: number,
-  isBecauseOfCallPermission: boolean
+  reason: 'not-approved' | 'permissions' | 'another-call-ongoing'
 ) {
   const incomingCallConversation = getConversationController().get(sender);
   setIsRinging(false);
-  if (!isBecauseOfCallPermission) {
-    ToastUtils.pushedMissedCall(
-      incomingCallConversation?.getNickname() ||
-        incomingCallConversation?.getProfileName() ||
-        'Unknown'
-    );
-  } else {
-    ToastUtils.pushedMissedCallCauseOfPermission(
-      incomingCallConversation?.getNickname() ||
-        incomingCallConversation?.getProfileName() ||
-        'Unknown'
-    );
+
+  const displayname =
+    incomingCallConversation?.getNickname() ||
+    incomingCallConversation?.getProfileName() ||
+    'Unknown';
+
+  switch (reason) {
+    case 'permissions':
+      ToastUtils.pushedMissedCallCauseOfPermission(displayname);
+      break;
+    case 'another-call-ongoing':
+      ToastUtils.pushedMissedCall(displayname);
+      break;
+    case 'not-approved':
+      ToastUtils.pushedMissedCallNotApproved(displayname);
+      break;
+    default:
   }
 
   await addMissedCallMessage(sender, incomingOfferTimestamp);

@@ -72,6 +72,7 @@ module.exports = {
   getNextExpiringMessage,
   getMessagesByConversation,
   getFirstUnreadMessageIdInConversation,
+  hasConversationOutgoingMessage,
 
   getUnprocessedCount,
   getAllUnprocessed,
@@ -1362,7 +1363,9 @@ function initialize({ configDir, key, messages, passwordAttempt }) {
     // Clear any already deleted db entries on each app start.
     vacuumDatabase(db);
     const msgCount = getMessageCount();
-    console.warn('total message count: ', msgCount);
+    const convoCount = getConversationCount();
+    console.info('total message count: ', msgCount);
+    console.info('total conversation count: ', convoCount);
   } catch (error) {
     if (passwordAttempt) {
       throw error;
@@ -2174,6 +2177,27 @@ function getMessagesByConversation(
       type,
     });
   return map(rows, row => jsonToObject(row.json));
+}
+
+function hasConversationOutgoingMessage(conversationId) {
+  const row = globalInstance
+    .prepare(
+      `
+    SELECT count(*)  FROM ${MESSAGES_TABLE} WHERE
+      conversationId = $conversationId AND
+      type IS 'outgoing'
+    `
+    )
+    .get({
+      conversationId,
+    });
+  if (!row) {
+    throw new Error('hasConversationOutgoingMessage: Unable to get coun');
+  }
+
+  console.warn('hasConversationOutgoingMessage', row);
+
+  return Boolean(row['count(*)']);
 }
 
 function getFirstUnreadMessageIdInConversation(conversationId) {
