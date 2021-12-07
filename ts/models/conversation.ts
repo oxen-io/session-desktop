@@ -274,6 +274,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public isMediumGroup() {
     return this.get('is_medium_group');
   }
+
   /**
    * Returns true if this conversation is active
    * i.e. the conversation is visibie on the left pane. (Either we or another user created this convo).

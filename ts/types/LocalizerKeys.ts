@@ -463,4 +463,4 @@ export type LocalizerKeys =
   | 'searchFor...'
   | 'joinedTheGroup'
   | 'editGroupName'
-  | 'reportIssue'
+  | 'reportIssue';
