@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { getConversationRequests } from '../../state/selectors/conversations';
 import { MemoConversationListItemWithDetails } from '../ConversationListItem';
 import styled from 'styled-components';
+// tslint:disable: use-simple-attributes
 
 export enum SessionClosableOverlayType {
   Message = 'message',
