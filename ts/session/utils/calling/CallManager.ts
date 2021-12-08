@@ -20,7 +20,7 @@ import { PubKey } from '../../types';
 
 import { v4 as uuidv4 } from 'uuid';
 import { PnServer } from '../../../pushnotification';
-import { getIsRinging, setIsRinging } from '../RingingManager';
+import { getIsRinging } from '../RingingManager';
 import { getBlackSilenceMediaStream } from './Silence';
 import { getMessageQueue } from '../..';
 import { MessageSender } from '../../sending';
@@ -508,7 +508,6 @@ export async function USER_callRecipient(recipient: string) {
   void PnServer.notifyPnServer(wrappedEnvelope, recipient);
 
   await openMediaDevicesAndAddTracks();
-  setIsRinging(true);
   await createOfferAndSendIt(recipient);
 
   // close and end the call if callTimeoutMs is reached ans still not connected
@@ -594,7 +593,6 @@ function handleConnectionStateChanged(pubkey: string) {
   if (peerConnection?.signalingState === 'closed' || peerConnection?.connectionState === 'failed') {
     closeVideoCall();
   } else if (peerConnection?.connectionState === 'connected') {
-    setIsRinging(false);
     const firstAudioInput = audioInputsList?.[0].deviceId || undefined;
     if (firstAudioInput) {
       void selectAudioInputByDeviceId(firstAudioInput);
@@ -614,7 +612,6 @@ function handleConnectionStateChanged(pubkey: string) {
 function closeVideoCall() {
   window.log.info('closingVideoCall ');
   currentCallStartTimestamp = undefined;
-  setIsRinging(false);
   if (peerConnection) {
     peerConnection.ontrack = null;
     peerConnection.onicecandidate = null;
@@ -698,7 +695,6 @@ function onDataChannelReceivedMessage(ev: MessageEvent<string>) {
 }
 function onDataChannelOnOpen() {
   window.log.info('onDataChannelOnOpen: sending video status');
-  setIsRinging(false);
   sendVideoStatusViaDataChannel();
 }
 
@@ -758,7 +754,6 @@ function createOrGetPeerConnection(withPubkey: string) {
 
 export async function USER_acceptIncomingCallRequest(fromSender: string) {
   window.log.info('USER_acceptIncomingCallRequest');
-  setIsRinging(false);
   if (currentCallUUID) {
     window.log.warn(
       'Looks like we are already in a call as in USER_acceptIncomingCallRequest is not undefined'
@@ -839,7 +834,6 @@ export async function USER_acceptIncomingCallRequest(fromSender: string) {
 }
 
 export async function rejectCallAlreadyAnotherCall(fromSender: string, forcedUUID: string) {
-  setIsRinging(false);
   window.log.info(`rejectCallAlreadyAnotherCall ${ed25519Str(fromSender)}: ${forcedUUID}`);
   rejectedCallUUIDS.add(forcedUUID);
   const rejectCallMessage = new CallMessage({
@@ -854,7 +848,6 @@ export async function rejectCallAlreadyAnotherCall(fromSender: string, forcedUUI
 }
 
 export async function USER_rejectIncomingCallRequest(fromSender: string) {
-  setIsRinging(false);
   // close the popup call
   window.inboxStore?.dispatch(endCall());
   const lastOfferMessage = findLastMessageTypeFromSender(
@@ -954,8 +947,6 @@ export async function handleCallTypeEndCall(sender: string, aboutCallUUID?: stri
       (ongoingCallStatus === 'incoming' || ongoingCallStatus === 'connecting')
     ) {
       // remote user hangup an offer he sent but we did not accept it yet
-      setIsRinging(false);
-
       window.inboxStore?.dispatch(endCall());
     }
   }
@@ -1098,7 +1089,6 @@ export async function handleCallTypeOffer(
       } else if (callerConvo) {
         await callerConvo.notifyIncomingCall();
       }
-      setIsRinging(true);
     }
     const cachedMessage = getCachedMessageFromCallMessage(callMessage, incomingOfferTimestamp);
 
@@ -1114,7 +1104,6 @@ export async function handleMissedCall(
   reason: 'not-approved' | 'permissions' | 'another-call-ongoing'
 ) {
   const incomingCallConversation = getConversationController().get(sender);
-  setIsRinging(false);
 
   const displayname =
     incomingCallConversation?.getNickname() ||
