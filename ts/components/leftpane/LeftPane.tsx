@@ -5,7 +5,7 @@ import { SectionType } from '../../state/ducks/section';
 import { SessionTheme } from '../../state/ducks/SessionTheme';
 import { getLeftPaneLists } from '../../state/selectors/conversations';
 import { getQuery, getSearchResults, isSearching } from '../../state/selectors/search';
-import { getFocusedSection } from '../../state/selectors/section';
+import { getFocusedSection, getOverlayMode } from '../../state/selectors/section';
 import { getIsMessageRequestsEnabled } from '../../state/selectors/userConfig';
 import { ActionsPanel } from './ActionsPanel';
 import { LeftPaneContactSection } from './LeftPaneContactSection';
@@ -30,6 +30,7 @@ const InnerLeftPaneMessageSection = () => {
 
   const lists = showSearch ? undefined : useSelector(getLeftPaneLists);
   const messageRequestsEnabled = useSelector(getIsMessageRequestsEnabled);
+  const overlayMode = useSelector(getOverlayMode);
 
   return (
     // tslint:disable-next-line: use-simple-attributes
@@ -39,6 +40,7 @@ const InnerLeftPaneMessageSection = () => {
       searchResults={searchResults}
       searchTerm={searchTerm}
       messageRequestsEnabled={messageRequestsEnabled}
+      overlayMode={overlayMode}
     />
   );
 };

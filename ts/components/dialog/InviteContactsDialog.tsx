@@ -13,7 +13,7 @@ import { updateInviteContactModal } from '../../state/ducks/modalDialog';
 // tslint:disable-next-line: no-submodule-imports
 import useKey from 'react-use/lib/useKey';
 import { SessionButton, SessionButtonColor } from '../basic/SessionButton';
-import { ContactType, SessionMemberListItem } from '../SessionMemberListItem';
+import { MemberListItem } from '../MemberListItem';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 
 type Props = {
@@ -174,7 +174,7 @@ const InviteContactsDialogInner = (props: Props) => {
       .map((d: ContactType) => d.id);
 
     return members.map((member: ContactType, index: number) => (
-      <SessionMemberListItem
+      <MemberListItem
         member={member}
         key={member.id}
         index={index}

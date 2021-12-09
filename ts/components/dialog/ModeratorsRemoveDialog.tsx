@@ -9,7 +9,7 @@ import { updateRemoveModeratorsModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionSpinner } from '../basic/SessionSpinner';
-import { ContactType, SessionMemberListItem } from '../SessionMemberListItem';
+import { ContactType, MemberListItem } from '../MemberListItem';
 interface Props {
   conversationId: string;
 }
@@ -97,7 +97,7 @@ export class RemoveModeratorsDialog extends React.Component<Props, State> {
     const selectedContacts = members.filter(d => d.checkmarked).map(d => d.id);
 
     return members.map((member: ContactType, index: number) => (
-      <SessionMemberListItem
+      <MemberListItem
         member={member}
         key={member.id}
         index={index}

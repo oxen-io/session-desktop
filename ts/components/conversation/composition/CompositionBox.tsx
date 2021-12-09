@@ -15,7 +15,7 @@ import {
 import { AbortController } from 'abort-controller';
 import { SessionQuotedMessageComposition } from '../SessionQuotedMessageComposition';
 import { Mention, MentionsInput } from 'react-mentions';
-import { SessionMemberListItem } from '../../SessionMemberListItem';
+import { MemberListItem } from '../../MemberListItem';
 import autoBind from 'auto-bind';
 import { getMediaPermissionsSettings } from '../../settings/SessionSettings';
 import { getDraftForConversation, updateDraftForConversation } from '../SessionConversationDrafts';
@@ -412,7 +412,6 @@ class CompositionBoxInner extends React.Component<Props, State> {
       ? i18n('unblockGroupToSend')
       : i18n('sendMessage');
     const { typingEnabled } = this.props;
-    let index = 0;
 
     return (
       <MentionsInput
@@ -438,9 +437,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
           displayTransform={(_id, display) => `@${display}`}
           data={this.fetchUsersForGroup}
           renderSuggestion={(suggestion, _search, _highlightedDisplay, _index, focused) => (
-            <SessionMemberListItem
+            <MemberListItem
               isSelected={focused}
-              index={index++}
               key={suggestion.id}
               member={{
                 id: `${suggestion.id}`,

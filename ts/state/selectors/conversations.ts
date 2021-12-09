@@ -415,7 +415,7 @@ export const getSortedConversations = createSelector(
   _getSortedConversations
 );
 
-export const _getConversationRequests = (
+const _getConversationRequests = (
   sortedConversations: Array<ReduxConversationType>,
   isMessageRequestEnabled?: boolean
 ): Array<ReduxConversationType> => {
@@ -430,6 +430,29 @@ export const getConversationRequests = createSelector(
   getSortedConversations,
   getIsMessageRequestsEnabled,
   _getConversationRequests
+);
+
+const _getPrivateContactsPubkeys = (
+  sortedConversations: Array<ReduxConversationType>,
+  isMessageRequestEnabled?: boolean
+): Array<string> => {
+  const pushToMessageRequests =
+    isMessageRequestEnabled && window?.lokiFeatureFlags?.useMessageRequests;
+  return _.filter(sortedConversations, conversation => {
+    return (
+      pushToMessageRequests &&
+      conversation.isPrivate &&
+      !conversation.isBlocked &&
+      !conversation.isMe &&
+      (conversation.isApproved || !pushToMessageRequests)
+    );
+  }).map(convo => convo.id);
+};
+
+export const getPrivateContactsPubkeys = createSelector(
+  getSortedConversations,
+  getIsMessageRequestsEnabled,
+  _getPrivateContactsPubkeys
 );
 
 export const getLeftPaneLists = createSelector(

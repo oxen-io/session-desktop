@@ -11,7 +11,7 @@ import { ConversationModel } from '../../models/conversation';
 import { updateGroupMembersModal } from '../../state/ducks/modalDialog';
 import { ClosedGroup } from '../../session';
 import { SessionButton, SessionButtonColor } from '../basic/SessionButton';
-import { ContactType, SessionMemberListItem } from '../SessionMemberListItem';
+import { ContactType, MemberListItem } from '../MemberListItem';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 
 type Props = {
@@ -177,7 +177,7 @@ export class UpdateGroupMembersDialog extends React.Component<Props, State> {
       const isSelected = this.state.isAdmin && !member.checkmarked;
 
       return (
-        <SessionMemberListItem
+        <MemberListItem
           member={member}
           index={index}
           isSelected={isSelected}
@@ -199,7 +199,7 @@ export class UpdateGroupMembersDialog extends React.Component<Props, State> {
     const zombieElements = zombies.map((member: ContactType, index: number) => {
       const isSelected = this.state.isAdmin && !member.checkmarked;
       return (
-        <SessionMemberListItem
+        <MemberListItem
           member={member}
           index={index}
           isSelected={isSelected}

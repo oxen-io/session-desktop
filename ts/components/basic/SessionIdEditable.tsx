@@ -6,7 +6,7 @@ interface Props {
   value?: string;
   text?: string;
   editable?: boolean;
-  onChange?: any;
+  onChange?: (value: string) => void;
   onPressEnter?: any;
   maxLength?: number;
   isGroup?: boolean;
@@ -56,7 +56,7 @@ export class SessionIdEditable extends React.PureComponent<Props> {
   private handleChange(e: any) {
     const { editable, onChange } = this.props;
 
-    if (editable) {
+    if (editable && onChange) {
       const value = e.target.value?.replace(/(\r\n|\n|\r)/gm, '');
       onChange(value);
     }

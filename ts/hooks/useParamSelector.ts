@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
 
@@ -29,6 +30,22 @@ export function useConversationUsername(pubkey?: string) {
       return pubkey;
     }
     return convo?.profileName || convo?.name || convo.id;
+  });
+}
+
+/**
+ * Returns either the nickname, profileName, or the shorten pubkey
+ */
+export function useConversationUsernameOrShorten(pubkey?: string) {
+  return useSelector((state: StateType) => {
+    if (!pubkey) {
+      return undefined;
+    }
+    const convo = state.conversations.conversationLookup[pubkey];
+    if (!convo) {
+      return PubKey.shorten(pubkey);
+    }
+    return convo?.profileName || convo?.name || PubKey.shorten(convo.id);
   });
 }
 
