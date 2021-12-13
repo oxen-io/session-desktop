@@ -324,6 +324,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const isPublic = this.isPublic();
 
     const members = this.isGroup() && !isPublic ? this.get('members') : [];
+    const zombies = this.isGroup() && !isPublic ? this.get('zombies') : [];
     const ourNumber = UserUtils.getOurPubKeyStrFromCache();
     const avatarPath = this.getAvatarPath();
     const isPrivate = this.isPrivate();
@@ -421,14 +422,14 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       toRet.subscriberCount = subscriberCount;
     }
     if (groupAdmins && groupAdmins.length) {
-      toRet.groupAdmins = groupAdmins;
+      toRet.groupAdmins = _.uniq(groupAdmins);
     }
     if (members && members.length) {
-      toRet.members = members;
+      toRet.members = _.uniq(members);
     }
 
-    if (members && members.length) {
-      toRet.members = members;
+    if (zombies && zombies.length) {
+      toRet.zombies = _.uniq(zombies);
     }
 
     if (expireTimer) {

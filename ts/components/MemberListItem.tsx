@@ -7,8 +7,6 @@ import { useConversationUsernameOrShorten } from '../hooks/useParamSelector';
 
 type Props = {
   pubkey: string;
-  checkmarked: boolean;
-  existingMember: boolean;
   isSelected: boolean;
   // this bool is used to make a zombie appear with less opacity than a normal member
   isZombie?: boolean;

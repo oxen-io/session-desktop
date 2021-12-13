@@ -69,3 +69,16 @@ export function useIsClosedGroup(convoId?: string) {
     return (convo.isGroup && !convo.isPublic) || false;
   });
 }
+
+export function useConversationPropsById(convoId?: string) {
+  return useSelector((state: StateType) => {
+    if (!convoId) {
+      return null;
+    }
+    const convo = state.conversations.conversationLookup[convoId];
+    if (!convo) {
+      return null;
+    }
+    return convo;
+  });
+}

@@ -437,18 +437,28 @@ const _getPrivateContactsPubkeys = (
   isMessageRequestEnabled?: boolean
 ): Array<string> => {
   const pushToMessageRequests =
-    isMessageRequestEnabled && window?.lokiFeatureFlags?.useMessageRequests;
+    (isMessageRequestEnabled && window?.lokiFeatureFlags?.useMessageRequests) ||
+    !isMessageRequestEnabled;
+
   return _.filter(sortedConversations, conversation => {
     return (
-      pushToMessageRequests &&
       conversation.isPrivate &&
       !conversation.isBlocked &&
       !conversation.isMe &&
-      (conversation.isApproved || !pushToMessageRequests)
+      (conversation.isApproved || !pushToMessageRequests) &&
+      Boolean(conversation.activeAt)
     );
   }).map(convo => convo.id);
 };
 
+/**
+ * Returns all the conversation ids of private conversations which are
+ * - private
+ * - not me
+ * - not blocked
+ * - approved (or message requests are disabled)
+ * - active_at is set to something truthy
+ */
 export const getPrivateContactsPubkeys = createSelector(
   getSortedConversations,
   getIsMessageRequestsEnabled,

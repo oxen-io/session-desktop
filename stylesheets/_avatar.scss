@@ -130,6 +130,6 @@ $borderAvatarColor: unquote(
 .module-avatar-clickable {
   transition: $session-transition-duration;
   &:hover {
-    opacity: $session-subtle-factor;
+    filter: grayscale(0.7);
   }
 }

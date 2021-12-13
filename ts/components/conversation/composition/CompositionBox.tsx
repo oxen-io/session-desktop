@@ -437,20 +437,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
           displayTransform={(_id, display) => `@${display}`}
           data={this.fetchUsersForGroup}
           renderSuggestion={(suggestion, _search, _highlightedDisplay, _index, focused) => (
-            <MemberListItem
-              isSelected={focused}
-              key={suggestion.id}
-              member={{
-                id: `${suggestion.id}`,
-                authorPhoneNumber: `${suggestion.id}`,
-                selected: focused,
-                authorProfileName: `${suggestion.display}`,
-                authorName: `${suggestion.display}`,
-                existingMember: false,
-                checkmarked: false,
-                authorAvatarPath: '',
-              }}
-            />
+            <MemberListItem isSelected={focused} key={suggestion.id} pubkey={`${suggestion.id}`} />
           )}
         />
       </MentionsInput>

@@ -93,8 +93,6 @@ export const OverlayClosedGroup = () => {
           <div className="group-member-list__selection">
             {privateContactsPubkeys.map((memberPubkey: string) => (
               <MemberListItem
-                checkmarked={false}
-                existingMember={false}
                 pubkey={memberPubkey}
                 isSelected={selectedMemberIds.some(m => m === memberPubkey)}
                 key={memberPubkey}
