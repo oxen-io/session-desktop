@@ -5,20 +5,18 @@ import { Constants } from '../session';
 import { SessionIcon } from './icon';
 import { useConversationUsernameOrShorten } from '../hooks/useParamSelector';
 
-type Props = {
+const AvatarItem = (props: { memberPubkey: string }) => {
+  return <Avatar size={AvatarSize.XS} pubkey={props.memberPubkey} />;
+};
+
+export const MemberListItem = (props: {
   pubkey: string;
   isSelected: boolean;
   // this bool is used to make a zombie appear with less opacity than a normal member
   isZombie?: boolean;
   onSelect?: (pubkey: string) => void;
   onUnselect?: (pubkey: string) => void;
-};
-
-const AvatarItem = (props: { memberPubkey: string }) => {
-  return <Avatar size={AvatarSize.XS} pubkey={props.memberPubkey} />;
-};
-
-export const MemberListItem = (props: Props) => {
+}) => {
   const { isSelected, pubkey, isZombie, onSelect, onUnselect } = props;
 
   const memberName = useConversationUsernameOrShorten(pubkey);

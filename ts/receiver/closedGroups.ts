@@ -678,7 +678,7 @@ async function handleClosedGroupMembersRemoved(
   // Only add update message if we have something to show
   if (membersAfterUpdate.length !== currentMembers.length) {
     const groupDiff: ClosedGroup.GroupDiff = {
-      leavingMembers: effectivelyRemovedMembers,
+      kickedMembers: effectivelyRemovedMembers,
     };
     await ClosedGroup.addUpdateMessage(
       convo,

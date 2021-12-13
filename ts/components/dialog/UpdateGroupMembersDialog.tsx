@@ -24,16 +24,22 @@ type Props = {
 const ClassicMemberList = (props: {
   convoId: string;
   selectedMembers: Array<string>;
+  showAdmins?: boolean; // if true, admins of this convo will be put at the top of the list and greyed
   onSelect: (m: string) => void;
   onUnselect: (m: string) => void;
 }) => {
-  const { onSelect, convoId, onUnselect, selectedMembers } = props;
+  const { onSelect, convoId, onUnselect, selectedMembers, showAdmins } = props;
   const weAreAdmin = useWeAreAdmin(convoId);
   const convoProps = useConversationPropsById(convoId);
   if (!convoProps) {
     throw new Error('MemberList needs convoProps');
   }
-  const currentMembers = convoProps.members || [];
+  let currentMembers = convoProps.members || [];
+  if (showAdmins) {
+    const { groupAdmins } = convoProps;
+    currentMembers = currentMembers.sort(m => (groupAdmins?.includes(m) ? -1 : 0));
+  }
+
   return (
     <>
       {currentMembers.map((member: string) => {
@@ -240,6 +246,7 @@ export const UpdateGroupMembersDialog = (props: Props) => {
           onSelect={onAdd}
           onUnselect={onRemove}
           selectedMembers={membersToKeepWithUpdate}
+          showAdmins={true}
         />
       </div>
       <ZombiesList convoId={conversationId} />
