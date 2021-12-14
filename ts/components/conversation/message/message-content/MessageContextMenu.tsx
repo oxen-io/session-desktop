@@ -183,7 +183,9 @@ export const MessageContextMenu = (props: Props) => {
 
       <Item onClick={copyText}>{window.i18n('copyMessage')}</Item>
       {(isSent || !isOutgoing) && <Item onClick={onReply}>{window.i18n('replyToMessage')}</Item>}
-      <Item onClick={onShowDetail}>{window.i18n('moreInformation')}</Item>
+      {(!isPublic || isOutgoing) && (
+        <Item onClick={onShowDetail}>{window.i18n('moreInformation')}</Item>
+      )}
       {showRetry ? <Item onClick={onRetry}>{window.i18n('resend')}</Item> : null}
       {isDeletable ? (
         <>

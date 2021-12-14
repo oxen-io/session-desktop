@@ -4,6 +4,7 @@ import { MessageRenderingProps } from '../../../../models/messageType';
 import { updateUserDetailsModal } from '../../../../state/ducks/modalDialog';
 import { getMessageAvatarProps } from '../../../../state/selectors/conversations';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
+// tslint:disable: use-simple-attributes
 
 export type MessageAvatarSelectorProps = Pick<
   MessageRenderingProps,
@@ -62,7 +63,11 @@ export const MessageAvatar = (props: Props) => {
 
   return (
     <div className="module-message__author-avatar" key={`msg-avatar-${authorPhoneNumber}`}>
-      <Avatar size={AvatarSize.S} onAvatarClick={onMessageAvatarClick} pubkey={authorPhoneNumber} />
+      <Avatar
+        size={AvatarSize.S}
+        onAvatarClick={(!isPublic && onMessageAvatarClick) || undefined}
+        pubkey={authorPhoneNumber}
+      />
       {isPublic && isSenderAdmin && (
         <div className="module-avatar__icon--crown-wrapper">
           <div className="module-avatar__icon--crown" />
