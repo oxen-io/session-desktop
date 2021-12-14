@@ -754,11 +754,12 @@ async function handleClosedGroupAdminMemberLeft(
   // if the admin was remove and we are the admin, it can only be voluntary
   await markGroupAsLeftOrKicked(groupPublicKey, convo, !isCurrentUserAdmin);
 
-  convo.set('members', []);
   // everybody left ! this is how we disable a group when the admin left
   const groupDiff: ClosedGroup.GroupDiff = {
-    leavingMembers: convo.get('members'),
+    kickedMembers: convo.get('members'),
   };
+  convo.set('members', []);
+
   await ClosedGroup.addUpdateMessage(convo, groupDiff, 'incoming', _.toNumber(envelope.timestamp));
   convo.updateLastMessage();
 

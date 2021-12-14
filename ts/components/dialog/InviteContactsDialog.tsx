@@ -107,8 +107,6 @@ const InviteContactsDialogInner = (props: Props) => {
   if (!convoProps.isGroup) {
     throw new Error('InviteContactsDialogInner must be a group');
   }
-  console.warn('convoProps', convoProps);
-  console.warn('validContactsForInvite', validContactsForInvite);
   if (!convoProps.isPublic) {
     // filter our zombies and current members from the list of contact we can add
     const members = convoProps.members || [];

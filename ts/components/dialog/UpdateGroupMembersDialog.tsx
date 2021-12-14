@@ -211,7 +211,6 @@ export const UpdateGroupMembersDialog = (props: Props) => {
     }
 
     addTo(member);
-    console.warn('onAdd member', member);
   };
 
   const onRemove = (member: string) => {
@@ -228,7 +227,6 @@ export const UpdateGroupMembersDialog = (props: Props) => {
       );
       return;
     }
-    console.warn('onRemove member', member);
 
     removeFrom(member);
   };
