@@ -84,12 +84,7 @@ export const OverlayMessage = () => {
     <div className="module-left-pane-overlay">
       <OverlayHeader title={title} subtitle={subtitle} />
 
-      <SessionIdEditable
-        // ref={this.inputRef}
-        editable={!loading}
-        placeholder={placeholder}
-        onChange={setPubkeyOrOns}
-      />
+      <SessionIdEditable editable={!loading} placeholder={placeholder} onChange={setPubkeyOrOns} />
 
       <SessionSpinner loading={loading} />
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 // tslint:disable: no-submodule-imports use-simple-attributes
 
 import { SessionJoinableRooms } from './SessionJoinableDefaultRooms';
@@ -27,7 +27,6 @@ async function joinOpenGroup(serverUrl: string) {
 }
 
 export const OverlayOpenGroup = () => {
-  const inputRef = useRef(null);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [groupUrl, setGroupUrl] = useState('');
@@ -67,7 +66,6 @@ export const OverlayOpenGroup = () => {
 
       <div className="create-group-name-input">
         <SessionIdEditable
-          ref={inputRef}
           editable={true}
           placeholder={placeholder}
           value={groupUrl}

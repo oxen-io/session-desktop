@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -16,7 +16,6 @@ import { MainViewController } from '../../MainViewController';
 import useKey from 'react-use/lib/useKey';
 
 export const OverlayClosedGroup = () => {
-  const inputRef = useRef(null);
   const dispatch = useDispatch();
   const privateContactsPubkeys = useSelector(getPrivateContactsPubkeys);
   // FIXME autofocus inputref on mount
@@ -72,7 +71,6 @@ export const OverlayClosedGroup = () => {
       <OverlayHeader title={title} subtitle={subtitle} />
       <div className="create-group-name-input">
         <SessionIdEditable
-          ref={inputRef}
           editable={!noContactsForClosedGroup}
           placeholder={placeholder}
           value={groupName}

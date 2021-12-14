@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { ChangeEvent, KeyboardEvent, useRef } from 'react';
 import classNames from 'classnames';
+import { useFocusMount } from '../../hooks/useFocusMount';
 
-interface Props {
+type Props = {
   placeholder?: string;
   value?: string;
   text?: string;
@@ -10,64 +11,46 @@ interface Props {
   onPressEnter?: any;
   maxLength?: number;
   isGroup?: boolean;
-}
+};
 
-export class SessionIdEditable extends React.PureComponent<Props> {
-  private readonly inputRef: any;
+export const SessionIdEditable = (props: Props) => {
+  const inputRef = useRef(null);
 
-  public constructor(props: Props) {
-    super(props);
-    this.inputRef = React.createRef();
-    this.handleChange = this.handleChange.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-  }
+  useFocusMount(inputRef);
+  const { placeholder, onPressEnter, onChange, editable, text, value, maxLength, isGroup } = props;
 
-  public focus() {
-    if (this.inputRef.current) {
-      this.inputRef.current.focus();
-    }
-  }
-
-  public render() {
-    const { placeholder, editable, text, value, maxLength, isGroup } = this.props;
-
-    return (
-      <div
-        className={classNames('session-id-editable', !editable && 'session-id-editable-disabled')}
-      >
-        <textarea
-          className={classNames(
-            isGroup ? 'group-id-editable-textarea' : 'session-id-editable-textarea'
-          )}
-          ref={this.inputRef}
-          placeholder={placeholder}
-          disabled={!editable}
-          spellCheck={false}
-          onKeyDown={this.handleKeyDown}
-          onChange={this.handleChange}
-          onBlur={this.handleChange}
-          value={value || text}
-          maxLength={maxLength}
-        />
-      </div>
-    );
-  }
-
-  private handleChange(e: any) {
-    const { editable, onChange } = this.props;
-
+  useFocusMount(inputRef);
+  function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     if (editable && onChange) {
-      const value = e.target.value?.replace(/(\r\n|\n|\r)/gm, '');
-      onChange(value);
+      const eventValue = e.target.value?.replace(/(\r\n|\n|\r)/gm, '');
+      onChange(eventValue);
     }
   }
 
-  private handleKeyDown(e: any) {
-    const { editable, onPressEnter } = this.props;
+  function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (editable && e.key === 'Enter') {
       e.preventDefault();
       // tslint:disable-next-line: no-unused-expression
       onPressEnter && onPressEnter();
     }
   }
-}
+
+  return (
+    <div className={classNames('session-id-editable', !editable && 'session-id-editable-disabled')}>
+      <textarea
+        className={classNames(
+          isGroup ? 'group-id-editable-textarea' : 'session-id-editable-textarea'
+        )}
+        ref={inputRef}
+        placeholder={placeholder}
+        disabled={!editable}
+        spellCheck={false}
+        onKeyDown={handleKeyDown}
+        onChange={handleChange}
+        onBlur={handleChange}
+        value={value || text}
+        maxLength={maxLength}
+      />
+    </div>
+  );
+};
