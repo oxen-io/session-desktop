@@ -2,8 +2,10 @@ import React from 'react';
 // tslint:disable-next-line: no-submodule-imports
 import useMount from 'react-use/lib/useMount';
 
-export function useFocusMount(ref: React.RefObject<any>) {
+export function useFocusMount(ref: React.RefObject<any>, isEditable?: boolean) {
   useMount(() => {
-    ref?.current?.focus();
+    if (isEditable) {
+      ref?.current?.focus();
+    }
   });
 }

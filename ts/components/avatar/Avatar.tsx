@@ -111,10 +111,12 @@ const AvatarInner = (props: Props) => {
         hasImage ? 'module-avatar--with-image' : 'module-avatar--no-image',
         isClickable && 'module-avatar-clickable'
       )}
-      onClick={e => {
-        e.stopPropagation();
-        e.preventDefault();
-        props.onAvatarClick?.();
+      onMouseDown={e => {
+        if (props.onAvatarClick) {
+          e.stopPropagation();
+          e.preventDefault();
+          props.onAvatarClick?.();
+        }
       }}
       role="button"
       data-testid={dataTestId}

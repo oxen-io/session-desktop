@@ -214,22 +214,22 @@ const AvatarItem = (props: { conversationId: string; isPrivate: boolean }) => {
   const avatarPath = useAvatarPath(conversationId);
   const dispatch = useDispatch();
 
+  function onPrivateAvatarClick() {
+    dispatch(
+      updateUserDetailsModal({
+        conversationId: conversationId,
+        userName: userName || '',
+        authorAvatarPath: avatarPath,
+      })
+    );
+  }
+
   return (
     <div className="module-conversation-list-item__avatar-container">
       <Avatar
         size={AvatarSize.S}
         pubkey={conversationId}
-        onAvatarClick={() => {
-          if (isPrivate) {
-            dispatch(
-              updateUserDetailsModal({
-                conversationId: conversationId,
-                userName: userName || '',
-                authorAvatarPath: avatarPath,
-              })
-            );
-          }
-        }}
+        onAvatarClick={isPrivate ? onPrivateAvatarClick : undefined}
       />
     </div>
   );

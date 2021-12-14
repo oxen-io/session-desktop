@@ -14,12 +14,10 @@ type Props = {
 };
 
 export const SessionIdEditable = (props: Props) => {
+  const { placeholder, onPressEnter, onChange, editable, text, value, maxLength, isGroup } = props;
   const inputRef = useRef(null);
 
-  useFocusMount(inputRef);
-  const { placeholder, onPressEnter, onChange, editable, text, value, maxLength, isGroup } = props;
-
-  useFocusMount(inputRef);
+  useFocusMount(inputRef, editable);
   function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     if (editable && onChange) {
       const eventValue = e.target.value?.replace(/(\r\n|\n|\r)/gm, '');
