@@ -12,7 +12,9 @@ const newUser = async (window, userName) => {
     // Input username = testuser
     await window.fill('#session-input-floating-label', userName);
     await window.click('text=Get Started');
-    return { userName, sessionid };
+    await window.click('[data-testid=reveal-recovery-phrase]');
+    const recoveryPhrase = await window.inputValue('.session-modal__text-highlight');
+    return { userName, sessionid, recoveryPhrase };
 };
 exports.newUser = newUser;
 //# sourceMappingURL=new_user.js.map

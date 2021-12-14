@@ -1,4 +1,4 @@
-import { _electron, test, expect }  from '@playwright/test';
+// import { _electron, test, expect }  from '@playwright/test';
 
 // Send message in one to one conversation with new contact
 
@@ -9,7 +9,7 @@ import { _electron, test, expect }  from '@playwright/test';
 // click up arrow (send)
 // confirm that tick appears next to message
 
-
+/*
 function standardFunction() {
 
 }
@@ -25,3 +25,4 @@ const arrowFunction = () => {
 const asyncArrowFunction = async () => {
 
 }
+*/

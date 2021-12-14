@@ -11,7 +11,7 @@ export const newUser = async ( window: Page, userName: string) => {
 	// Input username = testuser
 	await window.fill( '#session-input-floating-label', userName );
 	await window.click('text=Get Started');
-	await window.click('text=Reveal recovery phrase');   
+	await window.click('[data-testid=reveal-recovery-phrase]');   
 	const recoveryPhrase = await window.inputValue('.session-modal__text-highlight');      
 
 	return { userName, sessionid, recoveryPhrase };
