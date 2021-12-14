@@ -68,9 +68,8 @@ export const syncConfigurationIfNeeded = async () => {
 };
 
 export const forceSyncConfigurationNowIfNeeded = async (waitForMessageSent = false) =>
-  new Promise(async resolve => {
-    const allConvos = (await getAllConversations()).models;
-
+  new Promise(resolve => {
+    const allConvos = getConversationController().getConversations();
     // if we hang for more than 10sec, force resolve this promise.
     setTimeout(() => {
       resolve(false);

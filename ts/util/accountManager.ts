@@ -170,6 +170,7 @@ async function registrationDone(ourPubkey: string, displayName: string) {
     ConversationTypeEnum.PRIVATE
   );
   await conversation.setLokiProfile({ displayName });
+  await conversation.setIsApproved(true);
   const user = {
     ourNumber: getOurPubKeyStrFromCache(),
     ourPrimary: window.textsecure.storage.get('primaryDevicePubKey'),

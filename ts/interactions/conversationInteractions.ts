@@ -22,7 +22,6 @@ import {
 } from '../state/ducks/modalDialog';
 import {
   createOrUpdateItem,
-  getConversationById,
   getItemById,
   getMessageById,
   hasLinkPreviewPopupBeenDisplayed,
@@ -121,18 +120,17 @@ export async function unblockConvoById(conversationId: string) {
  * marks the conversation as approved.
  */
 export const approveConversation = async (conversationId: string) => {
-  const conversationToApprove = await getConversationById(conversationId);
+  const conversationToApprove = getConversationController().get(conversationId);
 
   if (!conversationToApprove || conversationToApprove.isApproved()) {
     window?.log?.info('Conversation is already approved.');
     return;
   }
 
-  await conversationToApprove?.setIsApproved(true);
+  await conversationToApprove.setIsApproved(true);
 
-  if (conversationToApprove?.isApproved() === true) {
-    await forceSyncConfigurationNowIfNeeded();
-  }
+  // Conversation was not approved before so a sync is needed
+  await forceSyncConfigurationNowIfNeeded();
 };
 
 export async function showUpdateGroupNameByConvoId(conversationId: string) {

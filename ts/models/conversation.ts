@@ -1174,7 +1174,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public async setIsPinned(value: boolean) {
-    if (value !== this.get('isPinned')) {
+    if (value !== this.isPinned()) {
       this.set({
         isPinned: value,
       });
@@ -1183,7 +1183,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public async setIsApproved(value: boolean) {
-    if (value !== this.get('isApproved')) {
+    if (value !== this.isApproved()) {
       window?.log?.info(`Setting ${this.attributes.profileName} isApproved to:: ${value}`);
       this.set({
         isApproved: value,
@@ -1274,7 +1274,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
   // returns true if this is a closed/medium or open group
   public isGroup() {
-    return this.get('type') === 'group';
+    return this.get('type') === ConversationTypeEnum.GROUP;
   }
 
   public async removeMessage(messageId: any) {
@@ -1297,11 +1297,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public isPinned() {
-    return this.get('isPinned');
+    return Boolean(this.get('isPinned'));
   }
 
   public isApproved() {
-    return this.get('isApproved');
+    return Boolean(this.get('isApproved'));
   }
 
   public getTitle() {
