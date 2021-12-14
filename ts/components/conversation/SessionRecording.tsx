@@ -124,7 +124,7 @@ export class SessionRecording extends React.Component<Props, State> {
           <StyledFlexWrapper marginHorizontal={Constants.UI.SPACING.marginXs}>
             {isRecording && (
               <SessionIconButton
-                iconType="pause"
+                iconType="stop"
                 iconSize="medium"
                 iconColor={Constants.UI.COLORS.DANGER_ALT}
                 onClick={actionPauseFn}
