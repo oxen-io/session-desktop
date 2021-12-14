@@ -30,11 +30,9 @@ window.getEnvironment = () => config.environment;
 window.getAppInstance = () => config.appInstance;
 window.getVersion = () => config.version;
 window.isDev = () => config.environment === 'development';
-window.getExpiration = () => config.buildExpiration;
 window.getCommitHash = () => config.commitHash;
 window.getNodeVersion = () => config.node_version;
 window.getHostName = () => config.hostname;
-window.getServerTrustRoot = () => config.serverTrustRoot;
 window.isBehindProxy = () => Boolean(config.proxyUrl);
 
 window.lokiFeatureFlags = {
