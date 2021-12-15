@@ -21,5 +21,6 @@ export const LeftPaneSectionContainer = styled.div`
   // this is not ideal but it seems that nth-0last-child does not work
   #onion-path-indicator-led-id {
     margin: auto auto 0px auto;
+    opacity: 1;
   }
 `;
