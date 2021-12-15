@@ -9,7 +9,7 @@ export const LeftPaneSectionContainer = styled.div`
   overflow-y: auto;
 
   .session-icon-button {
-    padding: 30px 0;
+    padding: 30px 20px;
   }
 
   .module-avatar {
