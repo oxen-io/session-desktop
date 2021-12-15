@@ -40,7 +40,7 @@ test('Send message to new contact', async() => {
   // Navigate to conversation with USER B
   await window.click('[data-testid=message-section');
   // check message was delivered correctly
-  await window.click()
+  // await window.click()
   // Send message back to USER A
   // Check that USER A was correctly added as a contact
 })
