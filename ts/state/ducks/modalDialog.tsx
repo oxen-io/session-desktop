@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SessionConfirmDialogProps } from '../../components/dialog/SessionConfirm';
 import { PasswordAction } from '../../components/dialog/SessionPasswordDialog';
+export type BanType = 'ban' | 'unban';
 
 export type ConfirmModalState = SessionConfirmDialogProps | null;
 export type InviteContactModalState = { conversationId: string } | null;
-export type UnbanUserModalState = InviteContactModalState;
-export type BanUserModalState = InviteContactModalState;
+export type BanOrUnbanUserModalState = {
+  conversationId: string;
+  banType: BanType;
+  pubkey?: string;
+} | null;
 export type AddModeratorsModalState = InviteContactModalState;
 export type RemoveModeratorsModalState = InviteContactModalState;
 export type UpdateGroupMembersModalState = InviteContactModalState;
@@ -28,8 +32,7 @@ export type UserDetailsModalState = {
 export type ModalState = {
   confirmModal: ConfirmModalState;
   inviteContactModal: InviteContactModalState;
-  unbanUserModal: UnbanUserModalState;
-  banUserModal: BanUserModalState;
+  banOrUnbanUserModal: BanOrUnbanUserModalState;
   removeModeratorsModal: RemoveModeratorsModalState;
   addModeratorsModal: AddModeratorsModalState;
   groupNameModal: UpdateGroupNameModalState;
@@ -49,8 +52,7 @@ export const initialModalState: ModalState = {
   inviteContactModal: null,
   addModeratorsModal: null,
   removeModeratorsModal: null,
-  unbanUserModal: null,
-  banUserModal: null,
+  banOrUnbanUserModal: null,
   groupNameModal: null,
   groupMembersModal: null,
   userDetailsModal: null,
@@ -73,11 +75,8 @@ const ModalSlice = createSlice({
     updateInviteContactModal(state, action: PayloadAction<InviteContactModalState | null>) {
       return { ...state, inviteContactModal: action.payload };
     },
-    updateBanUserModal(state, action: PayloadAction<BanUserModalState | null>) {
-      return { ...state, banUserModal: action.payload };
-    },
-    updateUnbanUserModal(state, action: PayloadAction<UnbanUserModalState | null>) {
-      return { ...state, unbanUserModal: action.payload };
+    updateBanOrUnbanUserModal(state, action: PayloadAction<BanOrUnbanUserModalState | null>) {
+      return { ...state, banOrUnbanUserModal: action.payload };
     },
     updateAddModeratorsModal(state, action: PayloadAction<AddModeratorsModalState | null>) {
       return { ...state, addModeratorsModal: action.payload };
@@ -134,7 +133,6 @@ export const {
   adminLeaveClosedGroup,
   sessionPassword,
   updateDeleteAccountModal,
-  updateBanUserModal,
-  updateUnbanUserModal,
+  updateBanOrUnbanUserModal,
 } = actions;
 export const modalReducer = reducer;

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   getAddModeratorsModal,
   getAdminLeaveClosedGroupDialog,
-  getBanUserModalState,
+  getBanOrUnbanUserModalState,
   getChangeNickNameDialog,
   getConfirmModal,
   getDeleteAccountModalState,
@@ -13,7 +13,6 @@ import {
   getRecoveryPhraseDialog,
   getRemoveModeratorsModal,
   getSessionPasswordDialog,
-  getUnbanUserModalState,
   getUpdateGroupMembersModal,
   getUpdateGroupNameModal,
   getUserDetailsModal,
@@ -32,8 +31,7 @@ import { RemoveModeratorsDialog } from './ModeratorsRemoveDialog';
 import { UpdateGroupMembersDialog } from './UpdateGroupMembersDialog';
 import { UpdateGroupNameDialog } from './UpdateGroupNameDialog';
 import { SessionNicknameDialog } from './SessionNicknameDialog';
-import { UnbanUserDialog } from './UnbanUserDialog';
-import { BanUserDialog } from './BanUserDialog';
+import { BanOrUnBanUserDialog } from './BanOrUnbanUserDialog';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
@@ -50,14 +48,11 @@ export const ModalContainer = () => {
   const adminLeaveClosedGroupModalState = useSelector(getAdminLeaveClosedGroupDialog);
   const sessionPasswordModalState = useSelector(getSessionPasswordDialog);
   const deleteAccountModalState = useSelector(getDeleteAccountModalState);
-  const unbanUserModalState = useSelector(getUnbanUserModalState);
-  const banUserModalState = useSelector(getBanUserModalState);
+  const banOrUnbanUserModalState = useSelector(getBanOrUnbanUserModalState);
 
   return (
     <>
-      {unbanUserModalState && <UnbanUserDialog {...unbanUserModalState} />}
-      {banUserModalState && <BanUserDialog {...banUserModalState} />}
-      {confirmModalState && <SessionConfirm {...confirmModalState} />}
+      {banOrUnbanUserModalState && <BanOrUnBanUserDialog {...banOrUnbanUserModalState} />}
       {inviteModalState && <InviteContactsDialog {...inviteModalState} />}
       {addModeratorsModalState && <AddModeratorsDialog {...addModeratorsModalState} />}
       {removeModeratorsModalState && <RemoveModeratorsDialog {...removeModeratorsModalState} />}

@@ -14,13 +14,12 @@ import {
   adminLeaveClosedGroup,
   changeNickNameModal,
   updateAddModeratorsModal,
-  updateBanUserModal,
+  updateBanOrUnbanUserModal,
   updateConfirmModal,
   updateGroupMembersModal,
   updateGroupNameModal,
   updateInviteContactModal,
   updateRemoveModeratorsModal,
-  updateUnbanUserModal,
 } from '../state/ducks/modalDialog';
 import {
   createOrUpdateItem,
@@ -215,12 +214,16 @@ export function showRemoveModeratorsByConvoId(conversationId: string) {
   window.inboxStore?.dispatch(updateRemoveModeratorsModal({ conversationId }));
 }
 
-export function showBanUserByConvoId(conversationId: string) {
-  window.inboxStore?.dispatch(updateBanUserModal({ conversationId }));
+export function showBanUserByConvoId(conversationId: string, pubkey?: string) {
+  window.inboxStore?.dispatch(
+    updateBanOrUnbanUserModal({ banType: 'ban', conversationId, pubkey })
+  );
 }
 
-export function showUnbanUserByConvoId(conversationId: string) {
-  window.inboxStore?.dispatch(updateUnbanUserModal({ conversationId }));
+export function showUnbanUserByConvoId(conversationId: string, pubkey?: string) {
+  window.inboxStore?.dispatch(
+    updateBanOrUnbanUserModal({ banType: 'unban', conversationId, pubkey })
+  );
 }
 
 export async function markAllReadByConvoId(conversationId: string) {
