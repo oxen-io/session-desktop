@@ -1,4 +1,4 @@
-import { _electron, test, expect }  from '@playwright/test';
+import { _electron, test, expect, Page }  from '@playwright/test';
 import { cleanUp } from './clean_up';
 import { newUser } from './new_user';
 import { openApp } from './open';

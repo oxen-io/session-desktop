@@ -12,11 +12,11 @@ export const newUser = async ( window: Page, userName: string) => {
 	await window.fill( '#session-input-floating-label', userName );
 	await window.click('text=Get Started');
 
-	// await window.click('[data-testid=settings-section');
-	// await window.click('text=Recovery Phrase');
-	// await window.click('[data-testid=reveal-recovery-phrase]'); 
+	await window.click('[data-testid=settings-section');
+	await window.click('text=Recovery Phrase');
+	await window.click('[data-testid=reveal-recovery-phrase]'); 
 	// await window.click('text=Copy'); 
-  // const recoveryPhrase = await window.inputValue('.session-modal__text-highlight');      
+  const recoveryPhrase = await window.inputValue('[data-testid=recovery-phrase-seed-modal]');      
 	// console.log(recoveryPhrase);
-	return { userName, sessionid };
+	return { userName, sessionid, recoveryPhrase };
 }
