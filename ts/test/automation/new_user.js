@@ -12,12 +12,11 @@ const newUser = async (window, userName) => {
     // Input username = testuser
     await window.fill('#session-input-floating-label', userName);
     await window.click('text=Get Started');
-    await window.click('[data-testid=settings-section');
+    await window.click('[data-testid=settings-section]');
     await window.click('text=Recovery Phrase');
-    await window.click('[data-testid=reveal-recovery-phrase]');
-    // await window.click('text=Copy'); 
-    const recoveryPhrase = await window.inputValue('.session-modal__text-highlight');
-    // console.log(recoveryPhrase);
+    // Save Recovery Phrase and export to use in test
+    const recoveryPhrase = await window.innerText('[data-test-id=recovery-phrase-seed-modal]');
+    await window.click('.session-icon-button.small');
     return { userName, sessionid, recoveryPhrase };
 };
 exports.newUser = newUser;

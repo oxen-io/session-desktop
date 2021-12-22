@@ -11,7 +11,7 @@ const logIn = async (window, userName, recoveryPhrase) => {
     await window.fill('[data-testid=display-name-input]', userName);
     // Click continue your session
     await window.click('[data-testid=continue-session-button]');
-    await Promise_1.sleepFor(100);
+    await (0, Promise_1.sleepFor)(100);
 };
 exports.logIn = logIn;
 //# sourceMappingURL=log_in.js.map
