@@ -54,7 +54,7 @@ export const SendMessageButton = (props: { onClick: () => void }) => {
         borderRadius="300px"
         iconPadding="6px"
         onClick={props.onClick}
-        dataTestId='send-message-button'
+        dataTestId="send-message-button"
       />
     </div>
   );

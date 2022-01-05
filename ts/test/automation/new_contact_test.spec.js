@@ -20,28 +20,20 @@ const userBDisplayName = 'userB';
     // Enter session ID of USER B
     await window.fill('.session-id-editable-textarea', userB.sessionid);
     // click next
-    await window.click('[data-testid=next-button]');
+    await window.click('text=Next');
     // type into message input box
-    await window.fill('.send-message-input', 'Sending test message');
+    await window.fill('[data-testid=message-input] * textarea', 'Sending test message');
     // click up arrow (send)
-    await window.click('[data-testid=send-message-button');
-    // confirm that tick appears next to message
-    await window.waitForSelector('[data-testid=msg-status-outgoing]');
-    await window.waitForSelector(`[data-test-name=convo-item-${userADisplayName}]`);
+    await window.click('[data-testid=send-message-button]');
     // Navigate to conversation with USER A
-    await window2.click('[data-testid=message-section');
+    await window2.click('[data-testid=message-section]');
+    await window2.click('.module-conversation-list-item__header');
+    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
     // Send message back to USER A
-    // await window.click()
-    // Check that USER A was correctly added as a contact
+    await window2.fill('[data-testid=message-input] * textarea', 'Sending reply message');
+    await window2.click('[data-testid=send-message-button]');
+    // Navigate to contacts tab
+    await window2.click('[data-testid=contact-section]');
+    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
 });
-// log out from USER A
-// cleanUp(window);
-// test('blah', async() => {
-//   const userA = newUser(window, 'user A')
-//   cleanUp(window)
-//   const userB = newUser(window, 'user B')
-//   // SEND MESSAGE TO USER 
-//   cleanUp(window)
-//   logIn(window, userA.userName, userA.recoveryPhrase)
-// })
 //# sourceMappingURL=new_contact_test.spec.js.map
