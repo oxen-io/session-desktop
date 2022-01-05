@@ -1,5 +1,4 @@
 import { _electron, test, expect, Page }  from '@playwright/test';
-// import { cleanUp } from './clean_up';
 import { newUser } from './new_user';
 import { openApp } from './open';
 import { sleepFor } from '../../session/utils/Promise';
@@ -8,21 +7,6 @@ import { sleepFor } from '../../session/utils/Promise';
 
 
 let window: Page | undefined;
-
-// test.afterEach(async () => {
-
-//   if(window) {
-//     await cleanUp(window)
-//   }
-// })
-
-// test.beforeAll( () => {
-//   emptyDirSync('~/Library/Application\ Support/Session-test-integration-1')
-//   emptyDirSync('~/Library/Application\ Support/Session-test-integration')
-//   emptyDirSync('~/Library/Application\ Support/Session-test-integration-2')
-  
-// })
-
 
 test('Create User', async() => {
 // Launch Electron app.
@@ -33,12 +17,16 @@ test('Create User', async() => {
   await window.click('[data-testid=leftpane-primary-avatar]');
   await sleepFor(100);
   //check username matches
-  console.log('blah');
   expect(await window.innerText('[data-testid=your-profile-name]')).toBe(userA.userName);
   //check session id matches
-  console.log(userA.userName);
-  console.log(userA.sessionid);
   expect(await window.innerText('[data-testid=your-session-id]')).toBe(userA.sessionid);
+  // exit profile module
+  await window.click('.session-icon-button.small'); 
+  // check recovery phrase matches
+  // go to settings section
+  await window.click('[data-testid=settings-section]');
+	await window.click('text=Recovery Phrase');
+  expect(await window.innerText('[data-testid=recovery-phrase-seed-modal]')).toBe(userA.recoveryPhrase);
   // Exit profile module
   await window.click('.session-icon-button.small');
   
