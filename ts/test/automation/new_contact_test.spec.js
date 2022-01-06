@@ -28,12 +28,12 @@ const userBDisplayName = 'userB';
     // Navigate to conversation with USER A
     await window2.click('[data-testid=message-section]');
     await window2.click('.module-conversation-list-item__header');
-    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
+    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
     // Send message back to USER A
     await window2.fill('[data-testid=message-input] * textarea', 'Sending reply message');
     await window2.click('[data-testid=send-message-button]');
     // Navigate to contacts tab
     await window2.click('[data-testid=contact-section]');
-    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
+    (0, test_1.expect)(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
 });
 //# sourceMappingURL=new_contact_test.spec.js.map

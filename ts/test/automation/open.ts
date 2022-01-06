@@ -10,6 +10,7 @@ export const openApp = async (multi:string) => {
     // Get the first window that the app opens, wait if necessary.
   const window = await electronApp.firstWindow();
   
+  await window.reload();
   return window;
 } 
 

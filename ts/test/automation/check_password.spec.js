@@ -17,14 +17,14 @@ let window;
     // Click set password
     await window.click('"Set Password"');
     // Enter password
-    await window.fill('#password-modal-input', '123456');
+    await window.type('#password-modal-input', '123456');
     // Confirm password
-    await window.fill('#password-modal-input-confirm', '123456');
+    await window.type('#password-modal-input-confirm', '123456');
     // Click OK
-    await window.click('"OK"');
+    await window.keyboard.press('Enter');
     // Type password into input field
     await window.fill('#password-lock-input', '123456');
     // Click OK
     await window.click('"OK"');
 });
-//# sourceMappingURL=check_password.js.map
+//# sourceMappingURL=check_password.spec.js.map

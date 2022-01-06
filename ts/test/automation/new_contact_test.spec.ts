@@ -31,11 +31,11 @@ test('Send message to new contact', async() => {
   // Navigate to conversation with USER A
   await window2.click('[data-testid=message-section]');
   await window2.click('.module-conversation-list-item__header');
-  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
+  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
   // Send message back to USER A
   await window2.fill('[data-testid=message-input] * textarea', 'Sending reply message');
   await window2.click('[data-testid=send-message-button]');
   // Navigate to contacts tab
   await window2.click('[data-testid=contact-section]');
-  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA);
+  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
 })
