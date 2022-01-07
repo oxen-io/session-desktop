@@ -1,19 +1,17 @@
-import { _electron, test, expect }  from '@playwright/test';
+import { _electron, expect, test } from '@playwright/test';
 import { newUser } from './new_user';
 // import { logIn } from './log_in';
 import { openApp } from './open';
 // import { cleanUp } from './clean_up';
 
-const userADisplayName ='userA'
-const userBDisplayName ='userB'
-
+const userADisplayName = 'userA';
+const userBDisplayName = 'userB';
 
 // Send message in one to one conversation with new contact
-test('Send message to new contact', async() => {
+test('Send message to new contact', async () => {
+  const [window, window2] = await Promise.all([openApp('1'), openApp('2')]);
 
-  const [window, window2] = await Promise.all([openApp('1'), openApp('2')])
-
-  // create userA 
+  // create userA
   const userA = await newUser(window, userADisplayName);
   // create userB
   const userB = await newUser(window2, userBDisplayName);
@@ -38,4 +36,4 @@ test('Send message to new contact', async() => {
   // Navigate to contacts tab
   await window2.click('[data-testid=contact-section]');
   expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
-})
+});

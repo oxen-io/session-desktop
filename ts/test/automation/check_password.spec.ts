@@ -1,13 +1,13 @@
-import { _electron, test, Page }  from '@playwright/test';
+import { _electron, Page, test } from '@playwright/test';
 import { newUser } from './new_user';
 import { openApp } from './open';
 // Open app
 let window: Page | undefined;
-test('Check Password', async() => {
+test('Check Password', async () => {
   // open Electron
   window = await openApp('1');
   // Create user
-  await newUser(window, 'userA');    
+  await newUser(window, 'userA');
   // Click on settings tab
   await window.click('[data-testid=settings-section]');
   // Click on privacy
@@ -24,5 +24,4 @@ test('Check Password', async() => {
   await window.fill('#password-lock-input', '123456');
   // Click OK
   await window.click('"OK"');
-})
-
+});

@@ -6,7 +6,7 @@ const config = {
   testIgnore: '*.js',
   outputDir: './ts/test/automation/test-results',
   use: {
-    video:'retain-on-failure',
+    video: 'retain-on-failure',
     trace: 'retain-on-failure',
   },
   workers: 1,

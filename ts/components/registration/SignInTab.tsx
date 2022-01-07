@@ -55,7 +55,7 @@ const ContinueYourSessionButton = (props: {
       buttonColor={SessionButtonColor.Green}
       text={window.i18n('continueYourSession')}
       disabled={props.disabled}
-      dataTestId='continue-session-button;'
+      dataTestId="continue-session-button;"
     />
   );
 };
