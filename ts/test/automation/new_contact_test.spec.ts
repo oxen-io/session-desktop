@@ -1,39 +1,26 @@
 import { _electron, expect, test } from '@playwright/test';
 import { newUser } from './new_user';
-// import { logIn } from './log_in';
 import { openApp } from './open';
-// import { cleanUp } from './clean_up';
+import { sendMessage } from './send_message';
 
 const userADisplayName = 'userA';
 const userBDisplayName = 'userB';
 
 // Send message in one to one conversation with new contact
 test('Send message to new contact', async () => {
-  const [window, window2] = await Promise.all([openApp('1'), openApp('2')]);
-
-  // create userA
-  const userA = await newUser(window, userADisplayName);
-  // create userB
-  const userB = await newUser(window2, userBDisplayName);
-  // SEND MESSAGE TO USER B FROM USER A
-  // Click + button for new conversation
-  await window.click('[data-testid=new-conversation-button]');
-  // Enter session ID of USER B
-  await window.fill('.session-id-editable-textarea', userB.sessionid);
-  // click next
-  await window.click('text=Next');
-  // type into message input box
-  await window.fill('[data-testid=message-input] * textarea', 'Sending test message');
-  // click up arrow (send)
-  await window.click('[data-testid=send-message-button]');
-  // Navigate to conversation with USER A
-  await window2.click('[data-testid=message-section]');
-  await window2.click('.module-conversation-list-item__header');
-  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
-  // Send message back to USER A
-  await window2.fill('[data-testid=message-input] * textarea', 'Sending reply message');
-  await window2.click('[data-testid=send-message-button]');
-  // Navigate to contacts tab
-  await window2.click('[data-testid=contact-section]');
-  expect(await window2.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
+  const [windowA, windowB] = await Promise.all([openApp('1'), openApp('2')]);
+  // Create User A
+  const userA = await newUser(windowA, userADisplayName);
+  // Create User B
+  const userB = await newUser(windowB, userBDisplayName);
+  // User A sends message to User B
+  await sendMessage(windowA, userB.sessionid, 'Sending Test Message');
+  // User B sends message to User B to USER A
+  await sendMessage(windowB, userA.sessionid, 'Sending Reply Test Message');
+  // Navigate to contacts tab in User B's window
+  await windowB.click('[data-testid=contact-section]');
+  expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
+  // Navigate to contacts tab in User A's window
+  await windowA.click('[data-testid=contact-section]');
+  expect(await windowA.innerText('.module-conversation__user__profile-name')).toBe(userB.userName);
 });

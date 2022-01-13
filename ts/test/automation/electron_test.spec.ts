@@ -21,15 +21,13 @@ test('Create User', async () => {
   expect(await window.innerText('[data-testid=your-session-id]')).toBe(userA.sessionid);
   // exit profile module
   await window.click('.session-icon-button.small');
-  // check recovery phrase matches
   // go to settings section
   await window.click('[data-testid=settings-section]');
   await window.click('text=Recovery Phrase');
+  // check recovery phrase matches
   expect(await window.innerText('[data-testid=recovery-phrase-seed-modal]')).toBe(
     userA.recoveryPhrase
   );
   // Exit profile module
   await window.click('.session-icon-button.small');
-
-  // await cleanUp(window);
 });
