@@ -15,10 +15,14 @@ test('Send message to new contact', async () => {
   const userB = await newUser(windowB, userBDisplayName);
   // User A sends message to User B
   await sendMessage(windowA, userB.sessionid, 'Sending Test Message');
+  // windowA.locator('[data-testid=msg-status-outgoing]').waitFor;
+  await windowA.waitForTimeout(5500);
   // User B sends message to User B to USER A
   await sendMessage(windowB, userA.sessionid, 'Sending Reply Test Message');
+  await windowA.waitForTimeout(5500);
   // Navigate to contacts tab in User B's window
   await windowB.click('[data-testid=contact-section]');
+  await windowA.waitForTimeout(2500);
   expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
   // Navigate to contacts tab in User A's window
   await windowA.click('[data-testid=contact-section]');
