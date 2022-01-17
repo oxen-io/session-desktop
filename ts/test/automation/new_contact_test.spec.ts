@@ -22,7 +22,7 @@ test('Send message to new contact', async () => {
   await sendMessage(windowA, userB.sessionid, `${testMessage} + ${timeStamp}`);
   windowA.locator(`${testMessage} > svg`).waitFor;
   await windowA.isVisible('[data-testid=msg-status-outgoing]');
-  // await windowA.waitForTimeout(5500);
+  await windowA.waitForTimeout(5500);
   // User B sends message to User B to USER A
   await sendMessage(windowB, userA.sessionid, `${testReply} + ${timeStamp}`);
   await windowA.waitForTimeout(5500);
