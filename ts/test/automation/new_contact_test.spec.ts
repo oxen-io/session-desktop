@@ -20,8 +20,11 @@ test('Send message to new contact', async () => {
   const userB = await newUser(windowB, userBDisplayName);
   // User A sends message to User B
   await sendMessage(windowA, userB.sessionid, `${testMessage} + ${timeStamp}`);
-  windowA.locator(`${testMessage} > svg`).waitFor;
-  await windowA.isVisible('[data-testid=msg-status-outgoing]');
+  await windowA.waitForSelector(`${testMessage} + ${timeStamp}` > );
+  // windowA.locator(`${testMessage} > svg`).waitFor;
+  // await windowA.isVisible(
+  //   '.session-message-wrapper.session-message-wrapper-outgoing:first-of-type [data-testid=msg-status-outgoing]'
+  // );
   await windowA.waitForTimeout(5500);
   // User B sends message to User B to USER A
   await sendMessage(windowB, userA.sessionid, `${testReply} + ${timeStamp}`);
