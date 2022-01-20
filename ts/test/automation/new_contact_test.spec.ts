@@ -9,7 +9,7 @@ const userBDisplayName = 'userB';
 const timeStamp = Date.now();
 
 const testMessage = 'Test-Message-';
-const testReply = 'Sending Reply Test Message';
+const testReply = 'Reply-Test-Message-';
 
 // Send message in one to one conversation with new contact
 test('Send message to new contact', async () => {
@@ -18,22 +18,30 @@ test('Send message to new contact', async () => {
   const userA = await newUser(windowA, userADisplayName);
   // Create User B
   const userB = await newUser(windowB, userBDisplayName);
+  const sentText = `${testMessage}${timeStamp}`;
+  const sentReplyText = `${testReply}${timeStamp}`;
   // User A sends message to User B
-  await sendMessage(windowA, userB.sessionid, `${testMessage} + ${timeStamp}`);
-  await windowA.waitForSelector(`${testMessage} + ${timeStamp}` > );
-  // windowA.locator(`${testMessage} > svg`).waitFor;
-  // await windowA.isVisible(
-  //   '.session-message-wrapper.session-message-wrapper-outgoing:first-of-type [data-testid=msg-status-outgoing]'
+  await sendMessage(windowA, userB.sessionid, sentText);
+  // const foundElement = await windowA.waitForSelector(
+  //   `[data-testid=readable-message] :has-text('${sentText}')`
   // );
-  await windowA.waitForTimeout(5500);
+  // console.warn('found message item with matching text?', Boolean(foundElement));
+  // const tickMessageSent = await foundElement.waitForSelector(
+  //   '[data-testid=msg-status-outgoing][data-testtype=sent]'
+  // );
+  // console.warn('found the tick of message sent?', Boolean(tickMessageSent));
+  // await windowA.waitForTimeout(5500);
   // User B sends message to User B to USER A
-  await sendMessage(windowB, userA.sessionid, `${testReply} + ${timeStamp}`);
-  await windowA.waitForTimeout(5500);
+  await sendMessage(windowB, userA.sessionid, sentReplyText);
+  // await windowA.waitForTimeout(5500);
   // Navigate to contacts tab in User B's window
   await windowB.click('[data-testid=contact-section]');
-  await windowA.waitForTimeout(2500);
+  // await windowA.waitForTimeout(4500);
   expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
   // Navigate to contacts tab in User A's window
   await windowA.click('[data-testid=contact-section]');
-  expect(await windowA.innerText('.module-conversation__user__profile-name')).toBe(userB.userName);
+
+  await windowA.waitForSelector(
+    `[data-testid=module-conversation__user__profile-name] :has-text('${userB.userName}')`
+  );
 });

@@ -37,7 +37,11 @@ export const ContactName = (props: Props) => {
   ) : null;
 
   return (
-    <span className={classNames(prefix, compact && 'compact')} dir="auto">
+    <span
+      data-testid={`${prefix}__profile-name`}
+      className={classNames(prefix, compact && 'compact')}
+      dir="auto"
+    >
       {profileElement}
       {shouldShowProfile ? ' ' : null}
       {pubKeyElement}
