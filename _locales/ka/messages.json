@@ -19,6 +19,8 @@
   "editMenuPaste": "ჩასმა",
   "editMenuPasteAndMatchStyle": "ჩასმა სტილის დამთხვევით",
   "editMenuDelete": "წაშლა",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "მონიშნე ყველა",
   "windowMenuClose": "ფანჯრის დახურვა",
   "windowMenuMinimize": "ჩაკეცვა",

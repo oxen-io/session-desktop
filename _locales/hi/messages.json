@@ -19,6 +19,8 @@
   "editMenuPaste": "पेस्ट करें",
   "editMenuPasteAndMatchStyle": "Paste and Match Style",
   "editMenuDelete": "हटाना",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Select All",
   "windowMenuClose": "विंडो बंद करें",
   "windowMenuMinimize": "छोटा करें",

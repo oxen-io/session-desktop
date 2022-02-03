@@ -19,6 +19,8 @@
   "editMenuPaste": "Colar",
   "editMenuPasteAndMatchStyle": "Colar e ajustar ao estilo",
   "editMenuDelete": "Eliminar",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Selecionar tudo",
   "windowMenuClose": "Fechar janela",
   "windowMenuMinimize": "Minimizar",

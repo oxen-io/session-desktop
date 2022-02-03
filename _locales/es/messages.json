@@ -19,6 +19,8 @@
   "editMenuPaste": "Pegar",
   "editMenuPasteAndMatchStyle": "Pegar texto sin formato",
   "editMenuDelete": "Eliminar",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Seleccionar Todo",
   "windowMenuClose": "Cerrar ventana",
   "windowMenuMinimize": "Minimizar",

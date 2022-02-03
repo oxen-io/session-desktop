@@ -31,4 +31,21 @@ test('Send message to new contact', async () => {
   // Navigate to contacts tab in User A's window
   await windowA.click('[data-testid=contact-section]');
   // Wait for contact name to change
+  // =======
+  // User A sends message to User B
+  // await sendMessage(windowA, userB.sessionid, `${testMessage} + ${timeStamp}`);
+  // windowA.locator(`${testMessage} > svg`).waitFor;
+  // await windowA.isVisible('[data-testid=msg-status-outgoing]');
+  // await windowA.waitForTimeout(5500);
+  // // User B sends message to User B to USER A
+  // await sendMessage(windowB, userA.sessionid, `${testReply} + ${timeStamp}`);
+  // await windowA.waitForTimeout(5500);
+  // // Navigate to contacts tab in User B's window
+  // await windowB.click('[data-testid=contact-section]');
+  // await windowA.waitForTimeout(2500);
+  // expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
+  // // Navigate to contacts tab in User A's window
+  // await windowA.click('[data-testid=contact-section]');
+  // expect(await windowA.innerText('.module-conversation__user__profile-name')).toBe(userB.userName);
+  // >>>>>>> origin/clearnet
 });

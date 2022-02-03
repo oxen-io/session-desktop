@@ -19,6 +19,8 @@
   "editMenuPaste": "הדבק",
   "editMenuPasteAndMatchStyle": "הדבק והתאם סגנון",
   "editMenuDelete": "מחק",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "בחר הכל",
   "windowMenuClose": "סגור חלון",
   "windowMenuMinimize": "מזער",

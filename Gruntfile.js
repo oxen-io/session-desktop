@@ -9,7 +9,6 @@ const toConcatForApp = [
   'node_modules/long/dist/long.js',
   'components/protobuf/**/*.js',
   'node_modules/mustache/mustache.js',
-  'node_modules/underscore/underscore.js',
   'node_modules/backbone/backbone.js',
 ];
 
@@ -72,15 +71,6 @@ module.exports = grunt => {
           'libtextsecure/helpers.js',
         ],
         dest: 'js/libtextsecure.js',
-      },
-      libtextsecuretest: {
-        src: [
-          'node_modules/jquery/dist/jquery.js',
-          'node_modules/mocha/mocha.js',
-          'node_modules/chai/chai.js',
-          'libtextsecure/test/_test.js',
-        ],
-        dest: 'libtextsecure/test/test.js',
       },
     },
     sass: {

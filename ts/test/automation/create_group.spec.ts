@@ -36,6 +36,7 @@ test('Create group', async () => {
   await windowA.click("'userB'");
   // Select user C
   await windowA.click("'userC'");
+
   // Click Done
   await windowA.click('"Done"');
   // Check group was successfully created

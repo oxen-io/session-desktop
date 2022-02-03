@@ -19,6 +19,8 @@
   "editMenuPaste": "Beillesztés",
   "editMenuPasteAndMatchStyle": "Beillesztés és formázás egyesítése",
   "editMenuDelete": "Törlés",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Összes kijelölése",
   "windowMenuClose": "Ablak bezárása",
   "windowMenuMinimize": "Minimalizálás",

@@ -19,6 +19,8 @@
   "editMenuPaste": "Vložit",
   "editMenuPasteAndMatchStyle": "Vložit a aplikovat styl",
   "editMenuDelete": "Vymazat",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Vybrat vše",
   "windowMenuClose": "Zavřít okno",
   "windowMenuMinimize": "Minimalizovat",

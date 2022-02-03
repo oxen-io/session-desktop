@@ -19,6 +19,8 @@
   "editMenuPaste": "Aseta",
   "editMenuPasteAndMatchStyle": "Aseta ja sobita stiiliga",
   "editMenuDelete": "Kustuta",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Vali kõik",
   "windowMenuClose": "Sulge aken",
   "windowMenuMinimize": "Minimeeri",

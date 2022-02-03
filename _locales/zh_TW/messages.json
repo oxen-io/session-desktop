@@ -19,6 +19,8 @@
   "editMenuPaste": "貼上",
   "editMenuPasteAndMatchStyle": "貼上並調整格式",
   "editMenuDelete": "刪除",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "選取全部",
   "windowMenuClose": "關閉視窗",
   "windowMenuMinimize": "最小化",

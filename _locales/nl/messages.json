@@ -19,6 +19,8 @@
   "editMenuPaste": "Plakken",
   "editMenuPasteAndMatchStyle": "Plakken en stijl overnemen",
   "editMenuDelete": "Wissen",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Alles selecteren",
   "windowMenuClose": "Venster sluiten",
   "windowMenuMinimize": "Minimaliseren",

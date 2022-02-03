@@ -19,6 +19,8 @@
   "editMenuPaste": "วาง",
   "editMenuPasteAndMatchStyle": "วางและให้รูปแบบตรงกัน",
   "editMenuDelete": "ลบ",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "เลือกทั้งหมด",
   "windowMenuClose": "ปิดหน้าต่าง",
   "windowMenuMinimize": "ย่อลง",

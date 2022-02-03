@@ -19,6 +19,8 @@
   "editMenuPaste": "粘帖",
   "editMenuPasteAndMatchStyle": "粘帖并调整格式",
   "editMenuDelete": "删除",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "全选",
   "windowMenuClose": "关闭窗口",
   "windowMenuMinimize": "最小化",

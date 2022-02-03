@@ -19,6 +19,8 @@
   "editMenuPaste": "Επικόλληση",
   "editMenuPasteAndMatchStyle": "Επικόλληση και Αντιστοίχιση Στυλ",
   "editMenuDelete": "Διαγραφή",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Επιλογή Όλων",
   "windowMenuClose": "Κλείσιμο Παραθύρου",
   "windowMenuMinimize": "Ελαχιστοποίηση",

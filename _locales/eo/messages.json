@@ -19,6 +19,8 @@
   "editMenuPaste": "Alglui",
   "editMenuPasteAndMatchStyle": "Alglui nur tekston",
   "editMenuDelete": "Forigi",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Elekti ĉion",
   "windowMenuClose": "Fermi fenestron",
   "windowMenuMinimize": "Plejetigi",

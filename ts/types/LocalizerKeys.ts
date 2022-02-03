@@ -214,6 +214,7 @@ export type LocalizerKeys =
   | 'groupNamePlaceholder'
   | 'stagedPreviewThumbnail'
   | 'helpUsTranslateSession'
+  | 'editMenuDeleteGroup'
   | 'unreadMessages'
   | 'documents'
   | 'audioPermissionNeededTitle'
@@ -250,6 +251,7 @@ export type LocalizerKeys =
   | 'previewThumbnail'
   | 'photo'
   | 'setPassword'
+  | 'editMenuDeleteContact'
   | 'hideMenuBarTitle'
   | 'imageCaptionIconAlt'
   | 'blockAll'
@@ -460,4 +462,7 @@ export type LocalizerKeys =
   | 'searchFor...'
   | 'joinedTheGroup'
   | 'editGroupName'
+  | 'trimDatabase'
+  | 'trimDatabaseDescription'
+  | 'trimDatabaseConfirmationBody'
   | 'reportIssue';

@@ -19,6 +19,8 @@
   "editMenuPaste": "Lim inn",
   "editMenuPasteAndMatchStyle": "Lim inn med gjeldende stil",
   "editMenuDelete": "Slett",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Velg alt",
   "windowMenuClose": "Lukk vindu",
   "windowMenuMinimize": "Minimer",

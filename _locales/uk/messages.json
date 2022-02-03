@@ -19,6 +19,8 @@
   "editMenuPaste": "Вставити",
   "editMenuPasteAndMatchStyle": "Вставити в поточному стилі",
   "editMenuDelete": "Видалити",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Вибрати все",
   "windowMenuClose": "Закрити вікно",
   "windowMenuMinimize": "Згорнути в трей",

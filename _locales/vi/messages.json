@@ -19,6 +19,8 @@
   "editMenuPaste": "Paste",
   "editMenuPasteAndMatchStyle": "Paste and Match Style",
   "editMenuDelete": "Xóa",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Chọn tất cả",
   "windowMenuClose": "Close Window",
   "windowMenuMinimize": "Minimize",

@@ -19,6 +19,8 @@
   "editMenuPaste": "Ngjite",
   "editMenuPasteAndMatchStyle": "Ngjite dhe Përputhi Stilin",
   "editMenuDelete": "Fshije",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Përzgjidhi Krejt",
   "windowMenuClose": "Mbylle Dritaren",
   "windowMenuMinimize": "Minimizoje",

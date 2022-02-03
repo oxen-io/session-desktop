@@ -19,6 +19,8 @@
   "editMenuPaste": "Klistra in",
   "editMenuPasteAndMatchStyle": "Klistra in och matcha stil",
   "editMenuDelete": "Radera",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Markera alla",
   "windowMenuClose": "Stäng fönster",
   "windowMenuMinimize": "Minimera",

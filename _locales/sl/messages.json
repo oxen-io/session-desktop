@@ -19,6 +19,8 @@
   "editMenuPaste": "Prilepi",
   "editMenuPasteAndMatchStyle": "Prilepi in spoji oblikovanje",
   "editMenuDelete": "Izbriši",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Izberi vse",
   "windowMenuClose": "Zapri okno",
   "windowMenuMinimize": "Pomanjšaj",

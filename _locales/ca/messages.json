@@ -19,6 +19,8 @@
   "editMenuPaste": "Enganxa",
   "editMenuPasteAndMatchStyle": "Enganxa sense format",
   "editMenuDelete": "Suprimeix",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Selecciona-ho tot",
   "windowMenuClose": "Tanca la finestra",
   "windowMenuMinimize": "Minimitza",

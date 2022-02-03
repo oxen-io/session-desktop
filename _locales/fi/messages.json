@@ -19,6 +19,8 @@
   "editMenuPaste": "Liitä",
   "editMenuPasteAndMatchStyle": "Liitä ja sovita tyyliin",
   "editMenuDelete": "Poista",
+  "editMenuDeleteContact": "Delete Contact",
+  "editMenuDeleteGroup": "Delete Group",
   "editMenuSelectAll": "Valitse kaikki",
   "windowMenuClose": "Sulje ikkuna",
   "windowMenuMinimize": "Pienennä",
