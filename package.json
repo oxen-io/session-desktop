@@ -126,7 +126,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.16.3",
-    "@types/backbone": "^1.4.2",
+    "@types/backbone": "1.4.2",
     "@types/better-sqlite3": "5.4.1",
     "@types/blueimp-load-image": "5.14.4",
     "@types/buffer-crc32": "^0.2.0",
