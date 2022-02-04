@@ -42,6 +42,7 @@ test('Create group', async () => {
   // Check group was successfully created
   windowA.locator(`text=${userBDisplayName}, ${userCDisplayName} + 'You joined the group'`);
   // Send message in group chat from user a
+  await windowA.click("'Test Group Name'");
   await messageSent(windowA, testMessage);
   // Verify it was received by other two accounts
   // Navigate to group in window B
