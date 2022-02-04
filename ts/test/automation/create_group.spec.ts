@@ -1,4 +1,5 @@
-import { _electron, test } from '@playwright/test';
+import { _electron, test, Page } from '@playwright/test';
+import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { messageSent } from './message';
 import { newUser } from './new_user';
 import { openApp } from './open';
@@ -11,10 +12,15 @@ const userCDisplayName = 'userC';
 const testMessage = 'Sending Test Message';
 const testReply = 'Sending Reply Test Message';
 const testGroupName = 'Test Group Name';
+test.beforeEach(cleanUpOtherTest);
 
-test('Create group', async () => {
+let windows: Array<Page> = [];
+test.afterEach(() => forceCloseAllWindows(windows));
+
+test.skip('Create group', async () => {
   // Open Electron
-  const [windowA, windowB, windowC] = await Promise.all([openApp('1'), openApp('2'), openApp('3')]);
+  windows = await Promise.all([openApp('1'), openApp('2'), openApp('3')]);
+  const [windowA, windowB, windowC] = windows;
   // Create User x3
   // create userA
   const userA = await newUser(windowA, userADisplayName);

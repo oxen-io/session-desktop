@@ -82,7 +82,6 @@
     "jquery": "3.3.1",
     "jsbn": "1.1.0",
     "libsodium-wrappers": "^0.7.8",
-    "libxmljs": "^0.19.7",
     "linkify-it": "3.0.2",
     "lodash": "4.17.11",
     "long": "^4.0.0",
@@ -124,7 +123,7 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.16.3",
+    "@playwright/test": "1.16.3",
     "@types/backbone": "1.4.2",
     "@types/better-sqlite3": "5.4.1",
     "@types/blueimp-load-image": "5.14.4",
@@ -187,7 +186,7 @@
     "mocha-testcheck": "1.0.0-rc.0",
     "node-gyp": "3.8.0",
     "node-sass-import-once": "1.2.0",
-    "playwright": "^1.16.3",
+    "playwright": "1.16.3",
     "postinstall-prepare": "^1.0.1",
     "prettier": "1.19.0",
     "run-script-os": "^1.1.6",

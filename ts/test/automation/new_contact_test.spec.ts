@@ -1,4 +1,5 @@
-import { _electron, expect, test } from '@playwright/test';
+import { _electron, expect, test, Page } from '@playwright/test';
+import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { newUser } from './new_user';
 import { openApp } from './open';
 import { sendNewMessage } from './send_message';
@@ -10,10 +11,15 @@ const timeStamp = Date.now();
 
 const testMessage = 'Test-Message-';
 const testReply = 'Reply-Test-Message-';
+test.beforeEach(cleanUpOtherTest);
+
+let windows: Array<Page> = [];
+test.afterEach(() => forceCloseAllWindows(windows));
 
 // Send message in one to one conversation with new contact
 test('Send message to new contact', async () => {
-  const [windowA, windowB] = await Promise.all([openApp('1'), openApp('2')]);
+  windows = await Promise.all([openApp('1'), openApp('2')]);
+  const [windowA, windowB] = windows;
   // Create User A
   const userA = await newUser(windowA, userADisplayName);
   // Create User B
@@ -26,7 +32,7 @@ test('Send message to new contact', async () => {
   await sendNewMessage(windowB, userA.sessionid, sentReplyText);
   // Navigate to contacts tab in User B's window
   await windowB.click('[data-testid=contact-section]');
-  // await windowA.waitForTimeout(4500);
+  await windowA.waitForTimeout(1000);
   expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
   // Navigate to contacts tab in User A's window
   await windowA.click('[data-testid=contact-section]');

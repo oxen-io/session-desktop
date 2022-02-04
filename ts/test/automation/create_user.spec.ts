@@ -2,11 +2,17 @@ import { _electron, expect, Page, test } from '@playwright/test';
 import { newUser } from './new_user';
 import { openApp } from './open';
 import { sleepFor } from '../../session/utils/Promise';
+import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 
 // import {emptyDirSync} from 'fs-extra';
 
 let window: Page | undefined;
-
+test.beforeEach(cleanUpOtherTest);
+test.afterEach(async () => {
+  if (window) {
+    await forceCloseAllWindows([window]);
+  }
+});
 test('Create User', async () => {
   // Launch Electron app.
   window = await openApp('1');

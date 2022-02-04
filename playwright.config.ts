@@ -1,4 +1,6 @@
-const config = {
+import { PlaywrightTestConfig } from '@playwright/test';
+
+const config: PlaywrightTestConfig = {
   timeout: 300000,
   globalTimeout: 6000000,
   reporter: 'list',
@@ -9,7 +11,11 @@ const config = {
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
   },
+  retries: 0,
+  repeatEach: 1,
   workers: 1,
+  reportSlowTests: null,
+  // globalSetup: './ts/test/automation/before_all',
 };
 
 module.exports = config;

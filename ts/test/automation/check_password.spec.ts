@@ -1,8 +1,16 @@
 import { _electron, Page, test } from '@playwright/test';
+import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { newUser } from './new_user';
 import { openApp } from './open';
-// Open app
 let window: Page | undefined;
+
+test.beforeEach(cleanUpOtherTest);
+test.afterEach(async () => {
+  if (window) {
+    await forceCloseAllWindows([window]);
+  }
+});
+// Open app
 test('Check Password', async () => {
   // open Electron
   window = await openApp('1');
