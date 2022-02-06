@@ -1,4 +1,4 @@
-import { _electron, test, Page } from '@playwright/test';
+import { _electron, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { messageSent } from './message';
 import { newUser } from './new_user';
@@ -17,7 +17,7 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-test.skip('Create group', async () => {
+test('Create group', async () => {
   // Open Electron
   windows = await Promise.all([openApp('1'), openApp('2'), openApp('3')]);
   const [windowA, windowB, windowC] = windows;
@@ -33,6 +33,9 @@ test.skip('Create group', async () => {
   await sendNewMessage(windowB, userA.sessionid, testReply);
   await sendNewMessage(windowA, userC.sessionid, testMessage);
   await sendNewMessage(windowC, userA.sessionid, testReply);
+  // wait for user C to be contact before moving to create group
+  // await windowA.waitForSelector();
+  // await windowA.waitForSelector()
   // Create group with existing contact and session ID (of non-contact)
   // Click new closed group tab
   await windowA.click('"New Closed Group"');
@@ -46,7 +49,7 @@ test.skip('Create group', async () => {
   // Click Done
   await windowA.click('"Done"');
   // Check group was successfully created
-  windowA.locator(`text=${userBDisplayName}, ${userCDisplayName} + 'You joined the group'`);
+  // await windowA.waitForSelector('[data-testid=readable-message]');
   // Send message in group chat from user a
   await windowA.click("'Test Group Name'");
   await messageSent(windowA, testMessage);
