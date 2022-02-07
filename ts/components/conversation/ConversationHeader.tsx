@@ -309,7 +309,9 @@ const ConversationHeaderTitle = () => {
       }}
       role="button"
     >
-      <span className="module-contact-name__profile-name">{convoName}</span>
+      <span className="module-contact-name__profile-name" data-testid="header-conversation-name">
+        {convoName}
+      </span>
       <StyledSubtitleContainer>
         <ConversationHeaderSubtitle text={fullTextSubtitle} />
       </StyledSubtitleContainer>

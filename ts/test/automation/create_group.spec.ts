@@ -4,6 +4,7 @@ import { messageSent } from './message';
 import { newUser } from './new_user';
 import { openApp } from './open';
 import { sendNewMessage } from './send_message';
+import { waitForTestIdWithText } from './utils';
 
 const userADisplayName = 'userA';
 const userBDisplayName = 'userB';
@@ -18,60 +19,67 @@ let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
 test('Create group', async () => {
-  // Open Electron
-  windows = await Promise.all([openApp('1'), openApp('2'), openApp('3')]);
-  const [windowA, windowB, windowC] = windows;
-  // Create User x3
-  // create userA
-  const userA = await newUser(windowA, userADisplayName);
-  // create userB
-  const userB = await newUser(windowB, userBDisplayName);
-  // Create UserC
-  const userC = await newUser(windowC, userCDisplayName);
-  // Add contact
-  await sendNewMessage(windowA, userB.sessionid, testMessage);
-  await sendNewMessage(windowB, userA.sessionid, testReply);
-  await sendNewMessage(windowA, userC.sessionid, testMessage);
-  await sendNewMessage(windowC, userA.sessionid, testReply);
-  // wait for user C to be contact before moving to create group
-  // await windowA.waitForSelector();
-  // await windowA.waitForSelector()
-  // Create group with existing contact and session ID (of non-contact)
-  // Click new closed group tab
-  await windowA.click('"New Closed Group"');
-  // Enter group name
-  await windowA.fill('.group-id-editable-textarea', testGroupName);
-  // Select user B
-  await windowA.click("'userB'");
-  // Select user C
-  await windowA.click("'userC'");
+  await test.step('Create group', async () => {
+    // Open Electron
+    windows = await Promise.all([openApp('1'), openApp('2'), openApp('3')]);
+    const [windowA, windowB, windowC] = windows;
+    // Create User x3
+    // create userA
+    const userA = await newUser(windowA, userADisplayName);
+    // create userB
+    const userB = await newUser(windowB, userBDisplayName);
+    // Create UserC
+    const userC = await newUser(windowC, userCDisplayName);
+    // Add contact
+    await sendNewMessage(windowA, userB.sessionid, testMessage);
+    await sendNewMessage(windowB, userA.sessionid, testReply);
+    await sendNewMessage(windowA, userC.sessionid, testMessage);
+    await sendNewMessage(windowC, userA.sessionid, testReply);
+    // wait for user C to be contact before moving to create group
 
-  // Click Done
-  await windowA.click('"Done"');
-  // Check group was successfully created
-  // await windowA.waitForSelector('[data-testid=readable-message]');
-  // Send message in group chat from user a
-  await windowA.click("'Test Group Name'");
-  await messageSent(windowA, testMessage);
-  // Verify it was received by other two accounts
-  // Navigate to group in window B
-  await windowB.click('[data-testid=message-section]');
-  // Click on test group
-  await windowB.click(testGroupName);
-  // wait for selector 'test message' in chat window
-  await windowB.waitForSelector(`[data-testid=] :has-text('${testMessage}')`);
-  // Send reply message
-  await messageSent(windowB, `${testReply}-B`);
-  // Navigate to group in window C
-  await windowC.click('[data-testid=message-section]');
-  // Click on test group
-  await windowC.click(testGroupName);
-  // wait for selector 'test message' in chat window
-  await windowC.waitForSelector(`[data-testid=] :has-text('${testMessage}')`);
-  // Send reply message
-  await messageSent(windowC, `${testReply}-C`);
-  // Verify in window A that user b sent message
-  await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-B')`);
-  // Verify in window A that user c sent message
-  await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-C')`);
+    // Create group with existing contact and session ID (of non-contact)
+    // Click new closed group tab
+    await windowA.click('"New Closed Group"');
+    // Enter group name
+    await windowA.fill('.group-id-editable-textarea', testGroupName);
+    // Select user B
+    await windowA.click("'userB'");
+    // Select user C
+    await windowA.click("'userC'");
+
+    // Click Done
+    await windowA.click('"Done"');
+    // Check group was successfully created
+    // await windowA.waitForSelector('[data-testid=readable-message]');
+    // Send message in group chat from user a
+
+    await windowA.click(`'${testGroupName}'`);
+    await waitForTestIdWithText(windowB, 'header-conversation-name', testGroupName);
+    console.warn('header correct found');
+    await messageSent(windowA, `${testReply}-A`);
+    // Verify it was received by other two accounts
+    // Navigate to group in window B
+    await windowB.click('[data-testid=message-section]');
+    // Click on test group
+
+    await windowB.click("'Test Group Name'");
+    // wait for selector 'test message' in chat window
+    // await waitForTestIdWithText(windowB, 'readable-message', `${testReply}-A`);
+
+    // console.error('readable message correct found');
+    // // Send reply message
+    // await messageSent(windowB, `${testReply}-B`);
+    // // Navigate to group in window C
+    // await windowC.click('[data-testid=message-section]');
+    // // Click on test group
+    // await windowC.click(testGroupName);
+    // // wait for selector 'test message' in chat window
+    // await windowC.waitForSelector(`[data-testid=] :has-text('${testMessage}')`);
+    // // Send reply message
+    // await messageSent(windowC, `${testReply}-C`);
+    // // Verify in window A that user b sent message
+    // await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-B')`);
+    // // Verify in window A that user c sent message
+    // await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-C')`);
+  });
 });
