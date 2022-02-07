@@ -1,4 +1,4 @@
-import { Page, _electron } from '@playwright/test';
+import { _electron, Page } from '@playwright/test';
 import { readdirSync, rmdirSync } from 'fs-extra';
 import { dirname, join } from 'path';
 import { NODE_ENV } from './open';
