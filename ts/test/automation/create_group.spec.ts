@@ -3,7 +3,12 @@ import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { messageSent } from './message';
 import { openAppsAndNewUsers, UserLoggedInType } from './new_user';
 import { sendNewMessage } from './send_message';
-import { waitForTestIdWithText } from './utils';
+import {
+  clickOnMatchingText,
+  getMessageTextContentNow,
+  waitForReadableMessageWithText,
+  waitForTestIdWithText,
+} from './utils';
 
 const testMessage = 'Sending Test Message';
 const testReply = 'Sending Reply Test Message';
@@ -25,14 +30,11 @@ test('Create group', async () => {
     // create userA, b and C
     const [userA, userB, userC] = users;
     // Add contact
-    await Promise.all([
-      sendNewMessage(windowA, userB.sessionid, testMessage),
-      sendNewMessage(windowB, userA.sessionid, testReply),
-    ]);
-    await Promise.all([
-      sendNewMessage(windowA, userC.sessionid, testMessage),
-      sendNewMessage(windowC, userA.sessionid, testReply),
-    ]);
+
+    await sendNewMessage(windowA, userB.sessionid, testMessage);
+    await sendNewMessage(windowB, userA.sessionid, testReply);
+    await sendNewMessage(windowA, userC.sessionid, testMessage);
+    await sendNewMessage(windowC, userA.sessionid, testReply);
     // wait for user C to be contact before moving to create group
 
     // Create group with existing contact and session ID (of non-contact)
@@ -48,36 +50,38 @@ test('Create group', async () => {
     // Click Done
     await windowA.click('"Done"');
     // Check group was successfully created
-    // await windowA.waitForSelector('[data-testid=readable-message]');
-    // Send message in group chat from user a
-
-    await windowB.click(`'${testGroupName}'`);
+    await clickOnMatchingText(windowB, testGroupName);
 
     await waitForTestIdWithText(windowB, 'header-conversation-name', testGroupName);
-    await messageSent(windowA, `${testReply}-A`);
+    // Send message in group chat from user a
+    const msgAToGroup = getMessageTextContentNow();
+
+    await messageSent(windowA, msgAToGroup);
     // Verify it was received by other two accounts
     // Navigate to group in window B
     await windowB.click('[data-testid=message-section]');
     // Click on test group
-
-    await windowB.click("'Test Group Name'");
+    await clickOnMatchingText(windowB, testGroupName);
     // wait for selector 'test message' in chat window
-    // await waitForTestIdWithText(windowB, 'readable-message', `${testReply}-A`);
+    await waitForReadableMessageWithText(windowB, msgAToGroup);
 
-    // console.error('readable message correct found');
-    // // Send reply message
-    // await messageSent(windowB, `${testReply}-B`);
-    // // Navigate to group in window C
-    // await windowC.click('[data-testid=message-section]');
-    // // Click on test group
-    // await windowC.click(testGroupName);
-    // // wait for selector 'test message' in chat window
-    // await windowC.waitForSelector(`[data-testid=] :has-text('${testMessage}')`);
-    // // Send reply message
-    // await messageSent(windowC, `${testReply}-C`);
-    // // Verify in window A that user b sent message
-    // await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-B')`);
-    // // Verify in window A that user c sent message
-    // await windowA.waitForSelector(`[data-testid=] :has-text('${testMessage}-C')`);
+    // Send reply message
+    const msgBToGroup = getMessageTextContentNow();
+
+    await messageSent(windowB, msgBToGroup);
+    // Navigate to group in window C
+    await windowC.click('[data-testid=message-section]');
+    // Click on test group
+    await clickOnMatchingText(windowC, testGroupName);
+    // windowC must see the message from A and the message from B
+    await waitForReadableMessageWithText(windowC, msgAToGroup);
+    await waitForReadableMessageWithText(windowC, msgBToGroup);
+
+    // Send message from C to the group
+    const msgCToGroup = getMessageTextContentNow();
+    await messageSent(windowC, msgCToGroup);
+    // windowA should see the message from B and the message from C
+    await waitForReadableMessageWithText(windowA, msgBToGroup);
+    await waitForReadableMessageWithText(windowA, msgCToGroup);
   });
 });
