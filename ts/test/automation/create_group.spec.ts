@@ -16,7 +16,6 @@ const testGroupName = 'Test Group Name';
 test.beforeEach(cleanUpOtherTest);
 
 let windows: Array<Page> = [];
-let users: Array<UserLoggedInType> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
 test('Create group', async () => {
@@ -24,10 +23,8 @@ test('Create group', async () => {
     // Open Electron
     const windowLoggedIn = await openAppsAndNewUsers(3);
     windows = windowLoggedIn.windows;
-    users = windowLoggedIn.users;
+    const users = windowLoggedIn.users;
     const [windowA, windowB, windowC] = windows;
-    // Create User x3
-    // create userA, b and C
     const [userA, userB, userC] = users;
     // Add contact
 

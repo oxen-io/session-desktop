@@ -1,11 +1,8 @@
-import { _electron, expect, test, Page } from '@playwright/test';
+import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
-import { newUser } from './new_user';
-import { openApp } from './open';
-import { sendNewMessage } from './send_message';
 
-const userADisplayName = 'userA';
-const userBDisplayName = 'userB';
+import { sendNewMessage } from './send_message';
+import { openAppsAndNewUsers } from './new_user';
 
 const timeStamp = Date.now();
 
@@ -18,12 +15,11 @@ test.afterEach(() => forceCloseAllWindows(windows));
 
 // Send message in one to one conversation with new contact
 test('Send message to new contact', async () => {
-  windows = await Promise.all([openApp('1'), openApp('2')]);
+  const windowLoggedIn = await openAppsAndNewUsers(2);
+  windows = windowLoggedIn.windows;
+  const users = windowLoggedIn.users;
   const [windowA, windowB] = windows;
-  // Create User A
-  const userA = await newUser(windowA, userADisplayName);
-  // Create User B
-  const userB = await newUser(windowB, userBDisplayName);
+  const [userA, userB] = users;
   const sentText = `${testMessage}${timeStamp}`;
   const sentReplyText = `${testReply}${timeStamp}`;
   // User A sends message to User B

@@ -10,8 +10,8 @@ export async function waitForReadableMessageWithText(window: Page, text: string)
   return waitForTestIdWithText(window, 'readable-message', text);
 }
 
-export async function clickOnMatchingText(window: Page, text: string) {
-  return window.click(`"${text}"`);
+export async function clickOnMatchingText(window: Page, text: string, rightButton = false) {
+  return window.click(`"${text}"`, rightButton ? { button: 'right' } : undefined);
 }
 
 export function getMessageTextContentNow() {
