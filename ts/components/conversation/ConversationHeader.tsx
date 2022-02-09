@@ -160,7 +160,12 @@ const ExpirationLength = (props: { expirationSettingName?: string }) => {
   return (
     <div className="module-conversation-header__expiration">
       <div className="module-conversation-header__expiration__clock-icon" />
-      <div className="module-conversation-header__expiration__setting">{expirationSettingName}</div>
+      <div
+        className="module-conversation-header__expiration__setting"
+        data-testid="disappearing-messages-indicator"
+      >
+        {expirationSettingName}
+      </div>
     </div>
   );
 };
@@ -183,6 +188,7 @@ const AvatarHeader = (props: {
           }
         }}
         pubkey={pubkey}
+        dataTestId="conversation-options-avatar"
       />
     </span>
   );
