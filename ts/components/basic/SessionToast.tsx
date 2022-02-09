@@ -77,7 +77,7 @@ export const SessionToast = (props: Props) => {
       container={true}
       alignItems="center"
       onClick={props?.onToastClick || noop}
-      data-testid="session-toast-success"
+      data-testid="session-toast"
     >
       <IconDiv>
         <SessionIcon iconType={toastIcon} iconSize={toastIconSize} />
