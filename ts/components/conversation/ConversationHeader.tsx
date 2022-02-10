@@ -201,7 +201,13 @@ const BackButton = (props: { onGoBack: () => void; showBackButton: boolean }) =>
   }
 
   return (
-    <SessionIconButton iconType="chevron" iconSize="large" iconRotation={90} onClick={onGoBack} />
+    <SessionIconButton
+      iconType="chevron"
+      iconSize="large"
+      iconRotation={90}
+      onClick={onGoBack}
+      dataTestId="back-button-message-details"
+    />
   );
 };
 

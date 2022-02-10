@@ -122,6 +122,7 @@ const HeaderItem = () => {
         onClick={() => {
           dispatch(closeRightPanel());
         }}
+        dataTestId="back-button-conversation-options"
       />
       <Avatar size={AvatarSize.XL} pubkey={id} />
       <div className="invite-friends-container">

@@ -14,6 +14,19 @@ export async function clickOnMatchingText(window: Page, text: string, rightButto
   return window.click(`"${text}"`, rightButton ? { button: 'right' } : undefined);
 }
 
+export async function clickOnTestIdWithText(window: Page, dataTestId: string, text?: string) {
+  if (text) {
+    return window.click(`css=[data-testid=${dataTestId}]:has-text("${text}")`);
+  }
+
+  const builtSelector = `css=[data-testid=${dataTestId}]`;
+  return window.click(builtSelector);
+}
+
 export function getMessageTextContentNow() {
   return `Test message timestamp: ${Date.now()}`;
+}
+
+export async function waitForMatchingText(window: Page, text: string) {
+  return window.click(`"${text}"`);
 }
