@@ -1,4 +1,4 @@
-import { _electron, Page, test, expect } from '@playwright/test';
+import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { messageSent } from './message';
 import { openAppsAndNewUsers } from './new_user';
@@ -38,7 +38,7 @@ test('Disappearing Messages', async () => {
   // Select 5 seconds
   await clickOnMatchingText(windowA, '5 seconds');
   // Click chevron to close menu
-  await windowA.click('.group-settings-header > .session-icon-button.medium');
+  await clickOnTestIdWithText(windowA, 'back-button-conversation-options');
   // Check config message
   await waitForTestIdWithText(
     windowA,
@@ -46,7 +46,7 @@ test('Disappearing Messages', async () => {
     'You set the disappearing message timer to 5 seconds'
   );
   // Check top right hand corner indicator
-  windowA.locator('[data-testid=disappearing-messages-indicator]');
+  await waitForTestIdWithText(windowA, 'disappearing-messages-indicator');
   // Send message
   // Wait for tick of confirmation
   await messageSent(windowA, sentMessage);
@@ -67,9 +67,10 @@ test('Disappearing Messages', async () => {
   // Verify message is deleted in windowB for receiver user
   // Check config message in windowB
   await waitForMatchingText(
-    windowA,
+    windowB,
     `'${userA.userName}' set the disappearing message timer to 5 seconds`
   );
   // Wait 5 seconds
+  await waitForMatchingText(windowB, `'${userA.userName}' disabled disappearing messages`);
   // Check if message from UserA is visible
 });
