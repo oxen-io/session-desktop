@@ -28,5 +28,7 @@ export function getMessageTextContentNow() {
 }
 
 export async function waitForMatchingText(window: Page, text: string) {
-  return window.click(`"${text}"`);
+  const builtSelector = `css=:has-text("${text}")`;
+
+  return window.waitForSelector(builtSelector);
 }

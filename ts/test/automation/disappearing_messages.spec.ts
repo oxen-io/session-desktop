@@ -46,7 +46,7 @@ test('Disappearing Messages', async () => {
     'You set the disappearing message timer to 5 seconds'
   );
   // Check top right hand corner indicator
-  await waitForTestIdWithText(windowA, 'disappearing-messages-indicator');
+  await waitForTestIdWithText(windowA, 'disappearing-messages-indicator', '5 seconds');
   // Send message
   // Wait for tick of confirmation
   await messageSent(windowA, sentMessage);
@@ -68,9 +68,10 @@ test('Disappearing Messages', async () => {
   // Check config message in windowB
   await waitForMatchingText(
     windowB,
-    `'${userA.userName}' set the disappearing message timer to 5 seconds`
+    `${userA.userName} set the disappearing message timer to 5 seconds`
   );
   // Wait 5 seconds
-  await waitForMatchingText(windowB, `'${userA.userName}' disabled disappearing messages`);
-  // Check if message from UserA is visible
+  await waitForMatchingText(windowB, `${userA.userName} disabled disappearing messages`);
+  // verify message is deleted in windowB
+  await expect(windowB.locator(sentMessage)).toHaveCount(0);
 });
