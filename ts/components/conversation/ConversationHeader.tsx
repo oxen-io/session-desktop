@@ -144,6 +144,7 @@ const TripleDotsMenu = (props: { triggerId: string; showBackButton: boolean }) =
           event: e,
         });
       }}
+      data-testid="three-dots-conversation-options"
     >
       <SessionIconButton iconType="ellipses" iconSize="medium" />
     </div>
