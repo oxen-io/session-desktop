@@ -45,10 +45,12 @@ async function toggleStartInTray() {
 }
 
 const settingsMenuBar = 'hide-menu-bar';
+const settingsFrequentTimestamps = 'frequent-timestamps';
 const settingsSpellCheck = 'spell-check';
 const settingsLinkPreview = 'link-preview-setting';
 const settingsStartInTray = 'start-in-tray-setting';
 
+// tslint:disable: max-func-body-length
 export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null }) => {
   const dispatch = useDispatch();
   const forceUpdate = useUpdate();
@@ -59,6 +61,11 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
       window.getSettingValue(settingsMenuBar) === undefined
         ? true
         : window.getSettingValue(settingsMenuBar);
+
+    const isFrequentTimestampsActive =
+      window.getSettingValue(settingsFrequentTimestamps) === undefined
+        ? true
+        : window.getSettingValue(settingsFrequentTimestamps);
 
     const isSpellCheckActive =
       window.getSettingValue(settingsSpellCheck) === undefined
@@ -81,6 +88,15 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
             active={isHideMenuBarActive}
           />
         )}
+        <SessionToggleWithDescription
+          onClickToggle={() => {
+            window.toggleFrequentTimestamps();
+            forceUpdate();
+          }}
+          title={window.i18n('frequentTimestampsTitle')}
+          description={window.i18n('frequentTimestampsDescription')}
+          active={isFrequentTimestampsActive}
+        />
         <SessionToggleWithDescription
           onClickToggle={() => {
             window.toggleSpellCheck();

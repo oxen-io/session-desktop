@@ -136,6 +136,11 @@
         window.setMenuBarVisibility(!value);
       },
 
+      getFrequentTimestamps: () => storage.get('frequent-timestamps', false),
+      setFrequentTimestamps: value => {
+        storage.put('frequent-timestamps', value);
+      },
+
       getSpellCheck: () => storage.get('spell-check', true),
       setSpellCheck: value => {
         storage.put('spell-check', value);
@@ -280,6 +285,16 @@
       }
 
       window.Events.setHideMenuBar(!current);
+    };
+
+    window.toggleFrequentTimestamps = () => {
+      const current = window.getSettingValue('frequent-timestamps');
+      if (current === undefined) {
+        window.Events.setFrequentTimestamps(false);
+        return;
+      }
+
+      window.Events.setFrequentTimestamps(!current);
     };
 
     window.toggleSpellCheck = () => {
