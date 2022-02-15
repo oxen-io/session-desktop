@@ -7,11 +7,11 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-function getWindowReduxState() {
-  return window.inboxStore?.getState();
-}
+// function getWindowReduxState() {
+//   return window.inboxStore?.getState();
+// }
 
-test('Switch themes', async () => {
+test.skip('Switch themes', async () => {
   // Open App
   // Create User
   const windowLoggedIn = await openAppsAndNewUsers(1);
@@ -21,7 +21,7 @@ test('Switch themes', async () => {
   await clickOnTestIdWithText(windowA, 'theme-section');
 
   // Check background colour of background
-  const element = await windowA.waitForSelector('.inbox');
+  await windowA.waitForSelector('.inbox');
   const color = await windowA.evaluate(`(async() => {
     console.log('1');
     return 888

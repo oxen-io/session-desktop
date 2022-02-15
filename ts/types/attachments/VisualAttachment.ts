@@ -129,6 +129,7 @@ export async function pickFileForAvatar(): Promise<string | null> {
     excludeAcceptAllOption: true,
     multiple: false,
   });
+
   const file = (await fileHandle.getFile()) as File;
 
   try {
