@@ -95,6 +95,10 @@
     .module-message__text {
       color: var(--color-sent-message-text);
 
+      * {
+	user-select: text;
+      }
+
       a {
         text-decoration: underline;
         color: var(--color-sent-message-text);
