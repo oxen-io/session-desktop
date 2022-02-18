@@ -59,6 +59,10 @@
       flex-direction: row;
       align-items: center;
 
+      * {
+	user-select: text;
+      }
+
       svg {
         margin-right: $session-margin-xs;
       }
@@ -94,6 +98,10 @@
 
     .module-message__text {
       color: var(--color-sent-message-text);
+
+      * {
+	user-select: text;
+      }
 
       a {
         text-decoration: underline;
