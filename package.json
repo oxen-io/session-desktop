@@ -112,6 +112,7 @@
     "linkify-it": "3.0.2",
     "lodash": "^4.17.20",
     "long": "^4.0.0",
+    "markdown-it": "^13.0.1",
     "mic-recorder-to-mp3": "^2.2.2",
     "minimist": "^1.2.6",
     "moment": "^2.29.4",

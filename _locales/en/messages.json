@@ -200,6 +200,8 @@
   "noteToSelf": "Note to Self",
   "hideMenuBarTitle": "Hide Menu Bar",
   "hideMenuBarDescription": "Toggle system menu bar visibility",
+  "messageFormattingTitle": "Message Formatting (Experimental)",
+  "messageFormattingDescription": "Render messages using Markdown formatting",
   "startConversation": "Start New Conversation",
   "invalidNumberError": "Invalid Session ID or ONS Name",
   "failedResolveOns": "Failed to resolve ONS name",

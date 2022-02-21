@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import LinkifyIt from 'linkify-it';
+import MarkdownIt from 'markdown-it';
 
 import { RenderTextCallbackType } from '../../../../types/Util';
 import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
@@ -11,6 +12,15 @@ import { LinkPreviews } from '../../../../util/linkPreviews';
 import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
 
 const linkify = LinkifyIt();
+
+const markdown = MarkdownIt('default', {
+  html: false,
+  linkify: true,
+  typographer: true,
+  // This seems not to work:
+  breaks: false
+  }
+);
 
 type Props = {
   text: string;
@@ -104,8 +114,13 @@ export const MessageBody = (props: Props) => {
     );
   }
 
-  if (text && text.startsWith('```') && text.endsWith('```') && text.length > 6) {
-    return <pre className="text-selectable">{text.substring(4, text.length - 3)}</pre>;
+  if (window.getSettingValue('message-formatting')) {
+    /* tslint:disable:react-no-dangerous-html */
+    return (
+      <div className="text-selectable"
+	   dangerouslySetInnerHTML={{__html: `<span style="font-size: 1.1em;">${markdown.render(text).trim()}</span>`}}
+      />
+    );
   }
 
   return JsxSelectable(
