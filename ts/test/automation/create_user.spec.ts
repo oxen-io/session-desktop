@@ -4,8 +4,6 @@ import { openApp } from './open';
 import { sleepFor } from '../../session/utils/Promise';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 
-// import {emptyDirSync} from 'fs-extra';
-
 let window: Page | undefined;
 test.beforeEach(cleanUpOtherTest);
 test.afterEach(async () => {

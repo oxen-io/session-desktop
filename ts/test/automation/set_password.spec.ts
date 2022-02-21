@@ -11,7 +11,7 @@ test.afterEach(async () => {
   }
 });
 // Open app
-test('Check Password', async () => {
+test('Set Password', async () => {
   // open Electron
   window = await openApp('1');
   // Create user
