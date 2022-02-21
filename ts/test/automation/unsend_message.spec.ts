@@ -2,7 +2,12 @@ import { _electron, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
 import { openAppsAndNewUsers } from './new_user';
 import { sendNewMessage } from './send_message';
-import { clickOnMatchingText, waitForTestIdWithText } from './utils';
+import {
+  clickOnMatchingText,
+  clickOnTestIdWithText,
+  waitForMatchingText,
+  waitForTestIdWithText,
+} from './utils';
 const timeStamp = Date.now();
 
 const testMessage = 'Test-Message-';
@@ -28,9 +33,10 @@ test('Unsend message', async () => {
   // Select delete for everyone
   await clickOnMatchingText(windowA, 'Delete for everyone');
   // Select delete for everyone confirmation
-  await waitForTestIdWithText(windowA, 'session-confirm-ok-button', 'Delete for everyone');
-
+  await clickOnTestIdWithText(windowA, 'session-confirm-ok-button', 'Delete for everyone');
   // Check that toast notification opens and says 'deleted'
   windowA.locator('[data-testid=session-toast]');
-  // await waitForTestIdWithText(windowA, 'session-toast', 'Deleted');
+  await waitForTestIdWithText(windowA, 'session-toast', 'Deleted');
+  // Check that message is deleted in receivers window
+  await waitForMatchingText(windowB, 'This message has been deleted');
 });

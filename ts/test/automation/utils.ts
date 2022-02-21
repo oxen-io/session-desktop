@@ -10,6 +10,12 @@ export async function waitForReadableMessageWithText(window: Page, text: string)
   return waitForTestIdWithText(window, 'readable-message', text);
 }
 
+export async function waitForMatchingText(window: Page, text: string) {
+  const builtSelector = `css=:has-text("${text}")`;
+
+  return window.waitForSelector(builtSelector);
+}
+
 export async function clickOnMatchingText(window: Page, text: string, rightButton = false) {
   return window.click(`"${text}"`, rightButton ? { button: 'right' } : undefined);
 }
@@ -25,10 +31,4 @@ export async function clickOnTestIdWithText(window: Page, dataTestId: string, te
 
 export function getMessageTextContentNow() {
   return `Test message timestamp: ${Date.now()}`;
-}
-
-export async function waitForMatchingText(window: Page, text: string) {
-  const builtSelector = `css=:has-text("${text}")`;
-
-  return window.waitForSelector(builtSelector);
 }
