@@ -8,6 +8,7 @@ import {
 } from '../../../../state/selectors/conversations';
 import { SessionIcon } from '../../../icon';
 import { MessageBody } from './MessageBody';
+import { MessageClock } from '../../MessageClock';
 
 type Props = {
   messageId: string;
@@ -15,7 +16,7 @@ type Props = {
 
 export type MessageTextSelectorProps = Pick<
   MessageRenderingProps,
-  'text' | 'direction' | 'status' | 'isDeleted' | 'conversationType'
+  'text' | 'direction' | 'status' | 'isDeleted' | 'conversationType' | 'timestamp'
 >;
 
 export const MessageText = (props: Props) => {
@@ -25,7 +26,7 @@ export const MessageText = (props: Props) => {
   if (!selected) {
     return null;
   }
-  const { text, direction, status, isDeleted, conversationType } = selected;
+  const { text, direction, status, isDeleted, conversationType, timestamp } = selected;
 
   const contents = isDeleted
     ? window.i18n('messageDeletedPlaceholder')
@@ -38,21 +39,24 @@ export const MessageText = (props: Props) => {
   }
 
   return (
-    <div
-      dir="auto"
-      className={classNames(
-        'module-message__text',
-        `module-message__text--${direction}`,
-        status === 'error' && direction === 'incoming' ? 'module-message__text--error' : null
-      )}
-    >
-      {isDeleted && <SessionIcon iconType="delete" iconSize="small" />}
-      <MessageBody
-        text={contents || ''}
-        disableLinks={multiSelectMode}
-        disableJumbomoji={false}
-        isGroup={conversationType === 'group'}
-      />
+    <div className={`module-message-clock--${direction}`}>
+      <div
+        dir="auto"
+        className={classNames(
+          'module-message__text',
+          `module-message__text--${direction}`,
+          status === 'error' && direction === 'incoming' ? 'module-message__text--error' : null
+        )}
+      >
+        {isDeleted && <SessionIcon iconType="delete" iconSize="small" />}
+        <MessageBody
+          text={contents || ''}
+          disableLinks={multiSelectMode}
+          disableJumbomoji={false}
+          isGroup={conversationType === 'group'}
+        />
+      </div>
+      {<MessageClock time={timestamp} />}
     </div>
   );
 };

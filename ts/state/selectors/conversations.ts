@@ -936,7 +936,7 @@ export const getMessageTextProps = createSelector(getMessagePropsByMessageId, (p
     return undefined;
   }
 
-  const { direction, status, text, isDeleted, conversationType } = props.propsForMessage;
+  const { direction, status, text, isDeleted, conversationType, timestamp} = props.propsForMessage;
 
   const msgProps: MessageTextSelectorProps = {
     direction,
@@ -944,6 +944,7 @@ export const getMessageTextProps = createSelector(getMessagePropsByMessageId, (p
     text,
     isDeleted,
     conversationType,
+    timestamp,
   };
 
   return msgProps;
