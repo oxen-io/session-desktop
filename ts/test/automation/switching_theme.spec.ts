@@ -7,30 +7,22 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-// function getWindowReduxState() {
-//   return window.inboxStore?.getState();
-// }
-
-test.skip('Switch themes', async () => {
+test('Switch themes', async () => {
   // Open App
   // Create User
   const windowLoggedIn = await openAppsAndNewUsers(1);
   windows = windowLoggedIn.windows;
   const [windowA] = windows;
-  // Click theme button
+  // Check light theme colour is correct
+  const lightThemeColor = windowA.locator('.inbox.index');
+  await expect(lightThemeColor).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  // Click theme button and change to dark theme
   await clickOnTestIdWithText(windowA, 'theme-section');
-
-  // Check background colour of background
-  await windowA.waitForSelector('.inbox');
-  const color = await windowA.evaluate(`(async() => {
-    console.log('1');
-    return 888
- })()`);
-
-  expect(color).toBe('#171717');
-  // const color = await windowA.locator('.inbox').evaluate(el => window.getComputedStyle(el).color);
-  // expect(color === '#171717').toBeTruthy;
-
-  // click theme button again
+  // Check background colour of background to verify dark theme
+  const darkThemeColor = windowA.locator('.inbox.index');
+  await expect(darkThemeColor).toHaveCSS('background-color', 'rgb(23, 23, 23)');
+  // Toggle back to light theme
+  await clickOnTestIdWithText(windowA, 'theme-section');
   // Check background colour again
+  await expect(lightThemeColor).toHaveCSS('background-color', 'rgb(255, 255, 255)');
 });
