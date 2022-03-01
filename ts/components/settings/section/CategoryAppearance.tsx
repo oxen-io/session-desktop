@@ -57,6 +57,11 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
         ? true
         : window.getSettingValue(SettingsKey.settingsMenuBar);
 
+    const isPerMessageTimestampsActive =
+      window.getSettingValue(SettingsKey.settingsPerMessageTimestamps) === undefined
+        ? true
+        : window.getSettingValue(SettingsKey.settingsPerMessageTimestamps);
+
     const isSpellCheckActive =
       window.getSettingValue(SettingsKey.settingsSpellCheck) === undefined
         ? true
@@ -78,6 +83,15 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
             active={isHideMenuBarActive}
           />
         )}
+        <SessionToggleWithDescription
+          onClickToggle={() => {
+            window.togglePerMessageTimestamps();
+            forceUpdate();
+          }}
+          title={window.i18n('perMessageTimestampsTitle')}
+          description={window.i18n('perMessageTimestampsDescription')}
+          active={isPerMessageTimestampsActive}
+        />
         <SessionToggleWithDescription
           onClickToggle={() => {
             window.toggleSpellCheck();

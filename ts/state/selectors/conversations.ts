@@ -199,9 +199,12 @@ export const getSortedMessagesTypesOfSelectedConversation = createSelector(
             sortedMessages[index + 1].propsForMessage.timestamp;
 
       const showDateBreak =
-        messageTimestamp - previousMessageTimestamp > maxMessagesBetweenTwoDateBreaks * 60 * 1000
-          ? messageTimestamp
-          : undefined;
+	window.getSettingValue('per-message-timestamps')
+	  ? undefined
+	  : messageTimestamp - previousMessageTimestamp >
+	    maxMessagesBetweenTwoDateBreaks * 60 * 1000
+	      ? messageTimestamp
+	      : undefined;
 
       if (msg.propsForDataExtractionNotification) {
         return {

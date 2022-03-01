@@ -56,7 +56,7 @@ export const MessageText = (props: Props) => {
           isGroup={conversationType === 'group'}
         />
       </div>
-      {<MessageClock time={timestamp} />}
+      {window.getSettingValue('per-message-timestamps') && <MessageClock time={timestamp} />}
     </div>
   );
 };
