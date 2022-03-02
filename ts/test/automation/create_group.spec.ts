@@ -5,6 +5,7 @@ import { openAppsAndNewUsers } from './new_user';
 import { sendNewMessage } from './send_message';
 import {
   clickOnMatchingText,
+  clickOnTestIdWithText,
   getMessageTextContentNow,
   waitForReadableMessageWithText,
   waitForTestIdWithText,
@@ -13,6 +14,7 @@ import {
 const testMessage = 'Sending Test Message';
 const testReply = 'Sending Reply Test Message';
 const testGroupName = 'Test Group Name';
+
 test.beforeEach(cleanUpOtherTest);
 
 let windows: Array<Page> = [];
@@ -36,16 +38,16 @@ test('Create group', async () => {
 
     // Create group with existing contact and session ID (of non-contact)
     // Click new closed group tab
-    await windowA.click('"New Closed Group"');
+    await clickOnMatchingText(windowA, 'New Closed Group');
     // Enter group name
     await windowA.fill('.group-id-editable-textarea', testGroupName);
     // Select user B
-    await windowA.click(`'${userB.userName}'`);
+    await clickOnMatchingText(windowA, userB.userName);
     // Select user C
-    await windowA.click(`'${userC.userName}'`);
+    await clickOnMatchingText(windowA, userC.userName);
 
     // Click Done
-    await windowA.click('"Done"');
+    await clickOnMatchingText(windowA, 'Done');
     // Check group was successfully created
     await clickOnMatchingText(windowB, testGroupName);
 
@@ -56,7 +58,7 @@ test('Create group', async () => {
     await messageSent(windowA, msgAToGroup);
     // Verify it was received by other two accounts
     // Navigate to group in window B
-    await windowB.click('[data-testid=message-section]');
+    await clickOnTestIdWithText(windowB, 'message-section');
     // Click on test group
     await clickOnMatchingText(windowB, testGroupName);
     // wait for selector 'test message' in chat window
@@ -67,7 +69,7 @@ test('Create group', async () => {
 
     await messageSent(windowB, msgBToGroup);
     // Navigate to group in window C
-    await windowC.click('[data-testid=message-section]');
+    await clickOnTestIdWithText(windowC, 'message-section');
     // Click on test group
     await clickOnMatchingText(windowC, testGroupName);
     // windowC must see the message from A and the message from B
