@@ -190,6 +190,7 @@ export class EditProfileDialog extends React.Component<{}, State> {
             onClick={() => {
               this.setState({ mode: 'edit' });
             }}
+            dataTestId="edit-profile-icon"
           />
         </div>
       </>
