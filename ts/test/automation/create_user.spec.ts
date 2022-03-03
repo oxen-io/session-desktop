@@ -3,6 +3,7 @@ import { newUser } from './new_user';
 import { openApp } from './open';
 import { sleepFor } from '../../session/utils/Promise';
 import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
+import { clickOnMatchingText, clickOnTestIdWithText } from './utils';
 
 let window: Page | undefined;
 test.beforeEach(cleanUpOtherTest);
@@ -16,8 +17,8 @@ test('Create User', async () => {
   window = await openApp('1');
   // Create User
   const userA = await newUser(window, 'userA');
-
-  await window.click('[data-testid=leftpane-primary-avatar]');
+  // Open profile tab
+  await clickOnTestIdWithText(window, 'leftpane-primary-avatar');
   await sleepFor(100);
   //check username matches
   expect(await window.innerText('[data-testid=your-profile-name]')).toBe(userA.userName);
@@ -26,9 +27,9 @@ test('Create User', async () => {
   // exit profile module
   await window.click('.session-icon-button.small');
   // go to settings section
-  await window.click('[data-testid=settings-section]');
-  await window.click('text=Recovery Phrase');
+  await clickOnTestIdWithText(window, 'settings-section');
   // check recovery phrase matches
+  await clickOnMatchingText(window, 'Recovery Phrase');
   expect(await window.innerText('[data-testid=recovery-phrase-seed-modal]')).toBe(
     userA.recoveryPhrase
   );
