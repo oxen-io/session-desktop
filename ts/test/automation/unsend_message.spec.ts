@@ -1,6 +1,6 @@
 import { _electron, Page, test } from '@playwright/test';
-import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
-import { openAppsAndNewUsers } from './new_user';
+import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
+import { openAppsAndNewUsers } from './setup/new_user';
 import { sendNewMessage } from './send_message';
 import {
   clickOnMatchingText,

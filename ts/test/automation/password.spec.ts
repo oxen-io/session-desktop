@@ -1,7 +1,7 @@
 import { _electron, Page, test } from '@playwright/test';
-import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
-import { newUser } from './new_user';
-import { openApp } from './open';
+import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
+import { newUser } from './setup/new_user';
+import { openApp } from './setup/open';
 import { clickOnMatchingText, clickOnTestIdWithText, waitForMatchingText } from './utils';
 let window: Page | undefined;
 

@@ -1,6 +1,7 @@
 import { _electron, Page } from '@playwright/test';
 import _ from 'lodash';
 import { openApp } from './open';
+const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export type UserLoggedInType = { userName: string; sessionid: string; recoveryPhrase: string };
 
@@ -32,7 +33,6 @@ const openAppAndNewUser = async (multi: string): Promise<UserLoggedInType & { wi
 };
 
 export async function openAppsAndNewUsers(windowToCreate: number) {
-  const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   if (windowToCreate >= multisAvailable.length) {
     throw new Error(`Do you really need ${multisAvailable.length} windows?!`);
   }
@@ -49,4 +49,17 @@ export async function openAppsAndNewUsers(windowToCreate: number) {
     return _.pick(w, ['sessionid', 'recoveryPhrase', 'userName']);
   });
   return { windows, users };
+}
+
+export async function openAppsNoNewUsers(windowToCreate: number) {
+  if (windowToCreate >= multisAvailable.length) {
+    throw new Error(`Do you really need ${multisAvailable.length} windows?!`);
+  }
+  // if windowToCreate = 3, this array will be ABC. If windowToCreate = 5, this array will be ABCDE
+  const multisToUse = multisAvailable.slice(0, windowToCreate);
+  return Promise.all(
+    [...multisToUse].map(async m => {
+      return openApp(m);
+    })
+  );
 }

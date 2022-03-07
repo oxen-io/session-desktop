@@ -1,8 +1,8 @@
 import { _electron, expect, Page, test } from '@playwright/test';
-import { newUser } from './new_user';
-import { openApp } from './open';
+import { newUser } from './setup/new_user';
+import { openApp } from './setup/open';
 import { sleepFor } from '../../session/utils/Promise';
-import { cleanUpOtherTest, forceCloseAllWindows } from './beforeEach';
+import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { clickOnMatchingText, clickOnTestIdWithText } from './utils';
 
 let window: Page | undefined;

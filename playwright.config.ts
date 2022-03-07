@@ -1,3 +1,4 @@
+// tslint:disable-next-line: no-implicit-dependencies
 import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
