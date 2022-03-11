@@ -49,12 +49,14 @@ export const MessageText = (props: Props) => {
         )}
       >
         {isDeleted && <SessionIcon iconType="delete" iconSize="small" />}
-        <MessageBody
-          text={contents || ''}
-          disableLinks={multiSelectMode}
-          disableJumbomoji={false}
-          isGroup={conversationType === 'group'}
-        />
+        {contents !== '\x00' &&
+          <MessageBody
+            text={contents}
+            disableLinks={multiSelectMode}
+            disableJumbomoji={false}
+            isGroup={conversationType === 'group'}
+          />
+	}
       </div>
       {window.getSettingValue('per-message-timestamps') && <MessageClock time={timestamp} />}
     </div>
