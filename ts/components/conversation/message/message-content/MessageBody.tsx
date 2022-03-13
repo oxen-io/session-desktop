@@ -98,57 +98,59 @@ export const MessageBody = (props: Props) => {
     return <pre className="text-selectable">{text.substring(4, text.length - 3)}</pre>;
   }
 
-  const em = /__([\s\S]+?)__(?!_)/g;
-  const strong = /\*\*([\s\S]+?)\*\*(?!\*)/g;
-  const code = /(`)([\s\S]*?[^`])\1(?!`)/g;
-  const del = /~~([\s\S]+?)~~(?!~)/g;
-  const u = /\^\^([\s\S]+?)\^\^(?!\^)/g;
-  const pre = /(```\n)([\s\S]*?[^`])\1(?!```)/gm;
-
-  let preformatted = false;
   let muText = text;
-  (muText.match(strong) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<strong>${s.substring(2, s.length - 2)}</strong>`);
-  });
-  (muText.match(em) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<em>${s.substring(2, s.length - 2)}</em>`);
-  });
-  (muText.match(code) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<code>${s.substring(1, s.length - 1)}</code>`);
-    preformatted = true;
-  });
-  (muText.match(del) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<del>${s.substring(2, s.length - 2)}</del>`);
-  });
-  (muText.match(u) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<u>${s.substring(2, s.length - 2)}</u>`);
-  });
-  (muText.match(pre) || []).forEach((s: string) => {
-    muText = muText.replace(s, `<pre>${s.substring(4, s.length - 4)}</pre>`);
-    preformatted = true;
-  });
-  const formatting = muText !== text;
+  if (window.getSettingValue('message-formatting')) {
+    const em = /__([\s\S]+?)__(?!_)/g;
+    const strong = /\*\*([\s\S]+?)\*\*(?!\*)/g;
+    const code = /(`)([\s\S]*?[^`])\1(?!`)/g;
+    const del = /~~([\s\S]+?)~~(?!~)/g;
+    const u = /\^\^([\s\S]+?)\^\^(?!\^)/g;
+    const pre = /(```\n)([\s\S]*?[^`])\1(?!```)/gm;
 
-  if (!preformatted) {
-    // SmartyPants rendering:
-    //  https://daringfireball.net/projects/smartypants/
-    muText = muText
-      // em-dashes
-      .replace(/---/g, '\u2014')
-      // en-dashes
-      .replace(/--/g, '\u2013')
-      // opening single quotes
-      .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
-      // closing single quotes and apostrophes
-      .replace(/'/g, '\u2019')
-      // opening double quotes
-      .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
-      // closing double quotes
-      .replace(/"/g, '\u201d')
-      // ellipses
-      .replace(/\.{3}/g, '\u2026');
+    let preformatted = false;
+    (muText.match(strong) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<strong>${s.substring(2, s.length - 2)}</strong>`);
+    });
+    (muText.match(em) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<em>${s.substring(2, s.length - 2)}</em>`);
+    });
+    (muText.match(code) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<code>${s.substring(1, s.length - 1)}</code>`);
+      preformatted = true;
+    });
+    (muText.match(del) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<del>${s.substring(2, s.length - 2)}</del>`);
+    });
+    (muText.match(u) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<u>${s.substring(2, s.length - 2)}</u>`);
+    });
+    (muText.match(pre) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<pre>${s.substring(4, s.length - 4)}</pre>`);
+      preformatted = true;
+    });
+
+    if (!preformatted) {
+      // SmartyPants rendering:
+      //  https://daringfireball.net/projects/smartypants/
+      muText = muText
+        // em-dashes
+        .replace(/---/g, '\u2014')
+        // en-dashes
+        .replace(/--/g, '\u2013')
+        // opening single quotes
+        .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
+        // closing single quotes and apostrophes
+        .replace(/'/g, '\u2019')
+        // opening double quotes
+        .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
+        // closing double quotes
+        .replace(/"/g, '\u201d')
+        // ellipses
+        .replace(/\.{3}/g, '\u2026');
+    }
   }
 
+  const formatting = muText !== text;
   if (formatting) {
     /* tslint:disable:react-no-dangerous-html */
     return (

@@ -191,6 +191,8 @@
   "noteToSelf": "Note to Self",
   "hideMenuBarTitle": "Hide Menu Bar",
   "hideMenuBarDescription": "Toggle system menu bar visibility",
+  "messageFormattingTitle": "Message Formatting (Experimental)",
+  "messageFormattingDescription": "Apply basic in-line Markdown and SmartyPants formatting to messages",
   "startConversation": "Start New Conversation",
   "invalidNumberError": "Invalid Session ID or ONS Name",
   "failedResolveOns": "Failed to resolve ONS name",

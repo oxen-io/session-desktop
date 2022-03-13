@@ -127,7 +127,12 @@
         window.setMenuBarVisibility(!value);
       },
 
-      getSpellCheck: () => storage.get('spell-check', true),
+      getMessageFormatting: () => storage.get('message-formatting', false),
+      setMessageFormatting: value => {
+        storage.put('message-formatting', value);
+      },
+
+       getSpellCheck: () => storage.get('spell-check', true),
       setSpellCheck: value => {
         storage.put('spell-check', value);
       },
@@ -273,7 +278,17 @@
       window.Events.setHideMenuBar(!current);
     };
 
-    window.toggleSpellCheck = () => {
+    window.toggleMessageFormatting = () => {
+      const current = window.getSettingValue('message-formatting');
+      if (current === undefined) {
+        window.Events.setMessageFormatting(false);
+        return;
+      }
+
+      window.Events.setMessageFormatting(!current);
+    };
+
+     window.toggleSpellCheck = () => {
       const currentValue = window.getSettingValue('spell-check');
       // if undefined, it means 'default' so true. but we have to toggle it, so false
       // if not undefined, we take the opposite
