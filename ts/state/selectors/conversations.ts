@@ -198,9 +198,11 @@ export const getSortedMessagesTypesOfSelectedConversation = createSelector(
           : sortedMessages[index + 1].propsForMessage.serverTimestamp ||
             sortedMessages[index + 1].propsForMessage.timestamp;
 
+      const hoursPreviousMessage = new Date(previousMessageTimestamp).getHours();
+      const hoursMessage = new Date(messageTimestamp).getHours();
       const showDateBreak =
 	window.getSettingValue('per-message-timestamps')
-	  ? undefined
+	  ? hoursMessage < hoursPreviousMessage ? messageTimestamp : undefined
 	  : messageTimestamp - previousMessageTimestamp >
 	    maxMessagesBetweenTwoDateBreaks * 60 * 1000
 	      ? messageTimestamp
