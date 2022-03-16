@@ -4,6 +4,8 @@ import { autoUpdater, UpdateInfo } from 'electron-updater';
 import { app, BrowserWindow } from 'electron';
 import { markShouldQuit } from '../../app/window_state';
 
+// add test for updater logic
+
 import {
   getPrintableError,
   LoggerType,
