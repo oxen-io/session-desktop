@@ -102,10 +102,10 @@ export const MessageBody = (props: Props) => {
   if (window.getSettingValue('message-formatting')) {
     const em = /__([\s\S]+?)__(?!_)/g;
     const strong = /\*\*([\s\S]+?)\*\*(?!\*)/g;
-    const code = /(`)([\s\S]*?[^`])\1(?!`)/g;
     const del = /~~([\s\S]+?)~~(?!~)/g;
     const u = /\^\^([\s\S]+?)\^\^(?!\^)/g;
-    const pre = /(```\n)([\s\S]*?[^`])\1(?!```)/gm;
+    const pre = /(```\n?)([\s\S]*?[^`])\1(?!```)/gm;
+    const code = /(`)([\s\S]*?[^`])\1(?!`)/g;
 
     let preformatted = false;
     (muText.match(strong) || []).forEach((s: string) => {
@@ -113,10 +113,6 @@ export const MessageBody = (props: Props) => {
     });
     (muText.match(em) || []).forEach((s: string) => {
       muText = muText.replace(s, `<em>${s.substring(2, s.length - 2)}</em>`);
-    });
-    (muText.match(code) || []).forEach((s: string) => {
-      muText = muText.replace(s, `<code>${s.substring(1, s.length - 1)}</code>`);
-      preformatted = true;
     });
     (muText.match(del) || []).forEach((s: string) => {
       muText = muText.replace(s, `<del>${s.substring(2, s.length - 2)}</del>`);
@@ -126,6 +122,10 @@ export const MessageBody = (props: Props) => {
     });
     (muText.match(pre) || []).forEach((s: string) => {
       muText = muText.replace(s, `<pre>${s.substring(4, s.length - 4)}</pre>`);
+      preformatted = true;
+    });
+    (muText.match(code) || []).forEach((s: string) => {
+      muText = muText.replace(s, `<code>${s.substring(1, s.length - 1)}</code>`);
       preformatted = true;
     });
 
