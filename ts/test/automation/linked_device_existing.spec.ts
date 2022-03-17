@@ -17,8 +17,9 @@ const contactFour = 'Gopher';
 
 test('Linked Device', async () => {
   // Open two windows
-  await linkedDevice(windows);
-  const [windowA1, windowA2] = windows;
+  const [windowA1, windowA2] = await linkedDevice();
+  windows.push(windowA1, windowA2);
+
   // Click on profile tab
   await clickOnTestIdWithText(windowA2, 'leftpane-primary-avatar');
   // Check session ID

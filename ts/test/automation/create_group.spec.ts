@@ -1,4 +1,4 @@
-import { _electron, Page, test } from '@playwright/test';
+import { _electron, Page, test, expect } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { messageSent } from './message';
 import { openAppsAndNewUsers } from './setup/new_user';
@@ -52,7 +52,7 @@ test('Create group', async () => {
     await clickOnMatchingText(windowB, testGroupName);
 
     await waitForTestIdWithText(windowB, 'header-conversation-name', testGroupName);
-    // Send message in group chat from user a
+    // Send message in group chat from user A
     const msgAToGroup = getMessageTextContentNow();
 
     await messageSent(windowA, msgAToGroup);
@@ -82,5 +82,24 @@ test('Create group', async () => {
     // windowA should see the message from B and the message from C
     await waitForReadableMessageWithText(windowA, msgBToGroup);
     await waitForReadableMessageWithText(windowA, msgCToGroup);
+
+    // Change the name of the group and check that it syncs to all devices (config messages)
+    // Click on group avatar to open settings
+    await windowA.click('.module-conversation-header__avatar');
+    // Click on edit group name
+    await clickOnMatchingText(windowA, 'Edit group name');
+    // Fill in new group name in input box
+    await windowA.fill('.profile-name-input', 'newGroupName');
+    // Click OK
+    await clickOnMatchingText(windowA, 'OK');
+    expect(await windowA.innerText('.group-settings>h2')).toBe('newGroupName');
+    expect(await windowA.innerText('[data-testid=readable-message]')).toBe(
+      "Group name is now 'newGroupName'."
+    );
+    // Check to see that you can't change group name to empty string
+    // Click on edit group name
+    await clickOnMatchingText(windowA, 'Edit group name');
+    // Fill in new group name in input box
+    await windowA.fill('.profile-name-input', '   ');
   });
 });

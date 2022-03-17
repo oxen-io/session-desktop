@@ -1,4 +1,4 @@
-import { _electron, Page } from 'playwright-core';
+import { _electron } from 'playwright-core';
 import { openAppsNoNewUsers } from './new_user';
 import { clickOnTestIdWithText } from '../utils';
 
