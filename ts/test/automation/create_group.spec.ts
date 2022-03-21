@@ -1,4 +1,4 @@
-import { _electron, Page, test, expect } from '@playwright/test';
+import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { messageSent } from './message';
 import { openAppsAndNewUsers } from './setup/new_user';

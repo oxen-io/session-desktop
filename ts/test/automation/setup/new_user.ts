@@ -3,7 +3,11 @@ import _ from 'lodash';
 import { openApp } from './open';
 const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-export type UserLoggedInType = { userName: string; sessionid: string; recoveryPhrase: string };
+export type UserLoggedInType = {
+  userName: string;
+  sessionid: string;
+  recoveryPhrase: string;
+};
 
 export const newUser = async (window: Page, userName: string): Promise<UserLoggedInType> => {
   // Create User
