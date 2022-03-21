@@ -10,6 +10,7 @@ test.afterEach(() => forceCloseAllWindows(windows));
 
 test('linking device', async () => {
   const { windowA1, windowA2, userA } = await linkedDevice();
+  windows.push(windowA1, windowA2);
 
   await clickOnTestIdWithText(windowA2, 'leftpane-primary-avatar');
   // Verify Username

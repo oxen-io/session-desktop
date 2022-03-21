@@ -1,5 +1,6 @@
 import { _electron, Page } from '@playwright/test';
 import _ from 'lodash';
+import { clickOnTestIdWithText } from '../utils';
 import { openApp } from './open';
 const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -66,4 +67,24 @@ export async function openAppsNoNewUsers(windowToCreate: number) {
       return openApp(m);
     })
   );
+}
+
+export async function existingUser() {
+  const recoveryPhraseTest =
+    'pinched total ongoing sushi etched rest gone long oilfield incur code grunt code';
+  const newUsername = 'new-username';
+  // const sessionIDTest = '05560802be231abc2fbaa860f09da4c2f20dafa4e5f560f77d61c5f587ef2c741f';
+  // const contactOne = 'Fish';
+  // const contactTwo = 'Dragon';
+  // const contactThree = 'Whale';
+  // const contactFour = 'Gopher';
+  const [windowA1] = await openAppsNoNewUsers(1);
+
+  await clickOnTestIdWithText(windowA1, 'restore-using-recovery');
+  await windowA1.fill('[data-testid=recovery-phrase-input]', recoveryPhraseTest);
+  await windowA1.fill('[data-testid=display-name-input]', newUsername);
+  await clickOnTestIdWithText(windowA1, 'continue-session-button');
+  // await clickOnTestIdWithText(windowA1, 'leftpane-primary-avatar');
+  // const sessionIDTest = await waitForTestIdWithText(windowA1, 'your-session-id');
+  return existingUser;
 }
