@@ -6,7 +6,7 @@ import { SettingsKey } from '../../../data/settings-key';
 import { CallManager } from '../../../session/utils';
 import { sessionPassword, updateConfirmModal } from '../../../state/ducks/modalDialog';
 import { toggleMessageRequests } from '../../../state/ducks/userConfig';
-import { getIsMessageRequestsEnabled } from '../../../state/selectors/userConfig';
+import { getHideMessageRequestBanner } from '../../../state/selectors/userConfig';
 import { SessionButtonColor } from '../../basic/SessionButton';
 import { PasswordAction } from '../../dialog/SessionPasswordDialog';
 
@@ -57,8 +57,6 @@ export const SettingsCategoryPrivacy = (props: {
   const forceUpdate = useUpdate();
   const dispatch = useDispatch();
 
-  const hasMessageRequestFlag = window.lokiFeatureFlags.useMessageRequests;
-
   if (props.hasPassword !== null) {
     return (
       <>
@@ -71,7 +69,7 @@ export const SettingsCategoryPrivacy = (props: {
           description={window.i18n('mediaPermissionsDescription')}
           active={Boolean(window.getSettingValue('media-permissions'))}
         />
-        {window.lokiFeatureFlags.useCallMessage && (
+        {window.sessionFeatureFlags.useCallMessage && (
           <SessionToggleWithDescription
             onClickToggle={async () => {
               await toggleCallMediaPermissions(forceUpdate);
@@ -112,16 +110,14 @@ export const SettingsCategoryPrivacy = (props: {
           description={window.i18n('autoUpdateSettingDescription')}
           active={Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate))}
         />
-        {hasMessageRequestFlag && (
-          <SessionToggleWithDescription
-            onClickToggle={() => {
-              dispatch(toggleMessageRequests());
-            }}
-            title={window.i18n('messageRequests')}
-            description={window.i18n('messageRequestsDescription')}
-            active={useSelector(getIsMessageRequestsEnabled)}
-          />
-        )}
+        <SessionToggleWithDescription
+          onClickToggle={() => {
+            dispatch(toggleMessageRequests());
+          }}
+          title={window.i18n('hideRequestBanner')}
+          description={window.i18n('hideRequestBannerDescription')}
+          active={useSelector(getHideMessageRequestBanner)}
+        />
         {!props.hasPassword && (
           <SessionSettingButtonItem
             title={window.i18n('setAccountPasswordTitle')}

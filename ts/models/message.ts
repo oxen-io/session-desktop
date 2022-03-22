@@ -16,10 +16,11 @@ import {
   MessageGroupUpdate,
   MessageModelType,
   PropsForDataExtractionNotification,
+  PropsForMessageRequestResponse,
 } from './messageType';
 
 import autoBind from 'auto-bind';
-import { saveMessage } from '../../ts/data/data';
+import { getFirstUnreadMessageWithMention, saveMessage } from '../../ts/data/data';
 import { ConversationModel, ConversationTypeEnum } from './conversation';
 import {
   FindAndFormatContactType,
@@ -106,12 +107,16 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const propsForGroupInvitation = this.getPropsForGroupInvitation();
     const propsForGroupUpdateMessage = this.getPropsForGroupUpdateMessage();
     const propsForTimerNotification = this.getPropsForTimerNotification();
+    const propsForMessageRequestResponse = this.getPropsForMessageRequestResponse();
     const callNotificationType = this.get('callNotificationType');
     const messageProps: MessageModelPropsWithoutConvoProps = {
       propsForMessage: this.getPropsForMessage(),
     };
     if (propsForDataExtractionNotification) {
       messageProps.propsForDataExtractionNotification = propsForDataExtractionNotification;
+    }
+    if (propsForMessageRequestResponse) {
+      messageProps.propsForMessageRequestResponse = propsForMessageRequestResponse;
     }
     if (propsForGroupInvitation) {
       messageProps.propsForGroupInvitation = propsForGroupInvitation;
@@ -174,6 +179,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
 
   public isGroupInvitation() {
     return !!this.get('groupInvitation');
+  }
+
+  public isMessageRequestResponse() {
+    return !!this.get('messageRequestResponse');
   }
 
   public isDataExtractionNotification() {
@@ -297,6 +306,30 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       messageId: this.id,
       receivedAt: this.get('received_at'),
       isUnread: this.isUnread(),
+    };
+  }
+
+  public getPropsForMessageRequestResponse(): PropsForMessageRequestResponse | null {
+    if (!this.isMessageRequestResponse()) {
+      return null;
+    }
+    const messageRequestResponse = this.get('messageRequestResponse');
+
+    if (!messageRequestResponse) {
+      window.log.warn('messageRequestResponse should not happen');
+      return null;
+    }
+
+    const contact = this.findAndFormatContact(messageRequestResponse.source);
+
+    return {
+      ...messageRequestResponse,
+      name: contact.profileName || contact.name || messageRequestResponse.source,
+      messageId: this.id,
+      receivedAt: this.get('received_at'),
+      isUnread: this.isUnread(),
+      conversationId: this.get('conversationId'),
+      source: this.get('source'),
     };
   }
 
@@ -1030,7 +1063,17 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (convo) {
       const beforeUnread = convo.get('unreadCount');
       const unreadCount = await convo.getUnreadCount();
-      if (beforeUnread !== unreadCount) {
+
+      const nextMentionedUs = await getFirstUnreadMessageWithMention(
+        convo.id,
+        UserUtils.getOurPubKeyStrFromCache()
+      );
+      let mentionedUsChange = false;
+      if (convo.get('mentionedUs') && !nextMentionedUs) {
+        convo.set('mentionedUs', false);
+        mentionedUsChange = true;
+      }
+      if (beforeUnread !== unreadCount || mentionedUsChange) {
         convo.set({ unreadCount });
         await convo.commit();
       }

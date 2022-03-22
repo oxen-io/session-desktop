@@ -48,6 +48,8 @@ import {
 } from '../../types/attachments/VisualAttachment';
 import { blobToArrayBuffer } from 'blob-util';
 import { MAX_ATTACHMENT_FILESIZE_BYTES } from '../../session/constants';
+import { ConversationMessageRequestButtons } from './ConversationRequestButtons';
+import { ConversationRequestinfo } from './ConversationRequestInfo';
 // tslint:disable: jsx-curly-spacing
 
 interface State {
@@ -123,7 +125,7 @@ export class SessionConversation extends React.Component<Props, State> {
       // if the newConversation changed, and is public, start our refresh members list
       if (newConversation.isPublic) {
         // this is a debounced call.
-        void this.updateMemberList();
+        void this.updateMemberListBouncy();
         // run this only once every minute if we don't change the visible conversation.
         // this is a heavy operation (like a few thousands members can be here)
         this.publicMembersRefreshTimeout = global.setInterval(this.updateMemberList, 60000);
@@ -236,10 +238,10 @@ export class SessionConversation extends React.Component<Props, State> {
           <div className={classNames('conversation-info-panel', showMessageDetails && 'show')}>
             <MessageDetail />
           </div>
-
           {lightBoxOptions?.media && this.renderLightBox(lightBoxOptions)}
 
           <div className="conversation-messages">
+            <ConversationMessageRequestButtons />
             <SplitViewContainer
               top={<InConversationCallContainer />}
               bottom={
@@ -254,6 +256,7 @@ export class SessionConversation extends React.Component<Props, State> {
             {isDraggingFile && <SessionFileDropzone />}
           </div>
 
+          <ConversationRequestinfo />
           <CompositionBox
             sendMessage={this.sendMessageFn}
             stagedAttachments={this.props.stagedAttachments}
@@ -336,11 +339,6 @@ export class SessionConversation extends React.Component<Props, State> {
     const contentType = file.type;
 
     const { stagedAttachments } = this.props;
-
-    if (window.Signal.Util.isFileDangerous(fileName)) {
-      ToastUtils.pushDangerousFileError();
-      return;
-    }
 
     if (stagedAttachments.length >= 32) {
       ToastUtils.pushMaximumAttachmentsError();
