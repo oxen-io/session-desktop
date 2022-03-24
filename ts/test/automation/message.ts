@@ -11,7 +11,8 @@ export const messageSent = async (window: Page, message: string) => {
 
   console.warn('found message item with matching text?', Boolean(foundElement));
   const tickMessageSent = await foundElement.waitForSelector(
-    '[data-testid=msg-status-outgoing][data-testtype=sent]'
+    '[data-testid=msg-status-outgoing][data-testtype=sent]',
+    { timeout: 55000 }
   );
   console.warn('found the tick of message sent', Boolean(tickMessageSent));
 };
