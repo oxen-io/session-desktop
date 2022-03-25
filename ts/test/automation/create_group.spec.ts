@@ -1,6 +1,6 @@
 import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { clickOnMatchingText } from './utils';
+import { clickOnMatchingText, waitForTestIdWithText } from './utils';
 import { createGroup } from './setup/create_group';
 
 test.beforeEach(cleanUpOtherTest);
@@ -20,10 +20,10 @@ test('Group testing', async () => {
   await windowA.fill('.profile-name-input', 'newGroupName');
   // Click OK
   await clickOnMatchingText(windowA, 'OK');
-  expect(await windowA.innerText('.group-settings>h2')).toBe('newGroupName');
-  expect(await windowA.innerText('[data-testid=readable-message]')).toBe(
-    "Group name is now 'newGroupName'."
-  );
+
+  await waitForTestIdWithText(windowA, 'right-panel-group-name', 'newGroupName');
+  await waitForTestIdWithText(windowA, 'readable-message', "Group name is now 'newGroupName'.");
+
   // Check to see that you can't change group name to empty string
   // Click on edit group name
   await clickOnMatchingText(windowA, 'Edit group name');

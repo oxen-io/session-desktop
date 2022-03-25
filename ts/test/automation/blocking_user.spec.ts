@@ -3,8 +3,6 @@ import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { openAppsAndNewUsers } from './setup/new_user';
 import { sendNewMessage } from './send_message';
 import { clickOnMatchingText, clickOnTestIdWithText, waitForTestIdWithText } from './utils';
-const testMessage = 'Sending Test Message';
-const testReply = 'Sending Reply Test Message';
 
 test.beforeEach(cleanUpOtherTest);
 
@@ -19,8 +17,8 @@ test('Block User', async () => {
   const [windowA, windowB] = windows;
   const [userA, userB] = users;
   // Create contact and send new message
-  await sendNewMessage(windowA, userB.sessionid, testMessage);
-  await sendNewMessage(windowB, userA.sessionid, testReply);
+  await sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`);
+  await sendNewMessage(windowB, userA.sessionid, `B -> A: ${Date.now()}`);
   //Click on three dots menu
   await clickOnTestIdWithText(windowA, 'three-dots-conversation-options');
   // Select block

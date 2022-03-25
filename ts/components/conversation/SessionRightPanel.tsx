@@ -236,7 +236,7 @@ export const SessionRightPanelWithDetails = () => {
   return (
     <div className="group-settings">
       <HeaderItem />
-      <h2>{name}</h2>
+      <h2 data-testid="right-panel-group-name">{name}</h2>
       {showMemberCount && (
         <>
           <SpacerLG />

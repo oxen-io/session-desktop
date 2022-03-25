@@ -11,8 +11,6 @@ import {
   waitForTestIdWithText,
 } from '../utils';
 
-const testMessage = 'Sending Test Message';
-const testReply = 'Sending Reply Test Message';
 const testGroupName = 'Test Group Name';
 
 test.beforeEach(cleanUpOtherTest);
@@ -28,10 +26,13 @@ export const createGroup = async () => {
   const [userA, userB, userC] = users;
   // Add contact
 
-  await sendNewMessage(windowA, userB.sessionid, `${testMessage} A -> B`);
-  await sendNewMessage(windowB, userA.sessionid, `${testReply} B -> A`);
-  await sendNewMessage(windowA, userC.sessionid, `${testMessage} A -> C`);
-  await sendNewMessage(windowC, userA.sessionid, `${testReply} C -> A`);
+  await sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`);
+  await Promise.all([
+    sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`),
+    sendNewMessage(windowB, userA.sessionid, `B -> A: ${Date.now()}`),
+    sendNewMessage(windowC, userA.sessionid, `C -> A: ${Date.now()}`),
+  ]);
+
   // wait for user C to be contact before moving to create group
   // Create group with existing contact and session ID (of non-contact)
   // Click new closed group tab
