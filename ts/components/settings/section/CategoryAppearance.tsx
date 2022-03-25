@@ -120,6 +120,14 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
         />
         <ZoomingSessionSlider />
         <SessionSettingButtonItem
+          title={window.i18n('moreOpenGroupsTitle')}
+	  // tslint:disable no-http-string
+          onClick={() => void shell.openExternal('http://lokilocker.com/Mods/Session-Groups/wiki/Session-Open-Groups')}
+	  // tslint:enable no-http-string
+          buttonColor={SessionButtonColor.Primary}
+          buttonText={window.i18n('listOpenGroups')}
+        />
+        <SessionSettingButtonItem
           title={window.i18n('surveyTitle')}
           onClick={() => void shell.openExternal('https://getsession.org/survey')}
           buttonColor={SessionButtonColor.Primary}

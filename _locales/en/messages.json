@@ -397,6 +397,8 @@
   "notificationSubtitle": "Notifications - $setting$",
   "surveyTitle": "Take our Session Survey",
   "goToOurSurvey": "Go to our survey",
+  "moreOpenGroupsTitle": "Find more open groups",
+  "listOpenGroups": "List open groups",
   "clearAll": "Clear All",
   "messageRequests": "Message Requests",
   "requestsSubtitle": "Pending Requests",
