@@ -17,25 +17,35 @@ test('Block User', async () => {
   const [windowA, windowB] = windows;
   const [userA, userB] = users;
   // Create contact and send new message
+
   await sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`);
   await sendNewMessage(windowB, userA.sessionid, `B -> A: ${Date.now()}`);
+  // Check to see if User B is a contact
+  await clickOnTestIdWithText(windowA, 'contact-section');
+  await waitForTestIdWithText(windowA, 'module-conversation__user__profile-name', userB.userName);
+
   //Click on three dots menu
+  await clickOnTestIdWithText(windowA, 'message-section');
+
   await clickOnTestIdWithText(windowA, 'three-dots-conversation-options');
   // Select block
   await clickOnMatchingText(windowA, 'Block');
   // Verify toast notification 'blocked'
   await waitForTestIdWithText(windowA, 'session-toast', 'Blocked');
-  // Verify the border of conversation list item is red
-  const blockedBorder = windowA.locator('.module-conversation-list-item--is-blocked');
-  await expect(blockedBorder).toHaveCSS('border-left', '4px solid rgb(255, 69, 58)');
+  // Verify the user was moved to the blocked contact list
+  // Click on settings tab
+  await clickOnTestIdWithText(windowA, 'settings-section');
+  // Navigate to blocked users tab'
+  await clickOnMatchingText(windowA, 'Blocked contacts');
+  // Check for user B's name
+  const blockedContact = windowA.locator('.session-settings-item__title');
+  await expect(blockedContact).toContainText(userB.userName);
   // Unblock user
-  //Click on three dots menu
-  await clickOnTestIdWithText(windowA, 'three-dots-conversation-options');
-  // Select block
   await clickOnMatchingText(windowA, 'Unblock');
   // Verify toast notification says unblocked
   await waitForTestIdWithText(windowA, 'session-toast', 'Unblocked');
   // Verify border has gone back to default
-  const unblockedBorder = windowA.locator('.module-conversation-list-item--is-selected');
-  await expect(unblockedBorder).toHaveCSS('border-left', '4px solid rgb(0, 233, 123)');
+  // await clickOnTestIdWithText(windowA, 'message-section');
+  // const unblockedBorder = windowA.locator('.module-conversation-list-item--is-selected');
+  // await expect(unblockedBorder).toHaveCSS('border-left', '4px solid rgb(0, 233, 123)');
 });

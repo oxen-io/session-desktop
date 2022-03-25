@@ -1,6 +1,6 @@
 import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { openAppsAndNewUsers } from './setup/new_user';
+import { openAppsAndNewUsers, openAppsNoNewUsers } from './setup/new_user';
 import { sendNewMessage } from './send_message';
 import { clickOnMatchingText, clickOnTestIdWithText, waitForMatchingText } from './utils';
 
@@ -30,20 +30,22 @@ test('Delete account from swarm', async () => {
   await clickOnMatchingText(windowA, 'Entire Account');
   // Confirm deletion by clicking i am sure
   await clickOnMatchingText(windowA, 'I am sure');
+  await windowA.waitForTimeout(7500);
+  const [windowA2] = await openAppsNoNewUsers(1);
   // Wait for window to close and reopen
   // Sign in with deleted account and check that nothing restores
-  await clickOnTestIdWithText(windowA, 'restore-using-recovery');
+  await clickOnTestIdWithText(windowA2, 'restore-using-recovery');
   // Fill in recovery phrase
-  await windowA.fill('[data-testid=continue-session-button]', userA.recoveryPhrase);
+  await windowA2.fill('#session-input-floating-label', userA.recoveryPhrase);
   // Enter display name
-  await windowA.fill('[data-testid=display-name-input]', userA.userName);
+  await windowA2.fill('[data-testid=display-name-input]', userA.userName);
   // Click continue
-  await clickOnTestIdWithText(windowA, 'continue-your-session-button');
+  await clickOnTestIdWithText(windowA2, 'continue-your-session-button');
   // Check if message from user B is restored
-  await waitForMatchingText(windowA, testMessage);
+  await waitForMatchingText(windowA2, testMessage);
   // Check if contact user B is restored
   // Click on contacts tab
-  await clickOnTestIdWithText(windowA, 'contact-section');
+  await clickOnTestIdWithText(windowA2, 'contact-section');
   // Expect contacts list to be empty
   expect('[data-testid=module-conversation__user__profile-name]').toHaveLength(0);
 });

@@ -1,6 +1,6 @@
 import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { clickOnMatchingText, waitForTestIdWithText } from './utils';
+import { clickOnMatchingText, clickOnTestIdWithText, waitForTestIdWithText } from './utils';
 import { createGroup } from './setup/create_group';
 
 test.beforeEach(cleanUpOtherTest);
@@ -34,4 +34,8 @@ test('Group testing', async () => {
   await expect(errorMessage).toContainText('Please enter a group name');
   await clickOnMatchingText(windowA, 'Cancel');
   // Check to see if you can leave group and all members get config message
+  // Navigate to the three dots menu
+  await clickOnTestIdWithText(windowA, 'three-dots-conversation-options');
+  // Select leave group
+  await clickOnMatchingText(windowA, 'Leave Group');
 });
