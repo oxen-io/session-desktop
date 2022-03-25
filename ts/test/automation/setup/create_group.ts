@@ -31,7 +31,6 @@ export const createGroup = async () => {
   await sendNewMessage(windowA, userB.sessionid, `${testMessage} A -> B`);
   await sendNewMessage(windowB, userA.sessionid, `${testReply} B -> A`);
   await sendNewMessage(windowA, userC.sessionid, `${testMessage} A -> C`);
-  await sendNewMessage(windowA, userC.sessionid, `${testMessage} A -> C`);
   await sendNewMessage(windowC, userA.sessionid, `${testReply} C -> A`);
   // wait for user C to be contact before moving to create group
   // Create group with existing contact and session ID (of non-contact)

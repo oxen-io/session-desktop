@@ -1,13 +1,13 @@
 import { _electron, Page } from '@playwright/test';
 import { readdirSync, rmdirSync } from 'fs-extra';
 import { dirname, join } from 'path';
-import { NODE_ENV } from './open';
+import { MULTI_PREFIX, NODE_ENV } from './open';
 
 const getDirectoriesOfSessionDataPath = (source: string) =>
   readdirSync(source, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
-    .filter(n => n.startsWith(`Session-${NODE_ENV}`));
+    .filter(n => n.startsWith(`Session-${NODE_ENV}-${MULTI_PREFIX}`));
 
 export const cleanUpOtherTest = async () => {
   process.env.NODE_ENV = NODE_ENV;

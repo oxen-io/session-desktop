@@ -76,6 +76,12 @@ const { installPermissionsHandler } = require('./app/permissions');
 
 let appStartInitialSpellcheckSetting = true;
 
+const enableTestIntegrationWiderWindow = true;
+const isTestIntegration =
+  enableTestIntegrationWiderWindow &&
+  Boolean(
+    process.env.NODE_APP_INSTANCE && process.env.NODE_APP_INSTANCE.includes('test-integration')
+  );
 async function getSpellCheckSetting() {
   const json = await sql.getItemById('spell-check');
   // Default to `true` if setting doesn't exist yet
@@ -185,17 +191,19 @@ function captureClicks(window) {
   window.webContents.on('new-window', handleUrl);
 }
 
-const WINDOW_SIZE = Object.freeze({
-  defaultWidth: 880,
-  defaultHeight: 820,
-  minWidth: 880,
-  minHeight: 600,
-});
+function getDefaultWindowSize() {
+  return {
+    defaultWidth: isTestIntegration ? 1500 : 880,
+    defaultHeight: 820,
+    minWidth: 880,
+    minHeight: 600,
+  };
+}
 
 function getWindowSize() {
   const { screen } = electron;
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
-  const { minWidth, minHeight, defaultWidth, defaultHeight } = WINDOW_SIZE;
+  const { minWidth, minHeight, defaultWidth, defaultHeight } = getDefaultWindowSize();
   // Ensure that the screen can fit within the default size
   const width = Math.min(defaultWidth, Math.max(minWidth, screenSize.width));
   const height = Math.min(defaultHeight, Math.max(minHeight, screenSize.height));
@@ -206,8 +214,8 @@ function getWindowSize() {
 function isVisible(window, bounds) {
   const boundsX = _.get(bounds, 'x') || 0;
   const boundsY = _.get(bounds, 'y') || 0;
-  const boundsWidth = _.get(bounds, 'width') || WINDOW_SIZE.defaultWidth;
-  const boundsHeight = _.get(bounds, 'height') || WINDOW_SIZE.defaultHeight;
+  const boundsWidth = _.get(bounds, 'width') || getDefaultWindowSize().defaultWidth;
+  const boundsHeight = _.get(bounds, 'height') || getDefaultWindowSize().defaultHeight;
   const BOUNDS_BUFFER = 100;
 
   // requiring BOUNDS_BUFFER pixels on the left or right side
@@ -236,28 +244,43 @@ async function createWindow() {
   const { screen } = electron;
   const { minWidth, minHeight, width, height } = getWindowSize();
 
-  const windowOptions = Object.assign(
-    {
-      show: true,
-      width,
-      height,
-      minWidth,
-      minHeight,
-      autoHideMenuBar: false,
-      backgroundColor: '#000',
-      webPreferences: {
-        nodeIntegration: false,
-        enableRemoteModule: true,
-        nodeIntegrationInWorker: false,
-        contextIsolation: false,
-        preload: path.join(__dirname, 'preload.js'),
-        nativeWindowOpen: true,
-        spellcheck: await getSpellCheckSetting(),
-      },
-      // don't setup icon, the executable one will be used by default
+  const fromConfig = _.pick(windowConfig, [
+    'maximized',
+    'autoHideMenuBar',
+    'width',
+    'height',
+    'x',
+    'y',
+  ]);
+
+  if (isTestIntegration) {
+    const screenWidth =
+      screen.getPrimaryDisplay().workAreaSize.width - getDefaultWindowSize().defaultWidth;
+    const screenHeight =
+      screen.getPrimaryDisplay().workAreaSize.height - getDefaultWindowSize().defaultHeight;
+    fromConfig.x = Math.floor(Math.random() * screenWidth);
+    fromConfig.y = Math.floor(Math.random() * screenHeight);
+  }
+  const windowOptions = Object.assign({
+    show: true,
+    width,
+    height,
+    minWidth,
+    minHeight,
+    autoHideMenuBar: false,
+    backgroundColor: '#000',
+    webPreferences: {
+      nodeIntegration: false,
+      enableRemoteModule: true,
+      nodeIntegrationInWorker: false,
+      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'),
+      nativeWindowOpen: true,
+      spellcheck: await getSpellCheckSetting(),
     },
-    _.pick(windowConfig, ['maximized', 'autoHideMenuBar', 'width', 'height', 'x', 'y'])
-  );
+    ...fromConfig,
+    // don't setup icon, the executable one will be used by default
+  });
 
   if (!_.isNumber(windowOptions.width) || windowOptions.width < minWidth) {
     windowOptions.width = Math.max(minWidth, width);
@@ -344,10 +367,20 @@ async function createWindow() {
 
   mainWindow.loadURL(prepareURL([__dirname, 'background.html']));
 
+  if (isTestIntegration) {
+    setTimeout(() => {
+      mainWindow.webContents.openDevTools({
+        mode: 'right',
+        activate: false,
+      });
+    }, 5000);
+  }
+
   if (config.get('openDevTools')) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools({
       mode: 'bottom',
+      activate: false,
     });
   }
 
@@ -566,8 +599,8 @@ async function showDebugLogWindow() {
   const theme = await getThemeFromMainWindow();
   const size = mainWindow.getSize();
   const options = {
-    width: Math.max(size[0] - 100, WINDOW_SIZE.minWidth),
-    height: Math.max(size[1] - 100, WINDOW_SIZE.minHeight),
+    width: Math.max(size[0] - 100, getDefaultWindowSize().minWidth),
+    height: Math.max(size[1] - 100, getDefaultWindowSize().minHeight),
     resizable: false,
     title: locale.messages.debugLog,
     autoHideMenuBar: true,

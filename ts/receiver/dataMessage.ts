@@ -254,6 +254,8 @@ export async function handleSwarmDataMessage(
   messageHash: string,
   senderConversationModel: ConversationModel
 ): Promise<void> {
+  window.log.info('handleSwarmDataMessage');
+
   const cleanDataMessage = await cleanIncomingDataMessage(envelope, rawDataMessage);
   // we handle group updates from our other devices in handleClosedGroupControlMessage()
   if (cleanDataMessage.closedGroupControlMessage) {
@@ -294,7 +296,7 @@ export async function handleSwarmDataMessage(
   );
 
   window?.log?.info(
-    `Handle dataMessage about convo ${convoIdToAddTheMessageTo} from user: ${convoIdOfSender}`
+    `Handle dataMessage about convo ${convoIdToAddTheMessageTo} from user: ${convoIdOfSender}: ${cleanDataMessage}`
   );
   // remove the prefix from the source object so this is correct for all other
 

@@ -3,7 +3,8 @@ import { Page } from 'playwright-core';
 export async function waitForTestIdWithText(window: Page, dataTestId: string, text?: string) {
   const builtSelector = `css=[data-testid=${dataTestId}]:has-text("${text}")`;
   console.warn('looking for selector', builtSelector);
-  return window.waitForSelector(builtSelector, { timeout: 55000 });
+  await window.waitForSelector(builtSelector, { timeout: 55000 });
+  console.warn('found selector', builtSelector);
 }
 
 export async function waitForReadableMessageWithText(window: Page, text: string) {
@@ -12,8 +13,11 @@ export async function waitForReadableMessageWithText(window: Page, text: string)
 
 export async function waitForMatchingText(window: Page, text: string) {
   const builtSelector = `css=:has-text("${text}")`;
+  console.warn(`waitForMatchingText: ${text}`);
 
-  return window.waitForSelector(builtSelector);
+  await window.waitForSelector(builtSelector, { timeout: 55000 });
+
+  console.warn(`got matchingText: ${text}`);
 }
 
 export async function clickOnMatchingText(window: Page, text: string, rightButton = false) {
