@@ -199,7 +199,7 @@ export const MessageContent = (props: Props) => {
         flashGreen && 'flash-green-once'
       )}
       style={{
-        width: isShowingImage ? width : undefined,
+        minWidth: isShowingImage ? width : undefined,
       }}
       role="button"
       onClick={onClickOnMessageInnerContainer}

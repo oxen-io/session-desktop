@@ -76,7 +76,7 @@ export const MessageContentWithStatuses = (props: Props) => {
       role="button"
       onClick={onClickOnMessageOuterContainer}
       onDoubleClickCapture={onDoubleClickReplyToMessage}
-      style={{ width: hasAttachments && isTrustedForAttachmentDownload ? 'min-content' : 'auto' }}
+      style={{ width: hasAttachments && isTrustedForAttachmentDownload ? 'auto' : 'auto' }}
       data-testid={dataTestId}
     >
       <MessageStatus
