@@ -19,7 +19,7 @@ test('Create User', async () => {
   const userA = await newUser(window, 'userA');
   // Open profile tab
   await clickOnTestIdWithText(window, 'leftpane-primary-avatar');
-  await sleepFor(100);
+  await sleepFor(100, true);
   //check username matches
   expect(await window.innerText('[data-testid=your-profile-name]')).toBe(userA.userName);
   //check session id matches
