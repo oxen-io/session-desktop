@@ -14,11 +14,10 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-const timeStamp = Date.now();
-const testMessage = 'Test-Message-';
-const testReply = 'Reply-Test-Message-';
-const sentMessage = `${testMessage}${timeStamp}`;
-const sentReplyMessage = `${testReply}${timeStamp}`;
+const testMessage = 'Test-Message- (A -> B) ';
+const testReply = 'Reply-Test-Message- (B -> A)';
+const sentMessage = `${testMessage}${Date.now()}`;
+const sentReplyMessage = `${testReply} :${Date.now()}`;
 
 test('Disappearing Messages', async () => {
   // Open App
@@ -29,8 +28,11 @@ test('Disappearing Messages', async () => {
   const [windowA, windowB] = windows;
   const [userA, userB] = users;
   // Create Contact
-  await sendNewMessage(windowA, userB.sessionid, sentMessage);
-  await sendNewMessage(windowB, userA.sessionid, sentReplyMessage);
+  await Promise.all([
+    sendNewMessage(windowA, userB.sessionid, sentMessage),
+    sendNewMessage(windowB, userA.sessionid, sentReplyMessage),
+  ]);
+  await waitForMatchingText(windowB, 'Your message request has been accepted');
   // Click on user's avatar to open conversation options
   await clickOnTestIdWithText(windowA, 'conversation-options-avatar');
   // Select disappearing messages drop down
