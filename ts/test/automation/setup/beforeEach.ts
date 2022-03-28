@@ -11,6 +11,7 @@ const getDirectoriesOfSessionDataPath = (source: string) =>
 
 export const cleanUpOtherTest = async () => {
   process.env.NODE_ENV = NODE_ENV;
+  process.env.NODE_APP_INSTANCE = `Session-${MULTI_PREFIX}`;
   const electronApp = await _electron.launch({ args: ['main.js'] });
   const appPath = await electronApp.evaluate(async ({ app }) => {
     return app.getPath('userData');

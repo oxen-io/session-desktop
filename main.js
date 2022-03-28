@@ -366,13 +366,14 @@ async function createWindow() {
   });
 
   mainWindow.loadURL(prepareURL([__dirname, 'background.html']));
-
   if (isTestIntegration) {
     setTimeout(() => {
-      mainWindow.webContents.openDevTools({
-        mode: 'right',
-        activate: false,
-      });
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.openDevTools({
+          mode: 'right',
+          activate: false,
+        });
+      }
     }, 5000);
   }
 
