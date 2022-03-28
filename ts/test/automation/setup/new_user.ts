@@ -1,6 +1,6 @@
 import { _electron, Page } from '@playwright/test';
 import _ from 'lodash';
-import { clickOnTestIdWithText } from '../utils';
+import { clickOnMatchingText, clickOnTestIdWithText, typeIntoInput } from '../utils';
 import { openApp } from './open';
 const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -12,17 +12,17 @@ export type UserLoggedInType = {
 
 export const newUser = async (window: Page, userName: string): Promise<UserLoggedInType> => {
   // Create User
-  await window.click('text=Create Session ID');
+  await clickOnMatchingText(window, 'Create Session ID');
   // Wait for animation for finish creating ID
   await window.waitForTimeout(1500);
   //Save session ID to a variable
   const sessionid = await window.inputValue('[data-testid=session-id-signup]');
-  await window.click('text=Continue');
+  await clickOnMatchingText(window, 'Continue');
   // Input username = testuser
-  await window.fill('#session-input-floating-label', userName);
-  await window.click('text=Get Started');
+  await typeIntoInput(window, 'display-name-input', userName);
+  await clickOnMatchingText(window, 'Get started');
   // save recovery phrase
-  await window.click('text=Reveal recovery phrase');
+  await clickOnMatchingText(window, 'Reveal Recovery Phrase');
   const recoveryPhrase = await window.innerText('[data-testid=recovery-phrase-seed-modal]');
 
   await window.click('.session-icon-button.small');
@@ -81,8 +81,8 @@ export async function existingUser() {
   const [windowA1] = await openAppsNoNewUsers(1);
 
   await clickOnTestIdWithText(windowA1, 'restore-using-recovery');
-  await windowA1.fill('[data-testid=recovery-phrase-input]', recoveryPhraseTest);
-  await windowA1.fill('[data-testid=display-name-input]', newUsername);
+  await typeIntoInput(windowA1, 'recovery-phrase-input', recoveryPhraseTest);
+  await typeIntoInput(windowA1, 'display-name-input', newUsername);
   await clickOnTestIdWithText(windowA1, 'continue-session-button');
   // await clickOnTestIdWithText(windowA1, 'leftpane-primary-avatar');
   // const sessionIDTest = await waitForTestIdWithText(windowA1, 'your-session-id');

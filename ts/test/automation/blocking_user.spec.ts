@@ -39,13 +39,10 @@ test('Block User', async () => {
   await clickOnMatchingText(windowA, 'Blocked contacts');
   // Check for user B's name
   const blockedContact = windowA.locator('.session-settings-item__title');
+
   await expect(blockedContact).toContainText(userB.userName);
   // Unblock user
   await clickOnMatchingText(windowA, 'Unblock');
   // Verify toast notification says unblocked
   await waitForTestIdWithText(windowA, 'session-toast', 'Unblocked');
-  // Verify border has gone back to default
-  // await clickOnTestIdWithText(windowA, 'message-section');
-  // const unblockedBorder = windowA.locator('.module-conversation-list-item--is-selected');
-  // await expect(unblockedBorder).toHaveCSS('border-left', '4px solid rgb(0, 233, 123)');
 });

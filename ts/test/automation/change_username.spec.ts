@@ -2,7 +2,7 @@ import { _electron, expect, Page, test } from '@playwright/test';
 import { newUser } from './setup/new_user';
 import { openApp } from './setup/open';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { clickOnTestIdWithText } from './utils';
+import { clickOnTestIdWithText, typeIntoInput } from './utils';
 let window: Page | undefined;
 
 test.beforeEach(cleanUpOtherTest);
@@ -20,13 +20,12 @@ test('Change username', async () => {
   // Open Profile
   await clickOnTestIdWithText(window, 'leftpane-primary-avatar');
   // Click on current username to open edit field
-  await window.click('.session-icon-button.medium');
+  await clickOnTestIdWithText(window, 'edit-profile-icon');
   // Type in new username
-  await window.fill('.profile-name-input', 'new username');
+  await typeIntoInput(window, 'profile-name-input', 'new username');
+  // await window.fill('.profile-name-input', 'new username');
   // Press enter to confirm username input
   await window.keyboard.press('Enter');
-  // Save
-  // await clickOnMatchingText(window, 'save');
   // Wait for Copy button to appear to verify username change
   await window.isVisible("'Copy'");
   // verify name change

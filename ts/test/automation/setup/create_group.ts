@@ -38,6 +38,7 @@ export const createGroup = async () => {
   // Click new closed group tab
   await clickOnMatchingText(windowA, 'New Closed Group');
   // Enter group name
+  // await typeIntoInput(windowA, 'editable-text-area', testGroupName);
   await windowA.fill('.group-id-editable-textarea', testGroupName);
   // Select user B
   await clickOnMatchingText(windowA, userB.userName);

@@ -1,6 +1,11 @@
 import { _electron, expect, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { clickOnMatchingText, clickOnTestIdWithText, waitForTestIdWithText } from './utils';
+import {
+  clickOnMatchingText,
+  clickOnTestIdWithText,
+  typeIntoInput,
+  waitForTestIdWithText,
+} from './utils';
 import { createGroup } from './setup/create_group';
 
 test.beforeEach(cleanUpOtherTest);
@@ -17,7 +22,8 @@ test('Group testing', async () => {
   // Click on edit group name
   await clickOnMatchingText(windowA, 'Edit group name');
   // Fill in new group name in input box
-  await windowA.fill('.profile-name-input', 'newGroupName');
+  await typeIntoInput(windowA, 'id-editable-area', 'newGroupName');
+  // await windowA.fill('.profile-name-input', 'newGroupName');
   // Click OK
   await clickOnMatchingText(windowA, 'OK');
 

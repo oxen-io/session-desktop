@@ -214,6 +214,7 @@ export class EditProfileDialog extends React.Component<{}, State> {
             tabIndex={0}
             required={true}
             aria-required={true}
+            data-testid="profile-name-input"
           />
         </div>
       </>

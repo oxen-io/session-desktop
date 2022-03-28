@@ -36,3 +36,8 @@ export async function clickOnTestIdWithText(window: Page, dataTestId: string, te
 export function getMessageTextContentNow() {
   return `Test message timestamp: ${Date.now()}`;
 }
+
+export async function typeIntoInput(window: Page, dataTestId: string, text: string) {
+  const builtSelector = `css=[data-testid=${dataTestId}]`;
+  return window.fill(builtSelector, text);
+}

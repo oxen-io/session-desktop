@@ -8,10 +8,11 @@ const config: PlaywrightTestConfig = {
   testDir: './ts/test/automation',
   testIgnore: '*.js',
   outputDir: './ts/test/automation/test-results',
-  use: {
-    video: 'retain-on-failure',
-    trace: 'retain-on-failure',
-  },
+  // use: {
+  //   // screenshot: 'only-on-failure',
+  //   video: 'on',
+  //   trace: 'retain-on-failure',
+  // },
   retries: 0,
   repeatEach: 1,
   workers: 1,
