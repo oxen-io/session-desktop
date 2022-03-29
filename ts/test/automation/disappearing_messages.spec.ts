@@ -1,4 +1,4 @@
-import { _electron, expect, Page, test } from '@playwright/test';
+import { _electron, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { messageSent } from './message';
 import { openAppsAndNewUsers } from './setup/new_user';
@@ -7,6 +7,7 @@ import {
   clickOnMatchingText,
   clickOnTestIdWithText,
   waitForMatchingText,
+  waitForReadableMessageWithText,
   waitForTestIdWithText,
 } from './utils';
 
@@ -28,11 +29,11 @@ test('Disappearing Messages', async () => {
   const [windowA, windowB] = windows;
   const [userA, userB] = users;
   // Create Contact
-  await Promise.all([
-    sendNewMessage(windowA, userB.sessionid, sentMessage),
-    sendNewMessage(windowB, userA.sessionid, sentReplyMessage),
-  ]);
-  await waitForMatchingText(windowB, 'Your message request has been accepted');
+  await sendNewMessage(windowA, userB.sessionid, sentMessage);
+  await sendNewMessage(windowB, userA.sessionid, sentReplyMessage);
+  await waitForReadableMessageWithText(windowA, 'Your message request has been accepted');
+  // await waitForMatchingText(windowA, `You have accepted ${userA.userName}'s message request`);
+  // await waitForMatchingText(windowB, 'Your message request has been accepted');
   // Click on user's avatar to open conversation options
   await clickOnTestIdWithText(windowA, 'conversation-options-avatar');
   // Select disappearing messages drop down
@@ -55,7 +56,18 @@ test('Disappearing Messages', async () => {
   // Check timer is functioning
 
   // Verify message is deleted
-  await expect(windowA.locator(sentMessage)).toHaveCount(0);
+  const errorDesc = 'Should not be found';
+  try {
+    const elemShouldNotBeFound = windowA.locator(sentMessage);
+    if (elemShouldNotBeFound) {
+      console.warn('Sent message not found in window A');
+      throw new Error(errorDesc);
+    }
+  } catch (e) {
+    if (e.message !== errorDesc) {
+      throw e;
+    }
+  }
   // Click on user's avatar for options
   await clickOnTestIdWithText(windowA, 'conversation-options-avatar');
   // Click on disappearing messages drop down
@@ -75,5 +87,16 @@ test('Disappearing Messages', async () => {
   // Wait 5 seconds
   await waitForMatchingText(windowB, `${userA.userName} disabled disappearing messages`);
   // verify message is deleted in windowB
-  await expect(windowB.locator(sentMessage)).toHaveCount(0);
+  const errorDesc2 = 'Should not be found';
+  try {
+    const elemShouldNotBeFound = windowA.locator(sentMessage);
+    if (elemShouldNotBeFound) {
+      console.warn('Sent message not found in window B');
+      throw new Error(errorDesc2);
+    }
+  } catch (e) {
+    if (e.message !== errorDesc2) {
+      throw e;
+    }
+  }
 });
