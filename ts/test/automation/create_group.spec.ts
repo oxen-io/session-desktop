@@ -18,7 +18,8 @@ test('Group testing', async () => {
   const { windowA } = await createGroup();
   // Change the name of the group and check that it syncs to all devices (config messages)
   // Click on group avatar to open settings
-  await windowA.click('.module-conversation-header__avatar');
+  await clickOnTestIdWithText(windowA, 'conversation-options-avatar');
+  // await windowA.click('.module-conversation-header__avatar');
   // Click on edit group name
   await clickOnMatchingText(windowA, 'Edit group name');
   // Fill in new group name in input box
@@ -26,14 +27,13 @@ test('Group testing', async () => {
   // await windowA.fill('.profile-name-input', 'newGroupName');
   // Click OK
   await clickOnMatchingText(windowA, 'OK');
-
   await waitForTestIdWithText(windowA, 'right-panel-group-name', 'newGroupName');
   await waitForTestIdWithText(windowA, 'readable-message', "Group name is now 'newGroupName'.");
-
   // Check to see that you can't change group name to empty string
   // Click on edit group name
   await clickOnMatchingText(windowA, 'Edit group name');
   // Fill in new group name in input box
+  // await typeIntoInput(windowA, 'profile-name-input');
   await windowA.fill('.profile-name-input', '   ');
   await windowA.keyboard.press('Enter');
   const errorMessage = windowA.locator('.error-message');

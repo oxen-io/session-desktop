@@ -6,6 +6,7 @@ import { sendNewMessage } from '../send_message';
 import {
   clickOnMatchingText,
   clickOnTestIdWithText,
+  typeIntoInput,
   // getMessageTextContentNow,
   waitForReadableMessageWithText,
   waitForTestIdWithText,
@@ -26,8 +27,8 @@ export const createGroup = async () => {
   const [userA, userB, userC] = users;
   // Add contact
 
-  await sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`);
   await Promise.all([
+    sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`),
     sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`),
     sendNewMessage(windowB, userA.sessionid, `B -> A: ${Date.now()}`),
     sendNewMessage(windowC, userA.sessionid, `C -> A: ${Date.now()}`),
@@ -38,8 +39,8 @@ export const createGroup = async () => {
   // Click new closed group tab
   await clickOnMatchingText(windowA, 'New Closed Group');
   // Enter group name
-  // await typeIntoInput(windowA, 'editable-text-area', testGroupName);
-  await windowA.fill('.group-id-editable-textarea', testGroupName);
+  await typeIntoInput(windowA, 'new-closed-group-name', testGroupName);
+  // await windowA.fill('.group-id-editable-textarea', testGroupName);
   // Select user B
   await clickOnMatchingText(windowA, userB.userName);
   // Select user C

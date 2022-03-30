@@ -100,6 +100,7 @@ export const OverlayMessage = () => {
         text={buttonText}
         disabled={false}
         onClick={handleMessageButtonClick}
+        dataTestId="next-new-conversation-button"
       />
     </div>
   );
