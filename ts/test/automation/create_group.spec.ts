@@ -19,12 +19,10 @@ test('Group testing', async () => {
   // Change the name of the group and check that it syncs to all devices (config messages)
   // Click on group avatar to open settings
   await clickOnTestIdWithText(windowA, 'conversation-options-avatar');
-  // await windowA.click('.module-conversation-header__avatar');
   // Click on edit group name
   await clickOnMatchingText(windowA, 'Edit group name');
   // Fill in new group name in input box
   await typeIntoInput(windowA, 'id-editable-area', 'newGroupName');
-  // await windowA.fill('.profile-name-input', 'newGroupName');
   // Click OK
   await clickOnMatchingText(windowA, 'OK');
   await waitForTestIdWithText(windowA, 'right-panel-group-name', 'newGroupName');
