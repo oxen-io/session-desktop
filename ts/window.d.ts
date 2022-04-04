@@ -52,6 +52,7 @@ declare global {
     getCallMediaPermissions: () => boolean;
     updateZoomFactor: () => boolean;
     toggleMenuBar: () => void;
+    toggleSendOnShiftEnter: () => void;
     toggleSpellCheck: any;
     setTheme: (newTheme: string) => any;
     isDev?: () => boolean;

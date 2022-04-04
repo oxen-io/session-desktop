@@ -747,7 +747,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
   }
 
   private async onKeyDown(event: any) {
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+    if (event.key === 'Enter' && event.shiftKey === window.getSettingValue('send-on-shift-enter') && !event.nativeEvent.isComposing) {
       // If shift, newline. If in IME composing mode, leave it to IME. Else send message.
       event.preventDefault();
       await this.onSendMessage();

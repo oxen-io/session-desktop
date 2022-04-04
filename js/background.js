@@ -127,6 +127,11 @@
         window.setMenuBarVisibility(!value);
       },
 
+      getSendOnShiftEnter: () => storage.get('send-on-shift-enter', false),
+      setSendOnShiftEnter: value => {
+        storage.put('send-on-shift-enter', value);
+      },
+
       getSpellCheck: () => storage.get('spell-check', true),
       setSpellCheck: value => {
         storage.put('spell-check', value);
@@ -273,7 +278,17 @@
       window.Events.setHideMenuBar(!current);
     };
 
-    window.toggleSpellCheck = () => {
+    window.toggleSendOnShiftEnter = () => {
+      const current = window.getSettingValue('send-on-shift-enter');
+      if (current === undefined) {
+        window.Events.setSendOnShiftEnter(false);
+        return;
+      }
+
+      window.Events.setSendOnShiftEnter(!current);
+    };
+
+     window.toggleSpellCheck = () => {
       const currentValue = window.getSettingValue('spell-check');
       // if undefined, it means 'default' so true. but we have to toggle it, so false
       // if not undefined, we take the opposite
