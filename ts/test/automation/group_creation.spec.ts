@@ -1,7 +1,8 @@
-import { _electron, Page } from '@playwright/test';
-import { messageSent } from '../message';
-import { openAppsAndNewUsers } from '../setup/new_user';
-import { sendNewMessage } from '../send_message';
+import { _electron, Page, test } from '@playwright/test';
+import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
+import { messageSent } from './message';
+import { openAppsAndNewUsers } from './setup/new_user';
+import { sendNewMessage } from './send_message';
 import {
   clickOnMatchingText,
   clickOnTestIdWithText,
@@ -9,19 +10,22 @@ import {
   // getMessageTextContentNow,
   waitForReadableMessageWithText,
   waitForTestIdWithText,
-} from '../utils';
+} from './utils';
 
 const testGroupName = 'Test Group Name';
 
-let windows: Array<Page> = [];
+test.beforeEach(cleanUpOtherTest);
 
-export const createGroup = async () => {
+let windows: Array<Page> = [];
+test.afterEach(() => forceCloseAllWindows(windows));
+
+test('Create group', async () => {
   const windowLoggedIn = await openAppsAndNewUsers(3);
   windows = windowLoggedIn.windows;
   const users = windowLoggedIn.users;
   const [windowA, windowB, windowC] = windows;
   const [userA, userB, userC] = users;
-  // Add contacts
+  // Add contact
   await sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`);
   await Promise.all([
     sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`),
@@ -64,8 +68,9 @@ export const createGroup = async () => {
   await clickOnTestIdWithText(windowC, 'message-section');
   // Click on test group
   await clickOnMatchingText(windowC, testGroupName);
-  // windowC must see the message from A and the message from B
+  // windowC must see the message from A
   await waitForReadableMessageWithText(windowC, msgAToGroup);
+  // windowC must see the message from B
   await waitForReadableMessageWithText(windowC, msgBToGroup);
   // Send message from C to the group
   // const msgCToGroup = getMessageTextContentNow();
@@ -74,6 +79,4 @@ export const createGroup = async () => {
   // windowA should see the message from B and the message from C
   await waitForReadableMessageWithText(windowA, msgBToGroup);
   await waitForReadableMessageWithText(windowA, msgCToGroup);
-
-  return { userA, windowA, windowB };
-};
+});
