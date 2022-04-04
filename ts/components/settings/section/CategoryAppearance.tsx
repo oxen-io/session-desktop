@@ -45,6 +45,7 @@ async function toggleStartInTray() {
 }
 
 const settingsMenuBar = 'hide-menu-bar';
+const settingsScrollOnSend = 'scroll-on-send';
 const settingsSpellCheck = 'spell-check';
 const settingsLinkPreview = 'link-preview-setting';
 const settingsStartInTray = 'start-in-tray-setting';
@@ -59,6 +60,11 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
       window.getSettingValue(settingsMenuBar) === undefined
         ? true
         : window.getSettingValue(settingsMenuBar);
+
+    const isScrollOnSendActive =
+      window.getSettingValue(settingsScrollOnSend) === undefined
+        ? true
+        : window.getSettingValue(settingsScrollOnSend);
 
     const isSpellCheckActive =
       window.getSettingValue(settingsSpellCheck) === undefined
@@ -81,6 +87,15 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
             active={isHideMenuBarActive}
           />
         )}
+        <SessionToggleWithDescription
+          onClickToggle={() => {
+            window.toggleScrollOnSend();
+            forceUpdate();
+          }}
+          title={window.i18n('scrollOnSendTitle')}
+          description={window.i18n('scrollOnSendDescription')}
+          active={isScrollOnSendActive}
+        />
         <SessionToggleWithDescription
           onClickToggle={() => {
             window.toggleSpellCheck();

@@ -173,7 +173,9 @@ export class SessionConversation extends React.Component<Props, State> {
 
     const sendAndScroll = async () => {
       void conversationModel.sendMessage(msg);
-      await this.scrollToNow();
+      if (window.getSettingValue('scroll-on-send')) {
+	await this.scrollToNow();
+      }
     };
 
     // const recoveryPhrase = window.textsecure.storage.get('mnemonic');
