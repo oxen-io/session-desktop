@@ -18,7 +18,7 @@ test.beforeEach(cleanUpOtherTest);
 const windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-test('Group testing', async () => {
+test.skip('Group testing', async () => {
   // Open Electron
   const { windowA, windowB } = await createGroup('Test Group Name');
   // Change the name of the group and check that it syncs to all devices (config messages)

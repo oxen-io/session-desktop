@@ -18,7 +18,7 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-test('Create group', async () => {
+test.skip('Create group', async () => {
   const windowLoggedIn = await openAppsAndNewUsers(3);
   windows = windowLoggedIn.windows;
   const users = windowLoggedIn.users;
