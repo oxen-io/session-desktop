@@ -11,11 +11,9 @@ import {
   waitForTestIdWithText,
 } from '../utils';
 
-const testGroupName = 'Test Group Name';
-
 let windows: Array<Page> = [];
 
-export const createGroup = async () => {
+export const createGroup = async (groupName: string) => {
   const windowLoggedIn = await openAppsAndNewUsers(3);
   windows = windowLoggedIn.windows;
   const users = windowLoggedIn.users;
@@ -34,7 +32,7 @@ export const createGroup = async () => {
   // Click new closed group tab
   await clickOnMatchingText(windowA, 'New Closed Group');
   // Enter group name
-  await typeIntoInput(windowA, 'new-closed-group-name', testGroupName);
+  await typeIntoInput(windowA, 'new-closed-group-name', groupName);
   // await windowA.fill('.group-id-editable-textarea', testGroupName);
   // Select user B
   await clickOnMatchingText(windowA, userB.userName);
@@ -43,8 +41,8 @@ export const createGroup = async () => {
   // Click Done
   await clickOnMatchingText(windowA, 'Done');
   // Check group was successfully created
-  await clickOnMatchingText(windowB, testGroupName);
-  await waitForTestIdWithText(windowB, 'header-conversation-name', testGroupName);
+  await clickOnMatchingText(windowB, groupName);
+  await waitForTestIdWithText(windowB, 'header-conversation-name', groupName);
   // Send message in group chat from user A
   // const msgAToGroup = getMessageTextContentNow();
   const msgAToGroup = 'A -> Group';
@@ -53,7 +51,7 @@ export const createGroup = async () => {
   // Navigate to group in window B
   await clickOnTestIdWithText(windowB, 'message-section');
   // Click on test group
-  await clickOnMatchingText(windowB, testGroupName);
+  await clickOnMatchingText(windowB, groupName);
   // wait for selector 'test message' in chat window
   await waitForReadableMessageWithText(windowB, msgAToGroup);
   // Send reply message
@@ -63,7 +61,7 @@ export const createGroup = async () => {
   // Navigate to group in window C
   await clickOnTestIdWithText(windowC, 'message-section');
   // Click on test group
-  await clickOnMatchingText(windowC, testGroupName);
+  await clickOnMatchingText(windowC, groupName);
   // windowC must see the message from A and the message from B
   await waitForReadableMessageWithText(windowC, msgAToGroup);
   await waitForReadableMessageWithText(windowC, msgBToGroup);
@@ -75,5 +73,5 @@ export const createGroup = async () => {
   await waitForReadableMessageWithText(windowA, msgBToGroup);
   await waitForReadableMessageWithText(windowA, msgCToGroup);
 
-  return { userA, windowA, windowB };
+  return { userA, userB, windowA, windowB };
 };

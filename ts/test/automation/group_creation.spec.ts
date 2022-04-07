@@ -7,7 +7,6 @@ import {
   clickOnMatchingText,
   clickOnTestIdWithText,
   typeIntoInput,
-  // getMessageTextContentNow,
   waitForReadableMessageWithText,
   waitForTestIdWithText,
 } from './utils';
@@ -25,21 +24,17 @@ test('Create group', async () => {
   const users = windowLoggedIn.users;
   const [windowA, windowB, windowC] = windows;
   const [userA, userB, userC] = users;
-  // Add contact
+  // Add contacts
   await sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`);
   await Promise.all([
     sendNewMessage(windowA, userB.sessionid, `A -> B: ${Date.now()}`),
     sendNewMessage(windowB, userA.sessionid, `B -> A: ${Date.now()}`),
     sendNewMessage(windowC, userA.sessionid, `C -> A: ${Date.now()}`),
   ]);
-
-  // wait for user C to be contact before moving to create group
-  // Create group with existing contact and session ID (of non-contact)
   // Click new closed group tab
   await clickOnMatchingText(windowA, 'New Closed Group');
   // Enter group name
   await typeIntoInput(windowA, 'new-closed-group-name', testGroupName);
-  // await windowA.fill('.group-id-editable-textarea', testGroupName);
   // Select user B
   await clickOnMatchingText(windowA, userB.userName);
   // Select user C
@@ -50,7 +45,6 @@ test('Create group', async () => {
   await clickOnMatchingText(windowB, testGroupName);
   await waitForTestIdWithText(windowB, 'header-conversation-name', testGroupName);
   // Send message in group chat from user A
-  // const msgAToGroup = getMessageTextContentNow();
   const msgAToGroup = 'A -> Group';
   await messageSent(windowA, msgAToGroup);
   // Verify it was received by other two accounts
@@ -61,7 +55,6 @@ test('Create group', async () => {
   // wait for selector 'test message' in chat window
   await waitForReadableMessageWithText(windowB, msgAToGroup);
   // Send reply message
-  // const msgBToGroup = getMessageTextContentNow();
   const msgBToGroup = 'B -> Group';
   await messageSent(windowB, msgBToGroup);
   // Navigate to group in window C
@@ -73,7 +66,6 @@ test('Create group', async () => {
   // windowC must see the message from B
   await waitForReadableMessageWithText(windowC, msgBToGroup);
   // Send message from C to the group
-  // const msgCToGroup = getMessageTextContentNow();
   const msgCToGroup = 'C -> Group';
   await messageSent(windowC, msgCToGroup);
   // windowA should see the message from B and the message from C

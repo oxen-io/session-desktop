@@ -135,6 +135,7 @@ const HeaderItem = () => {
                 showInviteContactByConvoId(selectedConversation.id);
               }
             }}
+            dataTestId="add-user-button"
           />
         )}
       </div>
