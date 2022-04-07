@@ -12,15 +12,17 @@ import {
 import { renameGroup } from './rename_group';
 import { leaveGroup } from './leave_group';
 import { createGroup } from './setup/create_group';
+import { stopFocusInterval } from './setup/focusInterval';
 
 test.beforeEach(cleanUpOtherTest);
 
-const windows: Array<Page> = [];
+let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-test.skip('Group testing', async () => {
+test('Group testing', async () => {
   // Open Electron
-  const { windowA, windowB } = await createGroup('Test Group Name');
+  const { windowA, windowB } = await createGroup('Test Group Name', true);
+  windows = [windowA, windowB];
   // Change the name of the group and check that it syncs to all devices (config messages)
   // Click on already created group
   // Check that renaming a group is working
@@ -44,4 +46,5 @@ test.skip('Group testing', async () => {
 
   // Leave group and receive config confirmation
   await leaveGroup(windowB);
+  stopFocusInterval();
 });

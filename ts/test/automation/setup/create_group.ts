@@ -9,14 +9,18 @@ import {
   waitForReadableMessageWithText,
   waitForTestIdWithText,
 } from '../utils';
+import { startFocusInterval } from './focusInterval';
 
 let windows: Array<Page> = [];
 
-export const createGroup = async (groupName: string) => {
+export const createGroup = async (groupName: string, startWindowFocusInterval?: boolean) => {
   const windowLoggedIn = await openAppsAndNewUsers(3);
   windows = windowLoggedIn.windows;
   const users = windowLoggedIn.users;
   const [windowA, windowB, windowC] = windows;
+  if (startWindowFocusInterval) {
+    startFocusInterval(() => windows);
+  }
   const [userA, userB, userC] = users;
   // Add contacts
   await sendNewMessage(windowA, userC.sessionid, `A -> C: ${Date.now()}`);
