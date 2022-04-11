@@ -12,7 +12,6 @@ import {
 import { renameGroup } from './rename_group';
 import { leaveGroup } from './leave_group';
 import { createGroup } from './setup/create_group';
-import { stopFocusInterval } from './setup/focusInterval';
 
 test.beforeEach(cleanUpOtherTest);
 
@@ -21,7 +20,7 @@ test.afterEach(() => forceCloseAllWindows(windows));
 
 test('Group testing', async () => {
   // Open Electron
-  const { windowA, windowB } = await createGroup('Test Group Name', true);
+  const { windowA, windowB } = await createGroup('Test Group Name');
   windows = [windowA, windowB];
   // Change the name of the group and check that it syncs to all devices (config messages)
   // Click on already created group
@@ -46,5 +45,4 @@ test('Group testing', async () => {
 
   // Leave group and receive config confirmation
   await leaveGroup(windowB);
-  stopFocusInterval();
 });
