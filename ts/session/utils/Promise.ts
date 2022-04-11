@@ -206,6 +206,7 @@ export async function delay(timeoutMs: number = 2000): Promise<Boolean> {
 // tslint:disable: no-string-based-set-timeout
 export const sleepFor = async (ms: number, showLog = false) => {
   if (showLog) {
+    // tslint:disable-next-line: no-console
     console.info(`sleeping for ${ms}ms...`);
   }
   return new Promise(resolve => {

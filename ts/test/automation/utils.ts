@@ -1,10 +1,16 @@
 import { Page } from 'playwright-core';
 
 export async function waitForTestIdWithText(window: Page, dataTestId: string, text?: string) {
-  const builtSelector = `css=[data-testid=${dataTestId}]:has-text("${text}")`;
+  let builtSelector = `css=[data-testid=${dataTestId}]`;
+  if (text) {
+    builtSelector += `:has-text("${text}")`;
+  }
+
   console.warn('looking for selector', builtSelector);
-  await window.waitForSelector(builtSelector, { timeout: 55000 });
+  const found = await window.waitForSelector(builtSelector, { timeout: 55000 });
   console.warn('found selector', builtSelector);
+
+  return found;
 }
 
 export async function waitForReadableMessageWithText(window: Page, text: string) {

@@ -5,7 +5,7 @@ import { clickOnTestIdWithText, typeIntoInput, waitForTestIdWithText } from './u
 
 test.beforeEach(cleanUpOtherTest);
 
-let windows: Array<Page> = [];
+const windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
 test('linking device', async () => {
