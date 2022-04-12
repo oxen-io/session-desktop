@@ -1,11 +1,9 @@
 import { _electron, Page } from '@playwright/test';
-import { clickOnTestIdWithText } from './utils';
-// import { typeIntoInput } from './utils';
+import { clickOnTestIdWithText, typeIntoInput } from './utils';
 
 export const messageSent = async (window: Page, message: string) => {
   // type into message input box
-  // await typeIntoInput(window, "'message-input' * textarea", message);
-  await window.fill('[data-testid=message-input] * textarea', message);
+  await typeIntoInput(window, 'message-input-text-area', message);
   // click up arrow (send)
   await clickOnTestIdWithText(window, 'send-message-button');
   // wait for confirmation tick to send reply message

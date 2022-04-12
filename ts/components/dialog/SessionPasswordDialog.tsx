@@ -81,6 +81,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
             }}
             placeholder={placeholders[0]}
             onKeyUp={this.onPasswordInput}
+            data-testid="password-input"
           />
           {passwordAction !== 'remove' && (
             <input
@@ -88,6 +89,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
               id="password-modal-input-confirm"
               placeholder={placeholders[1]}
               onKeyUp={this.onPasswordConfirmInput}
+              data-testid="password-input-confirm"
             />
           )}
           {passwordAction === 'change' && (
@@ -96,6 +98,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
               id="password-modal-input-reconfirm"
               placeholder={placeholders[2]}
               onKeyUp={this.onPasswordRetypeInput}
+              data-testid="password-input-reconfirm"
             />
           )}
         </div>

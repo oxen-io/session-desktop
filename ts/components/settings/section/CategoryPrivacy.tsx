@@ -127,6 +127,7 @@ export const SettingsCategoryPrivacy = (props: {
             }}
             buttonColor={SessionButtonColor.Primary}
             buttonText={window.i18n('setPassword')}
+            dataTestId={'set-password-button'}
           />
         )}
         {props.hasPassword && (

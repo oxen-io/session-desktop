@@ -118,6 +118,7 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
           e.stopPropagation();
           e.preventDefault();
         }}
+        data-testid="message-request-banner"
       >
         <CirclularIcon iconType="messageRequest" iconSize="medium" />
         <StyledMessageRequestBannerHeader>
