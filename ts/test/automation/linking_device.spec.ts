@@ -18,7 +18,7 @@ test('linking device', async () => {
   // Verify Session ID
   await waitForTestIdWithText(windowA2, 'your-session-id', userA.sessionid);
   // exit profile module
-  await windowA2.click('.session-icon-button.small');
+  await clickOnTestIdWithText(windowA2, 'modal-close-button');
   // You're almost finished isn't displayed
   const errorDesc = 'Should not be found';
   try {
@@ -39,7 +39,6 @@ test('linking device', async () => {
   // Replace old username with new username
   const newUsername = 'new-username';
   await typeIntoInput(windowA1, 'profile-name-input', newUsername);
-  // await windowA1.fill('.profile-name-input', newUsername);
   // Press enter to confirm change
   await windowA1.keyboard.press('Enter');
   // Wait for loading animation
@@ -48,6 +47,5 @@ test('linking device', async () => {
   await clickOnTestIdWithText(windowA2, 'leftpane-primary-avatar');
   // Verify username has changed to new username
   await waitForTestIdWithText(windowA2, 'your-profile-name', userA.userName);
-  // expect(await windowA2.innerText('[data-testid=your-profile-name]')).toBe(userA.userName);
   // Check message is deleting on both devices
 });

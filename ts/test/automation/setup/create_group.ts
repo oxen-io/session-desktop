@@ -70,9 +70,6 @@ export const createGroup = async (groupName: string) => {
   // Send message from C to the group
   const msgCToGroup = 'C -> Group';
   await messageSent(windowC, msgCToGroup);
-  // Focus screen
-  // await clickOnTestIdWithText(windowC, 'scroll-to-bottom-button');
-  await clickOnMatchingText(windowC, msgCToGroup);
   // windowA should see the message from B and the message from C
   await waitForReadableMessageWithText(windowA, msgBToGroup);
   await waitForReadableMessageWithText(windowA, msgCToGroup);
