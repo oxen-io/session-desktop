@@ -750,7 +750,14 @@ class CompositionBoxInner extends React.Component<Props, State> {
     if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
       // If shift, newline. If in IME composing mode, leave it to IME. Else send message.
       event.preventDefault();
+      const scrollState = window.getSettingValue('scroll-on-send');
+      if (event.altKey) {
+	window.setSettingValue('scroll-on-send', false)
+      }
       await this.onSendMessage();
+      if (event.altKey) {
+	window.setSettingValue('scroll-on-send', scrollState)
+      }
     } else if (event.key === 'Escape' && this.state.showEmojiPanel) {
       this.hideEmojiPanel();
     } else if (event.key === 'PageUp' || event.key === 'PageDown') {

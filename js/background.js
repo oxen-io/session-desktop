@@ -127,7 +127,12 @@
         window.setMenuBarVisibility(!value);
       },
 
-      getSpellCheck: () => storage.get('spell-check', true),
+      getScrollOnSend: () => storage.get('scroll-on-send', true),
+      setScrollOnSend: value => {
+        storage.put('scroll-on-send', value);
+      },
+
+       getSpellCheck: () => storage.get('spell-check', true),
       setSpellCheck: value => {
         storage.put('spell-check', value);
       },
@@ -273,7 +278,17 @@
       window.Events.setHideMenuBar(!current);
     };
 
-    window.toggleSpellCheck = () => {
+    window.toggleScrollOnSend = () => {
+      const current = window.getSettingValue('scroll-on-send');
+      if (current === undefined) {
+        window.Events.setScrollOnSend(true);
+        return;
+      }
+
+      window.Events.setScrollOnSend(!current);
+    };
+
+     window.toggleSpellCheck = () => {
       const currentValue = window.getSettingValue('spell-check');
       // if undefined, it means 'default' so true. but we have to toggle it, so false
       // if not undefined, we take the opposite
