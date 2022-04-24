@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Vous n'êtes pas autorisé à supprimer les messages des autres utilisateurs.",
   "deleteJustForMe": "Supprimer juste pour moi",
   "deleteForEveryone": "Supprimer pour tous",
-  "deleteMessagesQuestion": "Êtes-vous certains de vouloir supprimer les messages?",
+  "deleteMessagesQuestion": "Êtes-vous certains de vouloir supprimer les $count$ messages?",
   "deleteMessageQuestion": "Êtes-vous sûr de vouloir supprimer ce message?",
   "deleteMessages": "Supprimer les messages",
   "deleted": "Supprimé",

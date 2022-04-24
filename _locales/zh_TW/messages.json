@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "您無權刪除他人訊息",
   "deleteJustForMe": "Delete just for me",
   "deleteForEveryone": "Delete for everyone",
-  "deleteMessagesQuestion": "Delete those messages?",
+  "deleteMessagesQuestion": "Delete $count$ messages?",
   "deleteMessageQuestion": "Delete this message?",
   "deleteMessages": "刪除訊息",
   "deleted": "已刪除",

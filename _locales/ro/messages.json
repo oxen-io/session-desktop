@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Nu aveţi permisiunea de a şterge mesajele altora",
   "deleteJustForMe": "Șterge doar pentru mine",
   "deleteForEveryone": "Șterge pentru toată lumea",
-  "deleteMessagesQuestion": "Ștergi acele mesaje?",
+  "deleteMessagesQuestion": "Ștergi acele $count$ mesaje?",
   "deleteMessageQuestion": "Ștergi acest mesaj?",
   "deleteMessages": "Șterge mesajele",
   "deleted": "Șters",

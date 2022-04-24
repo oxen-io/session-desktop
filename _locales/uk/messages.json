@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "У вас немає дозволу на видалення повідомлень інших",
   "deleteJustForMe": "Delete just for me",
   "deleteForEveryone": "Delete for everyone",
-  "deleteMessagesQuestion": "Delete those messages?",
+  "deleteMessagesQuestion": "Delete $count$ messages?",
   "deleteMessageQuestion": "Delete this message?",
   "deleteMessages": "Видалити повідомлення",
   "deleted": "Видалено",

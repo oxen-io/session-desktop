@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "다른 사람의 메시지를 삭제할 수 있는 권한이 없습니다.",
   "deleteJustForMe": "자기 자신만 안 보이게 삭제",
   "deleteForEveryone": "모두에게서 삭제",
-  "deleteMessagesQuestion": "Delete those messages?",
+  "deleteMessagesQuestion": "Delete $count$ messages?",
   "deleteMessageQuestion": "이 메시지를 삭제하시겠습니까?",
   "deleteMessages": "Delete messages",
   "deleted": "삭제",

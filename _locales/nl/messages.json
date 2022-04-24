@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Je hebt geen toestemming om andermans berichten te verwijderen",
   "deleteJustForMe": "Verwijder alleen voor mij",
   "deleteForEveryone": "Verwijder voor iedereen",
-  "deleteMessagesQuestion": "Verwijder die berichten?",
+  "deleteMessagesQuestion": "Verwijder $count$ berichten?",
   "deleteMessageQuestion": "Dit bericht verwijderen?",
   "deleteMessages": "Berichten wissen",
   "deleted": "Verwijderd",

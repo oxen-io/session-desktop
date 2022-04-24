@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Você não tem permissão para excluír as mensagens de outros",
   "deleteJustForMe": "Excluir apenas para mim",
   "deleteForEveryone": "Excluir para todos",
-  "deleteMessagesQuestion": "Excluir mensagens?",
+  "deleteMessagesQuestion": "Excluir $count$ mensagens?",
   "deleteMessageQuestion": "Excluir esta mensagem?",
   "deleteMessages": "Apagar mensagens",
   "deleted": "Excluído",

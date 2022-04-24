@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "No teniu autorització per esborrar els missatges d'altres",
   "deleteJustForMe": "Delete just for me",
   "deleteForEveryone": "Delete for everyone",
-  "deleteMessagesQuestion": "Delete those messages?",
+  "deleteMessagesQuestion": "Delete $count$ messages?",
   "deleteMessageQuestion": "Delete this message?",
   "deleteMessages": "Suprimeix els missatges",
   "deleted": "Eliminat",

@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Du har ikke tilladelse til at slette andres beskeder",
   "deleteJustForMe": "Slet - kun for mig",
   "deleteForEveryone": "Slet for alle",
-  "deleteMessagesQuestion": "Slet disse beskeder?",
+  "deleteMessagesQuestion": "Slet $count$ beskeder?",
   "deleteMessageQuestion": "Slet denne besked?",
   "deleteMessages": "Slet beskeder",
   "deleted": "Slettet",

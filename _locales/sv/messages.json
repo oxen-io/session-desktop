@@ -113,7 +113,7 @@
   "messageDeletionForbidden": "Du har inte behörighet att ta bort andras meddelanden",
   "deleteJustForMe": "Radera bara för mig",
   "deleteForEveryone": "Radera för alla",
-  "deleteMessagesQuestion": "Radera dessa meddelanden?",
+  "deleteMessagesQuestion": "Radera $count$ meddelanden?",
   "deleteMessageQuestion": "Radera detta meddelande?",
   "deleteMessages": "Radera meddelanden",
   "deleted": "Raderat",
