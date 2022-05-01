@@ -2205,14 +2205,6 @@ asar@0.14.0:
     mksnapshot "^0.3.0"
     tmp "0.0.28"
 
-asbycountry@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/asbycountry/-/asbycountry-1.4.2.tgz#26bf0e090225b93f7d1fc5a177899c900b5c8258"
-  integrity sha512-NnIJ1lUYJ/M0XmoOA1T5uLQWbD81MDz5MpwufSHymw8j3DauFyTDki7ixxG8nMeUo5GBkFT1U/USOcz0mJnrNQ==
-  dependencies:
-    chalk "^1.1.3"
-    fetch "^1.1.0"
-
 asn1.js@^5.2.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
@@ -2381,13 +2373,6 @@ bindings@^1.5.0:
   integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
   dependencies:
     file-uri-to-path "1.0.0"
-
-biskviit@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/biskviit/-/biskviit-1.0.1.tgz#037a0cd4b71b9e331fd90a1122de17dc49e420a7"
-  integrity sha1-A3oM1LcbnjMf2QoRIt4X3EnkIKc=
-  dependencies:
-    psl "^1.1.7"
 
 blob-util@2.0.2:
   version "2.0.2"
@@ -3129,11 +3114,6 @@ cosmiconfig@^7.0.1:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
-country-code-lookup@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/country-code-lookup/-/country-code-lookup-0.0.19.tgz#3fbf0192758ecf0d5eee0efbc220d62706c50fd6"
-  integrity sha512-lpvgdPyj8RuP0CSZhACNf5ueKlLbv/IQUAQfg7yr/qJbFrdcWV7Y+aDN9K/u/bx3MXRfcsjuW+TdIc0AEj7kDw==
-
 create-ecdh@^4.0.0:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.4.tgz#d6e7f4bffa66736085a0762fd3a632684dabcc4e"
@@ -3834,13 +3814,6 @@ encodeurl@^1.0.2:
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
 
-encoding@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
-  integrity sha1-U4tm8+5izRq1HsMjgp0flIDHS+s=
-  dependencies:
-    iconv-lite "~0.4.13"
-
 end-of-stream@^1.1.0:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
@@ -4380,14 +4353,6 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-fetch@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/fetch/-/fetch-1.1.0.tgz#0a8279f06be37f9f0ebb567560a30a480da59a2e"
-  integrity sha1-CoJ58Gvjf58Ou1Z1YKMKSA2lmi4=
-  dependencies:
-    biskviit "1.0.1"
-    encoding "0.1.12"
-
 figures@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
@@ -4588,6 +4553,11 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
+
+fs@^0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/fs/-/fs-0.0.1-security.tgz#8a7bd37186b6dddf3813f23858b57ecaaf5e41d4"
+  integrity sha1-invTcYa23d84E/I4WLV+yq9eQdQ=
 
 fstream@^1.0.0, fstream@^1.0.12:
   version "1.0.12"
@@ -5322,13 +5292,6 @@ invert-kv@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-3.0.1.tgz#a93c7a3d4386a1dc8325b97da9bb1620c0282523"
   integrity sha512-CYdFeFexxhv/Bcny+Q0BfOV+ltRlJcd4BBZBYFX/O0u4npJrgZtIcjokegtiSMAvlMTJ+Koq0GBCc//3bueQxw==
-
-ip2country@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ip2country/-/ip2country-1.0.1.tgz#e2ab284b774b65c89509679fcb82552afcff9804"
-  integrity sha512-wYhIyQzcP85tKo17HwitnHB7F3vbN+gA7DqZzeE5K1NLfr4XnKZQ1RNsMGm3bNhf1eA3bz9QFjSXo4q6VKRqCw==
-  dependencies:
-    asbycountry "^1.4.2"
 
 ip@^1.1.5:
   version "1.1.5"
@@ -6070,6 +6033,14 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
+maxmind@^4.3.6:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/maxmind/-/maxmind-4.3.6.tgz#5e4aa2491eef8bd401f34be307776fa1fb5bc3ca"
+  integrity sha512-CwnEZqJX0T6b2rWrc0/V3n9hL/hWAMEn7fY09077YJUHiHx7cn/esA2ZIz8BpYLSJUf7cGVel0oUJa9jMwyQpg==
+  dependencies:
+    mmdb-lib "2.0.2"
+    tiny-lru "8.0.2"
+
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -6293,6 +6264,11 @@ mksnapshot@^0.3.0:
     decompress-zip "0.3.x"
     fs-extra "0.26.7"
     request "2.x"
+
+mmdb-lib@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/mmdb-lib/-/mmdb-lib-2.0.2.tgz#fe60404142c0456c19607c72caa15821731ae957"
+  integrity sha512-shi1I+fCPQonhTi7qyb6hr7hi87R7YS69FlfJiMFuJ12+grx0JyL56gLNzGTYXPU7EhAPkMLliGeyHer0K+AVA==
 
 mocha-testcheck@1.0.0-rc.0:
   version "1.0.0-rc.0"
@@ -7307,7 +7283,7 @@ pseudomap@^1.0.2:
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
-psl@^1.1.28, psl@^1.1.33, psl@^1.1.7:
+psl@^1.1.28, psl@^1.1.33:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.8.0.tgz#9326f8bcfb013adcc005fdff056acce020e51c24"
   integrity sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==
@@ -8784,6 +8760,11 @@ tiny-lr@^0.2.1:
     livereload-js "^2.2.0"
     parseurl "~1.3.0"
     qs "~5.1.0"
+
+tiny-lru@8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/tiny-lru/-/tiny-lru-8.0.2.tgz#812fccbe6e622ded552e3ff8a4c3b5ff34a85e4c"
+  integrity sha512-ApGvZ6vVvTNdsmt676grvCkUCGwzG9IqXma5Z07xJgiC5L7akUMof5U8G2JTI9Rz/ovtVhJBlY6mNhEvtjzOIg==
 
 tmp@0.0.28:
   version "0.0.28"
