@@ -42,7 +42,8 @@ declare global {
     onLogin: any;
     persistStore?: Persistor;
     restart: any;
-    getSeedNodeList: () => Array<any> | undefined;
+    getSeedNodeList: () => Array<string> | undefined;
+    mmdbBuffer: Buffer;
     setPassword: any;
     storage: any;
     isOnline: boolean;

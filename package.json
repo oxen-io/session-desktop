@@ -17,7 +17,7 @@
     "util-worker": {
       "source": "ts/webworker/workers/util.worker.ts",
       "distDir": "./ts/webworker/workers/",
-      "optimize" : true,
+      "optimize": true,
       "sourceMap": false,
       "context": "web-worker"
     }
@@ -66,7 +66,6 @@
     "classnames": "2.2.5",
     "color": "^3.1.2",
     "config": "1.28.1",
-    "country-code-lookup": "^0.0.19",
     "curve25519-js": "^0.0.4",
     "dompurify": "^2.0.7",
     "electron-is-dev": "^1.1.0",
@@ -78,13 +77,13 @@
     "fs-extra": "9.0.0",
     "glob": "7.1.2",
     "image-type": "^4.1.0",
-    "ip2country": "1.0.1",
     "jquery": "3.3.1",
     "jsbn": "1.1.0",
     "libsodium-wrappers-sumo": "^0.7.9",
     "linkify-it": "3.0.2",
     "lodash": "4.17.11",
     "long": "^4.0.0",
+    "maxmind": "^4.3.6",
     "mic-recorder-to-mp3": "^2.2.2",
     "moment": "2.21.0",
     "mustache": "2.3.0",
@@ -347,6 +346,9 @@
       "!node_modules/better-sqlite3/src/*",
       "node_modules/better-sqlite3/build/Release/better_sqlite3.node",
       "!dev-app-update.yml"
+    ],
+    "extraFiles": [
+      "mmdb/GeoLite2-Country.mmdb"
     ]
   }
 }
