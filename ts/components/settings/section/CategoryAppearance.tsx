@@ -46,6 +46,7 @@ async function toggleStartInTray() {
 }
 
 const settingsMenuBar = 'hide-menu-bar';
+const settingsConfirmDeletions = 'confirm-deletions';
 const settingsSpellCheck = 'spell-check';
 const settingsLinkPreview = 'link-preview-setting';
 const settingsStartInTray = 'start-in-tray-setting';
@@ -60,6 +61,11 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
       window.getSettingValue(settingsMenuBar) === undefined
         ? true
         : window.getSettingValue(settingsMenuBar);
+
+    const isConfirmDeletionsActive =
+      window.getSettingValue(settingsConfirmDeletions) === undefined
+        ? true
+        : window.getSettingValue(settingsConfirmDeletions);
 
     const isSpellCheckActive =
       window.getSettingValue(settingsSpellCheck) === undefined
@@ -83,6 +89,15 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
           />
         )}
         <SessionToggleWithDescription
+          onClickToggle={() => {
+            window.toggleConfirmDeletions();
+            forceUpdate();
+          }}
+          title={window.i18n('confirmDeletionsTitle')}
+          description={window.i18n('confirmDeletionsDescription')}
+          active={isConfirmDeletionsActive}
+        />
+         <SessionToggleWithDescription
           onClickToggle={() => {
             window.toggleSpellCheck();
             forceUpdate();

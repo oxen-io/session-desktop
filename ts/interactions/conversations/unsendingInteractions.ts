@@ -338,25 +338,34 @@ export async function deleteMessagesByIdForEveryone(
 
   const messageCount = selectedMessages.length;
   const moreThanOne = messageCount > 1;
+  const doDeleteAction = async () => doDeleteSelectedMessages({
+    selectedMessages,
+    conversation,
+    deleteForEveryone: true
+  });
 
-  window.inboxStore?.dispatch(
-    updateConfirmModal({
-      title: window.i18n('deleteForEveryone'),
-      message: moreThanOne
-        ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
-        : window.i18n('deleteMessageQuestion'),
-      okText: window.i18n('deleteForEveryone'),
-      okTheme: SessionButtonColor.Danger,
-      onClickOk: async () => {
-        await doDeleteSelectedMessages({ selectedMessages, conversation, deleteForEveryone: true });
+  if (window.getSettingValue('confirm-deletions')) {
+    window.inboxStore?.dispatch(
+      updateConfirmModal({
+        title: window.i18n('deleteForEveryone'),
+        message: moreThanOne
+          ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
+          : window.i18n('deleteMessageQuestion'),
+        okText: window.i18n('deleteForEveryone'),
+        okTheme: SessionButtonColor.Danger,
+        onClickOk: async () => {
+	  await doDeleteAction();
 
-        // explicity close modal for this case.
-        window.inboxStore?.dispatch(updateConfirmModal(null));
-        return;
-      },
-      closeAfterInput: false,
-    })
-  );
+          // explicity close modal for this case.
+          window.inboxStore?.dispatch(updateConfirmModal(null));
+          return;
+        },
+        closeAfterInput: false,
+      })
+    );
+  } else {
+    await doDeleteAction();
+  }
 }
 
 export async function deleteMessagesById(messageIds: Array<string>, conversationId: string) {
@@ -367,26 +376,32 @@ export async function deleteMessagesById(messageIds: Array<string>, conversation
 
   const messageCount = selectedMessages.length;
   const moreThanOne = selectedMessages.length > 1;
+  const doDeleteAction = async () => doDeleteSelectedMessages({
+    selectedMessages,
+    conversation,
+    deleteForEveryone: false
+  });
 
-  window.inboxStore?.dispatch(
-    updateConfirmModal({
-      title: window.i18n('deleteJustForMe'),
-      message: moreThanOne
-        ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
-        : window.i18n('deleteMessageQuestion'),
-      okText: window.i18n('delete'),
-      okTheme: SessionButtonColor.Danger,
-      onClickOk: async () => {
-        await doDeleteSelectedMessages({
-          selectedMessages,
-          conversation,
-          deleteForEveryone: false,
-        });
-        window.inboxStore?.dispatch(updateConfirmModal(null));
-      },
-      closeAfterInput: false,
-    })
-  );
+  if (window.getSettingValue('confirm-deletions')) {
+    window.inboxStore?.dispatch(
+      updateConfirmModal({
+        title: window.i18n('deleteJustForMe'),
+        message: moreThanOne
+          ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
+          : window.i18n('deleteMessageQuestion'),
+        okText: window.i18n('delete'),
+        okTheme: SessionButtonColor.Danger,
+        onClickOk: async () => {
+          await doDeleteAction();
+
+          window.inboxStore?.dispatch(updateConfirmModal(null));
+        },
+        closeAfterInput: false,
+      })
+    );
+  } else {
+    await doDeleteAction();
+  }
 }
 
 /**

@@ -133,6 +133,11 @@ Storage.onready(async () => {
       window.setMenuBarVisibility(!value);
     },
 
+    getConfirmDeletions: () => Storage.get('confirm-deletions', true),
+    setConfirmDeletions: async (value: boolean) => {
+      await Storage.put('confirm-deletions', value);
+    },
+
     getSpellCheck: () => Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
       await Storage.put('spell-check', value);
@@ -289,6 +294,12 @@ async function start() {
     }
 
     window.Events.setHideMenuBar(!current);
+  };
+
+  window.toggleConfirmDeletions = () => {
+    const currentValue = window.getSettingValue('confirm-deletions');
+    const newValue = currentValue !== undefined ? !currentValue : false;
+    window.Events.setConfirmDeletions(newValue);
   };
 
   window.toggleSpellCheck = () => {
