@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { Picker } from 'emoji-mart';
 import { Constants } from '../../session';
 import { useSelector } from 'react-redux';
-import { StateType } from '../../state/reducer';
 import { getTheme } from '../../state/selectors/theme';
 
 type Props = {
@@ -13,7 +12,7 @@ type Props = {
 
 export const SessionEmojiPanel = (props: Props) => {
   const { onEmojiClicked, show } = props;
-  const darkMode = useSelector((state: StateType) => getTheme(state)) === 'dark';
+  const darkMode = useSelector(getTheme) === 'dark';
 
   return (
     <div className={classNames('session-emoji-panel', show && 'show')}>
