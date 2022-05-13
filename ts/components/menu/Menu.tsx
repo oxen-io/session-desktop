@@ -225,6 +225,10 @@ export const DeleteContactMenuItem = () => {
       dispatch(updateConfirmModal(null));
     };
 
+    const onClickOk = async () => {
+      await getConversationController().deleteContact(convoId);
+    };
+
     const showConfirmationModal = () => {
       dispatch(
         updateConfirmModal({
@@ -235,13 +239,17 @@ export const DeleteContactMenuItem = () => {
           onClickClose,
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {
-            await getConversationController().deleteContact(convoId);
+            await onClickOk();
           },
         })
       );
     };
 
-    return <Item onClick={showConfirmationModal}>{menuItemText}</Item>;
+    if (window.getSettingValue('confirm-deletions')) {
+      return <Item onClick={showConfirmationModal}>{menuItemText}</Item>;
+    }
+
+    return <Item onClick={onClickOk}>{menuItemText}</Item>;
   }
   return null;
 };
