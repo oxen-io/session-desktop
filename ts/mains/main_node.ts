@@ -82,6 +82,12 @@ import { installPermissionsHandler } from '../node/permissions'; // checked - on
 
 let appStartInitialSpellcheckSetting = true;
 
+const enableTestIntegrationWiderWindow = true;
+const isTestIntegration =
+  enableTestIntegrationWiderWindow &&
+  Boolean(
+    process.env.NODE_APP_INSTANCE && process.env.NODE_APP_INSTANCE.includes('test-integration')
+  );
 async function getSpellCheckSetting() {
   const json = sqlNode.getItemById('spell-check');
   // Default to `true` if setting doesn't exist yet
@@ -197,16 +203,18 @@ function captureClicks(window: BrowserWindow) {
   window.webContents.on('new-window', handleUrl);
 }
 
-const WINDOW_SIZE = Object.freeze({
-  defaultWidth: 880,
-  defaultHeight: 820,
-  minWidth: 880,
-  minHeight: 600,
-});
+function getDefaultWindowSize() {
+  return {
+    defaultWidth: isTestIntegration ? 1500 : 880,
+    defaultHeight: 820,
+    minWidth: 880,
+    minHeight: 600,
+  };
+}
 
 function getWindowSize() {
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
-  const { minWidth, minHeight, defaultWidth, defaultHeight } = WINDOW_SIZE;
+  const { minWidth, minHeight, defaultWidth, defaultHeight } = getDefaultWindowSize();
   // Ensure that the screen can fit within the default size
   const width = Math.min(defaultWidth, Math.max(minWidth, screenSize.width));
   const height = Math.min(defaultHeight, Math.max(minHeight, screenSize.height));
@@ -217,8 +225,8 @@ function getWindowSize() {
 function isVisible(window: { x: number; y: number; width: number }, bounds: any) {
   const boundsX = _.get(bounds, 'x') || 0;
   const boundsY = _.get(bounds, 'y') || 0;
-  const boundsWidth = _.get(bounds, 'width') || WINDOW_SIZE.defaultWidth;
-  const boundsHeight = _.get(bounds, 'height') || WINDOW_SIZE.defaultHeight;
+  const boundsWidth = _.get(bounds, 'width') || getDefaultWindowSize().defaultWidth;
+  const boundsHeight = _.get(bounds, 'height') || getDefaultWindowSize().defaultHeight;
   const BOUNDS_BUFFER = 100;
 
   // requiring BOUNDS_BUFFER pixels on the left or right side
@@ -256,6 +264,16 @@ async function createWindow() {
     x: (windowConfig as any).x,
     y: (windowConfig as any).y,
   };
+  const fromConfig = _.pick(picked, ['maximized', 'autoHideMenuBar', 'width', 'height', 'x', 'y']);
+
+  if (isTestIntegration) {
+    const screenWidth =
+      screen.getPrimaryDisplay().workAreaSize.width - getDefaultWindowSize().defaultWidth;
+    const screenHeight =
+      screen.getPrimaryDisplay().workAreaSize.height - getDefaultWindowSize().defaultHeight;
+    fromConfig.x = Math.floor(Math.random() * screenWidth);
+    fromConfig.y = Math.floor(Math.random() * screenHeight);
+  }
 
   const windowOptions = {
     show: true,
@@ -273,6 +291,7 @@ async function createWindow() {
       spellcheck: await getSpellCheckSetting(),
     },
     ...picked,
+    // don't setup icon, the executable one will be used by default
   };
 
   if (!_.isNumber(windowOptions.width) || windowOptions.width < minWidth) {
@@ -351,6 +370,7 @@ async function createWindow() {
       width: size[0],
       height: size[1],
       x: position[0],
+
       y: position[1],
       fullscreen: false as boolean | undefined,
     };
@@ -381,11 +401,22 @@ async function createWindow() {
   });
 
   await mainWindow.loadURL(prepareURL([getAppRootPath(), 'background.html']));
+  if (isTestIntegration) {
+    setTimeout(() => {
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.openDevTools({
+          mode: 'right',
+          activate: false,
+        });
+      }
+    }, 5000);
+  }
 
   if ((process.env.NODE_APP_INSTANCE || '').startsWith('devprod')) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools({
       mode: 'bottom',
+      activate: false,
     });
   }
 
@@ -606,8 +637,8 @@ async function showDebugLogWindow() {
   const theme = await getThemeFromMainWindow();
   const size = mainWindow.getSize();
   const options = {
-    width: Math.max(size[0] - 100, WINDOW_SIZE.minWidth),
-    height: Math.max(size[1] - 100, WINDOW_SIZE.minHeight),
+    width: Math.max(size[0] - 100, getDefaultWindowSize().minWidth),
+    height: Math.max(size[1] - 100, getDefaultWindowSize().minHeight),
     resizable: true,
     title: locale.messages.debugLog,
     autoHideMenuBar: true,
