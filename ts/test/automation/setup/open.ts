@@ -3,7 +3,7 @@ import { join } from 'path';
 import { getAppRootPath } from '../../../node/getRootPath';
 
 export const NODE_ENV = 'production';
-export const MULTI_PREFIX = 'test-integration';
+export const MULTI_PREFIX = 'test-integration-testnet-';
 
 export const openElectronAppOnly = async (multi: string) => {
   process.env.NODE_APP_INSTANCE = `${MULTI_PREFIX}-${multi}`;

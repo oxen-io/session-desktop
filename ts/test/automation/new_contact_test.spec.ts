@@ -26,7 +26,7 @@ test('Send message to new contact', async () => {
   // Navigate to contacts tab in User B's window
 
   await clickOnTestIdWithText(windowA, 'contact-section');
-  await windowA.waitForTimeout(1000);
+  await windowA.waitForTimeout(2000);
   expect(await windowB.innerText('.module-conversation__user__profile-name')).toBe(userA.userName);
   // Navigate to contacts tab in User A's window
   await clickOnTestIdWithText(windowA, 'contact-section');
