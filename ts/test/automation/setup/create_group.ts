@@ -74,5 +74,5 @@ export const createGroup = async (groupName: string) => {
   await waitForReadableMessageWithText(windowA, msgBToGroup);
   await waitForReadableMessageWithText(windowA, msgCToGroup);
 
-  return { userA, userB, windowA, windowB };
+  return { userA, userB, windowA, windowB, userC, windowC };
 };

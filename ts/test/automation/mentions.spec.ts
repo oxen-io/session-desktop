@@ -1,15 +1,7 @@
 import { _electron, Page, test } from '@playwright/test';
-import { openAppsNoNewUsers } from './setup/new_user';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { logIn } from './setup/log_in';
-import {
-  testContactFour,
-  testContactOne,
-  testContactThree,
-  testContactTwo,
-  testUser,
-} from './setup/test_user';
 import { clickOnTestIdWithText, typeIntoInput, waitForTestIdWithText } from './utils';
+import { createGroup } from './setup/create_group';
 
 test.beforeEach(cleanUpOtherTest);
 
@@ -17,15 +9,43 @@ let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
 test('Mentions', async () => {
-  const [window] = await openAppsNoNewUsers(1);
-  windows = [window];
-  await logIn(window, testUser.recoveryPhrase);
-  await clickOnTestIdWithText(window, 'module-conversation__user__profile-name', 'Test Group Name');
-  await typeIntoInput(window, 'message-input-text-area', '@');
+  const { userA, userB, userC, windowA, windowB, windowC } = await createGroup('Test Group Name');
+  windows = [windowA, windowB, windowC];
+
+  // in windowA we should be able to mentions userB and userC
+
+  await clickOnTestIdWithText(
+    windowA,
+    'module-conversation__user__profile-name',
+    'Test Group Name'
+  );
+  await typeIntoInput(windowA, 'message-input-text-area', '@');
   // does 'message-input-text-area' have aria-expanded: true when @ is typed into input
-  await waitForTestIdWithText(window, 'mentions-popup-row');
-  await waitForTestIdWithText(window, 'mentions-popup-row', testContactOne.userName);
-  await waitForTestIdWithText(window, 'mentions-popup-row', testContactTwo.userName);
-  await waitForTestIdWithText(window, 'mentions-popup-row', testContactThree.userName);
-  await waitForTestIdWithText(window, 'mentions-popup-row', testContactFour.userName);
+  await waitForTestIdWithText(windowA, 'mentions-popup-row');
+  await waitForTestIdWithText(windowA, 'mentions-popup-row', userB.userName);
+  await waitForTestIdWithText(windowA, 'mentions-popup-row', userC.userName);
+
+  // in windowB we should be able to mentions userA and userC
+  await clickOnTestIdWithText(
+    windowB,
+    'module-conversation__user__profile-name',
+    'Test Group Name'
+  );
+  await typeIntoInput(windowB, 'message-input-text-area', '@');
+  // does 'message-input-text-area' have aria-expanded: true when @ is typed into input
+  await waitForTestIdWithText(windowB, 'mentions-popup-row');
+  await waitForTestIdWithText(windowB, 'mentions-popup-row', userA.userName);
+  await waitForTestIdWithText(windowB, 'mentions-popup-row', userC.userName);
+
+  // in windowC we should be able to mentions userA and userB
+  await clickOnTestIdWithText(
+    windowC,
+    'module-conversation__user__profile-name',
+    'Test Group Name'
+  );
+  await typeIntoInput(windowC, 'message-input-text-area', '@');
+  // does 'message-input-text-area' have aria-expanded: true when @ is typed into input
+  await waitForTestIdWithText(windowC, 'mentions-popup-row');
+  await waitForTestIdWithText(windowC, 'mentions-popup-row', userA.userName);
+  await waitForTestIdWithText(windowC, 'mentions-popup-row', userB.userName);
 });
