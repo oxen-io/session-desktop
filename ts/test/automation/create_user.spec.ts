@@ -1,6 +1,6 @@
 import { _electron, Page, test } from '@playwright/test';
 import { newUser } from './setup/new_user';
-import { openApp } from './setup/open';
+import { openAppAndWait } from './setup/open';
 import { sleepFor } from '../../session/utils/Promise';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { clickOnMatchingText, clickOnTestIdWithText, waitForTestIdWithText } from './utils';
@@ -14,8 +14,8 @@ test.afterEach(async () => {
 });
 test('Create User', async () => {
   // Launch Electron app.
-  window = await openApp('1');
-  // Create User
+  window = await openAppAndWait('1');
+  // // Create User
   const userA = await newUser(window, 'userA');
   // Open profile tab
   await clickOnTestIdWithText(window, 'leftpane-primary-avatar');

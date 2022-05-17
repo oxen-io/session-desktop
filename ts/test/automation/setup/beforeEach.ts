@@ -1,7 +1,7 @@
 import { _electron, Page } from '@playwright/test';
 import { readdirSync, rmdirSync } from 'fs-extra';
 import { dirname, join } from 'path';
-import { MULTI_PREFIX, NODE_ENV } from './open';
+import { MULTI_PREFIX, NODE_ENV, openElectronAppOnly } from './open';
 
 const getDirectoriesOfSessionDataPath = (source: string) =>
   readdirSync(source, { withFileTypes: true })
@@ -10,9 +10,7 @@ const getDirectoriesOfSessionDataPath = (source: string) =>
     .filter(n => n.startsWith(`Session-${NODE_ENV}-${MULTI_PREFIX}`));
 
 export const cleanUpOtherTest = async () => {
-  process.env.NODE_ENV = NODE_ENV;
-  process.env.NODE_APP_INSTANCE = `Session-${MULTI_PREFIX}`;
-  const electronApp = await _electron.launch({ args: ['main.js'] });
+  const electronApp = await openElectronAppOnly('start');
   const appPath = await electronApp.evaluate(async ({ app }) => {
     return app.getPath('userData');
   });
@@ -28,7 +26,6 @@ export const cleanUpOtherTest = async () => {
   }
 
   const allAppDataPath = getDirectoriesOfSessionDataPath(parentFolderOfAllDataPath);
-
   allAppDataPath.map(folder => {
     if (!appPath) {
       throw new Error('parentFolderOfAllDataPath unset');

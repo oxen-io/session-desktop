@@ -1,7 +1,7 @@
 import { _electron, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { newUser } from './setup/new_user';
-import { openApp } from './setup/open';
+import { openAppAndWait } from './setup/open';
 import {
   clickOnMatchingText,
   clickOnTestIdWithText,
@@ -24,7 +24,7 @@ const newTestPassword = '789101112';
 test.describe('Password checks', () => {
   test('Set Password', async () => {
     // open Electron
-    window = await openApp('1');
+    window = await openAppAndWait('1');
     // Create user
     await newUser(window, 'userA');
     // Click on settings tab
@@ -80,7 +80,7 @@ test.describe('Password checks', () => {
   });
   test('Wrong password', async () => {
     // Check if incorrect password works
-    window = await openApp('1');
+    window = await openAppAndWait('1');
     // Create user
     await newUser(window, 'userA');
     // Click on settings tab

@@ -1,7 +1,7 @@
 import { _electron, Page } from '@playwright/test';
 import _ from 'lodash';
 import { clickOnMatchingText, clickOnTestIdWithText, typeIntoInput } from '../utils';
-import { openApp } from './open';
+import { openAppAndWait } from './open';
 const multisAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export type UserLoggedInType = {
@@ -30,7 +30,7 @@ export const newUser = async (window: Page, userName: string): Promise<UserLogge
 };
 
 const openAppAndNewUser = async (multi: string): Promise<UserLoggedInType & { window: Page }> => {
-  const window = await openApp(multi);
+  const window = await openAppAndWait(multi);
 
   const userName = `${multi}-user`;
   const loggedIn = await newUser(window, userName);
@@ -64,7 +64,7 @@ export async function openAppsNoNewUsers(windowToCreate: number) {
   const multisToUse = multisAvailable.slice(0, windowToCreate);
   return Promise.all(
     [...multisToUse].map(async m => {
-      return openApp(m);
+      return openAppAndWait(m);
     })
   );
 }

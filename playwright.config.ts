@@ -8,16 +8,10 @@ const config: PlaywrightTestConfig = {
   testDir: './ts/test/automation',
   testIgnore: '*.js',
   outputDir: './ts/test/automation/test-results',
-  // use: {
-  //   // screenshot: 'only-on-failure',
-  //   video: 'on',
-  //   trace: 'retain-on-failure',
-  // },
   retries: 0,
   repeatEach: 1,
   workers: 1,
   reportSlowTests: null,
-  // globalSetup: './ts/test/automation/before_all',
 };
 
 module.exports = config;

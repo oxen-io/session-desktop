@@ -11,7 +11,7 @@ import {
   systemPreferences,
 } from 'electron';
 
-import path from 'path';
+import path, { join } from 'path';
 import url from 'url';
 import os from 'os';
 import fs from 'fs';
@@ -169,7 +169,7 @@ function assertLogger(): Logger {
 
 function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
   const urlObject: url.UrlObject = {
-    pathname: path.join.apply(null, pathSegments),
+    pathname: join(...pathSegments),
     protocol: 'file:',
     slashes: true,
     query: {
@@ -264,15 +264,15 @@ async function createWindow() {
     x: (windowConfig as any).x,
     y: (windowConfig as any).y,
   };
-  const fromConfig = _.pick(picked, ['maximized', 'autoHideMenuBar', 'width', 'height', 'x', 'y']);
 
   if (isTestIntegration) {
     const screenWidth =
       screen.getPrimaryDisplay().workAreaSize.width - getDefaultWindowSize().defaultWidth;
     const screenHeight =
       screen.getPrimaryDisplay().workAreaSize.height - getDefaultWindowSize().defaultHeight;
-    fromConfig.x = Math.floor(Math.random() * screenWidth);
-    fromConfig.y = Math.floor(Math.random() * screenHeight);
+    // tslint:disable: insecure-random
+    picked.x = Math.floor(Math.random() * screenWidth);
+    picked.y = Math.floor(Math.random() * screenHeight);
   }
 
   const windowOptions = {
@@ -400,7 +400,9 @@ async function createWindow() {
     }
   });
 
-  await mainWindow.loadURL(prepareURL([getAppRootPath(), 'background.html']));
+  const urlToLoad = prepareURL([getAppRootPath(), 'background.html']);
+
+  await mainWindow.loadURL(urlToLoad);
   if (isTestIntegration) {
     setTimeout(() => {
       if (mainWindow && mainWindow.webContents) {
@@ -676,7 +678,7 @@ async function showDebugLogWindow() {
 let ready = false;
 app.on('ready', async () => {
   const userDataPath = await getRealPath(app.getPath('userData'));
-  const installPath = await getRealPath(app.getAppPath());
+  const installPath = await getRealPath(join(app.getAppPath(), '..', '..'));
 
   installFileHandler({
     protocol: electronProtocol,
