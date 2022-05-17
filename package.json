@@ -45,6 +45,7 @@
     "transpile": "yarn tsc && yarn parcel-util-worker",
     "transpile:watch": "yarn grunt --force; tsc -w",
     "integration-test": "npx playwright test",
+    "integration-test-snapshots": "npx playwright test -g 'profile picture' --update-snapshots",
     "clean-transpile": "rimraf 'ts/**/*.js' 'ts/*.js' 'ts/*.js.map' 'ts/**/*.js.map' && rimraf tsconfig.tsbuildinfo;",
     "ready": "yarn grunt && yarn lint-full && yarn test",
     "sedtoAppImage": "sed -i 's/\"target\": \\[\"deb\", \"rpm\", \"freebsd\"\\]/\"target\": \"AppImage\"/g' package.json",
