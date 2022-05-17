@@ -2,7 +2,6 @@ import { _electron, Page, test } from '@playwright/test';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
 import { openAppsNoNewUsers } from './setup/new_user';
 import { sendNewMessage } from './send_message';
-import { logIn } from './setup/log_in';
 import {
   testContactFour,
   testContactOne,
@@ -10,6 +9,9 @@ import {
   testContactTwo,
   testUser,
 } from './setup/test_user';
+import { recoverFromSeed } from './setup/recovery_using_seed';
+import { clickOnMatchingText } from './utils';
+import { messageSent } from './message';
 
 test.beforeEach(cleanUpOtherTest);
 
@@ -20,11 +22,11 @@ test('Group upkeep', async () => {
   const [windowA, windowB, windowC, windowD, windowE] = await openAppsNoNewUsers(5);
   windows = [windowA, windowB, windowC, windowD, windowE];
   await Promise.all([
-    logIn(windowA, testUser.recoveryPhrase),
-    logIn(windowB, testContactOne.recoveryPhrase),
-    logIn(windowC, testContactTwo.recoveryPhrase),
-    logIn(windowD, testContactThree.recoveryPhrase),
-    logIn(windowE, testContactFour.recoveryPhrase),
+    recoverFromSeed(windowA, testUser.userName, testUser.recoveryPhrase),
+    recoverFromSeed(windowB, testContactOne.userName, testContactOne.recoveryPhrase),
+    recoverFromSeed(windowC, testContactTwo.userName, testContactTwo.recoveryPhrase),
+    recoverFromSeed(windowD, testContactThree.userName, testContactThree.recoveryPhrase),
+    recoverFromSeed(windowE, testContactFour.userName, testContactFour.recoveryPhrase),
   ]);
   // Send message from test users to all of it's contacts to maintain contact status
 
@@ -60,4 +62,6 @@ test('Group upkeep', async () => {
   );
   // Send message from Gopher to user A
   await sendNewMessage(windowE, testUser.sessionid, `Gopher (TC4) -> Test user : ${Date.now()}`);
+  await clickOnMatchingText(windowA, 'Test Group Name');
+  await messageSent(windowA, 'Group upkeep message');
 });

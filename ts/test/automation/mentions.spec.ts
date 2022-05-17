@@ -1,7 +1,6 @@
 import { _electron, Page, test } from '@playwright/test';
 import { openAppsNoNewUsers } from './setup/new_user';
 import { cleanUpOtherTest, forceCloseAllWindows } from './setup/beforeEach';
-import { logIn } from './setup/log_in';
 import {
   testContactFour,
   testContactOne,
@@ -10,6 +9,7 @@ import {
   testUser,
 } from './setup/test_user';
 import { clickOnTestIdWithText, typeIntoInput, waitForTestIdWithText } from './utils';
+import { recoverFromSeed } from './setup/recovery_using_seed';
 
 test.beforeEach(cleanUpOtherTest);
 
@@ -19,7 +19,7 @@ test.afterEach(() => forceCloseAllWindows(windows));
 test('Mentions', async () => {
   const [window] = await openAppsNoNewUsers(1);
   windows = [window];
-  await logIn(window, testUser.recoveryPhrase);
+  await recoverFromSeed(window, testUser.userName, testUser.recoveryPhrase);
   await clickOnTestIdWithText(window, 'module-conversation__user__profile-name', 'Test Group Name');
   await typeIntoInput(window, 'message-input-text-area', '@');
   // does 'message-input-text-area' have aria-expanded: true when @ is typed into input
