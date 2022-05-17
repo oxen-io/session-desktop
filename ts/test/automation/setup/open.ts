@@ -9,8 +9,8 @@ export const openElectronAppOnly = async (multi: string) => {
   process.env.NODE_APP_INSTANCE = `${MULTI_PREFIX}-${multi}`;
   process.env.NODE_ENV = NODE_ENV;
 
-  console.warn(' NODE_ENV', process.env.NODE_ENV);
-  console.warn(' NODE_APP_INSTANCE', process.env.NODE_APP_INSTANCE);
+  // console.warn(' NODE_ENV', process.env.NODE_ENV);
+  // console.warn(' NODE_APP_INSTANCE', process.env.NODE_APP_INSTANCE);
   const electronApp = await _electron.launch({
     args: [join(getAppRootPath(), 'ts', 'mains', 'main_node.js')],
   });

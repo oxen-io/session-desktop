@@ -16,7 +16,7 @@ test.beforeEach(cleanUpOtherTest);
 let windows: Array<Page> = [];
 test.afterEach(() => forceCloseAllWindows(windows));
 
-test('Group upkeep', async () => {
+test.skip('Group upkeep', async () => {
   const [windowA, windowB, windowC, windowD, windowE] = await openAppsNoNewUsers(5);
   windows = [windowA, windowB, windowC, windowD, windowE];
   await Promise.all([
