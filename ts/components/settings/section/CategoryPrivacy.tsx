@@ -9,6 +9,7 @@ import { toggleMessageRequests } from '../../../state/ducks/userConfig';
 import { getHideMessageRequestBanner } from '../../../state/selectors/userConfig';
 import { SessionButtonColor } from '../../basic/SessionButton';
 import { PasswordAction } from '../../dialog/SessionPasswordDialog';
+import { FetchDaysSessionSlider } from '../FetchDaysSessionSlider';
 
 import { SessionSettingButtonItem, SessionToggleWithDescription } from '../SessionSettingListItem';
 
@@ -132,6 +133,7 @@ export const SettingsCategoryPrivacy = (props: {
           description={window.i18n('hideRequestBannerDescription')}
           active={useSelector(getHideMessageRequestBanner)}
         />
+	<FetchDaysSessionSlider />
         <SessionToggleWithDescription
           onClickToggle={async () => {
             await toggleOpengroupPruning();

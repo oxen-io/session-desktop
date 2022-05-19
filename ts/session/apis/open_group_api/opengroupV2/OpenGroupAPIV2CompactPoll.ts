@@ -199,12 +199,13 @@ const getCompactPollRequest = async (
           room_id: roomId,
           auth_token: token || '',
         };
+	const daysToFetch = window.getSettingValue('fetch-days-setting');
         roomRequestContent.from_deletion_server_id = lastMessageDeletedServerID;
-        if (Date.now() - (lastFetchTimestamp || 0) <= DURATION.DAYS * 14) {
+        if (Date.now() - (lastFetchTimestamp || 0) <= DURATION.DAYS * daysToFetch) {
           roomRequestContent.from_message_server_id = lastMessageFetchedServerID;
         } else {
           window?.log?.info(
-            `We've been away for a long time... Only fetching last messages of room '${roomId}'`
+            `We've been away for a long time... Only fetching messages from last ${daysToFetch} days of room '${roomId}'`
           );
         }
 
