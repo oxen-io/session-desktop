@@ -1319,7 +1319,7 @@ export function sliceQuoteText(quotedText: string | undefined | null) {
   if (!quotedText || isEmpty(quotedText)) {
     return '';
   }
-  return quotedText.slice(0, 60);
+  return quotedText.slice(0, 180);
 }
 
 const throttledAllMessagesDispatch = _.debounce(
