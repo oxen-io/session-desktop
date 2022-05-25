@@ -9,7 +9,11 @@ export const MessageClock = (props: Props): JSX.Element => {
   const { time } = props;
 
   moment.locale('en-gb');
-  return <div style={{ fontSize: '0.8em', float: 'right' }}>
+  return <div style={{ paddingRight: '8px',
+		       paddingLeft: '8px',
+		       paddingBottom: '2px',
+		       fontSize: '0.8em',
+		       float: 'right' }}>
 	   {moment(time).format('LT')}
 	 </div>;
 };
