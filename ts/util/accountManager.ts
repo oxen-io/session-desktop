@@ -168,6 +168,9 @@ async function createAccount(identityKeyPair: any) {
   await Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
+  // Enable discarding of message requests by default.
+  await Storage.put(SettingsKey.settingsDiscardMessageRequests, true);
+
   await setLocalPubKey(pubKeyString);
 }
 

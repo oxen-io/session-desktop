@@ -133,6 +133,16 @@ export const SettingsCategoryPrivacy = (props: {
           active={useSelector(getHideMessageRequestBanner)}
         />
         <SessionToggleWithDescription
+          onClickToggle={() => {
+            const old = Boolean(window.getSettingValue(SettingsKey.settingsDiscardMessageRequests));
+	    window.setSettingValue(SettingsKey.settingsDiscardMessageRequests, !old);
+	    forceUpdate();
+          }}
+          title={window.i18n('discardRequestsTitle')}
+          description={window.i18n('discardRequestsDescription')}
+          active={Boolean(window.getSettingValue(SettingsKey.settingsDiscardMessageRequests))}
+        />
+        <SessionToggleWithDescription
           onClickToggle={async () => {
             await toggleOpengroupPruning();
             forceUpdate();

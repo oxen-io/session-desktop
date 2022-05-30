@@ -31,7 +31,9 @@ export const OverlayMessageRequest = () => {
   const messageRequests = useSelector(getConversationRequests);
   const selectedConversation = useSelector(getSelectedConversation);
 
-  const buttonText = window.i18n('clearAll');
+  const buttonText = window.i18n(window.getSettingValue('discard-requests')
+    ? 'discardAll'
+    : 'clearAll');
 
   /**
    * Blocks all message request conversations and synchronizes across linked devices
@@ -39,8 +41,12 @@ export const OverlayMessageRequest = () => {
    */
   function handleClearAllRequestsClick(convoRequests: Array<ReduxConversationType>) {
     const { i18n } = window;
-    const title = i18n('clearAllConfirmationTitle');
-    const message = i18n('clearAllConfirmationBody');
+    const title = i18n(window.getSettingValue('discard-requests')
+      ? 'discardAllConfirmationTitle'
+      : 'clearAllConfirmationTitle');
+    const message = i18n(window.getSettingValue('discard-requests')
+      ? 'discardAllConfirmationBody'
+      : 'clearAllConfirmationBody');
     const onClose = dispatch(updateConfirmModal(null));
 
     dispatch(
@@ -49,9 +55,9 @@ export const OverlayMessageRequest = () => {
         message,
         onClose,
         onClickOk: async () => {
-          window?.log?.info('Blocking all conversations');
+          window?.log?.info('Blocking/discarding all conversations');
           if (!convoRequests) {
-            window?.log?.info('No conversation requests to block.');
+            window?.log?.info('No conversation requests to block/discard.');
             return;
           }
 
@@ -62,8 +68,12 @@ export const OverlayMessageRequest = () => {
               const { id } = convo;
               const convoModel = convoController.get(id);
               if (!convoModel.isBlocked()) {
-                await BlockedNumberController.block(id);
-                await convoModel.commit();
+		if (window.getSettingValue('discard-requests')) {
+		  await getConversationController().deleteContact(id);
+		} else {
+		  await BlockedNumberController.block(id);
+		  await convoModel.commit();
+		}
               }
               await convoModel.setIsApproved(false);
 

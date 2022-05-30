@@ -160,7 +160,9 @@ export const declineConversationWithConfirm = (convoId: string, syncToDevices: b
       message: window.i18n('declineRequestMessage'),
       onClickOk: async () => {
         await declineConversationWithoutConfirm(convoId, syncToDevices);
-        await blockConvoById(convoId);
+	await window.getSettingValue('discard-requests')
+	  ? getConversationController().deleteContact(convoId)
+	  : blockConvoById(convoId);
         await forceSyncConfigurationNowIfNeeded();
         window?.inboxStore?.dispatch(resetConversationExternal());
       },
