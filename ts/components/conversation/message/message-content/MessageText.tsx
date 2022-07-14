@@ -48,7 +48,7 @@ export const MessageText = (props: Props) => {
     >
       {isDeleted && <SessionIcon iconType="delete" iconSize="small" />}
       <MessageBody
-        text={contents || ''}
+        text={contents}
         disableLinks={multiSelectMode}
         disableJumbomoji={false}
         isGroup={conversationType === 'group'}

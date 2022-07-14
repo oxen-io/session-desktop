@@ -133,6 +133,11 @@ Storage.onready(async () => {
       window.setMenuBarVisibility(!value);
     },
 
+    getPerMessageTimestamps: () => Storage.get('per-message-timestamps', true),
+    setPerMessageTimestamps: async (value: boolean) => {
+      await Storage.put('per-message-timestamps', value);
+    },
+
     getSpellCheck: () => Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
       await Storage.put('spell-check', value);
@@ -289,6 +294,12 @@ async function start() {
     }
 
     window.Events.setHideMenuBar(!current);
+  };
+
+  window.togglePerMessageTimestamps= () => {
+    const currentValue = window.getSettingValue('per-message-timestamps');
+    const newValue = currentValue !== undefined ? !currentValue : true;
+    window.Events.setPerMessageTimestamps(newValue);
   };
 
   window.toggleSpellCheck = () => {

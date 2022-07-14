@@ -6,6 +6,13 @@
   background: var(--color-cell-background);
 }
 
+.module-message-clock--incoming {
+  color: var(--color-message-timestamp-text);
+}
+.module-message-clock--outgoing {
+  color: var(--color-message-timestamp-text);
+}
+
 .module-message {
   position: relative;
   display: inline-flex;

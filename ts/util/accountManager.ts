@@ -168,6 +168,9 @@ async function createAccount(identityKeyPair: any) {
   await Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
+  // Enable per-message timestamps by default.
+  await Storage.put(SettingsKey.settingsPerMessageTimestamps, true);
+
   await setLocalPubKey(pubKeyString);
 }
 
