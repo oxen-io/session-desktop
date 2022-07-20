@@ -24,12 +24,10 @@ const QuotedMessageCompositionReply = styled.div`
 `;
 
 const Subtle = styled.div`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-all;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
   color: var(--color-text);
 `;
 
@@ -42,7 +40,7 @@ export const SessionQuotedMessageComposition = () => {
 
   const dispatch = useDispatch();
 
-  const { text: body, attachments } = quotedMessageProps || {};
+  const { text, attachments } = quotedMessageProps || {};
   const hasAttachments = attachments && attachments.length > 0;
 
   let hasImageAttachment = false;
@@ -79,7 +77,7 @@ export const SessionQuotedMessageComposition = () => {
       </Flex>
       <QuotedMessageCompositionReply>
         <Flex container={true} justifyContent="space-between" margin={'var(--margins-xs)'}>
-          <Subtle>{(hasAttachments && window.i18n('mediaMessage')) || body}</Subtle>
+          <Subtle>{(hasAttachments && window.i18n('mediaMessage')) || text}</Subtle>
 
           {hasImageAttachment && (
             <Image
