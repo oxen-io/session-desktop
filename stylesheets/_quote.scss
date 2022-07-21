@@ -15,30 +15,6 @@
   }
 }
 
-// This is related to the quote logic inside messages
-.module-quote {
-  &--outgoing {
-    .module-quote__primary__author {
-      color: var(--color-sent-message-text);
-      font-weight: bold;
-
-      .module-contact-name {
-        font-weight: bold;
-      }
-    }
-  }
-
-  &--incoming {
-    .module-quote__primary__author {
-      color: var(--color-received-message-text);
-      font-weight: bold;
-      .module-contact-name {
-        font-weight: bold;
-      }
-    }
-  }
-}
-
 .module-quote__icon-container__icon--file {
   @include color-svg('../images/file.svg', $color-loki-green);
 }
@@ -87,18 +63,6 @@
   padding-inline-end: 8px;
 
   max-width: 100%;
-}
-
-.module-quote__primary__author {
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 300;
-  color: $color-gray-90;
-  margin-bottom: 5px;
-
-  overflow-x: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .module-quote__primary__profile-name {

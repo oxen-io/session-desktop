@@ -5,7 +5,7 @@ import { PubKey } from '../session/types';
 import _ from 'lodash';
 import { getConversationController } from '../session/conversations';
 import { ConversationModel, ConversationTypeEnum } from '../models/conversation';
-import { MessageModel, sliceQuoteText } from '../models/message';
+import { MessageModel } from '../models/message';
 import { getMessageCountByType, getMessagesBySentAt } from '../../ts/data/data';
 
 import { SignalService } from '../protobuf';

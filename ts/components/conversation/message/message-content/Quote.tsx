@@ -19,6 +19,23 @@ import { MessageBody } from './MessageBody';
 import { useIsPrivate } from '../../../../hooks/useParamSelector';
 import styled from 'styled-components';
 
+const StyledQuoteAuthor = styled.div<{ isIncoming: boolean }>`
+  color: ${props =>
+    props.isIncoming ? `var(--color-received-message-text)` : `var(--color-sent-message-text)`};
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 18px;
+  margin-bottom: 5px;
+
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  .module-contact-name {
+    font-weight: bold;
+  }
+`;
+
 const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -295,12 +312,7 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
   const { authorProfileName, author, authorName, isFromMe, isIncoming } = props;
 
   return (
-    <div
-      className={classNames(
-        'module-quote__primary__author',
-        isIncoming ? 'module-quote__primary__author--incoming' : null
-      )}
-    >
+    <StyledQuoteAuthor isIncoming={isIncoming}>
       {isFromMe ? (
         window.i18n('you')
       ) : (
@@ -312,7 +324,7 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
           shouldShowPubkey={Boolean(props.showPubkeyForAuthor)}
         />
       )}
-    </div>
+    </StyledQuoteAuthor>
   );
 };
 
