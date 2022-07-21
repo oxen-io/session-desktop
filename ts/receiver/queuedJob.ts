@@ -66,7 +66,7 @@ async function copyFromQuotedMessage(
   window?.log?.info(`Found quoted message id: ${id}`);
   quoteLocal.referencedMessageNotFound = false;
 
-  quoteLocal.text = sliceQuoteText(found.get('body') || '');
+  quoteLocal.text = found.get('body') || '';
 
   // no attachments, just save the quote with the body
   if (

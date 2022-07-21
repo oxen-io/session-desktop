@@ -463,7 +463,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       convoId: this.get('conversationId'),
     };
     if (body) {
-      props.text = this.createNonBreakingLastSeparator(body);
+      props.text = body;
     }
     if (this.get('isDeleted')) {
       props.isDeleted = this.get('isDeleted');
@@ -519,15 +519,16 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     return props;
   }
 
-  public createNonBreakingLastSeparator(text: string) {
-    const nbsp = '\xa0';
-    const regex = /(\S)( +)(\S+\s*)$/;
-    return text.replace(regex, (_match, start, spaces, end) => {
-      const newSpaces =
-        end.length < 12 ? _.reduce(spaces, accumulator => accumulator + nbsp, '') : spaces;
-      return `${start}${newSpaces}${end}`;
-    });
-  }
+  // TODO No idea what this is
+  // public createNonBreakingLastSeparator(text: string) {
+  //   const nbsp = '\xa0';
+  //   const regex = /(\S)( +)(\S+\s*)$/;
+  //   return text.replace(regex, (_match, start, spaces, end) => {
+  //     const newSpaces =
+  //       end.length < 12 ? _.reduce(spaces, accumulator => accumulator + nbsp, '') : spaces;
+  //     return `${start}${newSpaces}${end}`;
+  //   });
+  // }
 
   public processQuoteAttachment(attachment: any) {
     const { thumbnail } = attachment;
@@ -610,8 +611,9 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (!referencedMessageNotFound) {
       if (quote.text) {
         // do not show text of not found messages.
+        // TODO show original message not found text
         // if the message was deleted better not show it's text content in the message
-        quoteProps.text = this.createNonBreakingLastSeparator(sliceQuoteText(quote.text));
+        quoteProps.text = quote.text;
       }
 
       const quoteAttachment = firstAttachment

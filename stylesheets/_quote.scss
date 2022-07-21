@@ -26,13 +26,6 @@
         font-weight: bold;
       }
     }
-    .module-quote__primary__text {
-      color: var(--color-sent-message-text);
-
-      a {
-        color: var(--color-sent-message-text);
-      }
-    }
   }
 
   &--incoming {
@@ -41,13 +34,6 @@
       font-weight: bold;
       .module-contact-name {
         font-weight: bold;
-      }
-    }
-    .module-quote__primary__text {
-      color: var(--color-received-message-text);
-
-      a {
-        color: var(--color-received-message-text);
       }
     }
   }
@@ -117,22 +103,6 @@
 
 .module-quote__primary__profile-name {
   font-style: italic;
-}
-
-.module-quote__primary__text {
-  font-size: 14px;
-  line-height: 18px;
-  text-align: start;
-
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-wrap;
-
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
 }
 
 .module-quote__primary__type-label {

@@ -17,6 +17,24 @@ import {
 import { ContactName } from '../../ContactName';
 import { MessageBody } from './MessageBody';
 import { useIsPrivate } from '../../../../hooks/useParamSelector';
+import styled from 'styled-components';
+
+const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+
+  font-size: 14px;
+  line-height: 18px;
+  color: ${props =>
+    props.isIncoming ? 'var(--color-received-message-text)' : 'var(--color-sent-message-text)'};
+
+  a {
+    color: ${props =>
+      props.isIncoming ? 'var(--color-received-message-text)' : 'var(--color-sent-message-text)'};
+  }
+`;
 
 export type QuotePropsWithoutListener = {
   attachment?: QuotedAttachmentType;
@@ -89,6 +107,7 @@ function getTypeLabel({
 
   return;
 }
+
 export const QuoteIcon = (props: any) => {
   const { icon } = props;
 
@@ -234,15 +253,9 @@ export const QuoteText = (
 
   if (text) {
     return (
-      <div
-        dir="auto"
-        className={classNames(
-          'module-quote__primary__text',
-          isIncoming ? 'module-quote__primary__text--incoming' : null
-        )}
-      >
+      <StyledQuoteText dir="auto" isIncoming={isIncoming}>
         <MessageBody text={text} disableLinks={true} disableJumbomoji={true} isGroup={isGroup} />
-      </div>
+      </StyledQuoteText>
     );
   }
 

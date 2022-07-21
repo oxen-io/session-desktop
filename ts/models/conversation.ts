@@ -651,6 +651,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       if (this.isPublic() && !this.isOpenGroupV2()) {
         throw new Error('Only opengroupv2 are supported now');
       }
+
       // an OpenGroupV2 message is just a visible message
       const chatMessageParams: VisibleMessageParams = {
         body: uploads.body,
