@@ -1,15 +1,5 @@
 // This is related to all quote logics
 .module-quote {
-  position: relative;
-
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  overflow: hidden;
-  border-left-width: 4px;
-  border-left-style: solid;
-
   &__primary__type-label {
     border-color: var(--color-text);
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import classNames from 'classnames';
 
 import * as MIME from '../../../../../ts/types/MIME';
@@ -53,6 +53,33 @@ const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
   }
 `;
 
+const StyledQuote = styled.div<{
+  isIncoming: boolean;
+  onClick: ((e: MouseEvent<HTMLDivElement>) => void) | undefined;
+  referencedMessageNotFound: boolean;
+}>`
+  position: relative;
+
+  cursor: ${props => (props.onClick ? 'pointer' : 'auto')};
+  display: flex;
+  flex-direction: row;
+  align-items: ${props => (props.referencedMessageNotFound ? 'center' : 'stretch')};
+  overflow: hidden;
+  border-left: 4px solid ${props => (props.isIncoming ? 'var(--color-accent)' : 'black')};
+
+  /* TODO not sure if this actually happens maybe we can remove it?  */
+  /* Test by forcing the value to be true */
+  ${props =>
+    props.referencedMessageNotFound &&
+    `
+    height: 26px;
+    background-color: rgba(white, 0.85);
+    padding-inline-start: 8px;
+    padding-inline-end: 8px;
+    margin-inline-end: 8px;
+  `}
+`;
+
 export type QuotePropsWithoutListener = {
   attachment?: QuotedAttachmentType;
   sender: string;
@@ -65,7 +92,7 @@ export type QuotePropsWithoutListener = {
 };
 
 export type QuotePropsWithListener = QuotePropsWithoutListener & {
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (e: MouseEvent<HTMLDivElement>) => void;
 };
 
 export interface QuotedAttachmentType {
@@ -378,15 +405,10 @@ export const Quote = (props: QuotePropsWithListener) => {
 
   return (
     <div className={classNames('module-quote-container')}>
-      <div
+      <StyledQuote
+        isIncoming={isIncoming}
         onClick={onClick}
-        role="button"
-        className={classNames(
-          'module-quote',
-          isIncoming ? 'module-quote--incoming' : 'module-quote--outgoing',
-          !onClick ? 'module-quote--no-click' : null,
-          referencedMessageNotFound ? 'module-quote--with-reference-warning' : null
-        )}
+        referencedMessageNotFound={referencedMessageNotFound}
       >
         <div className="module-quote__primary">
           <QuoteAuthor
@@ -405,7 +427,7 @@ export const Quote = (props: QuotePropsWithListener) => {
           handleImageErrorBound={handleImageErrorBound}
           imageBroken={imageBroken}
         />
-      </div>
+      </StyledQuote>
       <QuoteReferenceWarning
         isIncoming={isIncoming}
         referencedMessageNotFound={referencedMessageNotFound}
