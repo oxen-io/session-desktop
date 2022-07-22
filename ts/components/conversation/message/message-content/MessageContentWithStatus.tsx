@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { replyToMessage } from '../../../../interactions/conversationInteractions';
 import { MessageRenderingProps } from '../../../../models/messageType';
@@ -67,16 +67,33 @@ export const MessageContentWithStatuses = (props: Props) => {
   if (!contentProps) {
     return null;
   }
-  const { direction, isDeleted, hasAttachments, isTrustedForAttachmentDownload } = contentProps;
+  const { direction, isDeleted } = contentProps;
   const isIncoming = direction === 'incoming';
+
+  const messageModuleRef = useRef<HTMLDivElement>(null);
+  const [maximizeContent, setMaximizeContent] = useState(false);
+
+  useEffect(() => {
+    if (messageModuleRef.current !== null) {
+      const inViewElement = messageModuleRef.current.querySelector(`#inview-content-${messageId}`);
+      if (inViewElement) {
+        const messageTextWidth =
+          inViewElement.querySelector(`#message-text-${messageId}`)?.clientWidth || 0;
+        const messageQuoteWidth =
+          inViewElement.querySelector(`#message-quote-${messageId}`)?.clientWidth || 0;
+        setMaximizeContent(messageTextWidth >= messageQuoteWidth);
+      }
+    }
+  }, []);
 
   return (
     <div
+      ref={messageModuleRef}
       className={classNames('module-message', `module-message--${direction}`)}
       role="button"
       onClick={onClickOnMessageOuterContainer}
       onDoubleClickCapture={onDoubleClickReplyToMessage}
-      style={{ width: hasAttachments && isTrustedForAttachmentDownload ? 'min-content' : 'auto' }}
+      style={{ width: maximizeContent ? 'max-content' : 'min-content' }}
       data-testid={dataTestId}
     >
       <MessageStatus

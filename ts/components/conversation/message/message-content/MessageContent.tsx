@@ -215,7 +215,7 @@ export const MessageContent = (props: Props) => {
         <IsMessageVisibleContext.Provider value={isMessageVisible}>
           {!isDeleted && (
             <>
-              <MessageQuote messageId={props.messageId} />
+              <MessageQuote id={`message-quote-${props.messageId}`} messageId={props.messageId} />
               <MessageAttachment
                 messageId={props.messageId}
                 imageBroken={imageBroken}
@@ -228,7 +228,13 @@ export const MessageContent = (props: Props) => {
               {!isDeleted && (
                 <MessagePreview messageId={props.messageId} handleImageError={handleImageError} />
               )}
-              <Flex padding="7px" container={true} flexDirection="column">
+              <Flex
+                id={`message-text-${props.messageId}`}
+                padding="7px"
+                container={true}
+                flexDirection="column"
+                width="fit-content"
+              >
                 <MessageText messageId={props.messageId} />
               </Flex>
             </>

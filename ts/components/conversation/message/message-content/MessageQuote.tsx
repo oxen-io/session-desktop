@@ -17,6 +17,7 @@ import { MessageModel } from '../../../../models/message';
 // tslint:disable: use-simple-attributes
 
 type Props = {
+  id: string;
   messageId: string;
 };
 
@@ -89,6 +90,7 @@ export const MessageQuote = (props: Props) => {
 
   return (
     <Quote
+      id={props.id}
       onClick={onQuoteClick}
       text={quote.text || ''}
       attachment={quote.attachment}

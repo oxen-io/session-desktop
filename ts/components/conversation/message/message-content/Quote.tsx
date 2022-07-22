@@ -92,6 +92,7 @@ export type QuotePropsWithoutListener = {
 };
 
 export type QuotePropsWithListener = QuotePropsWithoutListener & {
+  id: string;
   onClick?: (e: MouseEvent<HTMLDivElement>) => void;
 };
 
@@ -404,7 +405,7 @@ export const Quote = (props: QuotePropsWithListener) => {
   const { isIncoming, referencedMessageNotFound, attachment, text, onClick } = props;
 
   return (
-    <div className={classNames('module-quote-container')}>
+    <div id={props.id} className={classNames('module-quote-container')}>
       <StyledQuote
         isIncoming={isIncoming}
         onClick={onClick}

@@ -315,10 +315,12 @@ textarea {
 }
 
 .module-message--incoming {
+  justify-content: flex-start;
   margin-inline-start: 0;
   margin-inline-end: auto;
 }
 .module-message--outgoing {
+  justify-content: flex-end;
   margin-inline-end: 0;
   margin-inline-start: auto;
 }
