@@ -50,19 +50,19 @@ describe('getEmojiSizeClass', () => {
       it('one emoji after a normal sentence', () => {
         expect(
           getEmojiSizeClass('The SMILING FACE WITH HORNS character (😈) is assigned')
-        ).to.be.equal('small', 'should have return small');
+        ).to.be.equal('default', 'should have return default');
       });
 
       it('multiple emoji after a normal sentence', () => {
         expect(
           getEmojiSizeClass('The SMILING FACE WITH HORNS character (😈) is assigned 😈 😈')
-        ).to.be.equal('small', 'should have return small');
+        ).to.be.equal('default', 'should have return default');
       });
 
       it('multiple emoji before a normal sentence', () => {
         expect(
           getEmojiSizeClass('😈 😈The SMILING FACE WITH HORNS character () is assigned')
-        ).to.be.equal('small', 'should have return small');
+        ).to.be.equal('default', 'should have return default');
       });
 
       it('one emoji with just a space after', () => {

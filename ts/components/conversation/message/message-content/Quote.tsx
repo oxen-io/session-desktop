@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import classNames from 'classnames';
 
 import * as MIME from '../../../../../ts/types/MIME';
@@ -21,7 +21,7 @@ import styled from 'styled-components';
 
 const StyledQuoteAuthor = styled.div<{ isIncoming: boolean }>`
   color: ${props =>
-    props.isIncoming ? `var(--color-received-message-text)` : `var(--color-sent-message-text)`};
+    props.isIncoming ? 'var(--color-received-message-text)' : 'var(--color-sent-message-text)'};
   font-size: 15px;
   font-weight: bold;
   line-height: 18px;
