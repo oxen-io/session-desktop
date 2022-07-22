@@ -36,9 +36,9 @@ export const Emojify = (props: Props): JSX.Element => {
       size = 1.1;
       break;
     case 'default':
+    default:
       size = 1.0;
       break;
-    default:
   }
 
   return <span style={{ fontSize: `${size}em`, userSelect: 'inherit' }}>{rendered}</span>;

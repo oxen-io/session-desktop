@@ -22,7 +22,7 @@ import styled from 'styled-components';
 const StyledQuoteAuthor = styled.div<{ isIncoming: boolean }>`
   color: ${props =>
     props.isIncoming ? `var(--color-received-message-text)` : `var(--color-sent-message-text)`};
-  font-size: 13px;
+  font-size: 15px;
   font-weight: bold;
   line-height: 18px;
   margin-bottom: 5px;
@@ -42,7 +42,7 @@ const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
   -webkit-line-clamp: 1;
   overflow: hidden;
 
-  font-size: 14px;
+  font-size: 15px;
   line-height: 18px;
   color: ${props =>
     props.isIncoming ? 'var(--color-received-message-text)' : 'var(--color-sent-message-text)'};

@@ -4,14 +4,17 @@ import { getEmojiSizeClass } from '../../../../util/emoji';
 describe('getEmojiSizeClass', () => {
   describe('empty or null string', () => {
     it('undefined as string', () => {
-      expect(getEmojiSizeClass(undefined as any)).to.be.equal('small', 'should have return small');
+      expect(getEmojiSizeClass(undefined as any)).to.be.equal(
+        'default',
+        'should have return default'
+      );
     });
     it('null as string', () => {
-      expect(getEmojiSizeClass(null as any)).to.be.equal('small', 'should have return small');
+      expect(getEmojiSizeClass(null as any)).to.be.equal('default', 'should have return default');
     });
 
     it('empty string', () => {
-      expect(getEmojiSizeClass('')).to.be.equal('small', 'should have return small');
+      expect(getEmojiSizeClass('')).to.be.equal('default', 'should have return default');
     });
   });
 
@@ -19,13 +22,13 @@ describe('getEmojiSizeClass', () => {
     it('string of ascii only', () => {
       expect(
         getEmojiSizeClass('The ASCII compatible UTF-8 encoding of ISO 10646 and Unicode')
-      ).to.be.equal('small', 'should have return small');
+      ).to.be.equal('default', 'should have return default');
     });
 
     it('string of utf8 with weird chars but no', () => {
       expect(getEmojiSizeClass('ASCII safety test: 1lI|, 0OD, 8B')).to.be.equal(
-        'small',
-        'should have return small'
+        'default',
+        'should have return default'
       );
     });
 
@@ -33,12 +36,12 @@ describe('getEmojiSizeClass', () => {
       // taken from https://www.w3.org/2001/06/utf-8-test/UTF-8-demo.html
       expect(
         getEmojiSizeClass('ASCII safety test: 1lI|, 0OD, 8B, γιγνώσκειν, ὦ ἄνδρες  დასასწრებად')
-      ).to.be.equal('small', 'should have return small');
+      ).to.be.equal('default', 'should have return default');
     });
 
     it('short string of utf8 with weird chars', () => {
       // taken from https://www.w3.org/2001/06/utf-8-test/UTF-8-demo.html
-      expect(getEmojiSizeClass('დ')).to.be.equal('small', 'should have return small');
+      expect(getEmojiSizeClass('დ')).to.be.equal('default', 'should have return default');
     });
   });
 
