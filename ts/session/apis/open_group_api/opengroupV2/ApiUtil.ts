@@ -6,7 +6,6 @@ import {
   updateDefaultRooms,
   updateDefaultRoomsInProgress,
 } from '../../../../state/ducks/defaultRooms';
-import { BlockedNumberController } from '../../../../util';
 import { getCompleteUrlFromRoom } from '../utils/OpenGroupUtils';
 import { parseOpenGroupV2 } from './JoinOpenGroupV2';
 import { getAllRoomInfos } from './OpenGroupAPIV2';
@@ -95,14 +94,6 @@ export const parseMessages = async (
   const parsedMessages = opengroupMessagesSignatureUnchecked
     .filter(m => signatureValidEncodedData.includes(m.opengroupv2Message.base64EncodedData))
     .map(m => m.opengroupv2Message);
-
-  if (window.getSettingValue('filter-open-groups')) {
-    return _.compact(
-      parsedMessages.map(m =>
-        m && m.sender && !BlockedNumberController.isBlocked(m.sender) ? m : null
-      )
-    ).sort((a, b) => (a.serverId || 0) - (b.serverId || 0));
-  }
 
   return _.compact(parsedMessages).sort((a, b) => (a.serverId || 0) - (b.serverId || 0));
 };
