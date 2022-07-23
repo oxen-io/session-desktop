@@ -5,6 +5,7 @@ import {
   MemoConversationListItemWithDetails,
 } from '../leftpane/conversation-list-item/ConversationListItem';
 import { MessageResultProps, MessageSearchResult } from './MessageSearchResults';
+import { BlockedNumberController } from '../../util';
 
 export type SearchResultsProps = {
   contactsAndGroups: Array<ConversationListItemProps>;
@@ -55,7 +56,7 @@ export const SearchResults = (props: SearchResultsProps) => {
             <MemoConversationListItemWithDetails
               {...contactOrGroup}
               mentionedUs={false}
-              isBlocked={false}
+              isBlocked={BlockedNumberController.isBlocked(contactOrGroup.id)}
               key={`search-result-convo-${contactOrGroup.id}`}
             />
           ))}

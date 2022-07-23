@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { MessageAttributes } from '../../models/messageType';
 import { useConversationUsername, useIsPrivate } from '../../hooks/useParamSelector';
 import { UserUtils } from '../../session/utils';
+import { BlockedNumberController } from '../../util';
 
 export type MessageResultProps = MessageAttributes & { snippet: string };
 
@@ -201,6 +202,10 @@ export const MessageSearchResult = (props: MessageResultProps) => {
     direction === 'incoming' ? conversationId : convoIsPrivate ? me : conversationId;
 
   if (!source && !destination) {
+    return null;
+  }
+
+  if (window.getSettingValue('filter-open-groups') && BlockedNumberController.isBlocked(source)) {
     return null;
   }
   // tslint:disable: use-simple-attributes
