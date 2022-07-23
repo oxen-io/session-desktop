@@ -198,6 +198,8 @@
   "noteToSelf": "Note to Self",
   "hideMenuBarTitle": "Hide Menu Bar",
   "hideMenuBarDescription": "Toggle system menu bar visibility",
+  "filterBlockedFromOpenGroupsTitle": "Filter Open Groups",
+  "filterBlockedFromOpenGroupsDescription": "Filter messages from blocked users from open groups",
   "startConversation": "Start New Conversation",
   "invalidNumberError": "Invalid Session ID or ONS Name",
   "failedResolveOns": "Failed to resolve ONS name",

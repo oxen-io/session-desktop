@@ -57,6 +57,11 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
         ? true
         : window.getSettingValue(SettingsKey.settingsMenuBar);
 
+    const isFilterOpenGroupsActive =
+      window.getSettingValue(SettingsKey.settingsFilterOpenGroups) === undefined
+        ? true
+        : window.getSettingValue(SettingsKey.settingsFilterOpenGroups);
+
     const isSpellCheckActive =
       window.getSettingValue(SettingsKey.settingsSpellCheck) === undefined
         ? true
@@ -79,6 +84,15 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
           />
         )}
         <SessionToggleWithDescription
+          onClickToggle={() => {
+            window.toggleFilterOpenGroups();
+            forceUpdate();
+          }}
+          title={window.i18n('filterBlockedFromOpenGroupsTitle')}
+          description={window.i18n('filterBlockedFromOpenGroupsDescription')}
+          active={isFilterOpenGroupsActive}
+        />
+         <SessionToggleWithDescription
           onClickToggle={() => {
             window.toggleSpellCheck();
             forceUpdate();
