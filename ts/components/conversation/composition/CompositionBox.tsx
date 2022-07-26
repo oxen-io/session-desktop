@@ -61,7 +61,6 @@ export interface ReplyingToMessageProps {
   id: string;
   author: string;
   timestamp: number;
-  text?: string;
   attachments?: Array<any>;
 }
 
@@ -825,13 +824,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     const { stagedLinkPreview } = this.state;
 
     // Send message
-    const extractedQuotedMessageProps = _.pick(
-      quotedMessageProps,
-      'id',
-      'author',
-      'text',
-      'attachments'
-    );
+    const extractedQuotedMessageProps = _.pick(quotedMessageProps, 'id', 'author', 'timestamp');
 
     // we consider that a link preview without a title at least is not a preview
     const linkPreview =

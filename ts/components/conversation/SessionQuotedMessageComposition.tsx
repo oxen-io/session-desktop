@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SessionIcon, SessionIconButton } from '../icon';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import { getAlt, isAudio } from '../../types/Attachment';
 import { AUDIO_MP3 } from '../../types/MIME';
 import { Flex } from '../basic/Flex';
 import { Image } from '../../../ts/components/conversation/Image';
+import { fetchQuotedMessage } from './message/message-content/MessageQuote';
+import { getAbsoluteAttachmentPath } from '../../types/MessageAttachment';
+import { isEqual } from 'lodash';
 
 const QuotedMessageComposition = styled.div`
   width: 100%;
@@ -40,27 +43,63 @@ export const SessionQuotedMessageComposition = () => {
 
   const dispatch = useDispatch();
 
-  const { text, attachments } = quotedMessageProps || {};
-  const hasAttachments = attachments && attachments.length > 0;
+  const { id, author, timestamp } = quotedMessageProps || {};
 
-  let hasImageAttachment = false;
-
-  let firstImageAttachment;
-  // we have to handle the case we are trying to reply to an audio message
-
-  if (attachments?.length && attachments[0].contentType !== AUDIO_MP3 && attachments[0].thumbnail) {
-    firstImageAttachment = attachments[0];
-    hasImageAttachment = true;
-  }
-
-  const hasAudioAttachment =
-    hasAttachments && attachments && attachments.length > 0 && isAudio(attachments);
+  const [quoteText, setQuoteText] = useState('');
+  const [imageAttachment, setImageAttachment] = useState(undefined);
+  const [hasAudioAttachment, setHasAudioAttachment] = useState(false);
 
   const removeQuotedMessage = useCallback(() => {
     dispatch(quoteMessage(undefined));
   }, []);
 
-  if (!quotedMessageProps?.id) {
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (author && timestamp) {
+      fetchQuotedMessage(author, timestamp)
+        .then(async result => {
+          if (isCancelled) {
+            return;
+          }
+
+          if (result) {
+            if (result.attachments && result.attachments[0]) {
+              if (!isEqual(imageAttachment, result.attachments[0])) {
+                setImageAttachment(
+                  result.attachments[0].contentType !== AUDIO_MP3 && result.attachments[0].thumbnail
+                    ? result.attachments[0]
+                    : undefined
+                );
+
+                const hasAudio = isAudio(result.attachments);
+                setHasAudioAttachment(
+                  hasAudio !== false && hasAudio !== undefined && hasAudio !== ''
+                );
+              }
+            } else {
+              setImageAttachment(undefined);
+              setHasAudioAttachment(false);
+            }
+
+            if (result.text && !isEqual(quoteText, result.text)) {
+              setQuoteText(result.text);
+            }
+          }
+        })
+        .catch(() => {
+          if (isCancelled) {
+            return;
+          }
+        });
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [author, fetchQuotedMessage, timestamp, hasAudioAttachment, imageAttachment, quoteText]);
+
+  if (!id || !author || !timestamp) {
     return null;
   }
 
@@ -77,15 +116,17 @@ export const SessionQuotedMessageComposition = () => {
       </Flex>
       <QuotedMessageCompositionReply>
         <Flex container={true} justifyContent="space-between" margin={'var(--margins-xs)'}>
-          <Subtle>{(hasAttachments && window.i18n('mediaMessage')) || text}</Subtle>
+          <Subtle>
+            {(imageAttachment && window.i18n('mediaMessage')) || (quoteText !== '' && quoteText)}
+          </Subtle>
 
-          {hasImageAttachment && (
+          {imageAttachment && (
             <Image
-              alt={getAlt(firstImageAttachment)}
-              attachment={firstImageAttachment}
+              alt={getAlt(imageAttachment)}
+              attachment={imageAttachment}
               height={100}
               width={100}
-              url={firstImageAttachment.thumbnail.objectUrl}
+              url={getAbsoluteAttachmentPath((imageAttachment as any).thumbnail.path)}
             />
           )}
 

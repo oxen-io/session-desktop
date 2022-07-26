@@ -19,7 +19,6 @@ import {
 } from '../../models/messageType';
 import { omit } from 'lodash';
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
-import { QuotedAttachmentType } from '../../components/conversation/message/message-content/Quote';
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 
 export type CallNotificationType = 'missed-call' | 'started-call' | 'answered-a-call';
@@ -183,10 +182,9 @@ export type PropsForMessageWithoutConvoProps = {
   attachments?: Array<PropsForAttachment>;
   previews?: Array<any>;
   quote?: {
-    text?: string;
-    attachment?: QuotedAttachmentType;
     isFromMe?: boolean;
     sender: string;
+    timestamp: number;
     authorProfileName?: string;
     authorName?: string;
     messageId?: string;

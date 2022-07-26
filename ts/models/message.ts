@@ -582,48 +582,31 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       return null;
     }
 
-    const { author, id, referencedMessageNotFound } = quote;
+    const { author, id, referencedMessageNotFound, timestamp } = quote;
     const contact: ConversationModel = author && getConversationController().get(author);
 
     const authorName = contact ? contact.getContactProfileNameOrShortenedPubKey() : null;
 
     const isFromMe = contact ? contact.id === UserUtils.getOurPubKeyStrFromCache() : false;
 
-    const firstAttachment = quote.attachments && quote.attachments[0];
     const quoteProps: {
       referencedMessageNotFound?: boolean;
       sender: string;
       messageId: string;
       authorName: string;
-      text?: string;
-      attachment?: any;
+      timestamp: number;
       isFromMe?: boolean;
     } = {
       sender: author,
       messageId: id,
       authorName: authorName || 'Unknown',
+      timestamp,
     };
 
     if (referencedMessageNotFound) {
       quoteProps.referencedMessageNotFound = true;
     }
 
-    if (!referencedMessageNotFound) {
-      if (quote.text) {
-        // do not show text of not found messages.
-        // TODO show original message not found text
-        // if the message was deleted better not show it's text content in the message
-        quoteProps.text = quote.text;
-      }
-
-      const quoteAttachment = firstAttachment
-        ? this.processQuoteAttachment(firstAttachment)
-        : undefined;
-      if (quoteAttachment) {
-        // only set attachment if referencedMessageNotFound is false and we have one
-        quoteProps.attachment = quoteAttachment;
-      }
-    }
     if (isFromMe) {
       quoteProps.isFromMe = true;
     }

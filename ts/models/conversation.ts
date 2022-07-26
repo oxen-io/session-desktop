@@ -609,21 +609,14 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public async makeQuote(quotedMessage: MessageModel): Promise<ReplyingToMessageProps | null> {
-    const attachments = quotedMessage.get('attachments');
-    const preview = quotedMessage.get('preview');
-
-    const body = quotedMessage.get('body');
-    const quotedAttachments = await this.getQuoteAttachment(attachments, preview);
-
     if (!quotedMessage.get('sent_at')) {
       window.log.warn('tried to make a quote without a sent_at timestamp');
       return null;
     }
+
     return {
-      author: quotedMessage.getSource(),
       id: `${quotedMessage.get('sent_at')}` || '',
-      text: body,
-      attachments: quotedAttachments,
+      author: quotedMessage.getSource(),
       timestamp: quotedMessage.get('sent_at') || 0,
       convoId: this.id,
     };
