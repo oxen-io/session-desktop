@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
+import _, { isEqual } from 'lodash';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { PubKey } from '../../../../session/types';
 import { openConversationToSpecificMessage } from '../../../../state/ducks/conversations';
@@ -11,8 +11,9 @@ import {
 } from '../../../../state/selectors/conversations';
 import { Quote } from './Quote';
 import { ToastUtils } from '../../../../session/utils';
-import { getMessagesBySentAt } from '../../../../data/data';
+import { getMessageBySenderAndTimestamp, getMessagesBySentAt } from '../../../../data/data';
 import { MessageModel } from '../../../../models/message';
+import { getConversationController } from '../../../../session/conversations';
 
 // tslint:disable: use-simple-attributes
 
@@ -23,6 +24,29 @@ type Props = {
 
 export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'direction'>;
 
+export const fetchQuotedMessage = async (author: string, timestamp: number) => {
+  const message: MessageModel | null = await getMessageBySenderAndTimestamp({
+    source: author,
+    timestamp,
+  });
+
+  if (!message) {
+    return null;
+  }
+
+  const conversationModel = getConversationController().getOrThrow(message.get('conversationId'));
+  const attachments = await conversationModel.getQuoteAttachment(
+    message.get('attachments'),
+    message.get('preview')
+  );
+
+  return {
+    text: message.get('body'),
+    attachments,
+    processQuoteAttachment: message.processQuoteAttachment,
+  };
+};
+
 export const MessageQuote = (props: Props) => {
   const selected = useSelector(state => getMessageQuoteProps(state as any, props.messageId));
   const multiSelectMode = useSelector(isMessageSelectionMode);
@@ -30,6 +54,9 @@ export const MessageQuote = (props: Props) => {
 
   const quote = selected ? selected.quote : undefined;
   const direction = selected ? selected.direction : undefined;
+
+  const [quoteAttachment, setQuoteAttachment] = useState(undefined);
+  const [quoteText, setQuoteText] = useState('');
 
   const onQuoteClick = useCallback(
     async (event: React.MouseEvent<HTMLDivElement>) => {
@@ -77,13 +104,49 @@ export const MessageQuote = (props: Props) => {
     },
     [quote, multiSelectMode, props.messageId]
   );
+
   if (!selected) {
     return null;
   }
 
-  if (!quote || !quote.sender || !quote.messageId) {
+  if (!quote || !quote.sender || !quote.timestamp || !quote.messageId) {
     return null;
   }
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (quote.sender && quote.timestamp) {
+      fetchQuotedMessage(quote.sender, quote.timestamp)
+        .then(async result => {
+          if (isCancelled) {
+            return;
+          }
+
+          if (result) {
+            if (result.attachments && result.attachments[0]) {
+              if (!isEqual(quoteAttachment, result.attachments[0])) {
+                setQuoteAttachment(result.attachments[0]);
+              }
+            }
+
+            if (result.text && !isEqual(quoteText, result.text)) {
+              setQuoteText(result.text);
+            }
+          }
+        })
+        .catch(() => {
+          if (isCancelled) {
+            return;
+          }
+        });
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [quote.sender, quote.timestamp, fetchQuotedMessage, quoteAttachment, quoteText]);
+
   const shortenedPubkey = PubKey.shorten(quote.sender);
 
   const displayedPubkey = quote.authorProfileName ? shortenedPubkey : quote.sender;
@@ -92,8 +155,8 @@ export const MessageQuote = (props: Props) => {
     <Quote
       id={props.id}
       onClick={onQuoteClick}
-      text={quote.text || ''}
-      attachment={quote.attachment}
+      text={quoteText}
+      attachment={quoteAttachment}
       isIncoming={direction === 'incoming'}
       sender={displayedPubkey}
       authorProfileName={quote.authorProfileName}
