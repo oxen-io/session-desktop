@@ -773,6 +773,7 @@ const LOKI_SCHEMA_VERSIONS = [
   updateToLokiSchemaVersion23,
   updateToLokiSchemaVersion24,
   updateToLokiSchemaVersion25,
+  updateToLokiSchemaVersion26,
 ];
 
 function updateToLokiSchemaVersion1(currentVersion: number, db: BetterSqlite3.Database) {
@@ -1584,6 +1585,33 @@ function updateToLokiSchemaVersion25(currentVersion: number, db: BetterSqlite3.D
 
     writeLokiSchemaVersion(targetVersion, db);
   })();
+
+  console.log(`updateToLokiSchemaVersion${targetVersion}: success!`);
+}
+
+function updateToLokiSchemaVersion26(currentVersion: number, db: BetterSqlite3.Database) {
+  const targetVersion = 26;
+  if (currentVersion >= targetVersion) {
+    return;
+  }
+  console.log(`updateToLokiSchemaVersion${targetVersion}: starting...`);
+
+  // db.transaction(() => {
+  //   // We want to replace all the occurences of the sogs server ip url (116.203.70.33 || http://116.203.70.33 || https://116.203.70.33) by its hostname: https://open.getsession.org
+  //   // This includes change the conversationTable, the openGroupRooms tables and every single message associated with them.
+  //   // Because the conversationId used to link messages to conversation includes the ip/url in it...
+  //   db.exec(`
+  //   -- let's start with the conversations
+  //   UPDATE ${CONVERSATIONS_TABLE} SET displayNameInProfile = name WHERE
+  //       type = 'group' AND
+  //       ( id LIKE 'publicChat:116.203.70.33%' OR id LIKE 'publicChat:http:116.203.70.33%' OR id LIKE 'publicChat:https://116.203.70.33%');
+
+  //   -- then the opengrouprooms
+
+  //      `);
+
+  //   // writeLokiSchemaVersion(targetVersion, db);
+  // })();
 
   console.log(`updateToLokiSchemaVersion${targetVersion}: success!`);
 }
