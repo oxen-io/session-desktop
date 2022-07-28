@@ -133,6 +133,11 @@ Storage.onready(async () => {
       window.setMenuBarVisibility(!value);
     },
 
+    getFilterOpenGroups: () => Storage.get('filter-open-groups', true),
+    setFilterOpenGroups: async (value: boolean) => {
+      await Storage.put('filter-open-groups', value);
+    },
+
     getSpellCheck: () => Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
       await Storage.put('spell-check', value);
@@ -289,6 +294,12 @@ async function start() {
     }
 
     window.Events.setHideMenuBar(!current);
+  };
+
+  window.toggleFilterOpenGroups = () => {
+    const currentValue = window.getSettingValue('filter-open-groups');
+    const newValue = currentValue !== undefined ? !currentValue : false;
+    window.Events.setFilterOpenGroups(newValue);
   };
 
   window.toggleSpellCheck = () => {

@@ -168,6 +168,9 @@ async function createAccount(identityKeyPair: any) {
   await Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
+  // Enable open group filtering by default.
+  await Storage.put(SettingsKey.settingsFilterOpenGroups, true);
+
   await setLocalPubKey(pubKeyString);
 }
 

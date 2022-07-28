@@ -154,7 +154,11 @@ export const getSortedMessagesOfSelectedConversation = createSelector(
     }
 
     const isPublic = convo.isPublic() || false;
-    const sortedMessage = sortMessages(messages, isPublic);
+    const sortedMessage = sortMessages(messages.filter(msg =>
+	!window.getSettingValue('filter-open-groups') ||
+	!BlockedNumberController.isBlocked(msg.propsForMessage.sender)
+      ), isPublic
+    )
 
     return updateFirstMessageOfSeries(sortedMessage);
   }

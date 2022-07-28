@@ -5,6 +5,7 @@ import {
   MemoConversationListItemWithDetails,
 } from '../leftpane/conversation-list-item/ConversationListItem';
 import { MessageResultProps, MessageSearchResult } from './MessageSearchResults';
+import { BlockedNumberController } from '../../util';
 
 export type SearchResultsProps = {
   contactsAndGroups: Array<ConversationListItemProps>;
@@ -42,7 +43,11 @@ export const SearchResults = (props: SearchResultsProps) => {
   const { contactsAndGroups, messages, searchTerm } = props;
 
   const haveContactsAndGroup = Boolean(contactsAndGroups?.length);
-  const haveMessages = Boolean(messages?.length);
+  const filteredMessages = messages.filter(message =>
+      !window.getSettingValue('filter-open-groups') ||
+      !BlockedNumberController.isBlocked(message.source)
+  )
+  const haveMessages = Boolean(filteredMessages?.length);
   const noResults = !haveContactsAndGroup && !haveMessages;
 
   return (
@@ -55,7 +60,7 @@ export const SearchResults = (props: SearchResultsProps) => {
             <MemoConversationListItemWithDetails
               {...contactOrGroup}
               mentionedUs={false}
-              isBlocked={false}
+              isBlocked={BlockedNumberController.isBlocked(contactOrGroup.id)}
               key={`search-result-convo-${contactOrGroup.id}`}
             />
           ))}
@@ -65,9 +70,9 @@ export const SearchResults = (props: SearchResultsProps) => {
       {haveMessages && (
         <>
           <StyledSeparatorSection>
-            {`${window.i18n('messagesHeader')}: ${messages.length}`}
+            {`${window.i18n('messagesHeader')}: ${filteredMessages.length}`}
           </StyledSeparatorSection>
-          {messages.map(message => (
+          {filteredMessages.map(message => (
             <MessageSearchResult key={`search-result-message-${message.id}`} {...message} />
           ))}
         </>
