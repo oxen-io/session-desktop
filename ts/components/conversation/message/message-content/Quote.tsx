@@ -67,6 +67,23 @@ const StyledQuote = styled.div<{
   border-left: 4px solid ${props => (props.isIncoming ? 'var(--color-accent)' : 'black')};
 `;
 
+const StyledQuoteImage = styled.div`
+  flex: initial;
+  min-width: 54px;
+  width: 54px;
+  max-height: 54px;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-left: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
 export type QuotePropsWithoutListener = {
   attachment?: QuotedAttachmentType;
   sender: string;
@@ -184,7 +201,7 @@ export const QuoteImage = (props: {
   ) : null;
 
   return (
-    <div className="module-quote__icon-container">
+    <StyledQuoteImage>
       <img
         src={srcData}
         alt={window.i18n('quoteThumbnailAlt')}
@@ -192,7 +209,7 @@ export const QuoteImage = (props: {
         onError={handleImageErrorBound}
       />
       {iconElement}
-    </div>
+    </StyledQuoteImage>
   );
 };
 
@@ -359,6 +376,11 @@ export const Quote = (props: QuotePropsWithListener) => {
   return (
     <div id={props.id} className={classNames('module-quote-container')}>
       <StyledQuote isIncoming={isIncoming} onClick={onClick}>
+        <QuoteIconContainer
+          attachment={attachment}
+          handleImageErrorBound={handleImageErrorBound}
+          imageBroken={imageBroken}
+        />
         <div className="module-quote__primary">
           <QuoteAuthor
             authorName={props.authorName}
@@ -371,11 +393,6 @@ export const Quote = (props: QuotePropsWithListener) => {
           <QuoteGenericFile {...props} />
           <QuoteText isIncoming={isIncoming} text={text} attachment={attachment} />
         </div>
-        <QuoteIconContainer
-          attachment={attachment}
-          handleImageErrorBound={handleImageErrorBound}
-          imageBroken={imageBroken}
-        />
       </StyledQuote>
     </div>
   );
