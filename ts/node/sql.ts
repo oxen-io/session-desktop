@@ -2283,21 +2283,6 @@ function getMessageById(id: string) {
   return jsonToObject(row.json);
 }
 
-function getMessageBySenderAndSentAt({ source, sentAt }: { source: string; sentAt: number }) {
-  const rows = assertGlobalInstance()
-    .prepare(
-      `SELECT json FROM ${MESSAGES_TABLE} WHERE
-      source = $source AND
-      sent_at = $sent_at;`
-    )
-    .all({
-      source,
-      sent_at: sentAt,
-    });
-
-  return map(rows, row => jsonToObject(row.json));
-}
-
 function getMessagesCountBySender({ source }: { source: string }) {
   if (!source) {
     throw new Error('source must be set');
@@ -3715,7 +3700,6 @@ export const sqlNode = {
   getUnreadCountByConversation,
   getMessageCountByType,
 
-  getMessageBySenderAndSentAt,
   filterAlreadyFetchedOpengroupMessage,
   getMessageBySenderAndTimestamp,
   getMessageIdsFromServerIds,

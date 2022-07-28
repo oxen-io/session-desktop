@@ -362,24 +362,6 @@ export async function getMessageById(
   return new MessageModel(message);
 }
 
-export async function getMessageBySenderAndSentAt({
-  source,
-  sentAt,
-}: {
-  source: string;
-  sentAt: number;
-}): Promise<MessageModel | null> {
-  const messages = await channels.getMessageBySenderAndSentAt({
-    source,
-    sentAt,
-  });
-  if (!messages || !messages.length) {
-    return null;
-  }
-
-  return new MessageModel(messages[0]);
-}
-
 export async function filterAlreadyFetchedOpengroupMessage(
   msgDetails: MsgDuplicateSearchOpenGroup
 ): Promise<MsgDuplicateSearchOpenGroup> {
