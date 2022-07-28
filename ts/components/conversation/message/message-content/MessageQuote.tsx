@@ -30,7 +30,7 @@ export const fetchQuotedMessage = async (author: string, timestamp: number) => {
     timestamp,
   });
 
-  if (!message) {
+  if (!message || message.get('isDeleted')) {
     return null;
   }
 
@@ -57,6 +57,7 @@ export const MessageQuote = (props: Props) => {
 
   const [quoteAttachment, setQuoteAttachment] = useState(undefined);
   const [quoteText, setQuoteText] = useState('');
+  const [quoteNotFound, setQuoteNotFound] = useState(quote?.referencedMessageNotFound || false);
 
   const onQuoteClick = useCallback(
     async (event: React.MouseEvent<HTMLDivElement>) => {
@@ -73,14 +74,10 @@ export const MessageQuote = (props: Props) => {
         return;
       }
 
-      const {
-        referencedMessageNotFound,
-        messageId: quotedMessageSentAt,
-        sender: quoteAuthor,
-      } = quote;
+      const { messageId: quotedMessageSentAt, sender: quoteAuthor } = quote;
       // For simplicity's sake, we show the 'not found' toast no matter what if we were
-      //   not able to find the referenced message when the quote was received.
-      if (referencedMessageNotFound || !quotedMessageSentAt || !quoteAuthor) {
+      // not able to find the referenced message when the quote was received.
+      if (quoteNotFound || !quotedMessageSentAt || !quoteAuthor) {
         ToastUtils.pushOriginalNotFound();
         return;
       }
@@ -109,21 +106,26 @@ export const MessageQuote = (props: Props) => {
     return null;
   }
 
-  if (!quote || !quote.sender || !quote.timestamp || !quote.messageId) {
+  if (!quote || !quote.sender || !quote.messageId) {
     return null;
   }
+
+  const timestamp = Number(quote.messageId);
 
   useEffect(() => {
     let isCancelled = false;
 
-    if (quote.sender && quote.timestamp) {
-      fetchQuotedMessage(quote.sender, quote.timestamp)
+    if (quote.sender && timestamp) {
+      fetchQuotedMessage(quote.sender, timestamp)
         .then(async result => {
           if (isCancelled) {
             return;
           }
 
           if (result) {
+            if (quoteNotFound) {
+              setQuoteNotFound(false);
+            }
             if (result.attachments && result.attachments[0]) {
               if (!isEqual(quoteAttachment, result.attachments[0])) {
                 setQuoteAttachment(result.attachments[0]);
@@ -132,6 +134,16 @@ export const MessageQuote = (props: Props) => {
 
             if (result.text && !isEqual(quoteText, result.text)) {
               setQuoteText(result.text);
+            }
+          } else {
+            if (!quoteNotFound) {
+              setQuoteNotFound(true);
+            }
+            if (quoteText !== window.i18n('originalMessageNotFound')) {
+              setQuoteText(window.i18n('originalMessageNotFound'));
+            }
+            if (quoteAttachment) {
+              setQuoteAttachment(undefined);
             }
           }
         })
@@ -145,7 +157,7 @@ export const MessageQuote = (props: Props) => {
     return () => {
       isCancelled = true;
     };
-  }, [quote.sender, quote.timestamp, fetchQuotedMessage, quoteAttachment, quoteText]);
+  }, [quote.sender, timestamp, fetchQuotedMessage, quoteAttachment, quoteNotFound, quoteText]);
 
   const shortenedPubkey = PubKey.shorten(quote.sender);
 
@@ -161,7 +173,6 @@ export const MessageQuote = (props: Props) => {
       sender={displayedPubkey}
       authorProfileName={quote.authorProfileName}
       authorName={quote.authorName}
-      referencedMessageNotFound={quote.referencedMessageNotFound || false}
       isFromMe={quote.isFromMe || false}
     />
   );

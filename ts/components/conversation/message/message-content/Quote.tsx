@@ -56,28 +56,15 @@ const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
 const StyledQuote = styled.div<{
   isIncoming: boolean;
   onClick: ((e: MouseEvent<HTMLDivElement>) => void) | undefined;
-  referencedMessageNotFound: boolean;
 }>`
   position: relative;
 
   cursor: ${props => (props.onClick ? 'pointer' : 'auto')};
   display: flex;
   flex-direction: row;
-  align-items: ${props => (props.referencedMessageNotFound ? 'center' : 'stretch')};
+  align-items: stretch;
   overflow: hidden;
   border-left: 4px solid ${props => (props.isIncoming ? 'var(--color-accent)' : 'black')};
-
-  /* TODO not sure if this actually happens maybe we can remove it?  */
-  /* Test by forcing the value to be true */
-  ${props =>
-    props.referencedMessageNotFound &&
-    `
-    height: 26px;
-    background-color: rgba(white, 0.85);
-    padding-inline-start: 8px;
-    padding-inline-end: 8px;
-    margin-inline-end: 8px;
-  `}
 `;
 
 export type QuotePropsWithoutListener = {
@@ -88,7 +75,6 @@ export type QuotePropsWithoutListener = {
   isFromMe: boolean;
   isIncoming: boolean;
   text: string | null;
-  referencedMessageNotFound: boolean;
 };
 
 export type QuotePropsWithListener = QuotePropsWithoutListener & {
@@ -356,40 +342,6 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
   );
 };
 
-export const QuoteReferenceWarning = (
-  props: Pick<QuotePropsWithoutListener, 'isIncoming' | 'referencedMessageNotFound'>
-) => {
-  const { isIncoming, referencedMessageNotFound } = props;
-
-  if (!referencedMessageNotFound) {
-    return null;
-  }
-
-  return (
-    <div
-      className={classNames(
-        'module-quote__reference-warning',
-        isIncoming ? 'module-quote__reference-warning--incoming' : null
-      )}
-    >
-      <div
-        className={classNames(
-          'module-quote__reference-warning__icon',
-          isIncoming ? 'module-quote__reference-warning__icon--incoming' : null
-        )}
-      />
-      <div
-        className={classNames(
-          'module-quote__reference-warning__text',
-          isIncoming ? 'module-quote__reference-warning__text--incoming' : null
-        )}
-      >
-        {window.i18n('originalMessageNotFound')}
-      </div>
-    </div>
-  );
-};
-
 export const Quote = (props: QuotePropsWithListener) => {
   const [imageBroken, setImageBroken] = useState(false);
   const handleImageErrorBound = () => {
@@ -402,15 +354,11 @@ export const Quote = (props: QuotePropsWithListener) => {
     return null;
   }
 
-  const { isIncoming, referencedMessageNotFound, attachment, text, onClick } = props;
+  const { isIncoming, attachment, text, onClick } = props;
 
   return (
     <div id={props.id} className={classNames('module-quote-container')}>
-      <StyledQuote
-        isIncoming={isIncoming}
-        onClick={onClick}
-        referencedMessageNotFound={referencedMessageNotFound}
-      >
+      <StyledQuote isIncoming={isIncoming} onClick={onClick}>
         <div className="module-quote__primary">
           <QuoteAuthor
             authorName={props.authorName}
@@ -429,10 +377,6 @@ export const Quote = (props: QuotePropsWithListener) => {
           imageBroken={imageBroken}
         />
       </StyledQuote>
-      <QuoteReferenceWarning
-        isIncoming={isIncoming}
-        referencedMessageNotFound={referencedMessageNotFound}
-      />
     </div>
   );
 };

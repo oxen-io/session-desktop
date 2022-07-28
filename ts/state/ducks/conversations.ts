@@ -184,10 +184,9 @@ export type PropsForMessageWithoutConvoProps = {
   quote?: {
     isFromMe?: boolean;
     sender: string;
-    timestamp: number;
     authorProfileName?: string;
     authorName?: string;
-    messageId?: string;
+    messageId?: string; // this is the timestamp
     referencedMessageNotFound?: boolean;
   } | null;
   messageHash?: string;

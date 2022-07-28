@@ -25,18 +25,6 @@
   color: $color-dark-05;
 }
 
-.module-quote__reference-warning {
-  background-color: $color-black-06;
-}
-
-.module-quote__reference-warning__icon {
-  @include color-svg('../images/broken-link.svg', $color-dark-30);
-}
-
-.module-quote__reference-warning__text {
-  color: $color-dark-05;
-}
-
 .module-quote-container {
   margin-bottom: 5px;
   margin-top: 10px;
@@ -172,33 +160,6 @@
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
-}
-
-.module-quote__reference {
-  &-warning {
-    height: 26px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    background-color: $color-white-085;
-    padding-inline-start: 8px;
-    padding-inline-end: 8px;
-    margin-inline-end: 8px;
-  }
-
-  &-warning__icon {
-    height: 16px;
-    width: 16px;
-    @include color-svg('../images/broken-link.svg', $color-gray-60);
-  }
-
-  &-warning__text {
-    margin-inline-start: 6px;
-    color: $color-gray-90;
-    font-size: 13px;
-    line-height: 18px;
   }
 }
 

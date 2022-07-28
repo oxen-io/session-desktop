@@ -582,7 +582,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       return null;
     }
 
-    const { author, id, referencedMessageNotFound, timestamp } = quote;
+    const { author, id, referencedMessageNotFound } = quote;
     const contact: ConversationModel = author && getConversationController().get(author);
 
     const authorName = contact ? contact.getContactProfileNameOrShortenedPubKey() : null;
@@ -594,13 +594,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       sender: string;
       messageId: string;
       authorName: string;
-      timestamp: number;
       isFromMe?: boolean;
     } = {
       sender: author,
-      messageId: id,
+      messageId: id, // this is the timestamp
       authorName: authorName || 'Unknown',
-      timestamp,
     };
 
     if (referencedMessageNotFound) {
