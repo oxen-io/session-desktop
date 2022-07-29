@@ -58,10 +58,8 @@ import { LinkPreviews } from '../../../util/linkPreviews';
 
 export interface ReplyingToMessageProps {
   convoId: string;
-  id: string;
+  id: string; // this is the timestamp
   author: string;
-  timestamp: number;
-  attachments?: Array<any>;
 }
 
 export type StagedLinkPreviewImage = {
@@ -824,7 +822,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     const { stagedLinkPreview } = this.state;
 
     // Send message
-    const extractedQuotedMessageProps = _.pick(quotedMessageProps, 'id', 'author', 'timestamp');
+    const extractedQuotedMessageProps = _.pick(quotedMessageProps, 'id', 'author');
 
     // we consider that a link preview without a title at least is not a preview
     const linkPreview =

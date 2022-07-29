@@ -617,7 +617,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     return {
       id: `${quotedMessage.get('sent_at')}` || '',
       author: quotedMessage.getSource(),
-      timestamp: quotedMessage.get('sent_at') || 0,
       convoId: this.id,
     };
   }

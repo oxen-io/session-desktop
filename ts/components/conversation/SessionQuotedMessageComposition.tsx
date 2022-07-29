@@ -61,7 +61,8 @@ export const SessionQuotedMessageComposition = () => {
 
   const dispatch = useDispatch();
 
-  const { id, author, timestamp, convoId } = quotedMessageProps || {};
+  const { id, author, convoId } = quotedMessageProps || {};
+  const timestamp = Number(id);
 
   const [isReady, setIsReady] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
