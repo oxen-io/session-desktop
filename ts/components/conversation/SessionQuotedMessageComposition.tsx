@@ -11,6 +11,8 @@ import { Image } from '../../../ts/components/conversation/Image';
 import { fetchQuotedMessage } from './message/message-content/MessageQuote';
 import { getAbsoluteAttachmentPath } from '../../types/MessageAttachment';
 import { isEqual } from 'lodash';
+import { getConversationController } from '../../session/conversations';
+import { PubKey } from '../../session/types';
 
 const QuotedMessageComposition = styled.div`
   width: 100%;
@@ -38,13 +40,32 @@ const ReplyingTo = styled.div`
   color: var(--color-text);
 `;
 
+const StyledImage = styled.div`
+  div {
+    border-radius: 4px;
+    overflow: hidden;
+  }
+`;
+
+const StyledText = styled(Flex)`
+  margin: 0 10px;
+
+  p {
+    font-weight: bold;
+    margin: 0 0 4px;
+  }
+`;
+
 export const SessionQuotedMessageComposition = () => {
   const quotedMessageProps = useSelector(getQuotedMessage);
 
   const dispatch = useDispatch();
 
-  const { id, author, timestamp } = quotedMessageProps || {};
+  const { id, author, timestamp, convoId } = quotedMessageProps || {};
 
+  const [isReady, setIsReady] = useState(false);
+  const [isGroup, setIsGroup] = useState(false);
+  const [authorName, setAuthorName] = useState('');
   const [quoteText, setQuoteText] = useState('');
   const [imageAttachment, setImageAttachment] = useState(undefined);
   const [hasAudioAttachment, setHasAudioAttachment] = useState(false);
@@ -55,6 +76,11 @@ export const SessionQuotedMessageComposition = () => {
 
   useEffect(() => {
     let isCancelled = false;
+
+    if (convoId) {
+      const conversationModel = getConversationController().get(convoId);
+      setIsGroup(conversationModel.isGroup());
+    }
 
     if (author && timestamp) {
       fetchQuotedMessage(author, timestamp)
@@ -85,6 +111,15 @@ export const SessionQuotedMessageComposition = () => {
             if (result.text && !isEqual(quoteText, result.text)) {
               setQuoteText(result.text);
             }
+
+            if (
+              result.authorName &&
+              result.authorName !== '' &&
+              !isEqual(authorName, result.authorName)
+            ) {
+              setAuthorName(result.authorName);
+            }
+            setIsReady(true);
           }
         })
         .catch(() => {
@@ -96,10 +131,24 @@ export const SessionQuotedMessageComposition = () => {
 
     return () => {
       isCancelled = true;
+      setIsReady(false);
     };
-  }, [author, fetchQuotedMessage, timestamp, hasAudioAttachment, imageAttachment, quoteText]);
+  }, [
+    convoId,
+    author,
+    authorName,
+    fetchQuotedMessage,
+    timestamp,
+    hasAudioAttachment,
+    imageAttachment,
+    quoteText,
+  ]);
 
   if (!id || !author || !timestamp) {
+    return null;
+  }
+
+  if (!isReady) {
     return null;
   }
 
@@ -115,20 +164,40 @@ export const SessionQuotedMessageComposition = () => {
         <SessionIconButton iconType="exit" iconSize="small" onClick={removeQuotedMessage} />
       </Flex>
       <QuotedMessageCompositionReply>
-        <Flex container={true} justifyContent="space-between" margin={'var(--margins-xs)'}>
-          <Subtle>
-            {(imageAttachment && window.i18n('mediaMessage')) || (quoteText !== '' && quoteText)}
-          </Subtle>
-
+        <Flex
+          container={true}
+          justifyContent="flex-start"
+          alignItems="center"
+          margin={'var(--margins-xs)'}
+        >
           {imageAttachment && (
-            <Image
-              alt={getAlt(imageAttachment)}
-              attachment={imageAttachment}
-              height={100}
-              width={100}
-              url={getAbsoluteAttachmentPath((imageAttachment as any).thumbnail.path)}
-            />
+            <StyledImage>
+              <Image
+                alt={getAlt(imageAttachment)}
+                attachment={imageAttachment}
+                height={100}
+                width={100}
+                url={getAbsoluteAttachmentPath((imageAttachment as any).thumbnail.path)}
+              />
+            </StyledImage>
           )}
+          <StyledText
+            container={true}
+            flexDirection="column"
+            justifyContent={'center'}
+            alignItems={'flex-start'}
+          >
+            {/* NOTE should merge after the ID blinding PR since it includes the updated shorten method i.e. (0553...1234) */}
+            {isGroup && (
+              <p>
+                {authorName !== '' && `${authorName} `}
+                {PubKey.shorten(author)}
+              </p>
+            )}
+            <Subtle>
+              {(imageAttachment && window.i18n('mediaMessage')) || (quoteText !== '' && quoteText)}
+            </Subtle>
+          </StyledText>
 
           {hasAudioAttachment && <SessionIcon iconType="microphone" iconSize="huge" />}
         </Flex>

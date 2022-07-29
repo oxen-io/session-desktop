@@ -40,10 +40,13 @@ export const fetchQuotedMessage = async (author: string, timestamp: number) => {
     message.get('preview')
   );
 
+  const contact = message.findAndFormatContact(author);
+  const authorName = contact?.profileName || contact?.name || '';
+
   return {
     text: message.get('body'),
     attachments,
-    processQuoteAttachment: message.processQuoteAttachment,
+    authorName,
   };
 };
 
