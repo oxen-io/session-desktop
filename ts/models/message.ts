@@ -519,7 +519,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     return props;
   }
 
-  // TODO No idea what this is
+  // TODO Decide whether we need this
   // public createNonBreakingLastSeparator(text: string) {
   //   const nbsp = '\xa0';
   //   const regex = /(\S)( +)(\S+\s*)$/;

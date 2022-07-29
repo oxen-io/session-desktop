@@ -62,7 +62,6 @@ export const SessionQuotedMessageComposition = () => {
   const dispatch = useDispatch();
 
   const { id, author, convoId } = quotedMessageProps || {};
-  const timestamp = Number(id);
 
   const [isReady, setIsReady] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
@@ -83,8 +82,8 @@ export const SessionQuotedMessageComposition = () => {
       setIsGroup(conversationModel.isGroup());
     }
 
-    if (author && timestamp) {
-      fetchQuotedMessage(author, timestamp)
+    if (author && id) {
+      fetchQuotedMessage(author, id)
         .then(async result => {
           if (isCancelled) {
             return;
@@ -135,17 +134,17 @@ export const SessionQuotedMessageComposition = () => {
       setIsReady(false);
     };
   }, [
+    id,
     convoId,
     author,
     authorName,
     fetchQuotedMessage,
-    timestamp,
     hasAudioAttachment,
     imageAttachment,
     quoteText,
   ]);
 
-  if (!id || !author || !timestamp) {
+  if (!id || !author) {
     return null;
   }
 
@@ -188,7 +187,6 @@ export const SessionQuotedMessageComposition = () => {
             justifyContent={'center'}
             alignItems={'flex-start'}
           >
-            {/* NOTE should merge after the ID blinding PR since it includes the updated shorten method i.e. (0553...1234) */}
             {isGroup && (
               <p>
                 {authorName !== '' && `${authorName} `}

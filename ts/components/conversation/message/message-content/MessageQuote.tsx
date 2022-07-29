@@ -24,10 +24,10 @@ type Props = {
 
 export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'direction'>;
 
-export const fetchQuotedMessage = async (author: string, timestamp: number) => {
+export const fetchQuotedMessage = async (author: string, timestamp: string) => {
   const message: MessageModel | null = await getMessageBySenderAndTimestamp({
     source: author,
-    timestamp,
+    timestamp: Number(timestamp),
   });
 
   if (!message || message.get('isDeleted')) {
@@ -113,13 +113,11 @@ export const MessageQuote = (props: Props) => {
     return null;
   }
 
-  const timestamp = Number(quote.messageId);
-
   useEffect(() => {
     let isCancelled = false;
 
-    if (quote.sender && timestamp) {
-      fetchQuotedMessage(quote.sender, timestamp)
+    if (quote.sender && quote.messageId) {
+      fetchQuotedMessage(quote.sender, quote.messageId || '')
         .then(async result => {
           if (isCancelled) {
             return;
@@ -160,7 +158,14 @@ export const MessageQuote = (props: Props) => {
     return () => {
       isCancelled = true;
     };
-  }, [quote.sender, timestamp, fetchQuotedMessage, quoteAttachment, quoteNotFound, quoteText]);
+  }, [
+    quote.messageId,
+    quote.sender,
+    fetchQuotedMessage,
+    quoteAttachment,
+    quoteNotFound,
+    quoteText,
+  ]);
 
   const shortenedPubkey = PubKey.shorten(quote.sender);
 
