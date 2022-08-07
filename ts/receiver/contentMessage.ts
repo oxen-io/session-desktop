@@ -26,7 +26,7 @@ import {
   deleteMessagesFromSwarmAndMarkAsDeletedLocally,
 } from '../interactions/conversations/unsendingInteractions';
 import { ConversationTypeEnum } from '../models/conversationAttributes';
-import { findCachedBlindedMatchOrItLookupAllServers } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
+import { findCachedBlindedMatchOrLookupOnAllServers } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 
 export async function handleSwarmContentMessage(envelope: EnvelopePlus, messageHash: string) {
   try {
@@ -600,7 +600,7 @@ async function handleMessageRequestResponse(
 
   const sodium = await getSodiumRenderer();
 
-  const convosToMerge = findCachedBlindedMatchOrItLookupAllServers(envelope.source, sodium);
+  const convosToMerge = findCachedBlindedMatchOrLookupOnAllServers(envelope.source, sodium);
   const unblindedConvoId = envelope.source;
 
   const conversationToApprove = await getConversationController().getOrCreateAndWait(

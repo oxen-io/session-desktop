@@ -291,7 +291,7 @@ function findNotCachedBlindedConvoFromUnblindedKey(
  * @param sodium the sodium instance
  * @returns the conversationId of the naked private convo found, matching that blindedId on that serverPubkey
  */
-export async function findCachedBlindedMatchOrItLookup(
+export async function findCachedBlindedMatchOrLookItUp(
   blindedId: string,
   serverPubKey: string,
   sodium: LibSodiumWrappers
@@ -392,12 +392,12 @@ export function getCachedNakedKeyFromBlindedNoServerPubkey(blindedId: string): s
  * @param unblindedId the blindedId of that user
  * @param sodium passed so we can make this function not async
  */
-export function findCachedBlindedMatchOrItLookupAllServers(
+export function findCachedBlindedMatchOrLookupOnAllServers(
   unblindedId: string,
   sodium: LibSodiumWrappers
 ): Array<ConversationModel> {
   if (PubKey.hasBlindedPrefix(unblindedId)) {
-    throw new Error('findCachedBlindedMatchOrItLookupAllServers needs an unblindedId');
+    throw new Error('findCachedBlindedMatchOrLookupOnAllServers needs an unblindedId');
   }
 
   const allServerPubkeys = OpenGroupData.getAllOpengroupsServerPubkeys();

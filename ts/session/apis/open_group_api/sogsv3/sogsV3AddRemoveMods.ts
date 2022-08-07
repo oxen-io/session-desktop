@@ -7,7 +7,7 @@ import { batchFirstSubIsSuccess, sogsBatchSend } from './sogsV3BatchPoll';
 
 /**
  * Add those pubkeys as admins.
- * We do not support adding as moderators/visible/global for now in session desktop
+ * TODO: We do not support adding as moderators/visible/global for now in session desktop
  */
 export const sogsV3AddAdmin = async (
   usersToAddAsMods: Array<PubKey>,
@@ -37,8 +37,8 @@ export const sogsV3AddAdmin = async (
 };
 
 /**
- * Add those pubkeys from admins.
- * We do not support removing as moderators/visible/global for now in session desktop
+ * Remove those pubkeys from the list of admins.
+ * TODO: We do not support removing as moderators/visible/global for now in session desktop
  */
 export const sogsV3RemoveAdmins = async (
   usersToRemoveFromMods: Array<PubKey>,

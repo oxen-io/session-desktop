@@ -110,7 +110,7 @@ export const sendMessageOnionV4BlindedRequest = async (
   // if we are sending a blinded message, we have to sign it with the derived keypair
   // otherwise, we just sign it with our real keypair
   const signedMessage = await message.signWithBlinding(serverPubkey);
-  const json = signedMessage.toBLindedMessageRequestJson();
+  const json = signedMessage.toBlindedMessageRequestJson();
   const stringifiedBody = JSON.stringify(json);
 
   const result = await OnionSending.sendJsonViaOnionV4ToSogs({

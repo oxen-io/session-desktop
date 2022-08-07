@@ -918,7 +918,7 @@ const sendOnionRequestNoRetries = async ({
   useV4: boolean;
 }) => {
   // Warning: be sure to do a copy otherwise the delete below creates issue with retries
-  // we want to forward the destination_ed25519_hex explicitely so remove it from the copy directly
+  // we want to forward the destination_ed25519_hex explicitly so remove it from the copy directly
   const finalDestOptions = cloneDeep(omit(finalDestOptionsOri, ['destination_ed25519_hex']));
   if (typeof destX25519hex !== 'string') {
     window?.log?.warn('destX25519hex was not a string');

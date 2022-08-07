@@ -5,6 +5,8 @@ import { ByteKeyPair } from '../../../../session/utils/User';
 import { to_hex } from 'libsodium-wrappers-sumo';
 import { fromBase64, fromHex } from 'bytebuffer';
 import { StringUtils } from '../../../../session/utils';
+import { concatUInt8Array, getSodiumRenderer } from '../../../../session/crypto';
+import { KeyPrefixType } from '../../../../session/types';
 
 chai.use(chaiBytes);
 
@@ -366,7 +368,7 @@ describe('OpenGroupAuthentication', () => {
         recipientSigningKey: signingKeysB,
       });
       if (data) {
-        const decrypted = await SogsBlinding.decryptBlindedMessage(
+        const decrypted = await decryptBlindedMessage(
           data,
           signingKeysA,
           signingKeysB,
@@ -407,3 +409,85 @@ describe('OpenGroupAuthentication', () => {
     });
   });
 });
+
+/**
+ * This function is actually just used for testing and is useless IRL.
+ * We should probably move it somewhere else.
+ *
+ * The function you are looking for is `decryptWithSessionBlindingProtocol`
+ * @param data The data to be decrypted from the sender
+ * @param aSignKeyBytes the sender's keypair bytes
+ * @param bSignKeyBytes the receivers keypair bytes
+ * @param serverPubKey the server the message is sent to
+ */
+const decryptBlindedMessage = async (
+  data: Uint8Array,
+  aSignKeyBytes: ByteKeyPair,
+  bSignKeyBytes: ByteKeyPair,
+  serverPubKey: Uint8Array
+): Promise<| {
+    messageText: string;
+    senderED25519PubKey: string;
+    senderSessionId: string;
+  }
+| undefined> => {
+  const sodium = await getSodiumRenderer();
+
+  const aBlindingValues = SogsBlinding.getBlindingValues(serverPubKey, aSignKeyBytes, sodium);
+  const bBlindingValues = SogsBlinding.getBlindingValues(serverPubKey, bSignKeyBytes, sodium);
+  const { publicKey: kA } = aBlindingValues;
+  const { a: b, publicKey: kB } = bBlindingValues;
+
+  const k = sodium.crypto_core_ed25519_scalar_reduce(sodium.crypto_generichash(64, serverPubKey));
+
+  const decryptKey = sodium.crypto_generichash(
+    32,
+    concatUInt8Array(sodium.crypto_scalarmult_ed25519_noclamp(b, kA), kA, kB)
+  );
+
+  const version = data[0];
+  if (version !== 0) {
+    window?.log?.error(
+      'decryptBlindedMessage - Dropping message due to unsupported encryption version'
+    );
+    return;
+  }
+
+  const nonceLength = sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
+  const ciphertextIncoming = data.slice(1, data.length - nonceLength);
+  const nonceIncoming = data.slice(data.length - nonceLength);
+
+  const plaintextIncoming = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+    null,
+    ciphertextIncoming,
+    null,
+    nonceIncoming,
+    decryptKey
+  );
+
+  if (plaintextIncoming.length <= 32) {
+    // throw Error;
+    window?.log?.error('decryptBlindedMessage: plaintext unsufficient length');
+    return;
+  }
+
+  const msg = plaintextIncoming.slice(0, plaintextIncoming.length - 32);
+  const senderEdpk = plaintextIncoming.slice(plaintextIncoming.length - 32);
+
+  if (to_hex(kA) !== to_hex(sodium.crypto_scalarmult_ed25519_noclamp(k, senderEdpk))) {
+    throw Error;
+  }
+
+  const messageText = StringUtils.decode(msg, 'utf8');
+
+  const senderSessionId = `${KeyPrefixType.standard}${to_hex(
+    sodium.crypto_sign_ed25519_pk_to_curve25519(senderEdpk)
+  )}`;
+  const senderED25519PubKey = to_hex(senderEdpk);
+
+  return {
+    messageText,
+    senderED25519PubKey,
+    senderSessionId,
+  };
+};

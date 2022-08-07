@@ -884,7 +884,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         lastMessageAttribute.length > 40 &&
         lastMessageUpdate.lastMessage.startsWith(lastMessageAttribute)
       ) {
-        // if status is the same, and text have a long length which start with the db status, do not trigger an update.
+        // if status is the same, and text has a long length which starts with the db status, do not trigger an update.
         // we only store the first 60 chars in the db for the lastMessage attributes (see sql.ts)
         return;
       }
@@ -1252,27 +1252,27 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public setSessionDisplayNameNoCommit(newDisplayName?: string | null) {
     const existingSessionName = this.getRealSessionUsername();
-    if (newDisplayName !== existingSessionName && newDisplayName) {
+    if (newDisplayName && newDisplayName !== existingSessionName) {
       this.set({ displayNameInProfile: newDisplayName });
     }
   }
 
   /**
-   * @returns `displayNameInProfile` so the real username as defined by that user/group
+   * @returns `displayNameInProfile` - the real username as defined by that user/group
    */
   public getRealSessionUsername(): string | undefined {
     return this.get('displayNameInProfile');
   }
 
   /**
-   * @returns `nickname` so the nickname we forced for that user. For a group, this returns `undefined`
+   * @returns `nickname` - the nickname we forced for that user. For a group, this returns undefined
    */
   public getNickname(): string | undefined {
     return this.isPrivate() ? this.get('nickname') : undefined;
   }
 
   /**
-   * @returns `getNickname` if a private convo and a nickname is set, or `getRealSessionUsername`
+   * @returns `getNickname` - the nickname if a private convo and a nickname is set, or `getRealSessionUsername`
    */
   public getNicknameOrRealUsername(): string | undefined {
     return this.getNickname() || this.getRealSessionUsername();

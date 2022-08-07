@@ -104,7 +104,6 @@ export class OpenGroupMessageV2 {
     }
     const data = fromBase64ToArray(this.base64EncodedData);
 
-    // const signature = sign(new Uint8Array(blindedKeyPair.secretKey), data, null);
     const signature = await SogsBlinding.getSogsSignature({
       blinded: true,
       ka: blindedKeyPair.secretKey,
@@ -148,7 +147,7 @@ export class OpenGroupMessageV2 {
     return json;
   }
 
-  public toBLindedMessageRequestJson() {
+  public toBlindedMessageRequestJson() {
     const json = {
       message: this.base64EncodedData,
       timestamp: this.sentTimestamp,

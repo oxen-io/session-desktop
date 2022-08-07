@@ -33,13 +33,13 @@ type BatchBodyRequest = BatchJsonSubrequestOptions;
 type BatchSubRequest = BatchBodyRequest | BatchFetchRequestOptions;
 
 type BatchRequest = {
-  /** Used by server to processing request */
+  /** Used by server to process request */
   endpoint: string;
-  /** Used by server to processing request */
+  /** Used by server to process request */
   method: string;
-  /** Used by server to processing request */
+  /** Used by server to process request */
   body: string;
-  /** Used by server to processing request and authenication */
+  /** Used by server to process request and authentication */
   headers: OpenGroupRequestHeaders;
 };
 
@@ -205,6 +205,7 @@ export type OpenGroupBatchRow =
   | SubRequestBanUnbanUserType
   | SubRequestDeleteAllUserPostsType
   | SubRequestUpdateRoomType;
+
 /**
  *
  * @param options Array of subrequest options to be made.
@@ -389,7 +390,7 @@ const sendSogsBatchRequestOnionV4 = async (
   if (isObject(batchResponse.body)) {
     return batchResponse as BatchSogsReponse;
   }
-  window?.log?.warn('sogsbatch: batch response decoded body is not object. Reutrning null');
+  window?.log?.warn('sogsbatch: batch response decoded body is not object. Returning null');
 
   return null;
 };

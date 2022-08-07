@@ -16,7 +16,7 @@ import { callUtilsWorker } from '../../../../webworker/workers/util_worker_inter
 import { PubKey } from '../../../types';
 import {
   addCachedBlindedKey,
-  findCachedBlindedMatchOrItLookup,
+  findCachedBlindedMatchOrLookItUp,
   findCachedOurBlindedPubkeyOrLookItUp,
   getCachedNakedKeyFromBlindedNoServerPubkey,
   tryMatchBlindWithStandardKey,
@@ -154,6 +154,7 @@ const handleSogsV3DeletedMessages = async (
     const convo = getConversationController().get(convoId);
     const messageIds = await Data.getMessageIdsFromServerIds(allIdsRemoved, convo.id);
 
+    // we shouldn't get too many messages to delete at a time, so no need to add a function to remove multiple messages for now
     await Promise.all(
       (messageIds || []).map(async id => {
         if (convo) {
@@ -162,7 +163,6 @@ const handleSogsV3DeletedMessages = async (
         await Data.removeMessage(id);
       })
     );
-    //
   } catch (e) {
     window?.log?.warn('handleDeletions failed:', e);
   }
@@ -237,15 +237,12 @@ const handleMessagesResponseV4 = async (
       }
       messagesWithResolvedBlindedIdsIfFound.push(newMessage);
     }
-    const dedupedUnblindedMessages = await filterDuplicatesFromDbAndIncomingV4(
-      messagesWithResolvedBlindedIdsIfFound
-    );
 
     // we use the unverified newMessages seqno and id as last polled because we actually did poll up to those ids.
     const incomingMessageSeqNo = compact(messages.map(n => n.seqno));
     const maxNewMessageSeqNo = Math.max(...incomingMessageSeqNo);
-    for (let index = 0; index < dedupedUnblindedMessages.length; index++) {
-      const msgToHandle = dedupedUnblindedMessages[index];
+    for (let index = 0; index < messagesWithResolvedBlindedIdsIfFound.length; index++) {
+      const msgToHandle = messagesWithResolvedBlindedIdsIfFound[index];
       try {
         await handleOpenGroupV4Message(msgToHandle, roomDetails);
       } catch (e) {
@@ -348,9 +345,9 @@ async function handleInboxOutboxMessages(
         const contentDecoded = SignalService.Content.decode(content);
 
         // if we already know this user's unblinded pubkey, store the blinded message we sent to that blinded recipient under
-        // the unblinded conversation instead (as we would have merge the blinded one with the )
+        // the unblinded conversation instead (as we would have merge the blinded one with the other )
         const unblindedIDOrBlinded =
-          (await findCachedBlindedMatchOrItLookup(recipient, serverPubkey, sodium)) || recipient;
+          (await findCachedBlindedMatchOrLookItUp(recipient, serverPubkey, sodium)) || recipient;
 
         if (contentDecoded.dataMessage) {
           const outboxConversationModel = await getConversationController().getOrCreateAndWait(
@@ -399,7 +396,7 @@ async function handleInboxOutboxMessages(
             realSessionId: decrypted.senderUnblinded,
             serverPublicKey: serverPubkey,
           });
-          await findCachedBlindedMatchOrItLookup(sender, serverPubkey, sodium);
+          await findCachedBlindedMatchOrLookItUp(sender, serverPubkey, sodium);
         } catch (e) {
           window.log.warn('tryMatchBlindWithStandardKey could not veriyfy');
         }
@@ -465,14 +462,13 @@ export const handleBatchPollResults = async (
             // capabilities are handled in handleCapabilities and are skipped here just to avoid the default case below
             break;
           case 'messages':
-            // this will also include deleted messages explicitely with `data: null` & edited messages with a new data field & react changes with data not existing
+            // this will also include deleted messages explicitly with `data: null` & edited messages with a new data field & react changes with data not existing
             return handleMessagesResponseV4(
               subResponse.body,
               serverUrl,
               subrequestOption,
               roomIdsStillPolled
             );
-
           case 'pollInfo':
             await handlePollInfoResponse(
               subResponse.code,
@@ -481,17 +477,12 @@ export const handleBatchPollResults = async (
               roomIdsStillPolled
             );
             break;
-
           case 'inbox':
             await handleInboxOutboxMessages(subResponse.body, serverUrl, false);
-
             break;
-
           case 'outbox':
             await handleInboxOutboxMessages(subResponse.body, serverUrl, true);
-
             break;
-
           default:
             window.log.error('No matching subrequest response body for type: ', responseType);
         }

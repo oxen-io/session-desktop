@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { MessageRenderingProps } from '../../../../models/messageType';
-import { findCachedBlindedMatchOrItLookup } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
+import { findCachedBlindedMatchOrLookItUp } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../../../../session/conversations';
 import { getSodiumRenderer } from '../../../../session/crypto';
 import { PubKey } from '../../../../session/types';
@@ -80,7 +80,7 @@ export const MessageAvatar = (props: Props) => {
       const room = OpenGroupData.getV2OpenGroupRoom(convoOpen.id);
       let privateConvoToOpen = sender;
       if (room?.serverPublicKey) {
-        const foundRealSessionId = await findCachedBlindedMatchOrItLookup(
+        const foundRealSessionId = await findCachedBlindedMatchOrLookItUp(
           sender,
           room.serverPublicKey,
           await getSodiumRenderer()

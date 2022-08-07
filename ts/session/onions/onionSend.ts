@@ -159,9 +159,8 @@ const sendViaOnionV4ToNonSnodeWithRetries = async (
         // We decode it here, because if the result status code is not valid, we want to trigger a retry (by throwing an error)
         const decodedV4 = OnionV4.decodeV4Response(onionV4Response);
 
-        // the pn server reply with the decodedV4?.metadata as any)?.status syntax
-        const foundStatusCode =
-          decodedV4?.metadata?.code || (decodedV4?.metadata as any)?.status || STATUS_NO_STATUS;
+        // the pn server replies with the decodedV4?.metadata as any)?.code syntax too since onion v4
+        const foundStatusCode = decodedV4?.metadata?.code || STATUS_NO_STATUS;
         if (foundStatusCode < 200 || foundStatusCode > 299) {
           // we consider those cases as an error, and trigger a retry (if possible), by throwing a non-abortable error
           throw new Error(

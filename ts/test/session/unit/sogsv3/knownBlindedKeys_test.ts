@@ -8,7 +8,7 @@ import {
   addCachedBlindedKey,
   BlindedIdMapping,
   findCachedBlindedIdFromUnblinded,
-  findCachedBlindedMatchOrItLookup,
+  findCachedBlindedMatchOrLookItUp,
   getCachedNakedKeyFromBlinded,
   getCachedNakedKeyFromBlindedNoServerPubkey,
   isNonBlindedKey,
@@ -442,9 +442,9 @@ describe('knownBlindedKeys', () => {
     });
   });
 
-  describe('findCachedBlindedMatchOrItLookup', () => {
+  describe('findCachedBlindedMatchOrLookItUp', () => {
     it('return unblinded pubkey if already unblinded', async () => {
-      const real = await findCachedBlindedMatchOrItLookup(realSessionId, serverPublicKey, sodium);
+      const real = await findCachedBlindedMatchOrLookItUp(realSessionId, serverPublicKey, sodium);
       expect(createOrUpdateItem.callCount).to.be.eq(0);
       expect(real).to.be.eq(realSessionId);
     });
@@ -458,7 +458,7 @@ describe('knownBlindedKeys', () => {
         serverPublicKey: knownBlindingMatch.serverPublicKey,
         realSessionId: knownBlindingMatch.realSessionId,
       });
-      const real = await findCachedBlindedMatchOrItLookup(realSessionId, serverPublicKey, sodium);
+      const real = await findCachedBlindedMatchOrLookItUp(realSessionId, serverPublicKey, sodium);
       // just one call with that addCachedBlindedKey, and none else, as the cache was hit
       expect(createOrUpdateItem.callCount).to.eq(1);
       expect(real).to.eq(realSessionId);
@@ -473,7 +473,7 @@ describe('knownBlindedKeys', () => {
         serverPublicKey: knownBlindingMatch.serverPublicKey,
         realSessionId: knownBlindingMatch.realSessionId,
       });
-      const real = await findCachedBlindedMatchOrItLookup(realSessionId, serverPublicKey, sodium);
+      const real = await findCachedBlindedMatchOrLookItUp(realSessionId, serverPublicKey, sodium);
       // just one call with that addCachedBlindedKey, and none else, as the cache was hit
       expect(createOrUpdateItem.callCount).to.eq(1);
       expect(real).to.eq(realSessionId);
@@ -500,7 +500,7 @@ describe('knownBlindedKeys', () => {
         await addCachedBlindedKey(shouldBeWrittenToDb);
 
         Sinon.stub(getConversationController(), 'getConversations').returns([]);
-        const real = await findCachedBlindedMatchOrItLookup(realSessionId, serverPublicKey, sodium);
+        const real = await findCachedBlindedMatchOrLookItUp(realSessionId, serverPublicKey, sodium);
         // we should have 1 call here as the value was already added to the cache
         expect(createOrUpdateItem.callCount).to.eq(1);
         expect(createOrUpdateItem.lastCall.args[0]).to.deep.eq({
@@ -527,7 +527,7 @@ describe('knownBlindedKeys', () => {
           ConversationTypeEnum.PRIVATE
         );
         convo.set({ isApproved: true });
-        const real = await findCachedBlindedMatchOrItLookup(
+        const real = await findCachedBlindedMatchOrLookItUp(
           knownBlindingMatch.blindedId,
           knownBlindingMatch.serverPublicKey,
           sodium
@@ -552,7 +552,7 @@ describe('knownBlindedKeys', () => {
           ConversationTypeEnum.PRIVATE
         );
         convo.set({ isApproved: false });
-        const real = await findCachedBlindedMatchOrItLookup(
+        const real = await findCachedBlindedMatchOrLookItUp(
           knownBlindingMatch.blindedId,
           knownBlindingMatch.serverPublicKey,
           sodium
@@ -571,7 +571,7 @@ describe('knownBlindedKeys', () => {
           ConversationTypeEnum.GROUP
         );
         convo.set({ isApproved: false });
-        const real = await findCachedBlindedMatchOrItLookup(
+        const real = await findCachedBlindedMatchOrLookItUp(
           knownBlindingMatch.blindedId,
           knownBlindingMatch.serverPublicKey,
           sodium
