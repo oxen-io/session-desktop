@@ -176,7 +176,8 @@ export const handleMessageReaction = async (
     reacts[reaction.emoji].count = count;
     reacts[reaction.emoji].senders = details.senders;
 
-    if (details && details.index === undefined) {
+    // sorting for open groups convos is handled by SOGS
+    if (!isOpenGroup && details && details.index === undefined) {
       reacts[reaction.emoji].index = originalMessage.get('reactsIndex') ?? 0;
       originalMessage.set('reactsIndex', (originalMessage.get('reactsIndex') ?? 0) + 1);
     }
