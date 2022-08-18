@@ -127,10 +127,9 @@ export type ReactionList = Record<
 >;
 
 // used when rendering reactions to guarantee sorted order using the index
-export type SortedReactionList = [
-  string,
-  { count: number; index: number; senders: Record<string, string> }
-][];
+export type SortedReactionList = Array<
+  [string, { count: number; index: number; senders: Record<string, string> }]
+>;
 
 export interface OpenGroupReaction {
   index: number;

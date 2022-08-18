@@ -1,6 +1,7 @@
 import { AbortSignal } from 'abort-controller';
 import { Data } from '../../../../data/data';
 import { OpenGroupReactionResponse, Reaction } from '../../../../types/Reaction';
+import { getEmojiDataFromNative } from '../../../../util/emoji';
 import { OnionSending } from '../../../onions/onionSend';
 import { OpenGroupPollingUtils } from '../opengroupV2/OpenGroupPollingUtils';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
@@ -44,7 +45,9 @@ export const sendSogsReactionOnionV4 = async (
     return false;
   }
 
-  const endpoint = `/room/${room}/reaction/${reaction.id}/${reaction.emoji}`;
+  // for an invalid reaction we use https://emojipedia.org/frame-with-an-x/ as a replacement since it cannot rendered as an emoji
+  const emoji = getEmojiDataFromNative(reaction.emoji) ? reaction.emoji : '🖾';
+  const endpoint = `/room/${room}/reaction/${reaction.id}/${emoji}`;
   const method = reaction.action === 0 ? 'PUT' : 'DELETE';
   const serverPubkey = allValidRoomInfos[0].serverPublicKey;
 
