@@ -1680,7 +1680,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
   public hasReactions() {
     // message requests should not have reactions
-    if (!this.isApproved()) {
+    if (this.isPrivate() && !this.isApproved()) {
       return false;
     }
     // older open group conversations won't have reaction support
