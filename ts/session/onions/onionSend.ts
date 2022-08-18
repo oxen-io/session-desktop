@@ -32,7 +32,7 @@ export type OnionFetchOptions = {
 
 // NOTE some endpoints require decoded strings
 const endpointExceptions = ['/reaction'];
-export const endpointRequiresDecoding = (url: string): string => {
+const endpointRequiresDecoding = (url: string): string => {
   // tslint:disable-next-line: prefer-for-of
   for (let i = 0; i < endpointExceptions.length; i++) {
     if (url.includes(endpointExceptions[i])) {
@@ -46,7 +46,7 @@ const buildSendViaOnionPayload = (
   url: URL,
   fetchOptions: OnionFetchOptions
 ): FinalDestNonSnodeOptions => {
-  const endpoint = endpointRequiresDecoding(
+  const endpoint = OnionSending.endpointRequiresDecoding(
     url.search ? `${url.pathname}${url.search}` : url.pathname
   );
 
@@ -519,7 +519,9 @@ async function sendJsonViaOnionV4ToFileServer(sendOptions: {
   return res as OnionV4JSONSnodeResponse;
 }
 
+// we export these methods for testing purposes
 export const OnionSending = {
+  endpointRequiresDecoding,
   sendViaOnionV4ToNonSnodeWithRetries,
   getOnionPathForSending,
   sendJsonViaOnionV4ToSogs,

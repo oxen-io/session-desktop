@@ -12,7 +12,7 @@ import {
   toX25519,
 } from '../../../utils/SodiumUtils';
 import { isEqual } from 'lodash';
-import { endpointRequiresDecoding } from '../../../onions/onionSend';
+import { OnionSending } from '../../../onions/onionSend';
 
 async function getSogsSignature({
   blinded,
@@ -68,7 +68,7 @@ async function getOpenGroupHeaders(data: {
     pubkey = `${KeyPrefixType.unblinded}${toHex(signingKeys.pubKeyBytes)}`;
   }
 
-  const rawPath = endpointRequiresDecoding(path); // this gets a string of the path wioth potentially emojis in it
+  const rawPath = OnionSending.endpointRequiresDecoding(path); // this gets a string of the path wioth potentially emojis in it
   const encodedPath = new Uint8Array(encode(rawPath, 'utf8')); // this gets the binary content of that utf8 string
 
   // SERVER_PUBKEY || NONCE || TIMESTAMP || METHOD || PATH || HASHED_BODY

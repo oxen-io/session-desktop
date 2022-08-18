@@ -126,10 +126,6 @@ describe('ReactionMessage', () => {
     clock.restore();
   });
 
-  it('a moderator can batch clear a reaction in an open group', () => {
-    // TODO Requires Open Group end point integration
-  });
-
   afterEach(() => {
     Sinon.restore();
   });
