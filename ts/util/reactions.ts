@@ -175,6 +175,11 @@ export const handleMessageReaction = async (
   if (count > 0) {
     reacts[reaction.emoji].count = count;
     reacts[reaction.emoji].senders = details.senders;
+
+    if (details && details.index === undefined) {
+      reacts[reaction.emoji].index = originalMessage.get('reactsIndex') ?? 0;
+      originalMessage.set('reactsIndex', (originalMessage.get('reactsIndex') ?? 0) + 1);
+    }
   } else {
     // tslint:disable-next-line: no-dynamic-delete
     delete reacts[reaction.emoji];

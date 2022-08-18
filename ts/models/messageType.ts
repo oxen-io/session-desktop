@@ -19,6 +19,7 @@ export interface MessageAttributes {
   preview?: any;
   reaction?: Reaction;
   reacts?: ReactionList;
+  reactsIndex?: number;
   body?: string;
   expirationStartTimestamp: number;
   read_by: Array<string>; // we actually only care about the length of this. values are not used for anything
@@ -162,6 +163,7 @@ export interface MessageAttributesOptionals {
   preview?: any;
   reaction?: Reaction;
   reacts?: ReactionList;
+  reactsIndex?: number;
   body?: string;
   expirationStartTimestamp?: number;
   read_by?: Array<string>; // we actually only care about the length of this. values are not used for anything

@@ -177,6 +177,7 @@ export type PropsForMessageWithoutConvoProps = {
   status?: LastMessageStatusType;
   attachments?: Array<PropsForAttachment>;
   reacts?: ReactionList;
+  reactsIndex?: number;
   previews?: Array<any>;
   quote?: {
     text?: string;
