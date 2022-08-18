@@ -1,5 +1,5 @@
 import React, { ReactElement, useRef, useState } from 'react';
-import { ReactionList } from '../../../../types/Reaction';
+import { SortedReactionList } from '../../../../types/Reaction';
 import { UserUtils } from '../../../../session/utils';
 import { abbreviateNumber } from '../../../../util/abbreviateNumber';
 import { nativeEmojiData } from '../../../../util/emoji';
@@ -41,7 +41,7 @@ const StyledReactionContainer = styled.div<{
 export type ReactionProps = {
   emoji: string;
   messageId: string;
-  reactions: ReactionList;
+  reactions: SortedReactionList;
   inModal: boolean;
   inGroup: boolean;
   handlePopupX: (x: number) => void;
@@ -68,8 +68,9 @@ export const Reaction = (props: ReactionProps): ReactElement => {
     handlePopupReaction,
     handlePopupClick,
   } = props;
-  const senders = reactions[emoji].senders ? Object.keys(reactions[emoji].senders) : [];
-  const count = reactions[emoji].count;
+  const reactionsMap = (reactions && Object.fromEntries(reactions)) || {};
+  const senders = reactionsMap[emoji].senders ? Object.keys(reactionsMap[emoji].senders) : [];
+  const count = reactionsMap[emoji].count;
   const showCount = count !== undefined && (count > 1 || inGroup);
 
   const reactionRef = useRef<HTMLDivElement>(null);
@@ -141,7 +142,7 @@ export const Reaction = (props: ReactionProps): ReactElement => {
         <ReactionPopup
           messageId={messageId}
           emoji={popupReaction}
-          senders={Object.keys(reactions[popupReaction].senders)}
+          senders={Object.keys(reactionsMap[popupReaction].senders)}
           tooltipPosition={tooltipPosition}
           onClick={() => {
             if (handlePopupReaction) {

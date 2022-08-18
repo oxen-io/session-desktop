@@ -917,6 +917,13 @@ export const getMessageReactsProps = createSelector(getMessagePropsByMessageId, 
     'serverId',
   ]);
 
+  if (msgProps.reacts) {
+    const sortedReacts = Object.entries(msgProps.reacts).sort((a, b) => {
+      return a[1].index < b[1].index ? -1 : a[1].index > b[1].index ? 1 : 0;
+    });
+    msgProps.sortedReacts = sortedReacts;
+  }
+
   return msgProps;
 });
 

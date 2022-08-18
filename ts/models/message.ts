@@ -534,7 +534,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const nbsp = '\xa0';
     const regex = /(\S)( +)(\S+\s*)$/;
     return text.replace(regex, (_match, start, spaces, end) => {
-      const newSpaces =
+      const newSpaces: any =
         end.length < 12 ? reduce(spaces, accumulator => accumulator + nbsp, '') : spaces;
       return `${start}${newSpaces}${end}`;
     });
@@ -856,6 +856,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       attachments: undefined,
       preview: undefined,
       reacts: undefined,
+      reactsIndex: undefined,
     });
     await this.markRead(Date.now());
     await this.commit();

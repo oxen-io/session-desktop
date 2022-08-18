@@ -13,7 +13,7 @@ import {
 } from '../../state/ducks/modalDialog';
 import { StateType } from '../../state/reducer';
 import { getMessageReactsProps } from '../../state/selectors/conversations';
-import { ReactionList } from '../../types/Reaction';
+import { SortedReactionList } from '../../types/Reaction';
 import { nativeEmojiData } from '../../util/emoji';
 import { sendMessageReaction } from '../../util/reactions';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
@@ -184,7 +184,8 @@ const handleSenders = (senders: Array<string>, me: string) => {
 export const ReactListModal = (props: Props): ReactElement => {
   const { reaction, messageId } = props;
 
-  const [reactions, setReactions] = useState<ReactionList>({});
+  const [reactions, setReactions] = useState<SortedReactionList>([]);
+  const reactionsMap = (reactions && Object.fromEntries(reactions)) || {};
   const [currentReact, setCurrentReact] = useState('');
   const [reactAriaLabel, setReactAriaLabel] = useState<string | undefined>();
   const [senders, setSenders] = useState<Array<string>>([]);
@@ -198,7 +199,8 @@ export const ReactListModal = (props: Props): ReactElement => {
   const dispatch = useDispatch();
 
   const me = UserUtils.getOurPubKeyStrFromCache();
-  const { convoId, reacts, isPublic } = msgProps;
+  const { convoId, sortedReacts: reacts, isPublic } = msgProps;
+
   const convo = getConversationController().get(convoId);
   const weAreModerator = convo.getConversationModelProps().weAreModerator;
 
@@ -239,13 +241,13 @@ export const ReactListModal = (props: Props): ReactElement => {
       setReactions(reacts);
     }
 
-    if (Object.keys(reactions).length > 0 && (reacts === {} || reacts === undefined)) {
-      setReactions({});
+    if (reactions && reactions.length > 0 && (reacts === [] || reacts === undefined)) {
+      setReactions([]);
     }
 
     let _senders =
-      reactions[currentReact] && reactions[currentReact].senders
-        ? Object.keys(reactions[currentReact].senders)
+      reactionsMap && reactionsMap[currentReact] && reactionsMap[currentReact].senders
+        ? Object.keys(reactionsMap[currentReact].senders)
         : null;
 
     if (_senders && !isEqual(senders, _senders)) {
@@ -257,14 +259,14 @@ export const ReactListModal = (props: Props): ReactElement => {
 
     if (
       senders.length > 0 &&
-      (!reactions[currentReact] ||
-        !reactions[currentReact].senders ||
+      (!reactionsMap[currentReact] ||
+        !reactionsMap[currentReact].senders ||
         _senders === [] ||
         _senders === null)
     ) {
       setSenders([]);
     }
-  }, [currentReact, me, reaction, reacts, reactions, senders]);
+  }, [currentReact, me, reaction, reacts, reactionsMap, senders]);
 
   return (
     <SessionWrapperModal
@@ -282,7 +284,7 @@ export const ReactListModal = (props: Props): ReactElement => {
             onClick={handleReactionClick}
           />
         </StyledReactionsContainer>
-        {currentReact && (
+        {reactionsMap && currentReact && (
           <StyledSendersContainer
             container={true}
             flexDirection={'column'}
@@ -297,10 +299,10 @@ export const ReactListModal = (props: Props): ReactElement => {
                 <span role={'img'} aria-label={reactAriaLabel}>
                   {currentReact}
                 </span>
-                {reactions[currentReact].count && (
+                {reactionsMap[currentReact].count && (
                   <>
                     <span>&#8226;</span>
-                    <span>{reactions[currentReact].count}</span>
+                    <span>{reactionsMap[currentReact].count}</span>
                   </>
                 )}
               </p>

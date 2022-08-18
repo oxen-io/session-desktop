@@ -5,7 +5,7 @@ import { MessageRenderingProps } from '../../../../models/messageType';
 import { StateType } from '../../../../state/reducer';
 import { getMessageReactsProps } from '../../../../state/selectors/conversations';
 import { isEmpty, isEqual } from 'lodash';
-import { ReactionList } from '../../../../types/Reaction';
+import { SortedReactionList } from '../../../../types/Reaction';
 import { StyledPopupContainer } from '../reactions/ReactionPopup';
 import { Flex } from '../../../basic/Flex';
 import { nativeEmojiData } from '../../../../util/emoji';
@@ -66,7 +66,7 @@ const Reactions = (props: ReactionsProps): ReactElement => {
       alignItems={'center'}
       inModal={inModal}
     >
-      {Object.keys(reactions).map(emoji => (
+      {reactions.map(([emoji, _]) => (
         <Reaction key={`${messageId}-${emoji}`} emoji={emoji} {...props} />
       ))}
     </StyledMessageReactions>
@@ -86,16 +86,14 @@ const CompressedReactions = (props: ExpandReactionsProps): ReactElement => {
       alignItems={'center'}
       inModal={inModal}
     >
-      {Object.keys(reactions)
-        .slice(0, 4)
-        .map(emoji => (
-          <Reaction key={`${messageId}-${emoji}`} emoji={emoji} {...props} />
-        ))}
+      {reactions.slice(0, 4).map(([emoji, _]) => (
+        <Reaction key={`${messageId}-${emoji}`} emoji={emoji} {...props} />
+      ))}
       <StyledReactionOverflow onClick={handleExpand}>
-        {Object.keys(reactions)
+        {reactions
           .slice(4, 7)
           .reverse()
-          .map(emoji => {
+          .map(([emoji, _]) => {
             return (
               <span
                 key={`${messageId}-${emoji}`}
@@ -128,7 +126,7 @@ const ExpandedReactions = (props: ExpandReactionsProps): ReactElement => {
 
 export type MessageReactsSelectorProps = Pick<
   MessageRenderingProps,
-  'convoId' | 'conversationType' | 'isPublic' | 'reacts' | 'serverId'
+  'convoId' | 'conversationType' | 'isPublic' | 'serverId' | 'reacts' | 'sortedReacts'
 >;
 
 type Props = {
@@ -153,7 +151,7 @@ export const MessageReactions = (props: Props): ReactElement => {
     inModal = false,
     onSelected,
   } = props;
-  const [reactions, setReactions] = useState<ReactionList>({});
+  const [reactions, setReactions] = useState<SortedReactionList>([]);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const handleExpand = () => {
@@ -169,7 +167,7 @@ export const MessageReactions = (props: Props): ReactElement => {
     return <></>;
   }
 
-  const { conversationType, reacts } = msgProps;
+  const { conversationType, sortedReacts: reacts } = msgProps;
   const inGroup = conversationType === 'group';
 
   const reactLimit = 6;
@@ -194,7 +192,7 @@ export const MessageReactions = (props: Props): ReactElement => {
     }
 
     if (!isEmpty(reactions) && isEmpty(reacts)) {
-      setReactions({});
+      setReactions([]);
     }
   }, [reacts, reactions]);
 
@@ -207,8 +205,9 @@ export const MessageReactions = (props: Props): ReactElement => {
       x={popupX}
       y={popupY}
     >
-      {reactions !== {} &&
-        (!hasReactLimit || Object.keys(reactions).length <= reactLimit ? (
+      {reacts &&
+        reacts !== [] &&
+        (!hasReactLimit || reacts.length <= reactLimit ? (
           <Reactions {...reactionsProps} />
         ) : isExpanded ? (
           <ExpandedReactions handleExpand={handleExpand} {...reactionsProps} />

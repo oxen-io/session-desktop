@@ -116,6 +116,7 @@ export interface Reaction {
   action: Action;
 }
 
+// used for logic operations with reactions i.e reponses, db, etc.
 export type ReactionList = Record<
   string,
   {
@@ -124,6 +125,12 @@ export type ReactionList = Record<
     senders: Record<string, string>; // <sender pubkey, messageHash or serverId>
   }
 >;
+
+// used when rendering reactions to guarantee sorted order using the index
+export type SortedReactionList = [
+  string,
+  { count: number; index: number; senders: Record<string, string> }
+][];
 
 export interface OpenGroupReaction {
   index: number;
