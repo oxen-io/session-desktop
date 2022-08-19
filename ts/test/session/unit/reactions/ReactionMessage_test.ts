@@ -23,7 +23,7 @@ describe('ReactionMessage', () => {
 
   beforeEach(() => {
     Sinon.stub(originalMessage, 'getConversation').returns({
-      hasReactions: true,
+      hasReactions: () => true,
       sendReaction: noop,
     } as any);
 
