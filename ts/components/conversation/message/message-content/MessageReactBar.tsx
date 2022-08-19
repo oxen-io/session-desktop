@@ -57,7 +57,7 @@ export const MessageReactBar = (props: Props): ReactElement => {
     if (reactions && !isEqual(reactions, recentReactions)) {
       setRecentReactions(reactions);
     }
-  }, [recentReactions]);
+  }, []);
 
   if (!recentReactions) {
     return <></>;

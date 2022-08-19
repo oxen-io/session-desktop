@@ -586,13 +586,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   }
 
   public getPropsForReacts(): ReactionList | null {
-    const reacts = this.get('reacts') || null;
-
-    if (!reacts) {
-      return null;
-    }
-
-    return reacts;
+    return this.get('reacts') || null;
   }
 
   public getPropsForQuote(_options: any = {}) {

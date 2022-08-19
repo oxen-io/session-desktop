@@ -1,8 +1,9 @@
 import { isEmpty, isEqual } from 'lodash';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../data/data';
+import { useMessageReactsPropsById } from '../../hooks/useParamSelector';
 import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
@@ -11,8 +12,6 @@ import {
   updateReactListModal,
   updateUserDetailsModal,
 } from '../../state/ducks/modalDialog';
-import { StateType } from '../../state/reducer';
-import { getMessageReactsProps } from '../../state/selectors/conversations';
 import { SortedReactionList } from '../../types/Reaction';
 import { nativeEmojiData } from '../../util/emoji';
 import { sendMessageReaction } from '../../util/reactions';
@@ -189,7 +188,7 @@ export const ReactListModal = (props: Props): ReactElement => {
   const [senders, setSenders] = useState<Array<string>>([]);
   const me = UserUtils.getOurPubKeyStrFromCache();
 
-  const msgProps = useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+  const msgProps = useMessageReactsPropsById(messageId);
 
   // tslint:disable: cyclomatic-complexity
   useEffect(() => {

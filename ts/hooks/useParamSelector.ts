@@ -1,10 +1,10 @@
 import { pick } from 'lodash';
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ConversationModel } from '../models/conversation';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
+import { getMessageReactsProps } from '../state/selectors/conversations';
 
 export function useAvatarPath(convoId: string | undefined) {
   const convoProps = useConversationPropsById(convoId);
@@ -171,19 +171,15 @@ export function useConversationPropsById(convoId?: string) {
   });
 }
 
-export function usePopup() {
-  const popupXDefault = -101;
-  const popupYDefault = -90;
-
-  const [popupX, setPopupX] = useState(popupXDefault);
-  const [popupY, setPopupY] = useState(popupYDefault);
-
-  return {
-    popupXDefault,
-    popupX,
-    setPopupX,
-    popupYDefault,
-    popupY,
-    setPopupY,
-  };
+export function useMessageReactsPropsById(messageId?: string) {
+  return useSelector((state: StateType) => {
+    if (!messageId) {
+      return null;
+    }
+    const messageReactsProps = getMessageReactsProps(state, messageId);
+    if (!messageReactsProps) {
+      return null;
+    }
+    return messageReactsProps;
+  });
 }

@@ -8,7 +8,6 @@ import { useMouse } from 'react-use';
 import { ReactionPopup, TipPosition } from './ReactionPopup';
 import { popupXDefault, popupYDefault } from '../message-content/MessageReactions';
 import { isUsAnySogsFromCache } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
-// import { usePopup } from '../../../../hooks/useParamSelector';
 
 const StyledReaction = styled.button<{ selected: boolean; inModal: boolean; showCount: boolean }>`
   display: flex;
@@ -73,8 +72,6 @@ export const Reaction = (props: ReactionProps): ReactElement => {
   const senders = reactionsMap[emoji].senders ? Object.keys(reactionsMap[emoji].senders) : [];
   const count = reactionsMap[emoji].count;
   const showCount = count !== undefined && (count > 1 || inGroup);
-
-  // const { popupXDefault, setPopupX, popupYDefault, setPopupY } = usePopup();
 
   const reactionRef = useRef<HTMLDivElement>(null);
   const { docX, elW } = useMouse(reactionRef);

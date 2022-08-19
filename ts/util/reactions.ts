@@ -83,7 +83,7 @@ export const sendMessageReaction = async (messageId: string, emoji: string) => {
       (isOpenGroup && getUsBlindedInThatServer(conversationModel)) ||
       UserUtils.getOurPubKeyStrFromCache();
     const author = found.get('source');
-    let action = 0;
+    let action: Action = Action.REACT;
 
     const reacts = found.get('reacts');
     if (
@@ -92,7 +92,7 @@ export const sendMessageReaction = async (messageId: string, emoji: string) => {
       Object.keys(reacts[emoji].senders).includes(me)
     ) {
       window.log.info('found matching reaction removing it');
-      action = 1;
+      action = Action.REMOVE;
     } else {
       const reactions = getRecentReactions();
       if (reactions) {
@@ -110,7 +110,7 @@ export const sendMessageReaction = async (messageId: string, emoji: string) => {
     await conversationModel.sendReaction(messageId, reaction);
 
     window.log.info(
-      `You ${action === 0 ? 'added' : 'removed'} a`,
+      `You ${action === Action.REACT ? 'added' : 'removed'} a`,
       emoji,
       'reaction for message',
       id
@@ -239,10 +239,10 @@ export const updateRecentReactions = async (reactions: Array<string>, newReactio
   window?.log?.info('updating recent reactions with', newReaction);
   const recentReactions = new RecentReactions(reactions);
   const foundIndex = recentReactions.items.indexOf(newReaction);
-  if (foundIndex >= 0) {
-    if (foundIndex === 0) {
-      return;
-    }
+  if (foundIndex === 0) {
+    return;
+  }
+  if (foundIndex > 0) {
     recentReactions.swap(foundIndex);
   } else {
     recentReactions.push(newReaction);

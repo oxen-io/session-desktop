@@ -1,8 +1,9 @@
 import { EmojiSet } from 'emoji-mart';
 
+export const reactionLimit: number = 6;
+
 export class RecentReactions {
   public items: Array<string> = [];
-  public limit: number = 6;
 
   constructor(items: Array<string>) {
     this.items = items;
@@ -13,7 +14,7 @@ export class RecentReactions {
   }
 
   public push(item: string): void {
-    if (this.size() === this.limit) {
+    if (this.size() === reactionLimit) {
       this.items.pop();
     }
     this.items.unshift(item);

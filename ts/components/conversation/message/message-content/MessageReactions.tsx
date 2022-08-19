@@ -1,9 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MessageRenderingProps } from '../../../../models/messageType';
-import { StateType } from '../../../../state/reducer';
-import { getMessageReactsProps } from '../../../../state/selectors/conversations';
 import { isEmpty, isEqual } from 'lodash';
 import { SortedReactionList } from '../../../../types/Reaction';
 import { StyledPopupContainer } from '../reactions/ReactionPopup';
@@ -11,7 +8,7 @@ import { Flex } from '../../../basic/Flex';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { Reaction, ReactionProps } from '../reactions/Reaction';
 import { SessionIcon } from '../../../icon';
-// import { usePopup } from '../../../../hooks/useParamSelector';
+import { useMessageReactsPropsById } from '../../../../hooks/useParamSelector';
 
 export const popupXDefault = -101;
 export const popupYDefault = -90;
@@ -161,9 +158,8 @@ export const MessageReactions = (props: Props): ReactElement => {
 
   const [popupX, setPopupX] = useState(popupXDefault);
   const [popupY, setPopupY] = useState(popupYDefault);
-  // const { popupX, popupY } = usePopup();
 
-  const msgProps = useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+  const msgProps = useMessageReactsPropsById(messageId);
 
   useEffect(() => {
     if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {

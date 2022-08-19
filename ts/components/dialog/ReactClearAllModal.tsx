@@ -1,11 +1,10 @@
 import React, { ReactElement, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useMessageReactsPropsById } from '../../hooks/useParamSelector';
 import { clearSogsReactionByServerId } from '../../session/apis/open_group_api/sogsv3/sogsV3ClearReaction';
 import { getConversationController } from '../../session/conversations';
 import { updateReactClearAllModal } from '../../state/ducks/modalDialog';
-import { StateType } from '../../state/reducer';
-import { getMessageReactsProps } from '../../state/selectors/conversations';
 import { getTheme } from '../../state/selectors/theme';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
@@ -47,7 +46,7 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
 
   const dispatch = useDispatch();
   const darkMode = useSelector(getTheme) === 'dark';
-  const msgProps = useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+  const msgProps = useMessageReactsPropsById(messageId);
 
   if (!msgProps) {
     return <></>;
