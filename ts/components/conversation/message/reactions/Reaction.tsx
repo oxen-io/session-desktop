@@ -8,6 +8,7 @@ import { useMouse } from 'react-use';
 import { ReactionPopup, TipPosition } from './ReactionPopup';
 import { popupXDefault, popupYDefault } from '../message-content/MessageReactions';
 import { isUsAnySogsFromCache } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
+// import { usePopup } from '../../../../hooks/useParamSelector';
 
 const StyledReaction = styled.button<{ selected: boolean; inModal: boolean; showCount: boolean }>`
   display: flex;
@@ -22,7 +23,7 @@ const StyledReaction = styled.button<{ selected: boolean; inModal: boolean; show
   box-sizing: border-box;
   padding: 0 7px;
   margin: 0 4px var(--margins-sm);
-  height: 23px;
+  height: 24px;
   min-width: ${props => (props.showCount ? '48px' : '24px')};
   ${props => props.inModal && 'width: 100%;'}
 
@@ -73,6 +74,8 @@ export const Reaction = (props: ReactionProps): ReactElement => {
   const count = reactionsMap[emoji].count;
   const showCount = count !== undefined && (count > 1 || inGroup);
 
+  // const { popupXDefault, setPopupX, popupYDefault, setPopupY } = usePopup();
+
   const reactionRef = useRef<HTMLDivElement>(null);
   const { docX, elW } = useMouse(reactionRef);
 
@@ -84,7 +87,7 @@ export const Reaction = (props: ReactionProps): ReactElement => {
   const isBlindedMe =
     senders &&
     senders.length > 0 &&
-    senders.filter(sender => sender.startsWith('15') && isUsAnySogsFromCache(sender)).length > 0;
+    senders.filter(sender => isUsAnySogsFromCache(sender)).length > 0;
 
   const selected = () => {
     if (onSelected) {
@@ -104,9 +107,7 @@ export const Reaction = (props: ReactionProps): ReactElement => {
         showCount={showCount}
         selected={selected()}
         inModal={inModal}
-        onClick={() => {
-          handleReactionClick();
-        }}
+        onClick={handleReactionClick}
         onMouseEnter={() => {
           if (inGroup) {
             const { innerWidth: windowWidth } = window;

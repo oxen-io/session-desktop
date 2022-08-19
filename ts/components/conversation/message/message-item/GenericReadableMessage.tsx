@@ -185,11 +185,27 @@ export const GenericReadableMessage = (props: Props) => {
     [ctxMenuID, multiSelectMode, msgProps?.isKickedFromGroup]
   );
 
+  useEffect(() => {
+    if (msgProps?.convoId) {
+      const conversationModel = getConversationController().get(msgProps?.convoId);
+      if (conversationModel) {
+        setEnableReactions(conversationModel.hasReactions());
+      }
+    }
+  }, [msgProps?.convoId]);
+
+  useEffect(() => {
+    document.addEventListener('click', onMessageLoseFocus);
+
+    return () => {
+      document.removeEventListener('click', onMessageLoseFocus);
+    };
+  }, [onMessageLoseFocus]);
+
   if (!msgProps) {
     return null;
   }
   const {
-    convoId,
     direction,
     conversationType,
     receivedAt,
@@ -205,21 +221,6 @@ export const GenericReadableMessage = (props: Props) => {
   const selected = isMessageSelected || false;
   const isGroup = conversationType === 'group';
   const isIncoming = direction === 'incoming';
-
-  useEffect(() => {
-    const conversationModel = getConversationController().get(convoId);
-    if (conversationModel) {
-      setEnableReactions(conversationModel.hasReactions());
-    }
-  }, [convoId]);
-
-  useEffect(() => {
-    document.addEventListener('click', onMessageLoseFocus);
-
-    return () => {
-      document.removeEventListener('click', onMessageLoseFocus);
-    };
-  }, [onMessageLoseFocus]);
 
   return (
     <StyledReadableMessage

@@ -425,7 +425,6 @@ class CompositionBoxInner extends React.Component<Props, State> {
         {typingEnabled && <StartRecordingButton onClick={this.onLoadVoiceNoteView} />}
 
         <StyledSendMessageInput
-          className="send-message-input"
           role="main"
           onClick={this.focusCompositionBox} // used to focus on the textarea when clicking in its container
           ref={el => {

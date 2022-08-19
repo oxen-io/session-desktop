@@ -55,6 +55,10 @@ const StyledEmoji = styled.span`
   margin-left: 8px;
 `;
 
+const StyledOthers = styled.span`
+  color: var(--color-accent);
+`;
+
 const generateContacts = async (messageId: string, senders: Array<string>) => {
   let results = null;
   const message = await Data.getMessageById(messageId);
@@ -75,7 +79,7 @@ const generateContacts = async (messageId: string, senders: Array<string>) => {
   return results;
 };
 
-const renderContacts = (contacts: string) => {
+const Contacts = (contacts: string) => {
   if (!contacts) {
     return;
   }
@@ -84,8 +88,7 @@ const renderContacts = (contacts: string) => {
     const [names, others] = contacts.split('&');
     return (
       <span>
-        {names} & <span style={{ color: 'var(--color-accent' }}>{others}</span>{' '}
-        {window.i18n('reactionTooltip')}
+        {names} & <StyledOthers>{others}</StyledOthers> {window.i18n('reactionTooltip')}
       </span>
     );
   }
@@ -133,17 +136,9 @@ export const ReactionPopup = (props: Props): ReactElement => {
   }, [generateContacts]);
 
   return (
-    <StyledPopupContainer
-      tooltipPosition={tooltipPosition}
-      onClick={() => {
-        onClick();
-      }}
-    >
-      {renderContacts(contacts)}
-      <StyledEmoji
-        role={'img'}
-        aria-label={nativeEmojiData?.ariaLabels ? nativeEmojiData.ariaLabels[emoji] : undefined}
-      >
+    <StyledPopupContainer tooltipPosition={tooltipPosition} onClick={onClick}>
+      {Contacts(contacts)}
+      <StyledEmoji role={'img'} aria-label={nativeEmojiData?.ariaLabels?.[emoji]}>
         {emoji}
       </StyledEmoji>
     </StyledPopupContainer>

@@ -1,4 +1,5 @@
 import { pick } from 'lodash';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ConversationModel } from '../models/conversation';
 import { PubKey } from '../session/types';
@@ -168,4 +169,21 @@ export function useConversationPropsById(convoId?: string) {
     }
     return convo;
   });
+}
+
+export function usePopup() {
+  const popupXDefault = -101;
+  const popupYDefault = -90;
+
+  const [popupX, setPopupX] = useState(popupXDefault);
+  const [popupY, setPopupY] = useState(popupYDefault);
+
+  return {
+    popupXDefault,
+    popupX,
+    setPopupX,
+    popupYDefault,
+    popupY,
+    setPopupY,
+  };
 }

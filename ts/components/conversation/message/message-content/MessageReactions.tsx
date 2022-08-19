@@ -11,6 +11,7 @@ import { Flex } from '../../../basic/Flex';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { Reaction, ReactionProps } from '../reactions/Reaction';
 import { SessionIcon } from '../../../icon';
+// import { usePopup } from '../../../../hooks/useParamSelector';
 
 export const popupXDefault = -101;
 export const popupYDefault = -90;
@@ -160,14 +161,25 @@ export const MessageReactions = (props: Props): ReactElement => {
 
   const [popupX, setPopupX] = useState(popupXDefault);
   const [popupY, setPopupY] = useState(popupYDefault);
+  // const { popupX, popupY } = usePopup();
 
   const msgProps = useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+
+  useEffect(() => {
+    if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {
+      setReactions(msgProps?.sortedReacts);
+    }
+
+    if (!isEmpty(reactions) && isEmpty(msgProps?.sortedReacts)) {
+      setReactions([]);
+    }
+  }, [msgProps?.sortedReacts, reactions]);
 
   if (!msgProps) {
     return <></>;
   }
 
-  const { conversationType, sortedReacts: reacts } = msgProps;
+  const { conversationType, sortedReacts } = msgProps;
   const inGroup = conversationType === 'group';
 
   const reactLimit = 6;
@@ -186,15 +198,7 @@ export const MessageReactions = (props: Props): ReactElement => {
     handlePopupClick: onPopupClick,
   };
 
-  useEffect(() => {
-    if (reacts && !isEqual(reactions, reacts)) {
-      setReactions(reacts);
-    }
-
-    if (!isEmpty(reactions) && isEmpty(reacts)) {
-      setReactions([]);
-    }
-  }, [reacts, reactions]);
+  const ExtendedReactions = isExpanded ? ExpandedReactions : CompressedReactions;
 
   return (
     <StyledMessageReactionsContainer
@@ -205,14 +209,12 @@ export const MessageReactions = (props: Props): ReactElement => {
       x={popupX}
       y={popupY}
     >
-      {reacts &&
-        reacts !== [] &&
-        (!hasReactLimit || reacts.length <= reactLimit ? (
+      {sortedReacts &&
+        sortedReacts !== [] &&
+        (!hasReactLimit || sortedReacts.length <= reactLimit ? (
           <Reactions {...reactionsProps} />
-        ) : isExpanded ? (
-          <ExpandedReactions handleExpand={handleExpand} {...reactionsProps} />
         ) : (
-          <CompressedReactions handleExpand={handleExpand} {...reactionsProps} />
+          <ExtendedReactions handleExpand={handleExpand} {...reactionsProps} />
         ))}
     </StyledMessageReactionsContainer>
   );

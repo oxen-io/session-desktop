@@ -163,9 +163,7 @@ type Props = {
 
 const handleSenders = (senders: Array<string>, me: string) => {
   let updatedSenders = senders;
-  const blindedMe = updatedSenders.filter(
-    sender => sender.startsWith('15') && isUsAnySogsFromCache(sender)
-  );
+  const blindedMe = updatedSenders.filter(sender => isUsAnySogsFromCache(sender));
 
   let meIndex = -1;
   if (blindedMe && blindedMe[0]) {
