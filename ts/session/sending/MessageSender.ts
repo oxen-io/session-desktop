@@ -27,7 +27,6 @@ import {
 } from '../apis/open_group_api/sogsv3/sogsV3SendMessage';
 import { AbortController } from 'abort-controller';
 import { sendSogsReactionOnionV4 } from '../apis/open_group_api/sogsv3/sogsV3SendReaction';
-import { Reaction } from '../../types/Reaction';
 
 const DEFAULT_CONNECTIONS = 1;
 
@@ -289,12 +288,12 @@ export async function sendToOpenGroupV2(
     filesToLink,
   });
 
-  if (rawMessage.dataProto().reaction) {
+  if (rawMessage.reaction) {
     const msg = await sendSogsReactionOnionV4(
       roomInfos.serverUrl,
       roomInfos.roomId,
       new AbortController().signal,
-      rawMessage.dataProto().reaction as Reaction,
+      rawMessage.reaction,
       blinded
     );
     return msg;

@@ -5,7 +5,7 @@ import { SignalService } from '../protobuf';
 import { getUsBlindedInThatServer } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { UserUtils } from '../session/utils';
 
-import { OpenGroupReactionList, ReactionList, RecentReactions } from '../types/Reaction';
+import { Action, OpenGroupReactionList, ReactionList, RecentReactions } from '../types/Reaction';
 import { getRecentReactions, saveRecentReations } from '../util/storage';
 
 const rateCountLimit = 20;
@@ -59,7 +59,7 @@ export const sendMessageReaction = async (messageId: string, emoji: string) => {
       return;
     }
 
-    if (!conversationModel.hasReactions) {
+    if (!conversationModel.hasReactions()) {
       window.log.warn("This conversation doesn't have reaction support");
       return;
     }
@@ -147,7 +147,9 @@ export const handleMessageReaction = async (
   const senders = Object.keys(details.senders);
 
   window.log.info(
-    `${sender} ${reaction.action === 0 ? 'added' : 'removed'} a ${reaction.emoji} reaction`
+    `${sender} ${reaction.action === Action.REACT ? 'added' : 'removed'} a ${
+      reaction.emoji
+    } reaction`
   );
 
   switch (reaction.action) {

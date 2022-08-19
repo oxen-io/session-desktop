@@ -519,7 +519,7 @@ async function sendJsonViaOnionV4ToFileServer(sendOptions: {
   return res as OnionV4JSONSnodeResponse;
 }
 
-// we export these methods for testing purposes
+// we export these methods for stubbing during testing
 export const OnionSending = {
   endpointRequiresDecoding,
   sendViaOnionV4ToNonSnodeWithRetries,

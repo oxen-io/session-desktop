@@ -74,6 +74,7 @@ export interface VisibleMessageParams extends MessageParams {
 
 export class VisibleMessage extends DataMessage {
   public readonly expireTimer?: number;
+  public readonly reaction?: Reaction;
 
   private readonly attachments?: Array<AttachmentPointerWithUrl>;
   private readonly body?: string;
@@ -82,7 +83,6 @@ export class VisibleMessage extends DataMessage {
   private readonly displayName?: string;
   private readonly avatarPointer?: string;
   private readonly preview?: Array<PreviewWithAttachmentUrl>;
-  private readonly reaction?: Reaction;
 
   /// In the case of a sync message, the public key of the person the message was targeted at.
   /// - Note: `null or undefined` if this isn't a sync message.

@@ -1,26 +1,26 @@
 import { AbortSignal } from 'abort-controller';
 import { Data } from '../../../../data/data';
-import { OpenGroupReactionResponse, Reaction } from '../../../../types/Reaction';
+import { OpenGroupReactionResponse, Reaction, Action } from '../../../../types/Reaction';
 import { getEmojiDataFromNative } from '../../../../util/emoji';
 import { OnionSending } from '../../../onions/onionSend';
 import { OpenGroupPollingUtils } from '../opengroupV2/OpenGroupPollingUtils';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
 
-export const hasReactionSupport = async (id: number): Promise<boolean> => {
-  const found = await Data.getMessageByServerId(id);
+export const hasReactionSupport = async (serverId: number): Promise<boolean> => {
+  const found = await Data.getMessageByServerId(serverId);
   if (!found) {
-    window.log.warn(`Open Group Message ${id} not found in db`);
+    window.log.warn(`Open Group Message ${serverId} not found in db`);
     return false;
   }
 
   const conversationModel = found?.getConversation();
   if (!conversationModel) {
-    window.log.warn(`Conversation for ${id} not found in db`);
+    window.log.warn(`Conversation for ${serverId} not found in db`);
     return false;
   }
 
-  if (!conversationModel.hasReactions) {
-    window.log.warn("This open group doesn't have reaction support. Server Message Id", id);
+  if (!conversationModel.hasReactions()) {
+    window.log.warn("This open group doesn't have reaction support. Server Message ID", serverId);
     return false;
   }
 
@@ -48,7 +48,7 @@ export const sendSogsReactionOnionV4 = async (
   // for an invalid reaction we use https://emojipedia.org/frame-with-an-x/ as a replacement since it cannot rendered as an emoji
   const emoji = getEmojiDataFromNative(reaction.emoji) ? reaction.emoji : '🖾';
   const endpoint = `/room/${room}/reaction/${reaction.id}/${emoji}`;
-  const method = reaction.action === 0 ? 'PUT' : 'DELETE';
+  const method = reaction.action === Action.REACT ? 'PUT' : 'DELETE';
   const serverPubkey = allValidRoomInfos[0].serverPublicKey;
 
   // reaction endpoint requires an empty dict {}
@@ -82,10 +82,10 @@ export const sendSogsReactionOnionV4 = async (
   }
 
   window.log.info(
-    `You ${reaction.action === 0 ? 'added' : 'removed'} a`,
+    `You ${reaction.action === Action.REACT ? 'added' : 'removed'} a`,
     reaction.emoji,
     `reaction on ${serverUrl}/${room}`
   );
-  const success = Boolean(reaction.action === 0 ? rawMessage.added : rawMessage.removed);
+  const success = Boolean(reaction.action === Action.REACT ? rawMessage.added : rawMessage.removed);
   return success;
 };

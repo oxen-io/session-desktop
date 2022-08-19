@@ -298,7 +298,7 @@ const handleMessagesResponseV4 = async (
       const groupConvo = getConversationController().get(conversationId);
       if (groupConvo && groupConvo.isOpenGroupV2()) {
         for (const message of messagesWithReactions) {
-          await groupConvo.queueJob(async () => {
+          void groupConvo.queueJob(async () => {
             await handleOpenGroupMessageReactions(message.reactions, message.id);
           });
         }

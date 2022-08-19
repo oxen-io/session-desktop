@@ -83,7 +83,7 @@ export class MessageQueue {
       );
 
       // NOTE Reactions are handled in the MessageSender
-      if (message && message.dataProto().reaction) {
+      if (message.reaction) {
         return;
       }
 

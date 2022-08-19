@@ -103,7 +103,7 @@ export interface FixedPickerProps {
   // useButton?: boolean | undefined;
 }
 
-enum Action {
+export enum Action {
   REACT = 0,
   REMOVE = 1,
 }

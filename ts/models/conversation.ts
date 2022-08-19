@@ -728,8 +728,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public async sendReactionJob(sourceMessage: MessageModel, reaction: Reaction) {
     try {
       const destination = this.id;
-      // TODO update sendToOpenGroupV2 to not need this
-      const fileIdsToLink: Array<any> = [];
 
       const sentAt = sourceMessage.get('sent_at');
       if (!sentAt) {
@@ -797,12 +795,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         await handleMessageReaction(reaction, sender, true);
 
         // send with blinding if we need to
-        await getMessageQueue().sendToOpenGroupV2(
-          chatMessageOpenGroupV2,
-          roomInfos,
-          blinded,
-          fileIdsToLink
-        );
+        await getMessageQueue().sendToOpenGroupV2(chatMessageOpenGroupV2, roomInfos, blinded, []);
         return;
       } else {
         await handleMessageReaction(reaction, sender, false);

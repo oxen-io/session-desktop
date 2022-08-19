@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -187,8 +187,47 @@ export const ReactListModal = (props: Props): ReactElement => {
   const [currentReact, setCurrentReact] = useState('');
   const [reactAriaLabel, setReactAriaLabel] = useState<string | undefined>();
   const [senders, setSenders] = useState<Array<string>>([]);
+  const me = UserUtils.getOurPubKeyStrFromCache();
 
   const msgProps = useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+
+  // tslint:disable: cyclomatic-complexity
+  useEffect(() => {
+    if (currentReact === '' && currentReact !== reaction) {
+      setReactAriaLabel(
+        nativeEmojiData?.ariaLabels ? nativeEmojiData.ariaLabels[reaction] : undefined
+      );
+      setCurrentReact(reaction);
+    }
+
+    if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {
+      setReactions(msgProps?.sortedReacts);
+    }
+
+    if (
+      reactions &&
+      reactions.length > 0 &&
+      (msgProps?.sortedReacts === [] || msgProps?.sortedReacts === undefined)
+    ) {
+      setReactions([]);
+    }
+
+    let _senders =
+      reactionsMap && reactionsMap[currentReact] && reactionsMap[currentReact].senders
+        ? Object.keys(reactionsMap[currentReact].senders)
+        : null;
+
+    if (_senders && !isEqual(senders, _senders)) {
+      if (_senders.length > 0) {
+        _senders = handleSenders(_senders, me);
+      }
+      setSenders(_senders);
+    }
+
+    if (senders.length > 0 && (!reactionsMap[currentReact]?.senders || isEmpty(_senders))) {
+      setSenders([]);
+    }
+  }, [currentReact, me, reaction, msgProps?.sortedReacts, reactionsMap, senders]);
 
   if (!msgProps) {
     return <></>;
@@ -196,8 +235,7 @@ export const ReactListModal = (props: Props): ReactElement => {
 
   const dispatch = useDispatch();
 
-  const me = UserUtils.getOurPubKeyStrFromCache();
-  const { convoId, sortedReacts: reacts, isPublic } = msgProps;
+  const { convoId, isPublic } = msgProps;
 
   const convo = getConversationController().get(convoId);
   const weAreModerator = convo.getConversationModelProps().weAreModerator;
@@ -225,46 +263,6 @@ export const ReactListModal = (props: Props): ReactElement => {
       })
     );
   };
-
-  // tslint:disable: cyclomatic-complexity
-  useEffect(() => {
-    if (currentReact === '' && currentReact !== reaction) {
-      setReactAriaLabel(
-        nativeEmojiData?.ariaLabels ? nativeEmojiData.ariaLabels[reaction] : undefined
-      );
-      setCurrentReact(reaction);
-    }
-
-    if (reacts && !isEqual(reactions, reacts)) {
-      setReactions(reacts);
-    }
-
-    if (reactions && reactions.length > 0 && (reacts === [] || reacts === undefined)) {
-      setReactions([]);
-    }
-
-    let _senders =
-      reactionsMap && reactionsMap[currentReact] && reactionsMap[currentReact].senders
-        ? Object.keys(reactionsMap[currentReact].senders)
-        : null;
-
-    if (_senders && !isEqual(senders, _senders)) {
-      if (_senders.length > 0) {
-        _senders = handleSenders(_senders, me);
-      }
-      setSenders(_senders);
-    }
-
-    if (
-      senders.length > 0 &&
-      (!reactionsMap[currentReact] ||
-        !reactionsMap[currentReact].senders ||
-        _senders === [] ||
-        _senders === null)
-    ) {
-      setSenders([]);
-    }
-  }, [currentReact, me, reaction, reacts, reactionsMap, senders]);
 
   return (
     <SessionWrapperModal
