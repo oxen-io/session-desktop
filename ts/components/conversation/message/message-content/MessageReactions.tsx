@@ -48,6 +48,7 @@ const StyledReactionOverflow = styled.button`
 const StyledReadLess = styled.span`
   font-size: var(--font-size-xs);
   margin-top: 8px;
+  cursor: pointer;
   svg {
     margin-right: 5px;
   }

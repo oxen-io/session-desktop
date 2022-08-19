@@ -1,6 +1,6 @@
 import { AbortSignal } from 'abort-controller';
 import { Data } from '../../../../data/data';
-import { OpenGroupReactionResponse, Reaction, Action } from '../../../../types/Reaction';
+import { Action, OpenGroupReactionResponse, Reaction } from '../../../../types/Reaction';
 import { getEmojiDataFromNative } from '../../../../util/emoji';
 import { OnionSending } from '../../../onions/onionSend';
 import { OpenGroupPollingUtils } from '../opengroupV2/OpenGroupPollingUtils';

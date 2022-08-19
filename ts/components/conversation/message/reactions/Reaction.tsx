@@ -82,9 +82,7 @@ export const Reaction = (props: ReactionProps): ReactElement => {
 
   const me = UserUtils.getOurPubKeyStrFromCache();
   const isBlindedMe =
-    senders &&
-    senders.length > 0 &&
-    senders.filter(sender => isUsAnySogsFromCache(sender)).length > 0;
+    senders && senders.length > 0 && senders.filter(isUsAnySogsFromCache).length > 0;
 
   const selected = () => {
     if (onSelected) {
