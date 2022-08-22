@@ -886,7 +886,7 @@ label {
     &__description {
       font-family: $session-font-default;
       font-size: $session-font-sm;
-      font-weight: 100;
+      font-weight: 400;
       max-width: 700px;
       @include session-color-subtle(var(--color-text));
     }
