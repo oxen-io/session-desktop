@@ -16,6 +16,15 @@ type Props = {
   messageId: string;
 };
 
+const StyledButtonContainer = styled.div`
+  div:first-child {
+    margin-right: 0px;
+  }
+  div:not(:first-child) {
+    margin-left: 20px;
+  }
+`;
+
 const StyledReactClearAllContainer = styled(Flex)<{ darkMode: boolean }>`
   margin: var(--margins-lg);
 
@@ -87,7 +96,7 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
         darkMode={darkMode}
       >
         <p>{window.i18n('clearAllReactions', [reaction])}</p>
-        <div className="session-modal__button-group">
+        <StyledButtonContainer className="session-modal__button-group">
           <SessionButton
             text={window.i18n('clear')}
             buttonColor={confirmButtonColor}
@@ -102,7 +111,7 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
             onClick={handleClose}
             disabled={clearingInProgress}
           />
-        </div>
+        </StyledButtonContainer>
         <SessionSpinner loading={clearingInProgress} />
       </StyledReactClearAllContainer>
     </SessionWrapperModal>
