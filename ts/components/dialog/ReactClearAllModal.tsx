@@ -21,7 +21,7 @@ const StyledReactClearAllContainer = styled(Flex)<{ darkMode: boolean }>`
 
   p {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 500;
     padding-bottom: var(--margins-lg);
     margin: var(--margins-md) auto;
     border-bottom: 1.5px solid ${props => (props.darkMode ? '#2D2D2D' : '#EEEEEE')};
