@@ -10,7 +10,7 @@ import {
   prefixify,
   publicKeyParam,
 } from '../utils/OpenGroupUtils';
-import { hasExistingOpenGroup } from './ApiUtil';
+import { defaultServerSession, hasExistingOpenGroup, isSessionRunOpenGroup } from './ApiUtil';
 import { getOpenGroupManager } from './OpenGroupManagerV2';
 // tslint:disable: variable-name
 
@@ -62,7 +62,8 @@ async function joinOpenGroupV2(room: OpenGroupV2Room, fromConfigMessage: boolean
     return;
   }
 
-  const serverUrl = room.serverUrl.toLowerCase();
+  const lowerCased = room.serverUrl.toLowerCase();
+  const serverUrl = isSessionRunOpenGroup(lowerCased) ? defaultServerSession : lowerCased;
   const roomId = room.roomId.toLowerCase();
   const publicKey = room.serverPublicKey.toLowerCase();
   const prefixedServer = prefixify(serverUrl);

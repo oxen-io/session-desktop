@@ -39,8 +39,8 @@ export type OpenGroupV2InfoJoinable = OpenGroupV2Info & {
 // tslint:disable: no-http-string
 
 const legacyDefaultServerIP = '116.203.70.33';
-const defaultServer = 'https://open.getsession.org';
-const defaultServerHost = new window.URL(defaultServer).host;
+export const defaultServerSession = 'https://open.getsession.org';
+const defaultServerHost = new window.URL(defaultServerSession).host;
 
 /**
  * This function returns true if the server url given matches any of the sogs run by Session.
@@ -139,7 +139,7 @@ export function hasExistingOpenGroup(server: string, roomId: string) {
 }
 
 const defaultServerPublicKey = 'a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238';
-const defaultRoom = `${defaultServer}/main?public_key=${defaultServerPublicKey}`;
+const defaultRoom = `${defaultServerSession}/main?public_key=${defaultServerPublicKey}`;
 
 const loadDefaultRoomsSingle = () =>
   allowOnlyOneAtATime(

@@ -3,7 +3,7 @@ import { ConversationModel } from '../../../../models/conversation';
 import { getConversationController } from '../../../conversations';
 import { allowOnlyOneAtATime } from '../../../utils/Promise';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
-import { OpenGroupRequestCommonType } from './ApiUtil';
+import { hasExistingOpenGroup, OpenGroupRequestCommonType } from './ApiUtil';
 import { OpenGroupServerPoller } from './OpenGroupServerPoller';
 
 import _ from 'lodash';
@@ -169,7 +169,10 @@ export class OpenGroupManagerV2 {
       conversationId,
       serverPublicKey,
     };
-
+    const alreadyExist = hasExistingOpenGroup(serverUrl, roomId);
+    if (alreadyExist) {
+      throw new Error(window.i18n('publicChatExists'));
+    }
     try {
       // save the pubkey to the db right now, the request for room Info
       // will need it and access it from the db
