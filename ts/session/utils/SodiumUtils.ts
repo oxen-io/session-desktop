@@ -19,6 +19,13 @@ export function combineKeys(
   rhsKeyBytes: Uint8Array,
   sodium: LibSodiumWrappers
 ) {
+  // tslint:disable: no-console
+
+  console.info(
+    `crypto_scalarmult_ed25519_noclamp of \n\t\tlhsKeyBytes: "${
+      lhsKeyBytes ? sodium.to_hex(lhsKeyBytes) : 'empty'
+    }"  \n\t\trhsKeyBytes: "${rhsKeyBytes ? sodium.to_hex(rhsKeyBytes) : 'empty'}"`
+  );
   return sodium.crypto_scalarmult_ed25519_noclamp(lhsKeyBytes, rhsKeyBytes);
 }
 
