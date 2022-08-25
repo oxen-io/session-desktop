@@ -18,6 +18,7 @@ import { ConversationInteraction } from '../interactions';
 import { getLastProfileUpdateTimestamp, setLastProfileUpdateTimestamp } from '../util/storage';
 import { appendFetchAvatarAndProfileJob, updateOurProfileSync } from './userProfileImageUpdates';
 import { ConversationTypeEnum } from '../models/conversationAttributes';
+import { hasExistingOpenGroup } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 
 async function handleOurProfileUpdate(
   sentAt: number | Long,
@@ -72,7 +73,7 @@ async function handleGroupsAndContactsFromConfigMessage(
     await handleClosedGroupsFromConfig(configMessage.closedGroups, envelope);
   }
 
-  handleOpenGroupsFromConfig(configMessage.openGroups);
+  void handleOpenGroupsFromConfig(configMessage.openGroups);
 
   if (configMessage.contacts?.length) {
     await Promise.all(configMessage.contacts.map(async c => handleContactFromConfig(c, envelope)));
@@ -83,7 +84,7 @@ async function handleGroupsAndContactsFromConfigMessage(
  * Trigger a join for all open groups we are not already in.
  * @param openGroups string array of open group urls
  */
-const handleOpenGroupsFromConfig = (openGroups: Array<string>) => {
+const handleOpenGroupsFromConfig = async (openGroups: Array<string>) => {
   const numberOpenGroup = openGroups?.length || 0;
   for (let i = 0; i < numberOpenGroup; i++) {
     const currentOpenGroupUrl = openGroups[i];
@@ -91,12 +92,18 @@ const handleOpenGroupsFromConfig = (openGroups: Array<string>) => {
     if (!parsedRoom) {
       continue;
     }
+    const alreadyExist = hasExistingOpenGroup(parsedRoom.serverUrl, parsedRoom.roomId);
+    if (alreadyExist) {
+      continue;
+    }
     const roomConvoId = getOpenGroupV2ConversationId(parsedRoom.serverUrl, parsedRoom.roomId);
     if (!getConversationController().get(roomConvoId)) {
       window?.log?.info(
         `triggering join of public chat '${currentOpenGroupUrl}' from ConfigurationMessage`
       );
-      void joinOpenGroupV2WithUIEvents(currentOpenGroupUrl, false, true);
+
+      // we need to `await` this so we do not start joining 2 times the same session sogs with ip and url syntax being the only difference
+      await joinOpenGroupV2WithUIEvents(currentOpenGroupUrl, false, true);
     }
   }
 };
