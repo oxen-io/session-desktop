@@ -32,6 +32,7 @@ jobs:
           node-version: '16.13.0'
 
       - name: Cache Desktop node_modules
+        if: runner.os != 'Windows'
         id: cache-desktop-modules
         uses: actions/cache@v2
         with:
