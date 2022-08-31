@@ -1247,7 +1247,31 @@ input {
 }
 
 .module-message__text {
+
   white-space: pre-wrap;
+
+  p {
+    display: inline-block;
+    margin-top: 0.4em;
+    margin-bottom: 0.25em;
+  }
+
+  ul, ol, blockquote {
+    margin-bottom: -0.5em;
+    white-space: normal;
+
+    p {
+      display: block !important;
+    }
+  }
+
+  pre {
+    margin-bottom: -0.5em;
+   }
+
+  * {
+    user-select: text;
+  }
 }
 
 .speedButton {
