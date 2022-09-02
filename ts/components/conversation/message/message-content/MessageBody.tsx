@@ -20,8 +20,12 @@ const markdown = MarkdownIt('default', {
   // This seems not to work:
   breaks: false
   }
-// tslint:disable-next-line:no-var-requires no-require-imports
-).use(require('markdown-it-highlightjs'), { inline: true });
+)
+// tslint:disable:no-var-requires no-require-imports
+.use(require('markdown-it-sub'))
+.use(require('markdown-it-sup'))
+.use(require('markdown-it-highlightjs'), { inline: true });
+// tslint:enable:no-var-requires no-require-imports
 
 type Props = {
   text: string;
