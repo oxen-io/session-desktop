@@ -24,6 +24,7 @@ const markdown = MarkdownIt('default', {
 // tslint:disable:no-var-requires no-require-imports
 .use(require('markdown-it-sub'))
 .use(require('markdown-it-sup'))
+.use(require('markdown-it-footnote'))
 .use(require('markdown-it-highlightjs'), { inline: true });
 // tslint:enable:no-var-requires no-require-imports
 

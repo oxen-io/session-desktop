@@ -113,6 +113,7 @@
     "lodash": "^4.17.20",
     "long": "^4.0.0",
     "markdown-it": "^13.0.1",
+    "markdown-it-footnote": "^3.0.3",
     "markdown-it-highlightjs": "^4.0.1",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
