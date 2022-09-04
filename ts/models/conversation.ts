@@ -1605,6 +1605,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public hasReactions() {
+    if (!window.sessionFeatureFlags.useEmojiReacts) {
+      return false;
+    }
     // message requests should not have reactions
     if (this.isPrivate() && !this.isApproved()) {
       return false;

@@ -225,6 +225,7 @@ export type OpenGroupBatchRow =
  *
  * @param options Array of subrequest options to be made.
  */
+// tslint:disable-next-line: cyclomatic-complexity
 const makeBatchRequestPayload = (
   options: OpenGroupBatchRow
 ): BatchSubRequest | Array<BatchSubRequest> | null => {
@@ -237,11 +238,16 @@ const makeBatchRequestPayload = (
 
     case 'messages':
       if (options.messages) {
+        const react = window.sessionFeatureFlags.useEmojiReacts;
         return {
           method: 'GET',
           path: isNumber(options.messages.sinceSeqNo)
-            ? `/room/${options.messages.roomId}/messages/since/${options.messages.sinceSeqNo}?t=r&reactors=${Reactions.SOGSReactorsFetchCount}`
-            : `/room/${options.messages.roomId}/messages/recent?reactors=${Reactions.SOGSReactorsFetchCount}`,
+            ? `/room/${options.messages.roomId}/messages/since/${options.messages.sinceSeqNo}${
+                react ? `?t=r&reactors=${Reactions.SOGSReactorsFetchCount}` : ''
+              }`
+            : `/room/${options.messages.roomId}/messages/recent${
+                react ? `?reactors=${Reactions.SOGSReactorsFetchCount}` : ''
+              }`,
         };
       }
       break;
