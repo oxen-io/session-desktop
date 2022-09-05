@@ -14,7 +14,7 @@ import {
 
 import { getIntl, getOurNumber } from './user';
 import { BlockedNumberController } from '../../util';
-import { ConversationModel } from '../../models/conversation';
+import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { LocalizerType } from '../../types/Util';
 import { ConversationHeaderTitleProps } from '../../components/conversation/ConversationHeader';
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
@@ -456,12 +456,13 @@ const _getConversationRequests = (
 ): Array<ReduxConversationType> => {
   return filter(sortedConversations, conversation => {
     const { isApproved, isBlocked, isPrivate, isMe, activeAt } = conversation;
-    const isRequest = ConversationModel.hasValidIncomingRequestValues({
-      isApproved,
-      isBlocked,
-      isPrivate,
-      isMe,
-      activeAt,
+
+    const isRequest = hasValidIncomingRequestValues({
+      isApproved: isApproved || false,
+      isBlocked: isBlocked || false,
+      isPrivate: isPrivate || false,
+      isMe: isMe || false,
+      activeAt: activeAt || null,
     });
     return isRequest;
   });

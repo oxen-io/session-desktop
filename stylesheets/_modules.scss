@@ -288,53 +288,10 @@
   align-items: center;
 }
 
-.module-conversation-header__title-container {
-  min-width: 0;
-  display: block;
-  text-align: center;
-  flex-grow: 1;
-}
-
-.module-conversation-header__title-flex {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  height: 48px;
-  max-width: 100%;
-}
-
 .module-conversation-header__avatar {
   cursor: pointer;
   min-width: 28px;
   user-select: none;
-}
-
-.module-conversation-header__title {
-  margin: 0px 20px;
-
-  min-width: 0;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-  color: var(--color-text);
-
-  // width of avatar (28px) and our 6px left margin
-  max-width: calc(100% - 34px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  display: flex;
-  align-items: center;
-
-  -webkit-user-select: text;
-  cursor: pointer;
-
-  .module-contact-name__profile-name {
-    width: 100%;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-  }
 }
 
 .module-conversation-header__expiration {

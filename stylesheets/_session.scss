@@ -272,36 +272,6 @@ textarea {
   height: $main-view-header-height;
 }
 
-.module-conversation-header__title-flex,
-.module-conversation-header__title {
-  font-weight: bold;
-  width: 100%;
-  display: flex;
-  font-size: $session-font-md;
-
-  &-text {
-    @include session-color-subtle(var(--color-text));
-
-    font-weight: 400;
-    font-size: $session-font-sm;
-    line-height: $session-font-sm;
-  }
-
-  .module-contact-name {
-    width: 100%;
-  }
-
-  .module-contact-name__profile-number {
-    text-align: center;
-  }
-}
-
-.module-conversation-header__title {
-  flex-direction: column;
-}
-.module-conversation-header__title-flex {
-  flex-direction: row;
-}
 .module-conversation__user__profile-name,
 .module-message__author__profile-name {
   font-style: normal;
@@ -364,7 +334,7 @@ label {
 
 .module-conversation-header {
   position: relative;
-  padding: 0px $session-margin-lg 0px $session-margin-sm;
+  padding: 0px $session-margin-sm 0px $session-margin-sm;
 }
 
 .title-wrapper {

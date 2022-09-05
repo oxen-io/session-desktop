@@ -1,6 +1,8 @@
-import { pick } from 'lodash';
 import { useSelector } from 'react-redux';
-import { ConversationModel } from '../models/conversation';
+import {
+  hasValidIncomingRequestValues,
+  hasValidOutgoingRequestValues,
+} from '../models/conversation';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
@@ -145,16 +147,38 @@ export function useIsApproved(convoId?: string) {
   return Boolean(convoProps && convoProps.isApproved);
 }
 
-export function useIsRequest(convoId?: string) {
+export function useIsIncomingRequest(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   if (!convoProps) {
     return false;
   }
   return Boolean(
     convoProps &&
-      ConversationModel.hasValidIncomingRequestValues(
-        pick(convoProps, ['isMe', 'isApproved', 'isPrivate', 'isBlocked', 'activeAt'])
-      )
+      hasValidIncomingRequestValues({
+        isMe: convoProps.isMe || false,
+        isApproved: convoProps.isApproved || false,
+        isPrivate: convoProps.isPrivate || false,
+        isBlocked: convoProps.isBlocked || false,
+        activeAt: convoProps.activeAt || null,
+      })
+  );
+}
+
+export function useIsOutgoingRequest(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  if (!convoProps) {
+    return false;
+  }
+  return Boolean(
+    convoProps &&
+      hasValidOutgoingRequestValues({
+        isMe: convoProps.isMe || false,
+        isApproved: convoProps.isApproved || false,
+        didApproveMe: convoProps.didApproveMe || false,
+        isPrivate: convoProps.isPrivate || false,
+        isBlocked: convoProps.isBlocked || false,
+        activeAt: convoProps.activeAt || null,
+      })
   );
 }
 

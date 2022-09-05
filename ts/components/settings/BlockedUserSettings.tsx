@@ -30,7 +30,7 @@ export const BlockedUserSettings = () => {
       <SessionSettingButtonItem
         key={blockedEntry}
         buttonColor={SessionButtonColor.Danger}
-        buttonText={window.i18n('unblockUser')}
+        buttonText={window.i18n('unblock')}
         title={title}
         onClick={async () => {
           await unblockConvoById(blockedEntry);
