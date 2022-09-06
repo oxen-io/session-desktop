@@ -172,6 +172,9 @@ async function createAccount(identityKeyPair: SessionKeyPair) {
   await Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
+  // Fetch only the most recent open group messages by default.
+  await Storage.put(SettingsKey.settingsFetchMessagesSinceEpoch, false);
+
   await setLocalPubKey(pubKeyString);
 }
 

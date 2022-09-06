@@ -55,6 +55,7 @@ declare global {
     toggleCallMediaPermissionsTo: (enabled: boolean) => Promise<void>;
     getCallMediaPermissions: () => boolean;
     toggleMenuBar: () => void;
+    toggleFetchMessagesSinceEpoch: () => void;
     toggleSpellCheck: any;
     setTheme: (newTheme: string) => any;
     isDev?: () => boolean;

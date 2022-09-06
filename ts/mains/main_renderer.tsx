@@ -138,6 +138,11 @@ Storage.onready(async () => {
       window.setMenuBarVisibility(!value);
     },
 
+    getFetchMessagesSinceEpoch: () => Storage.get('fetch-msgs-since-epoch', true),
+    setFetchMessagesSinceEpoch: async (value: boolean) => {
+      await Storage.put('fetch-msgs-since-epoch', value);
+    },
+
     getSpellCheck: () => Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
       await Storage.put('spell-check', value);
@@ -301,6 +306,12 @@ async function start() {
     }
 
     window.Events.setHideMenuBar(!current);
+  };
+
+  window.toggleFetchMessagesSinceEpoch = () => {
+    const currentValue = window.getSettingValue('fetch-msgs-since-epoch');
+    const newValue = currentValue !== undefined ? !currentValue : false;
+    window.Events.setFetchMessagesSinceEpoch(newValue);
   };
 
   window.toggleSpellCheck = () => {

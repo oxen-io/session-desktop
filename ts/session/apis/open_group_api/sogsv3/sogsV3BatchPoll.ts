@@ -240,8 +240,10 @@ const makeBatchRequestPayload = (
         return {
           method: 'GET',
           path: isNumber(options.messages.sinceSeqNo)
-            ? `/room/${options.messages.roomId}/messages/since/${options.messages.sinceSeqNo}?t=r&reactors=${Reactions.SOGSReactorsFetchCount}`
-            : `/room/${options.messages.roomId}/messages/recent?reactors=${Reactions.SOGSReactorsFetchCount}`,
+            ? `/room/${options.messages.roomId}/messages/since/${options.messages.sinceSeqNo}?t=r&reactors=${Reactions.SOGSReactorsFetchCount}&limit=256`
+            : window.getSettingValue('fetch-msgs-since-epoch')
+	      ? `/room/${options.messages.roomId}/messages/since/0?t=r&reactors=${Reactions.SOGSReactorsFetchCount}&limit=256`
+	      : `/room/${options.messages.roomId}/messages/recent?reactors=${Reactions.SOGSReactorsFetchCount}&limit=256`,
         };
       }
       break;
