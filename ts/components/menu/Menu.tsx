@@ -57,7 +57,7 @@ import { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { ContextConversationId } from '../leftpane/conversation-list-item/ConversationListItem';
 
-const maxNumberOfPinnedConversations = 5;
+const maxNumberOfPinnedConversations = 10;
 
 function showTimerOptions(
   isPublic: boolean,
