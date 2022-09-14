@@ -172,6 +172,9 @@ async function createAccount(identityKeyPair: SessionKeyPair) {
   await Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
+  // Disable message formatting by default.
+  await Storage.put(SettingsKey.settingsMessageFormatting, false);
+
   await setLocalPubKey(pubKeyString);
 }
 

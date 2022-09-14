@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import LinkifyIt from 'linkify-it';
-
+import MarkdownIt from 'markdown-it';
 import { RenderTextCallbackType } from '../../../../types/Util';
 import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
 import { AddMentions } from '../../AddMentions';
@@ -11,6 +11,42 @@ import { LinkPreviews } from '../../../../util/linkPreviews';
 import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
 
 const linkify = LinkifyIt();
+
+const markdown = MarkdownIt('default', {
+  html: false,
+  linkify: true,
+  typographer: true,
+  // This seems not to work:
+  breaks: false
+  }
+)
+  // tslint:disable:no-var-requires no-require-imports
+  .use(require('markdown-it-abbr'))
+  .use(require('markdown-it-sub'))
+  .use(require('markdown-it-sup'))
+  .use(require('markdown-it-ins'))
+  .use(require('markdown-it-mark'))
+  .use(require('markdown-it-container'), 'spoiler', {
+    validate: (params: string) => {
+      return params.trim().match(/^spoiler\s+(.*)$/);
+    },
+
+    render: (tokens: Array<any>, idx: number) => {
+      const m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
+
+      if (tokens[idx].nesting === 1) {
+        // opening tag
+        return `<details><summary>${markdown.utils.escapeHtml(m[1])}</summary>\n`;
+      } else {
+        // closing tag
+        return '</details>\n';
+      }
+    }
+  })
+  .use(require('markdown-it-footnote'))
+  .use(require('markdown-it-highlightjs'), { inline: true }
+  // tslint:enable:no-var-requires no-require-imports
+);
 
 type Props = {
   text: string;
@@ -104,8 +140,13 @@ export const MessageBody = (props: Props) => {
     );
   }
 
-  if (text && text.startsWith('```') && text.endsWith('```') && text.length > 6) {
-    return <pre className="text-selectable">{text.substring(4, text.length - 3)}</pre>;
+  if (window.getSettingValue('message-formatting')) {
+    /* tslint:disable:react-no-dangerous-html */
+    return (
+      <div className="text-selectable"
+	   dangerouslySetInnerHTML={{__html: `<span style="font-size: 1.1em;">${markdown.render(text).trim()}</span>`}}
+      />
+    );
   }
 
   return JsxSelectable(

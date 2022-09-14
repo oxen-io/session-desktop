@@ -138,6 +138,11 @@ Storage.onready(async () => {
       window.setMenuBarVisibility(!value);
     },
 
+    getMessageFormatting: () => Storage.get('message-formatting', true),
+    setMessageFormatting: async (value: boolean) => {
+      await Storage.put('message-formatting', value);
+    },
+
     getSpellCheck: () => Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
       await Storage.put('spell-check', value);
@@ -301,6 +306,12 @@ async function start() {
     }
 
     window.Events.setHideMenuBar(!current);
+  };
+
+  window.toggleMessageFormatting = () => {
+    const currentValue = window.getSettingValue('message-formatting');
+    const newValue = currentValue !== undefined ? !currentValue : true;
+    window.Events.setMessageFormatting(newValue);
   };
 
   window.toggleSpellCheck = () => {
