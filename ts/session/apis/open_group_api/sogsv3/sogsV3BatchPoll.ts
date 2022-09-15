@@ -281,14 +281,14 @@ const makeBatchRequestPayload = (
       return options.addRemoveModerators.sessionIds.map(sessionId => ({
         method: 'POST',
         path: `/user/${sessionId}/moderator`,
+        // currently we only support adding/removing visible admins but we still need to set the `moderator`
+        // permissions here so removing an admin works does not only devote an admin to a moderator
 
         json: {
           rooms: [options.addRemoveModerators.roomId],
           global: false,
           visible: true,
           admin: isAddMod,
-          // currently we only support adding/removing visible admins but we still need to set the `moderator`
-          // permissions here so removing an admin works does not only devote an admin to a moderator
           moderator: isAddMod,
         },
       }));

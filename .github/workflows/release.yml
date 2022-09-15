@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - release-v1.10.1
 
 jobs:
   build:
