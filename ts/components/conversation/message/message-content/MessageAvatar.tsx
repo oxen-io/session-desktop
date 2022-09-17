@@ -48,16 +48,11 @@ export const MessageAvatar = (props: Props) => {
     authorName,
     sender,
     authorProfileName,
-    conversationType,
-    direction,
     isSenderAdmin,
     lastMessageOfSeries,
     isPublic,
   } = avatarProps;
 
-  if (conversationType !== 'group' || direction === 'outgoing') {
-    return null;
-  }
   const userName = authorName || authorProfileName || sender;
 
   const onMessageAvatarClick = useCallback(async () => {
