@@ -20,46 +20,47 @@ const StyledCountContainer = styled.div<{ shouldRender: boolean }>`
   font-family: var(--font-default);
   border-radius: 50%;
   font-weight: 700;
-  background: var(--color-destructive);
+  background: var(--color-accent);
   transition: var(--default-duration);
   opacity: ${props => (props.shouldRender ? 1 : 0)};
   text-align: center;
-  color: white;
+  color: var(--color-text-opposite);
   /* cursor:  */
 `;
 
 const StyledCount = styled.div<{ countOverflow: boolean }>`
   position: relative;
   font-size: ${props => (props.countOverflow ? '0.5em' : '0.6em')};
-  margin-top: ${props => (props.countOverflow ? '0.35em' : '0em')};
-  margin-left: ${props => (props.countOverflow ? '-0.45em' : '0em')};
+  margin-top: 0em;
+  margin-left: 0em;
 `;
 
 const StyledCountSup = styled.div`
   position: absolute;
-  font-size: 1.3em;
-  top: -0.5em;
-  margin-inline-start: 0.375em;
+  font-size: 0.75em;
+  top: -0.15em;
+  margin-inline-start: 1.4em;
 `;
 
 export const SessionNotificationCount = (props: Props) => {
   const { count } = props;
-  const overflow = Boolean(count && count > 9);
+  const overflow = Boolean(count && count > 99);
   const shouldRender = Boolean(count && count > 0);
 
   if (overflow) {
     return (
       <StyledCountContainer shouldRender={shouldRender}>
         <StyledCount countOverflow={overflow}>
-          {9}
+          {99}
           <StyledCountSup>+</StyledCountSup>
         </StyledCount>
       </StyledCountContainer>
     );
   }
+  const shrink = Boolean(count && count > 9);
   return (
     <StyledCountContainer shouldRender={shouldRender}>
-      <StyledCount countOverflow={overflow}>{count}</StyledCount>
+      <StyledCount countOverflow={shrink}>{count}</StyledCount>
     </StyledCountContainer>
   );
 };
