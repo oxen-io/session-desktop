@@ -10,7 +10,7 @@ import {
   showSettingsSection,
 } from '../../state/ducks/section';
 import { getFocusedSettingsSection } from '../../state/selectors/section';
-import { recoveryPhraseModal, updateDeleteAccountModal } from '../../state/ducks/modalDialog';
+import { updateDeleteAccountModal } from '../../state/ducks/modalDialog';
 import { SessionIcon } from '../icon';
 import { SessionSettingCategory } from '../settings/SessionSettings';
 import { resetConversationExternal } from '../../state/ducks/conversations';
@@ -46,10 +46,6 @@ const getCategories = () => {
       title: window.i18n('helpSettingsTitle'),
     },
     {
-      id: SessionSettingCategory.RecoveryPhrase,
-      title: window.i18n('recoveryPhrase'),
-    },
-    {
       id: SessionSettingCategory.ClearData,
       title: window.i18n('clearDataSettingsTitle'),
     },
@@ -80,9 +76,6 @@ const LeftPaneSettingsCategoryRow = (props: {
             dispatch(showLeftPaneSection(SectionType.Message));
             dispatch(setOverlayMode('message-requests'));
             dispatch(resetConversationExternal());
-            break;
-          case SessionSettingCategory.RecoveryPhrase:
-            dispatch(recoveryPhraseModal({}));
             break;
           case SessionSettingCategory.ClearData:
             dispatch(updateDeleteAccountModal({}));
