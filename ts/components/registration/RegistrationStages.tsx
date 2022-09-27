@@ -17,7 +17,7 @@ import {
 import { fromHex } from '../../session/utils/String';
 import { setSignInByLinking, setSignWithRecoveryPhrase, Storage } from '../../util/storage';
 
-export const MAX_USERNAME_LENGTH = 26;
+export const MAX_USERNAME_LENGTH = 64;
 // tslint:disable: use-simple-attributes
 
 export async function resetRegistration() {
