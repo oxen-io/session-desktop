@@ -3,22 +3,19 @@ import React from 'react';
 
 import { SpacerLG } from '../../basic/Text';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getConversationRequests,
-  getSelectedConversation,
-} from '../../../state/selectors/conversations';
+import { getConversationRequests } from '../../../state/selectors/conversations';
 import { MemoConversationListItemWithDetails } from '../conversation-list-item/ConversationListItem';
 import styled from 'styled-components';
 import { SessionButton, SessionButtonColor } from '../../basic/SessionButton';
-import { resetOverlayMode, SectionType, showLeftPaneSection } from '../../../state/ducks/section';
+import {
+  resetOverlayMode,
+  SectionType,
+  showLeftPaneSection,
+} from '../../../state/ducks/section';
 import { getConversationController } from '../../../session/conversations';
 import { forceSyncConfigurationNowIfNeeded } from '../../../session/utils/syncUtils';
-import { BlockedNumberController } from '../../../util';
 import useKey from 'react-use/lib/useKey';
-import {
-  ReduxConversationType,
-  resetConversationExternal,
-} from '../../../state/ducks/conversations';
+import { resetConversationExternal } from '../../../state/ducks/conversations';
 import { updateConfirmModal } from '../../../state/ducks/modalDialog';
 
 const MessageRequestListPlaceholder = styled.div`
@@ -62,7 +59,6 @@ export const OverlayMessageRequest = () => {
   }
   const convoRequestCount = useSelector(getConversationRequests).length;
   const messageRequests = useSelector(getConversationRequests);
-  const selectedConversation = useSelector(getSelectedConversation);
 
   const buttonText = window.i18n('clearAll');
 
@@ -70,7 +66,7 @@ export const OverlayMessageRequest = () => {
    * Blocks all message request conversations and synchronizes across linked devices
    * @returns void
    */
-  function handleClearAllRequestsClick(convoRequests: Array<ReduxConversationType>) {
+  function handleClearAllRequestsClick() {
     const { i18n } = window;
     const title = i18n('clearAllConfirmationTitle');
     const message = i18n('clearAllConfirmationBody');
@@ -82,42 +78,29 @@ export const OverlayMessageRequest = () => {
         message,
         onClose,
         onClickOk: async () => {
-          window?.log?.info('Blocking all conversations');
-          if (!convoRequests) {
-            window?.log?.info('No conversation requests to block.');
+          window?.log?.info('Marking all conversations as unapproved');
+          if (!messageRequests?.length) {
+            window?.log?.info('No conversation requests to mark unapproved.');
             return;
           }
 
-          let newConvosBlocked = [];
-          const convoController = getConversationController();
-          await Promise.all(
-            (newConvosBlocked = convoRequests.filter(async convo => {
-              const { id } = convo;
-              const convoModel = convoController.get(id);
-              if (!convoModel.isBlocked()) {
-                await BlockedNumberController.block(id);
-                await convoModel.commit();
-              }
-              await convoModel.setIsApproved(false);
+          for (const convoRequest of messageRequests) {
+            const { id } = convoRequest;
+            const convoModel = getConversationController().get(id);
+            if (convoModel) {
+              // we mark the conversation as inactive. This way it wont' show up in the UI.
+              // we cannot delete it completely on desktop, because we might need the convo details for sogs/group convos.
 
-              // if we're looking at the convo to decline, close the convo
-              if (selectedConversation?.id === id) {
-                dispatch(resetConversationExternal());
-              }
-              return true;
-            }))
-          );
-
-          if (newConvosBlocked) {
-            await forceSyncConfigurationNowIfNeeded();
+              await convoModel.setIsApproved(false, false);
+              convoModel.set('active_at', undefined);
+              await convoModel.commit();
+            }
           }
 
-          // if no more requests, return to placeholder screen
-          if (convoRequestCount === newConvosBlocked.length) {
-            dispatch(resetOverlayMode());
-            dispatch(showLeftPaneSection(SectionType.Message));
-            dispatch(resetConversationExternal());
-          }
+          dispatch(resetOverlayMode());
+          dispatch(showLeftPaneSection(SectionType.Message));
+          dispatch(resetConversationExternal());
+          void forceSyncConfigurationNowIfNeeded();
         },
       })
     );
@@ -132,9 +115,7 @@ export const OverlayMessageRequest = () => {
           <SessionButton
             buttonColor={SessionButtonColor.Danger}
             text={buttonText}
-            onClick={() => {
-              handleClearAllRequestsClick(messageRequests);
-            }}
+            onClick={handleClearAllRequestsClick}
           />
         </>
       ) : (

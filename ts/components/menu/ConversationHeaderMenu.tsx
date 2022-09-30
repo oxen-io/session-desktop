@@ -1,14 +1,14 @@
 import React from 'react';
 import { animation, Menu } from 'react-contexify';
 import {
-  AcceptMenuItem,
+  AcceptMsgRequestMenuItem,
   AddModeratorsMenuItem,
   BanMenuItem,
   BlockMenuItem,
   ChangeNicknameMenuItem,
   ClearNicknameMenuItem,
   CopyMenuItem,
-  DeclineMenuItem,
+  DeclineMsgRequestMenuItem,
   DeleteContactMenuItem,
   DeleteMessagesMenuItem,
   DisappearingMessageMenuItem,
@@ -44,8 +44,8 @@ export const ConversationHeaderMenu = (props: PropsConversationHeaderMenu) => {
     <ContextConversationId.Provider value={selectedConversation}>
       <SessionContextMenuContainer>
         <Menu id={triggerId} animation={animation.fade}>
-          <AcceptMenuItem />
-          <DeclineMenuItem />
+          <AcceptMsgRequestMenuItem />
+          <DeclineMsgRequestMenuItem />
           <DisappearingMessageMenuItem />
           <NotificationForConvoMenuItem />
           <PinConversationMenuItem />

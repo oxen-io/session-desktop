@@ -149,44 +149,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     );
   }
 
-  /**
-   * Method to evaluate if a convo contains the right values
-   * @param values Required properties to evaluate if this is a message request
-   */
-  public static hasValidIncomingRequestValues({
-    isMe,
-    isApproved,
-    isBlocked,
-    isPrivate,
-    activeAt,
-  }: {
-    isMe?: boolean;
-    isApproved?: boolean;
-    isBlocked?: boolean;
-    isPrivate?: boolean;
-    activeAt?: number;
-  }): boolean {
-    // if a convo is not active, it means we didn't get any messages nor sent any.
-    const isActive = activeAt && isFinite(activeAt) && activeAt > 0;
-    return Boolean(isPrivate && !isMe && !isApproved && !isBlocked && isActive);
-  }
-
-  public static hasValidOutgoingRequestValues({
-    isMe,
-    didApproveMe,
-    isApproved,
-    isBlocked,
-    isPrivate,
-  }: {
-    isMe?: boolean;
-    isApproved?: boolean;
-    didApproveMe?: boolean;
-    isBlocked?: boolean;
-    isPrivate?: boolean;
-  }): boolean {
-    return Boolean(!isMe && isApproved && isPrivate && !isBlocked && !didApproveMe);
-  }
-
   public idForLogging() {
     if (this.isPrivate()) {
       return this.id;
@@ -796,11 +758,12 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
    * Does this conversation contain the properties to be considered a message request
    */
   public isIncomingRequest(): boolean {
-    return ConversationModel.hasValidIncomingRequestValues({
+    return hasValidIncomingRequestValues({
       isMe: this.isMe(),
       isApproved: this.isApproved(),
       isBlocked: this.isBlocked(),
       isPrivate: this.isPrivate(),
+      activeAt: this.get('active_at'),
     });
   }
 
@@ -808,12 +771,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
    * Is this conversation an outgoing message request
    */
   public isOutgoingRequest(): boolean {
-    return ConversationModel.hasValidOutgoingRequestValues({
+    return hasValidOutgoingRequestValues({
       isMe: this.isMe(),
       isApproved: this.isApproved(),
       didApproveMe: this.didApproveMe(),
       isBlocked: this.isBlocked(),
       isPrivate: this.isPrivate(),
+      activeAt: this.get('active_at'),
     });
   }
 
@@ -2148,3 +2112,45 @@ export class ConversationCollection extends Backbone.Collection<ConversationMode
   }
 }
 ConversationCollection.prototype.model = ConversationModel;
+
+/**
+ * Method to evaluate if a convo contains the right values
+ * @param values Required properties to evaluate if this is a message request
+ */
+export function hasValidIncomingRequestValues({
+  isMe,
+  isApproved,
+  isBlocked,
+  isPrivate,
+  activeAt,
+}: {
+  isMe: boolean;
+  isApproved: boolean;
+  isBlocked: boolean;
+  isPrivate: boolean;
+  activeAt: number | null;
+}): boolean {
+  // if a convo is not active, it means we didn't get any messages nor sent any.
+  const isActive = activeAt && isFinite(activeAt) && activeAt > 0;
+  return Boolean(isPrivate && !isMe && !isApproved && !isBlocked && isActive);
+}
+
+export function hasValidOutgoingRequestValues({
+  isMe,
+  didApproveMe,
+  isApproved,
+  isBlocked,
+  isPrivate,
+  activeAt,
+}: {
+  isMe: boolean;
+  isApproved: boolean;
+  didApproveMe: boolean;
+  isBlocked: boolean;
+  isPrivate: boolean;
+  activeAt: number | null;
+}): boolean {
+  // if a convo is not active, it means we didn't get any messages nor sent any.
+  const isActive = activeAt && isFinite(activeAt) && activeAt > 0;
+  return Boolean(isPrivate && !isMe && isApproved && !isBlocked && !didApproveMe && isActive);
+}

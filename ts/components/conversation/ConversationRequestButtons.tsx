@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useIsRequest } from '../../hooks/useParamSelector';
+import { useIsIncomingRequest } from '../../hooks/useParamSelector';
 import {
   approveConvoAndSendResponse,
   declineConversationWithConfirm,
@@ -13,23 +13,12 @@ import {
 } from '../../state/selectors/conversations';
 import { SessionButton, SessionButtonColor } from '../basic/SessionButton';
 
-const handleDeclineConversationRequest = (convoId: string) => {
-  declineConversationWithConfirm(convoId, true);
-};
-
-const handleAcceptConversationRequest = async (convoId: string) => {
-  const convo = getConversationController().get(convoId);
-  await convo.setDidApproveMe(true);
-  await convo.addOutgoingApprovalMessage(Date.now());
-  await approveConvoAndSendResponse(convoId, true);
-};
-
-const ConversationRequestBanner = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--margins-lg);
-  gap: var(--margins-lg);
+const StyledBlockUserText = styled.span`
+  color: var(--color-destructive);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  align-self: center;
+  font-weight: 700;
 `;
 
 const ConversationBannerRow = styled.div`
@@ -39,11 +28,66 @@ const ConversationBannerRow = styled.div`
   justify-content: center;
 `;
 
+const ConversationRequestBanner = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--margins-lg);
+  gap: var(--margins-sm);
+`;
+
+const ConversationRequestTextBottom = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: var(--margins-xs) var(--margins-lg);
+`;
+
+const ConversationRequestTextInner = styled.div`
+  color: var(--color-text-subtle);
+  text-align: center;
+  max-width: 450px;
+  font-size: var(--font-size-sm);
+`;
+
+const handleDeclineConversationRequest = (convoId: string) => {
+  declineConversationWithConfirm({
+    conversationId: convoId,
+    syncToDevices: true,
+    blockContact: false,
+  });
+};
+
+const handleDeclineAndBlockConversationRequest = (convoId: string) => {
+  declineConversationWithConfirm({
+    conversationId: convoId,
+    syncToDevices: true,
+    blockContact: true,
+  });
+};
+
+const handleAcceptConversationRequest = async (convoId: string) => {
+  const convo = getConversationController().get(convoId);
+  await convo.setDidApproveMe(true);
+  await convo.addOutgoingApprovalMessage(Date.now());
+  await approveConvoAndSendResponse(convoId, true);
+};
+
+const ConversationRequestExplanation = () => {
+  return (
+    <ConversationRequestTextBottom>
+      <ConversationRequestTextInner>
+        {window.i18n('respondingToRequestWarning')}
+      </ConversationRequestTextInner>
+    </ConversationRequestTextBottom>
+  );
+};
+
 export const ConversationMessageRequestButtons = () => {
   const selectedConversation = useSelector(getSelectedConversation);
 
   const hasIncomingMessages = useSelector(hasSelectedConversationIncomingMessages);
-  const isIncomingMessageRequest = useIsRequest(selectedConversation?.id);
+  const isIncomingMessageRequest = useIsIncomingRequest(selectedConversation?.id);
 
   if (!selectedConversation || !hasIncomingMessages) {
     return null;
@@ -73,6 +117,15 @@ export const ConversationMessageRequestButtons = () => {
           dataTestId="decline-message-request"
         />
       </ConversationBannerRow>
+      <ConversationRequestExplanation />
+      <StyledBlockUserText
+        onClick={() => {
+          handleDeclineAndBlockConversationRequest(selectedConversation.id);
+        }}
+        data-testid="decline-and-block-message-request"
+      >
+        {window.i18n('blockUser')}
+      </StyledBlockUserText>
     </ConversationRequestBanner>
   );
 };

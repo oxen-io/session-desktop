@@ -90,17 +90,20 @@ export async function blockConvoById(conversationId: string) {
     return;
   }
 
-  const promise = conversation.isPrivate()
-    ? BlockedNumberController.block(conversation.id)
-    : BlockedNumberController.blockGroup(conversation.id);
-  await promise;
+  if (conversation.isIncomingRequest() && conversation.isPrivate()) {
+    await conversation.setIsApproved(false);
+  }
+
+  conversation.isPrivate()
+    ? await BlockedNumberController.block(conversation.id)
+    : await BlockedNumberController.blockGroup(conversation.id);
+  
   await conversation.commit();
   ToastUtils.pushToastSuccess('blocked', window.i18n('blocked'));
 }
 
 export async function unblockConvoById(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
-
   if (!conversation) {
     // we assume it's a block contact and not group.
     // this is to be able to unlock a contact we don't have a conversation with.
@@ -111,10 +114,10 @@ export async function unblockConvoById(conversationId: string) {
   if (!conversation.id || conversation.isPublic()) {
     return;
   }
-  const promise = conversation.isPrivate()
-    ? BlockedNumberController.unblock(conversationId)
-    : BlockedNumberController.unblockGroup(conversationId);
-  await promise;
+  conversation.isPrivate()
+    ? await BlockedNumberController.unblock(conversationId)
+    : await BlockedNumberController.unblockGroup(conversationId);
+
   ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
   await conversation.commit();
 }
@@ -144,16 +147,40 @@ export const approveConvoAndSendResponse = async (
   }
 };
 
-export const declineConversationWithConfirm = (convoId: string, syncToDevices: boolean = true) => {
+export const declineConversationWithConfirm = ({
+  conversationId,
+  syncToDevices,
+  blockContact,
+}: {
+  conversationId: string;
+  syncToDevices: boolean;
+  blockContact: boolean; // if set to false, the contact will just be set to not approved
+}) => {
   window?.inboxStore?.dispatch(
     updateConfirmModal({
-      okText: window.i18n('decline'),
+      okText: blockContact ? window.i18n('block') : window.i18n('decline'),
       cancelText: window.i18n('cancel'),
       message: window.i18n('declineRequestMessage'),
       onClickOk: async () => {
-        await declineConversationWithoutConfirm(convoId, syncToDevices);
-        await blockConvoById(convoId);
-        await forceSyncConfigurationNowIfNeeded();
+        const conversationToDecline = getConversationController().get(conversationId);
+
+        if (!conversationToDecline || conversationToDecline.isApproved()) {
+          window?.log?.info('Conversation is already declined.');
+          return;
+        }
+
+        // we mark the conversation as inactive. This way it wont' show up in the UI.
+        // we cannot delete it completely on desktop, because we might need the convo details for sogs/group convos.
+        conversationToDecline.set('active_at', undefined);
+        await conversationToDecline.setIsApproved(false, false);
+        await conversationToDecline.commit();
+
+        if (blockContact) {
+          await blockConvoById(conversationId);
+        }
+        if (syncToDevices) {
+          await forceSyncConfigurationNowIfNeeded();
+        }
         window?.inboxStore?.dispatch(resetConversationExternal());
       },
       onClickCancel: () => {
@@ -164,28 +191,6 @@ export const declineConversationWithConfirm = (convoId: string, syncToDevices: b
       },
     })
   );
-};
-
-/**
- * Sets the approval fields to false for conversation. Sends decline message.
- */
-export const declineConversationWithoutConfirm = async (
-  conversationId: string,
-  syncToDevices: boolean = true
-) => {
-  const conversationToDecline = getConversationController().get(conversationId);
-
-  if (!conversationToDecline || conversationToDecline.isApproved()) {
-    window?.log?.info('Conversation is already declined.');
-    return;
-  }
-
-  await conversationToDecline.setIsApproved(false);
-
-  // Conversation was not approved before so a sync is needed
-  if (syncToDevices) {
-    await forceSyncConfigurationNowIfNeeded();
-  }
 };
 
 export async function showUpdateGroupNameByConvoId(conversationId: string) {
