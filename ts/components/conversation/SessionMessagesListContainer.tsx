@@ -23,6 +23,7 @@ import {
 } from '../../state/selectors/conversations';
 import { TypingBubble } from './TypingBubble';
 import styled from 'styled-components';
+import { ConversationMessageRequestButtons } from './ConversationRequestButtons';
 
 export type SessionMessageListProps = {
   messageContainerRef: React.RefObject<HTMLDivElement>;
@@ -140,7 +141,7 @@ class SessionMessagesListContainerInner extends React.Component<Props> {
             onEndPressed={this.scrollEnd}
           />
         </ScrollToLoadedMessageContext.Provider>
-
+        <ConversationMessageRequestButtons />
         <SessionScrollButton
           onClickScrollBottom={this.props.scrollToNow}
           key="scroll-down-button"

@@ -36,8 +36,9 @@ import { getHasIncomingCall, getHasOngoingCall } from '../../state/selectors/cal
 import {
   useConversationUsername,
   useExpireTimer,
+  useIsIncomingRequest,
   useIsKickedFromGroup,
-  useIsRequest,
+  useIsOutgoingRequest,
 } from '../../hooks/useParamSelector';
 import {
   SessionButton,
@@ -141,7 +142,7 @@ const SelectionOverlay = () => {
   );
 };
 
-const TripleDotContainer = styled.div`
+const TripleDotContainer = styled.button`
   user-select: none;
   flex-grow: 0;
   flex-shrink: 0;
@@ -149,12 +150,15 @@ const TripleDotContainer = styled.div`
 
 const TripleDotsMenu = (props: { triggerId: string; showBackButton: boolean }) => {
   const { showBackButton } = props;
-  if (showBackButton) {
+  const selectedConvoKey = useSelector(getSelectedConversationKey);
+  const isOutgoingRequest = useIsOutgoingRequest(selectedConvoKey);
+  const isIncomingRequest = useIsIncomingRequest(selectedConvoKey);
+
+  if (showBackButton || isOutgoingRequest || isIncomingRequest) {
     return null;
   }
   return (
     <TripleDotContainer
-      role="button"
       onClick={(e: any) => {
         contextMenu.show({
           id: props.triggerId,
@@ -188,24 +192,35 @@ const ExpirationLength = (props: { expirationSettingName?: string }) => {
   );
 };
 
-const AvatarHeader = (props: {
-  pubkey: string;
-  showBackButton: boolean;
-  onAvatarClick?: (pubkey: string) => void;
-}) => {
-  const { pubkey, onAvatarClick, showBackButton } = props;
+const AvatarHeader = () => {
+  const selectedConvoKey = useSelector(getSelectedConversationKey);
+
+  const isIncomingRequest = useIsIncomingRequest(selectedConvoKey);
+  const isOutgoingRequest = useIsIncomingRequest(selectedConvoKey);
+
+  const isMessageDetailOpened = useSelector(isMessageDetailView);
+  const dispatch = useDispatch();
+
+  if (!selectedConvoKey) {
+    return null;
+  }
+
+  const avatarClick =
+    isIncomingRequest || isOutgoingRequest
+      ? undefined
+      : () => {
+          // do not allow right panel to appear if another button is shown on the SessionConversation
+          if (!isMessageDetailOpened) {
+            dispatch(openRightPanel());
+          }
+        };
 
   return (
     <span className="module-conversation-header__avatar">
       <Avatar
         size={AvatarSize.S}
-        onAvatarClick={() => {
-          // do not allow right panel to appear if another button is shown on the SessionConversation
-          if (onAvatarClick && !showBackButton) {
-            onAvatarClick(pubkey);
-          }
-        }}
-        pubkey={pubkey}
+        onAvatarClick={avatarClick}
+        pubkey={selectedConvoKey}
         dataTestId="conversation-options-avatar"
       />
     </span>
@@ -240,9 +255,19 @@ const CallButton = () => {
   const hasOngoingCall = useSelector(getHasOngoingCall);
   const canCall = !(hasIncomingCall || hasOngoingCall);
 
-  const isRequest = useIsRequest(selectedConvoKey);
+  // we do not want to show the call button if we are not fully approved with this convo (message request accepted)
+  const isIncomingRequest = useIsIncomingRequest(selectedConvoKey);
+  const isOutgoingRequest = useIsOutgoingRequest(selectedConvoKey);
 
-  if (!isPrivate || isMe || !selectedConvoKey || isBlocked || !activeAt || isRequest) {
+  if (
+    !isPrivate ||
+    isMe ||
+    !selectedConvoKey ||
+    isBlocked ||
+    !activeAt ||
+    isIncomingRequest ||
+    isOutgoingRequest
+  ) {
     return null;
   }
 
@@ -281,6 +306,65 @@ export type ConversationHeaderTitleProps = {
   currentNotificationSetting?: ConversationNotificationSettingType;
 };
 
+const StyledTitleContainer = styled.div`
+  margin-inline: 100px;
+  display: flex;
+  font-size: 17px;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-items: center;
+  -webkit-user-select: text;
+  cursor: pointer;
+  pointer-events: all;
+
+  .module-contact-name__profile-name {
+    width: 100%;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+  .module-contact-name {
+    width: 100%;
+  }
+  .module-contact-name__profile-number {
+    text-align: center;
+  }
+`;
+
+const StyledSubtitle = styled.span`
+  color: var(--color-text);
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: var(--font-size-sm);
+`;
+
+const StyledItemsWrapper = styled.div`
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  justify-content: space-between;
+`;
+
+const StyledHeaderTitleContainer = styled.div`
+  position: absolute;
+  top: 0;
+  justify-content: center;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  pointer-events: none;
+`;
+
 /**
  * The subtitle beneath a conversation title when looking at a conversation screen.
  * @param props props for subtitle. Text to be displayed
@@ -291,13 +375,15 @@ export const ConversationHeaderSubtitle = (props: { text?: string | null }): JSX
   if (!text) {
     return null;
   }
-  return <span className="module-conversation-header__title-text">{text}</span>;
+  return <StyledSubtitle>{text}</StyledSubtitle>;
 };
 
 const ConversationHeaderTitle = () => {
   const headerTitleProps = useSelector(getConversationHeaderTitleProps);
   const notificationSetting = useSelector(getCurrentNotificationSettingText);
   const isRightPanelOn = useSelector(isRightPanelShowing);
+  const isIncomingRequest = useIsIncomingRequest(headerTitleProps?.conversationKey);
+  const isOutgoingRequest = useIsIncomingRequest(headerTitleProps?.conversationKey);
 
   const convoName = useConversationUsername(headerTitleProps?.conversationKey);
   const dispatch = useDispatch();
@@ -310,7 +396,7 @@ const ConversationHeaderTitle = () => {
   const { i18n } = window;
 
   if (isMe) {
-    return <div className="module-conversation-header__title">{i18n('noteToSelf')}</div>;
+    return <StyledTitleContainer>{i18n('noteToSelf')}</StyledTitleContainer>;
   }
 
   let memberCount = 0;
@@ -336,10 +422,9 @@ const ConversationHeaderTitle = () => {
     : `${notificationSubtitle}`;
 
   return (
-    <div
-      className="module-conversation-header__title"
+    <StyledTitleContainer
       onClick={() => {
-        if (isRightPanelOn) {
+        if (isRightPanelOn || isIncomingRequest || isOutgoingRequest) {
           dispatch(closeRightPanel());
         } else {
           dispatch(openRightPanel());
@@ -353,7 +438,7 @@ const ConversationHeaderTitle = () => {
       <StyledSubtitleContainer>
         <ConversationHeaderSubtitle text={fullTextSubtitle} />
       </StyledSubtitleContainer>
-    </div>
+    </StyledTitleContainer>
   );
 };
 
@@ -376,48 +461,41 @@ export const ConversationHeaderWithDetails = () => {
   const triggerId = 'conversation-header';
 
   return (
-    <div className="module-conversation-header">
-      <div className="conversation-header--items-wrapper">
-        <BackButton
-          onGoBack={() => {
-            dispatch(closeMessageDetailsView());
-          }}
-          showBackButton={isMessageDetailOpened}
-        />
-        <TripleDotsMenu triggerId={triggerId} showBackButton={isMessageDetailOpened} />
+    <>
+      <div className="module-conversation-header">
+        <StyledItemsWrapper>
+          <BackButton
+            onGoBack={() => {
+              dispatch(closeMessageDetailsView());
+            }}
+            showBackButton={isMessageDetailOpened}
+          />
+          <TripleDotsMenu triggerId={triggerId} showBackButton={isMessageDetailOpened} />
 
-        <div className="module-conversation-header__title-container">
-          <div className="module-conversation-header__title-flex">
-            <ConversationHeaderTitle />
-          </div>
-        </div>
+          {!isSelectionMode && (
+            <Flex
+              container={true}
+              flexDirection="row"
+              alignItems="center"
+              flexGrow={0}
+              flexShrink={0}
+              margin="0 0 0 auto"
+            >
+              {!isKickedFromGroup && (
+                <ExpirationLength expirationSettingName={expirationSettingName} />
+              )}
+              <CallButton />
+              <AvatarHeader />
+            </Flex>
+          )}
 
-        {!isSelectionMode && (
-          <Flex
-            container={true}
-            flexDirection="row"
-            alignItems="center"
-            flexGrow={0}
-            flexShrink={0}
-          >
-            {!isKickedFromGroup && (
-              <ExpirationLength expirationSettingName={expirationSettingName} />
-            )}
-            <CallButton />
-            <AvatarHeader
-              onAvatarClick={() => {
-                dispatch(openRightPanel());
-              }}
-              pubkey={selectedConvoKey}
-              showBackButton={isMessageDetailOpened}
-            />
-          </Flex>
-        )}
-
-        <ConversationHeaderMenu triggerId={triggerId} />
+          <ConversationHeaderMenu triggerId={triggerId} />
+        </StyledItemsWrapper>
+        {isSelectionMode && <SelectionOverlay />}
       </div>
-
-      {isSelectionMode && <SelectionOverlay />}
-    </div>
+      <StyledHeaderTitleContainer>
+        <ConversationHeaderTitle />
+      </StyledHeaderTitleContainer>
+    </>
   );
 };

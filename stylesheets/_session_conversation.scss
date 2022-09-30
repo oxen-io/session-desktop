@@ -55,13 +55,8 @@
 }
 
 .conversation-header {
-  &--items-wrapper {
-    display: flex;
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
+  position: relative;
+  background: var(--color-cell-background);
 
   .message-selection-overlay {
     position: absolute;
