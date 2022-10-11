@@ -155,7 +155,7 @@ function showInviteContact(isPublic: boolean): boolean {
 
 /** Menu items standardized */
 
-export const InviteContactMenuItem = (): JSX.Element | null => {
+export const InviteContactMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
 
@@ -171,9 +171,9 @@ export const InviteContactMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const PinConversationMenuItem = (): JSX.Element | null => {
+export const PinConversationMenuItem = React.memo((): JSX.Element | null => {
   const conversationId = useContext(ContextConversationId);
   const isMessagesSection = useSelector(getFocusedSection) === SectionType.Message;
   const isRequest = useIsRequest(conversationId);
@@ -190,9 +190,9 @@ export const PinConversationMenuItem = (): JSX.Element | null => {
     return <Item onClick={togglePinConversation}>{menuText}</Item>;
   }
   return null;
-};
+});
 
-export const DeleteContactMenuItem = () => {
+export const DeleteContactMenuItem = React.memo(() => {
   const dispatch = useDispatch();
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
@@ -234,9 +234,9 @@ export const DeleteContactMenuItem = () => {
     return <Item onClick={showConfirmationModal}>{menuItemText}</Item>;
   }
   return null;
-};
+});
 
-export const LeaveGroupMenuItem = () => {
+export const LeaveGroupMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isLeft = useIsLeft(convoId);
@@ -256,9 +256,9 @@ export const LeaveGroupMenuItem = () => {
   }
 
   return null;
-};
+});
 
-export const ShowUserDetailsMenuItem = () => {
+export const ShowUserDetailsMenuItem = React.memo(() => {
   const dispatch = useDispatch();
   const convoId = useContext(ContextConversationId);
   const isPrivate = useIsPrivate(convoId);
@@ -285,9 +285,9 @@ export const ShowUserDetailsMenuItem = () => {
   }
 
   return null;
-};
+});
 
-export const UpdateGroupNameMenuItem = () => {
+export const UpdateGroupNameMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const left = useIsLeft(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
@@ -305,9 +305,9 @@ export const UpdateGroupNameMenuItem = () => {
     );
   }
   return null;
-};
+});
 
-export const RemoveModeratorsMenuItem = (): JSX.Element | null => {
+export const RemoveModeratorsMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
@@ -325,9 +325,9 @@ export const RemoveModeratorsMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const AddModeratorsMenuItem = (): JSX.Element | null => {
+export const AddModeratorsMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
@@ -345,9 +345,9 @@ export const AddModeratorsMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const UnbanMenuItem = (): JSX.Element | null => {
+export const UnbanMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
@@ -365,9 +365,9 @@ export const UnbanMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const BanMenuItem = (): JSX.Element | null => {
+export const BanMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
@@ -385,9 +385,9 @@ export const BanMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const CopyMenuItem = (): JSX.Element | null => {
+export const CopyMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
   const isPrivate = useIsPrivate(convoId);
@@ -398,9 +398,9 @@ export const CopyMenuItem = (): JSX.Element | null => {
     return <Item onClick={() => copyPublicKeyByConvoId(convoId)}>{copyIdLabel}</Item>;
   }
   return null;
-};
+});
 
-export const MarkAllReadMenuItem = (): JSX.Element | null => {
+export const MarkAllReadMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isRequest = useIsRequest(convoId);
   if (!isRequest) {
@@ -410,9 +410,9 @@ export const MarkAllReadMenuItem = (): JSX.Element | null => {
   } else {
     return null;
   }
-};
+});
 
-export const DisappearingMessageMenuItem = (): JSX.Element | null => {
+export const DisappearingMessageMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isBlocked = useIsBlocked(convoId);
   const isActive = useIsActive(convoId);
@@ -454,9 +454,9 @@ export const DisappearingMessageMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const NotificationForConvoMenuItem = (): JSX.Element | null => {
+export const NotificationForConvoMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
   const left = useIsLeft(convoId);
@@ -509,7 +509,7 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
 export function isRtlBody(): boolean {
   const body = document.getElementsByTagName('body').item(0);
@@ -517,7 +517,7 @@ export function isRtlBody(): boolean {
   return body?.classList.contains('rtl') || false;
 }
 
-export const BlockMenuItem = (): JSX.Element | null => {
+export const BlockMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isMe = useIsMe(convoId);
   const isBlocked = useIsBlocked(convoId);
@@ -532,9 +532,9 @@ export const BlockMenuItem = (): JSX.Element | null => {
     return <Item onClick={blockHandler}>{blockTitle}</Item>;
   }
   return null;
-};
+});
 
-export const ClearNicknameMenuItem = (): JSX.Element | null => {
+export const ClearNicknameMenuItem = React.memo((): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isMe = useIsMe(convoId);
   const hasNickname = useHasNickname(convoId);
@@ -547,9 +547,9 @@ export const ClearNicknameMenuItem = (): JSX.Element | null => {
     );
   }
   return null;
-};
+});
 
-export const ChangeNicknameMenuItem = () => {
+export const ChangeNicknameMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const isMe = useIsMe(convoId);
   const isPrivate = useIsPrivate(convoId);
@@ -568,9 +568,9 @@ export const ChangeNicknameMenuItem = () => {
     );
   }
   return null;
-};
+});
 
-export const DeleteMessagesMenuItem = () => {
+export const DeleteMessagesMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const isRequest = useIsRequest(convoId);
 
@@ -587,22 +587,24 @@ export const DeleteMessagesMenuItem = () => {
       {window.i18n('deleteMessages')}
     </Item>
   );
-};
+});
 
-export const HideBannerMenuItem = (): JSX.Element => {
-  const dispatch = useDispatch();
-  return (
-    <Item
-      onClick={() => {
-        dispatch(hideMessageRequestBanner());
-      }}
-    >
-      {window.i18n('hideBanner')}
-    </Item>
-  );
-};
+export const HideBannerMenuItem = React.memo(
+  (): JSX.Element => {
+    const dispatch = useDispatch();
+    return (
+      <Item
+        onClick={() => {
+          dispatch(hideMessageRequestBanner());
+        }}
+      >
+        {window.i18n('hideBanner')}
+      </Item>
+    );
+  }
+);
 
-export const AcceptMenuItem = () => {
+export const AcceptMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const isRequest = useIsRequest(convoId);
   const convo = getConversationController().get(convoId);
@@ -621,9 +623,9 @@ export const AcceptMenuItem = () => {
     );
   }
   return null;
-};
+});
 
-export const DeclineMenuItem = () => {
+export const DeclineMenuItem = React.memo(() => {
   const convoId = useContext(ContextConversationId);
   const isRequest = useIsRequest(convoId);
 
@@ -639,4 +641,4 @@ export const DeclineMenuItem = () => {
     );
   }
   return null;
-};
+});
