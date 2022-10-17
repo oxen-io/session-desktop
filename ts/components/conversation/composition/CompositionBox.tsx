@@ -1084,6 +1084,7 @@ const mapStateToProps = (state: StateType) => {
     quotedMessageProps: getQuotedMessage(state),
     selectedConversation: getSelectedConversation(state),
     selectedConversationKey: getSelectedConversationKey(state),
+
     typingEnabled: getIsTypingEnabled(state),
   };
 };

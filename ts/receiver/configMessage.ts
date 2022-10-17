@@ -182,7 +182,7 @@ const handleContactFromConfig = async (
       }
       await BlockedNumberController.block(contactConvo.id);
     } else if (contactReceived.isBlocked === false) {
-      await BlockedNumberController.unblock(contactConvo.id);
+      await BlockedNumberController.unblockAll([contactConvo.id]);
     }
 
     void appendFetchAvatarAndProfileJob(

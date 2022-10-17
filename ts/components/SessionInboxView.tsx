@@ -22,7 +22,7 @@ import { initialThemeState } from '../state/ducks/theme';
 import { TimerOptionsArray } from '../state/ducks/timerOptions';
 import { initialUserConfigState } from '../state/ducks/userConfig';
 import { StateType } from '../state/reducer';
-import { makeLookup } from '../util';
+import { BlockedNumberController, makeLookup } from '../util';
 import { SessionMainPanel } from './SessionMainPanel';
 import { createStore } from '../state/createStore';
 import { ExpirationTimerOptions } from '../util/expiringMessages';
@@ -100,6 +100,7 @@ export class SessionInboxView extends React.Component<any, State> {
       conversations: {
         ...getEmptyConversationState(),
         conversationLookup: makeLookup(conversations, 'id'),
+        blockedConversations: BlockedNumberController.getAllBlockedIds(),
       },
       user: {
         ourNumber: UserUtils.getOurPubKeyStrFromCache(),

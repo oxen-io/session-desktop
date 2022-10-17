@@ -160,7 +160,7 @@ describe('state/selectors/conversations', () => {
         },
       };
       const comparator = _getConversationComparator(i18n);
-      const conversations = _getSortedConversations(data, comparator);
+      const conversations = _getSortedConversations(data, comparator, []);
 
       assert.strictEqual(conversations[0].displayNameInProfile, 'First!');
       assert.strictEqual(conversations[1].displayNameInProfile, 'Á');
@@ -325,7 +325,7 @@ describe('state/selectors/conversations', () => {
         },
       };
       const comparator = _getConversationComparator(i18n);
-      const conversations = _getSortedConversations(data, comparator);
+      const conversations = _getSortedConversations(data, comparator, []);
 
       assert.strictEqual(conversations[0].displayNameInProfile, 'Á');
       assert.strictEqual(conversations[1].displayNameInProfile, 'C');

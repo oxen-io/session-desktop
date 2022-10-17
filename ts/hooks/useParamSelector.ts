@@ -4,7 +4,7 @@ import { ConversationModel } from '../models/conversation';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
-import { getMessageReactsProps } from '../state/selectors/conversations';
+import { getBlockedConversations, getMessageReactsProps } from '../state/selectors/conversations';
 
 export function useAvatarPath(convoId: string | undefined) {
   const convoProps = useConversationPropsById(convoId);
@@ -101,8 +101,11 @@ export function useIsPublic(convoId?: string) {
 }
 
 export function useIsBlocked(convoId?: string) {
-  const convoProps = useConversationPropsById(convoId);
-  return Boolean(convoProps && convoProps.isBlocked);
+  if (!convoId) {
+    return false;
+  }
+  const blockList = useSelector(getBlockedConversations);
+  return blockList.includes(convoId);
 }
 
 export function useIsActive(convoId?: string) {

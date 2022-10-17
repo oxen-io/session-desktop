@@ -81,7 +81,7 @@ describe('BlockedNumberController', () => {
       const primary = TestUtils.generateFakePubKey();
       memoryDB.blocked = [primary.key];
 
-      await BlockedNumberController.unblock(primary);
+      await BlockedNumberController.unblockAll([primary]);
 
       const blockedNumbers = BlockedNumberController.getBlockedNumbers();
       expect(blockedNumbers).to.be.empty;
@@ -93,7 +93,7 @@ describe('BlockedNumberController', () => {
       const another = TestUtils.generateFakePubKey();
       memoryDB.blocked = [pubKey.key, another.key];
 
-      await BlockedNumberController.unblock(pubKey);
+      await BlockedNumberController.unblockAll([pubKey]);
 
       const blockedNumbers = BlockedNumberController.getBlockedNumbers();
       expect(blockedNumbers).to.have.lengthOf(1);

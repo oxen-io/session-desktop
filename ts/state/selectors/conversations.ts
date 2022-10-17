@@ -13,7 +13,6 @@ import {
 } from '../ducks/conversations';
 
 import { getIntl } from './user';
-import { BlockedNumberController } from '../../util';
 import { ConversationModel } from '../../models/conversation';
 import { LocalizerType } from '../../types/Util';
 import { ConversationHeaderTitleProps } from '../../components/conversation/ConversationHeader';
@@ -40,12 +39,13 @@ import { filter, isEmpty, pick, sortBy } from 'lodash';
 
 export const getConversations = (state: StateType): ConversationsStateType => state.conversations;
 
-export const getConversationLookup = createSelector(
-  getConversations,
-  (state: ConversationsStateType): ConversationLookupType => {
-    return state.conversationLookup;
-  }
-);
+export const getConversationLookup = (state: StateType): ConversationLookupType => {
+  return state.conversations.conversationLookup;
+};
+
+export const getBlockedConversations = (state: StateType) => {
+  return state.conversations.blockedConversations || [];
+};
 
 export const getConversationsCount = createSelector(getConversationLookup, (state): number => {
   return Object.values(state).length;
@@ -385,6 +385,7 @@ export const _getLeftPaneLists = (
 export const _getSortedConversations = (
   lookup: ConversationLookupType,
   comparator: (left: ReduxConversationType, right: ReduxConversationType) => number,
+  blockedConversations: Array<string>,
   selectedConversation?: string
 ): Array<ReduxConversationType> => {
   const values = Object.values(lookup);
@@ -393,31 +394,17 @@ export const _getSortedConversations = (
   const sortedConversations: Array<ReduxConversationType> = [];
 
   for (let conversation of sorted) {
-    if (selectedConversation === conversation.id) {
-      conversation = {
-        ...conversation,
-        isSelected: true,
-      };
-    }
-
-    const isBlocked =
-      BlockedNumberController.isBlocked(conversation.id) ||
-      BlockedNumberController.isGroupBlocked(conversation.id);
-
-    if (isBlocked) {
-      conversation = {
-        ...conversation,
-        isBlocked: true,
-      };
-    }
-
     // Remove all invalid conversations and conversatons of devices associated
     //  with cancelled attempted links
     if (!conversation.isPublic && !conversation.activeAt) {
       continue;
     }
+    const copy = { ...conversation };
 
-    sortedConversations.push(conversation);
+    copy.isSelected = selectedConversation === conversation.id;
+    copy.isBlocked = blockedConversations.includes(conversation.id);
+
+    sortedConversations.push(copy);
   }
 
   return sortedConversations;
@@ -426,6 +413,7 @@ export const _getSortedConversations = (
 export const getSortedConversations = createSelector(
   getConversationLookup,
   getConversationComparator,
+  getBlockedConversations,
   getSelectedConversationKey,
   _getSortedConversations
 );
@@ -616,11 +604,6 @@ export const getIsSelectedNoteToSelf = createSelector(
     return selectedProps?.isMe || false;
   }
 );
-
-export const getNumberOfPinnedConversations = createSelector(getConversations, (state): number => {
-  const values = Object.values(state.conversationLookup);
-  return values.filter(conversation => conversation.isPinned).length;
-});
 
 export const isMessageDetailView = createSelector(
   getConversations,

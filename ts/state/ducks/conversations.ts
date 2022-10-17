@@ -280,13 +280,12 @@ export interface NotificationForConvoOption {
   value: ConversationNotificationSettingType;
 }
 
-export type ConversationLookupType = {
-  [key: string]: ReduxConversationType;
-};
+export type ConversationLookupType = Record<string, ReduxConversationType>;
 
 export type ConversationsStateType = {
   conversationLookup: ConversationLookupType;
   selectedConversation?: string;
+  blockedConversations: Array<string>;
   messages: Array<MessageModelPropsWithoutConvoProps>;
   firstUnreadMessageId: string | undefined;
   messageDetailProps?: MessagePropsDetails;
@@ -446,6 +445,7 @@ export const fetchBottomMessagesForConversation = createAsyncThunk(
 export function getEmptyConversationState(): ConversationsStateType {
   return {
     conversationLookup: {},
+    blockedConversations: [],
     messages: [],
     messageDetailProps: undefined,
     showRightPanel: false,
@@ -710,7 +710,11 @@ const conversationsSlice = createSlice({
      * Closes any existing conversation and returns state to the placeholder screen
      */
     resetConversationExternal(state: ConversationsStateType) {
-      return { ...getEmptyConversationState(), conversationLookup: state.conversationLookup };
+      return {
+        ...getEmptyConversationState(),
+        conversationLookup: state.conversationLookup,
+        blockedConversations: state.blockedConversations,
+      };
     },
     openConversationExternal(
       state: ConversationsStateType,
@@ -738,6 +742,7 @@ const conversationsSlice = createSlice({
       }
       return {
         conversationLookup: state.conversationLookup,
+        blockedConversations: state.blockedConversations,
         mostRecentMessageId: action.payload.mostRecentMessageIdOnOpen,
         selectedConversation: action.payload.conversationKey,
         firstUnreadMessageId: action.payload.firstUnreadIdOnOpen,
@@ -847,6 +852,31 @@ const conversationsSlice = createSlice({
           action.payload.isInitialFetchingInProgress;
       }
 
+      return state;
+    },
+    setBlockedList(state: ConversationsStateType, action: PayloadAction<Array<string>>) {
+      state.blockedConversations = action.payload;
+      return state;
+    },
+
+    addToBlockedList(state: ConversationsStateType, action: PayloadAction<string>) {
+      const toAdd = action.payload;
+
+      if (state.blockedConversations.includes(toAdd)) {
+        return state;
+      }
+      state.blockedConversations.push(toAdd);
+      return state;
+    },
+
+    removeFromBlockedList(state: ConversationsStateType, action: PayloadAction<string>) {
+      const toRemove = action.payload;
+      if (!state.blockedConversations.includes(toRemove)) {
+        return state;
+      }
+
+      const index = state.blockedConversations.indexOf(toRemove);
+      state.blockedConversations.splice(index, 1);
       return state;
     },
   },
@@ -980,6 +1010,10 @@ export const {
   resetOldTopMessageId,
   resetOldBottomMessageId,
   markConversationFullyRead,
+  //blocked list
+  setBlockedList,
+  addToBlockedList,
+  removeFromBlockedList,
   // layout stuff
   showMessageDetailsView,
   closeMessageDetailsView,

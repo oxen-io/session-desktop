@@ -104,7 +104,7 @@ export async function unblockConvoById(conversationId: string) {
   if (!conversation) {
     // we assume it's a block contact and not group.
     // this is to be able to unlock a contact we don't have a conversation with.
-    await BlockedNumberController.unblock(conversationId);
+    await BlockedNumberController.unblockAll([conversationId]);
     ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
     return;
   }
@@ -112,7 +112,7 @@ export async function unblockConvoById(conversationId: string) {
     return;
   }
   const promise = conversation.isPrivate()
-    ? BlockedNumberController.unblock(conversationId)
+    ? BlockedNumberController.unblockAll([conversationId])
     : BlockedNumberController.unblockGroup(conversationId);
   await promise;
   ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));

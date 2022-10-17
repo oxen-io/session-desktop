@@ -1,6 +1,12 @@
+import { uniq } from 'lodash';
 import { Data } from '../data/data';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
+import {
+  addToBlockedList,
+  removeFromBlockedList,
+  setBlockedList,
+} from '../state/ducks/conversations';
 
 const BLOCKED_NUMBERS_ID = 'blocked';
 const BLOCKED_GROUPS_ID = 'blocked-groups';
@@ -68,22 +74,7 @@ export class BlockedNumberController {
     if (!this.blockedNumbers.has(toBlock.key)) {
       this.blockedNumbers.add(toBlock.key);
       await this.saveToDB(BLOCKED_NUMBERS_ID, this.blockedNumbers);
-    }
-  }
-
-  /**
-   * Unblock a user.
-   * This will only unblock the primary device of the user.
-   *
-   * @param user The user to unblock.
-   */
-  public static async unblock(user: string | PubKey): Promise<void> {
-    await this.load();
-    const toUnblock = PubKey.cast(user);
-
-    if (this.blockedNumbers.has(toUnblock.key)) {
-      this.blockedNumbers.delete(toUnblock.key);
-      await this.saveToDB(BLOCKED_NUMBERS_ID, this.blockedNumbers);
+      window.inboxStore?.dispatch(addToBlockedList(toBlock.key));
     }
   }
 
@@ -93,7 +84,7 @@ export class BlockedNumberController {
    *
    * @param user The user to unblock.
    */
-  public static async unblockAll(users: Array<string>): Promise<void> {
+  public static async unblockAll(users: Array<string | PubKey>): Promise<void> {
     await this.load();
     let changes = false;
     users.forEach(user => {
@@ -102,6 +93,7 @@ export class BlockedNumberController {
       if (this.blockedNumbers.has(toUnblock.key)) {
         this.blockedNumbers.delete(toUnblock.key);
         changes = true;
+        window.inboxStore?.dispatch(removeFromBlockedList(toUnblock.key));
       }
     });
 
@@ -114,7 +106,7 @@ export class BlockedNumberController {
     if (blocked) {
       return BlockedNumberController.block(user);
     }
-    return BlockedNumberController.unblock(user);
+    return BlockedNumberController.unblockAll([user]);
   }
 
   public static async setGroupBlocked(groupId: string | PubKey, blocked: boolean): Promise<void> {
@@ -127,15 +119,22 @@ export class BlockedNumberController {
   public static async blockGroup(groupId: string | PubKey): Promise<void> {
     await this.load();
     const id = PubKey.cast(groupId);
-    this.blockedGroups.add(id.key);
-    await this.saveToDB(BLOCKED_GROUPS_ID, this.blockedGroups);
+
+    if (!this.blockedGroups.has(id.key)) {
+      this.blockedGroups.add(id.key);
+      await this.saveToDB(BLOCKED_GROUPS_ID, this.blockedGroups);
+      window.inboxStore?.dispatch(addToBlockedList(id.key));
+    }
   }
 
   public static async unblockGroup(groupId: string | PubKey): Promise<void> {
     await this.load();
     const id = PubKey.cast(groupId);
-    this.blockedGroups.delete(id.key);
-    await this.saveToDB(BLOCKED_GROUPS_ID, this.blockedGroups);
+    if (this.blockedGroups.has(id.key)) {
+      this.blockedGroups.delete(id.key);
+      await this.saveToDB(BLOCKED_GROUPS_ID, this.blockedGroups);
+      window.inboxStore?.dispatch(removeFromBlockedList(id.key));
+    }
   }
 
   public static getBlockedNumbers(): Array<string> {
@@ -153,13 +152,27 @@ export class BlockedNumberController {
       this.blockedNumbers = await this.getNumbersFromDB(BLOCKED_NUMBERS_ID);
       this.blockedGroups = await this.getNumbersFromDB(BLOCKED_GROUPS_ID);
       this.loaded = true;
+
+      const merged = Array.from(this.blockedNumbers).concat(...Array.from(this.blockedGroups));
+      const uniqMerged = uniq(merged) || [];
+      window.inboxStore?.dispatch(setBlockedList(uniqMerged));
     }
+  }
+
+  public static getAllBlockedIds() {
+    if (!this.loaded) {
+      throw new Error('BlockedNumberControler needs to be loaded');
+    }
+    const merged = Array.from(this.blockedNumbers).concat(...Array.from(this.blockedGroups));
+    const uniqMerged = uniq(merged) || [];
+    return uniqMerged;
   }
 
   public static reset() {
     this.loaded = false;
     this.blockedNumbers = new Set();
     this.blockedGroups = new Set();
+    window.inboxStore?.dispatch(setBlockedList([]));
   }
 
   private static async getNumbersFromDB(id: string): Promise<Set<string>> {

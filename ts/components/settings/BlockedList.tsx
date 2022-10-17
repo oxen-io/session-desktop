@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 // tslint:disable-next-line: no-submodule-imports
 import useUpdate from 'react-use/lib/useUpdate';
 import styled from 'styled-components';
 import { useSet } from '../../hooks/useSet';
 import { ToastUtils } from '../../session/utils';
+import { getBlockedConversations } from '../../state/selectors/conversations';
 import { BlockedNumberController } from '../../util';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerLG } from '../basic/Text';
@@ -91,6 +93,7 @@ const NoBlockedContacts = () => {
 
 export const BlockedContactsList = () => {
   const [expanded, setExpanded] = useState(false);
+  const blockedConversations = useSelector(getBlockedConversations);
   const {
     uniqueValues: selectedIds,
     addTo: addToSelected,
@@ -98,14 +101,11 @@ export const BlockedContactsList = () => {
     empty: emptySelected,
   } = useSet<string>([]);
 
-  const forceUpdate = useUpdate();
-
   const hasAtLeastOneSelected = Boolean(selectedIds.length);
-  const blockedNumbers = BlockedNumberController.getBlockedNumbers();
-  const noBlockedNumbers = !blockedNumbers.length;
+  const noBlockedNumbers = !blockedConversations.length;
 
   function toggleUnblockList() {
-    if (blockedNumbers.length) {
+    if (blockedConversations.length) {
       setExpanded(!expanded);
     }
   }
@@ -115,7 +115,6 @@ export const BlockedContactsList = () => {
       await BlockedNumberController.unblockAll(selectedIds);
       emptySelected();
       ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
-      forceUpdate();
     }
   }
 
@@ -152,7 +151,7 @@ export const BlockedContactsList = () => {
       </StyledBlockedSettingItem>
       {expanded && !noBlockedNumbers ? (
         <BlockedEntries
-          blockedNumbers={blockedNumbers}
+          blockedNumbers={blockedConversations}
           selectedIds={selectedIds}
           addToSelected={addToSelected}
           removeFromSelected={removeFromSelected}
