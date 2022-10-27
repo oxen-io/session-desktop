@@ -16,7 +16,7 @@ let alreadyCleaned = false;
 let alreadyCleanedWaiting = false;
 
 const cleanUpOtherTest = async () => {
-  if (alreadyCleaned || alreadyCleanedWaiting) {
+  if (alreadyCleaned || alreadyCleanedWaiting || process.env.RUNNING_IN_CI) {
     return;
   }
   alreadyCleaned = true;

@@ -50,5 +50,6 @@ export function getMessageTextContentNow() {
 export async function typeIntoInput(window: Page, dataTestId: string, text: string) {
   console.info(`typeIntoInput testId: ${dataTestId} : "${text}"`);
   const builtSelector = `css=[data-testid=${dataTestId}]`;
-  return window.fill(builtSelector, text);
+  await window.waitForSelector(builtSelector);
+  return window.fill(builtSelector, text, { force: true });
 }
