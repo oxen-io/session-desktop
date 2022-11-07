@@ -36,7 +36,6 @@ import { createSwarmMessageSentFromUs } from '../../../../models/messageFactory'
 import { Data } from '../../../../data/data';
 import { processMessagesUsingCache } from './sogsV3MutationCache';
 
-
 /**
  * Get the convo matching those criteria and make sure it is an opengroup convo, or return null.
  * If you get null, you most likely need to cancel the processing of whatever you are doing
