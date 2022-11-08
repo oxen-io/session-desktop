@@ -116,7 +116,7 @@ async function retrieveNextMessages(
   associatedWith: string,
   namespaces: Array<number>,
   ourPubkey: string
-): Promise<Array<{ code: number; messages: Array<Record<string, any>> }>> {
+): Promise<Array<{ code: number; results: { messages: Array<any> } }>> {
   if (namespaces.length !== lastHashes.length) {
     throw new Error('namespaces and lasthashes does not match');
   }
@@ -171,7 +171,7 @@ async function retrieveNextMessages(
 
     GetNetworkTime.handleTimestampOffsetFromNetwork('retrieve', bodyFirstResult.t);
 
-    return results.map(result => ({ code: result.code, messages: result.body as Array<any> }));
+    return results.map(result => ({ code: result.code, results: result.body as any }));
   } catch (e) {
     window?.log?.warn('exception while parsing json of nextMessage:', e);
     if (!window.inboxStore?.getState().onionPaths.isOnline) {

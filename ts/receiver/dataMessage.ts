@@ -194,9 +194,9 @@ export async function handleSwarmDataMessage(
   const isGroupV3Message = isGroupMessage && PubKey.isClosedGroupV3(envelope.source);
   let typeOfConvo = ConversationTypeEnum.PRIVATE;
   if (isGroupV3Message) {
-    typeOfConvo = ConversationTypeEnum.GROUPV3;
+    typeOfConvo = ConversationTypeEnum.CLOSED_GROUP_V3;
   } else if (isGroupMessage) {
-    typeOfConvo = ConversationTypeEnum.GROUP;
+    typeOfConvo = ConversationTypeEnum.CLOSED_GROUP_LEGACY;
   }
 
   const convoToAddMessageTo = await getConversationController().getOrCreateAndWait(

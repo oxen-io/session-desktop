@@ -44,7 +44,6 @@ import {
 } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
 import { GroupInvitationMessage } from '../session/messages/outgoing/visibleMessage/GroupInvitationMessage';
 import { ReadReceiptMessage } from '../session/messages/outgoing/controlMessage/receipt/ReadReceiptMessage';
-import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { OpenGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
 import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { getOpenGroupV2FromConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
@@ -78,8 +77,9 @@ import {
   ConversationNotificationSetting,
   ConversationTypeEnum,
   fillConvoAttributesWithDefaults,
+  isClosedGroupLegacyOrV3,
   isDirectConversation,
-  isOpenOrClosedGroup,
+  isOpenGroup,
 } from './conversationAttributes';
 import { SogsBlinding } from '../session/apis/open_group_api/sogsv3/sogsBlinding';
 import { from_hex } from 'libsodium-wrappers-sumo';
@@ -196,39 +196,28 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return this.id;
     }
 
-    if (this.isPublic()) {
-      const opengroup = this.toOpenGroupV2();
-      return `${opengroup.serverUrl}/${opengroup.roomId}`;
+    if (this.isOpenGroupV2()) {
+      return `${this.id}`;
     }
 
     return `group(${ed25519Str(this.id)})`;
   }
 
   public isMe() {
-    return UserUtils.isUsFromCache(this.id);
+    return this.isPrivate() && UserUtils.isUsFromCache(this.id);
   }
-  public isPublic(): boolean {
-    return Boolean(this.id && this.id.match(OpenGroupUtils.openGroupPrefixRegex));
-  }
+
   public isOpenGroupV2(): boolean {
-    return OpenGroupUtils.isOpenGroupV2(this.id);
+    return isOpenGroup(this.get('type'));
   }
-  public isClosedGroup() {
-    return (
-      (this.get('type') === ConversationTypeEnum.GROUP && !this.isPublic()) ||
-      this.get('type') === ConversationTypeEnum.GROUPV3
-    );
+  public isClosedGroup(): boolean {
+    return isClosedGroupLegacyOrV3(this.get('type'));
   }
-  public isPrivate() {
+  public isPrivate(): boolean {
     return isDirectConversation(this.get('type'));
   }
 
-  // returns true if this is a closed/medium or open group
-  public isGroup() {
-    return isOpenOrClosedGroup(this.get('type'));
-  }
-
-  public isBlocked() {
+  public isBlocked(): boolean {
     if (!this.id || this.isMe()) {
       return false;
     }
@@ -244,17 +233,13 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     return false;
   }
 
-  public isMediumGroup() {
-    return this.get('is_medium_group');
-  }
-
   /**
    * Returns true if this conversation is active
    * i.e. the conversation is visibie on the left pane. (Either we or another user created this convo).
    * This is useful because we do not want bumpTyping on the first message typing to a new convo to
    *  send a message.
    */
-  public isActive() {
+  public isActive(): boolean {
     return Boolean(this.get('active_at'));
   }
 
@@ -283,7 +268,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public getGroupModerators(): Array<string> {
     const groupModerators = this.get('groupModerators') as Array<string> | undefined;
 
-    return this.isPublic() && groupModerators && groupModerators?.length > 0 ? groupModerators : [];
+    return this.isOpenGroupV2() && groupModerators && groupModerators?.length > 0
+      ? groupModerators
+      : [];
   }
 
   // tslint:disable-next-line: cyclomatic-complexity max-func-body-length
@@ -291,7 +278,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const groupAdmins = this.getGroupAdmins();
     const groupModerators = this.getGroupModerators();
     // tslint:disable-next-line: cyclomatic-complexity
-    const isPublic = this.isPublic();
+    const isPublic = this.isOpenGroupV2();
 
     const members = this.isClosedGroup() ? this.get('members') : [];
     const zombies = this.isClosedGroup() ? this.get('zombies') : [];
@@ -475,7 +462,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public async updateGroupModerators(groupModerators: Array<string>, shouldCommit: boolean) {
-    if (!this.isPublic()) {
+    if (!this.isOpenGroupV2()) {
       throw new Error('group moderators are only possible on SOGS');
     }
     const existingModerators = uniq(sortBy(this.getGroupModerators()));
@@ -547,7 +534,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return null;
     }
     let msgSource = quotedMessage.getSource();
-    if (this.isPublic()) {
+    if (this.isOpenGroupV2()) {
       const room = OpenGroupData.getV2OpenGroupRoom(this.id);
       if (room && roomHasBlindEnabled(room) && msgSource === UserUtils.getOurPubKeyStrFromCache()) {
         // this room should send message with blinded pubkey, so we need to make the quote with them too.
@@ -585,9 +572,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         throw new Error('sendMessageJob() sent_at must be set.');
       }
 
-      if (this.isPublic() && !this.isOpenGroupV2()) {
-        throw new Error('Only opengroupv2 are supported now');
-      }
       // an OpenGroupV2 message is just a visible message
       const chatMessageParams: VisibleMessageParams = {
         body,
@@ -674,7 +658,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         return;
       }
 
-      if (this.isMediumGroup()) {
+      if (this.isClosedGroup()) {
         const chatMessageMediumGroup = new VisibleMessage(chatMessageParams);
         const closedGroupVisibleMessage = new ClosedGroupVisibleMessage({
           chatMessage: chatMessageMediumGroup,
@@ -684,10 +668,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         // we need the return await so that errors are caught in the catch {}
         await getMessageQueue().sendToGroup(closedGroupVisibleMessage);
         return;
-      }
-
-      if (this.isClosedGroup()) {
-        throw new Error('Legacy group are not supported anymore. You need to recreate this group.');
       }
 
       throw new TypeError(`Invalid conversation type: '${this.get('type')}'`);
@@ -704,10 +684,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       const sentAt = sourceMessage.get('sent_at');
       if (!sentAt) {
         throw new Error('sendReactMessageJob() sent_at must be set.');
-      }
-
-      if (this.isPublic() && !this.isOpenGroupV2()) {
-        throw new Error('Only opengroupv2 are supported now');
       }
 
       // an OpenGroupV2 message is just a visible message
@@ -779,7 +755,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
         return;
       }
 
-      if (this.isMediumGroup()) {
+      if (this.isClosedGroup()) {
         const chatMessageMediumGroup = new VisibleMessage(chatMessageParams);
         const closedGroupVisibleMessage = new ClosedGroupVisibleMessage({
           chatMessage: chatMessageMediumGroup,
@@ -794,10 +770,6 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
           isOpenGroup: false,
         });
         return;
-      }
-
-      if (this.isClosedGroup()) {
-        throw new Error('Legacy group are not supported anymore. You need to recreate this group.');
       }
 
       throw new TypeError(`Invalid conversation type: '${this.get('type')}'`);
@@ -970,7 +942,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       attachments,
       sent_at: networkTimestamp,
       expireTimer,
-      serverTimestamp: this.isPublic() ? networkTimestamp : undefined,
+      serverTimestamp: this.isOpenGroupV2() ? networkTimestamp : undefined,
       groupInvitation,
     });
 
@@ -1179,7 +1151,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     >
   ) {
     let sender = UserUtils.getOurPubKeyStrFromCache();
-    if (this.isPublic()) {
+    if (this.isOpenGroupV2()) {
       const openGroup = OpenGroupData.getV2OpenGroupRoom(this.id);
       if (openGroup && openGroup.serverPublicKey && roomHasBlindEnabled(openGroup)) {
         const signingKeys = await UserUtils.getUserED25519KeyPairBytes();
@@ -1228,7 +1200,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public async leaveClosedGroup() {
-    if (this.isMediumGroup()) {
+    if (this.isClosedGroup()) {
       await leaveClosedGroup(this.id);
     } else {
       window?.log?.error('Cannot leave a non-medium group conversation');
@@ -1499,7 +1471,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
 
   public isAdmin(pubKey?: string) {
-    if (!this.isPublic() && !this.isGroup()) {
+    if (!this.isOpenGroupV2() && !this.isClosedGroup()) {
       return false;
     }
     if (!pubKey) {
@@ -1517,7 +1489,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (!pubKey) {
       throw new Error('isModerator() pubKey is falsy');
     }
-    if (!this.isPublic()) {
+    if (!this.isOpenGroupV2()) {
       return false;
     }
 

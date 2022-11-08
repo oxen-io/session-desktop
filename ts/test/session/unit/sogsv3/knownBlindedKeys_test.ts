@@ -568,7 +568,7 @@ describe('knownBlindedKeys', () => {
         // adding a private conversation with a known match of the blinded pubkey we have
         const convo = await getConversationController().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
-          ConversationTypeEnum.GROUP
+          ConversationTypeEnum.CLOSED_GROUP_LEGACY
         );
         convo.set({ isApproved: false });
         const real = await findCachedBlindedMatchOrLookItUp(

@@ -52,7 +52,6 @@ const allowedKeysFormatRowOfConversation = [
   'isPinned',
   'isApproved',
   'didApproveMe',
-  'is_medium_group',
   'mentionedUs',
   'isKickedFromGroup',
   'left',
@@ -79,6 +78,8 @@ const allowedKeysFormatRowOfConversation = [
   'identityPrivateKey',
 ];
 
+const keysAllowedButNotSaved = ['is_medium_group', 'json'];
+
 //tslint-disable cyclomatic-complexity
 export function formatRowOfConversation(row?: Record<string, any>): ConversationAttributes | null {
   if (!row) {
@@ -90,18 +91,38 @@ export function formatRowOfConversation(row?: Record<string, any>): Conversation
     allowedKeysFormatRowOfConversation
   );
 
+  const keysNotAllowedWithoutNotSaved = difference(
+    foundInRowButNotInAllowed,
+    keysAllowedButNotSaved
+  );
+
   if (foundInRowButNotInAllowed?.length) {
     console.error(
       'formatRowOfConversation: foundInRowButNotInAllowed: ',
       foundInRowButNotInAllowed
     );
 
-    throw new Error(
-      `formatRowOfConversation: an invalid key was given in the record: ${foundInRowButNotInAllowed[0]}`
-    );
+    // only throw if we've got keys not allowed to be there (taking into account the one which can be there but not saved).
+
+    /**
+     * Essentially, when we remove a column in sqlite, we also update the corresponding type on the renderer side.
+     * This whole function is to ensure that whatever is in the database, it matches the expected type from the renderer.
+     * Now the issue arises when we remove a column on the database with a migration.
+     * In that case, we also need to update the type of the renderer object.
+     * But before that migration removing the field, we might very well have a migration trying to save the conversation or just read data from the database.
+     * If that happens, this function here will throw as the key should not be there anymore.
+     * This is essentialy a error thrown to make sure you did make a migration removing that column.
+     *
+     * Rather than blindly adding your just removed key to `keysAllowedButNotSaved`, you need to make sure you've run a migration to take that into account, and only then, add it to this list of `keysAllowedButNotSaved`
+     */
+    if (keysNotAllowedWithoutNotSaved.length) {
+      throw new Error(
+        `formatRowOfConversation: an invalid key was given in the record: ${foundInRowButNotInAllowed[0]}`
+      );
+    }
   }
 
-  const convo: ConversationAttributes = omit(row, 'json') as ConversationAttributes;
+  const convo: ConversationAttributes = omit(row, keysAllowedButNotSaved) as ConversationAttributes;
 
   // if the stringified array of admins/moderators/members/zombies length is less than 5,
   // we consider there is nothing to parse and just return []
@@ -126,7 +147,6 @@ export function formatRowOfConversation(row?: Record<string, any>): Conversation
   convo.isPinned = Boolean(convo.isPinned);
   convo.isApproved = Boolean(convo.isApproved);
   convo.didApproveMe = Boolean(convo.didApproveMe);
-  convo.is_medium_group = Boolean(convo.is_medium_group);
   convo.mentionedUs = Boolean(convo.mentionedUs);
   convo.isKickedFromGroup = Boolean(convo.isKickedFromGroup);
   convo.left = Boolean(convo.left);
@@ -187,7 +207,6 @@ const allowedKeysOfConversationAttributes = [
   'isPinned',
   'isApproved',
   'didApproveMe',
-  'is_medium_group',
   'mentionedUs',
   'isKickedFromGroup',
   'left',
@@ -232,9 +251,17 @@ export function assertValidConversationAttributes(
     console.error(
       `assertValidConversationAttributes: an invalid key was given in the record: ${foundInAttributesButNotInAllowed}`
     );
+
+    // if (
+    //   foundInAttributesButNotInAllowed.length == 1 &&
+    //   foundInAttributesButNotInAllowed.includes('is_medium_group')
+    // ) {
+    //   // during migrations,
+    // } else {
     throw new Error(
       `assertValidConversationAttributes: found a not allowed key: ${foundInAttributesButNotInAllowed[0]}`
     );
+    // }
   }
 
   return pick(data, allowedKeysOfConversationAttributes) as ConversationAttributes;
@@ -252,6 +279,7 @@ export function dropFtsAndTriggers(db: BetterSqlite3.Database) {
 }
 
 export function rebuildFtsTable(db: BetterSqlite3.Database) {
+  const now = Date.now();
   console.info('rebuildFtsTable');
   db.exec(`
           -- Then we create our full-text search table and populate it
@@ -283,5 +311,5 @@ export function rebuildFtsTable(db: BetterSqlite3.Database) {
             );
           END;
           `);
-  console.info('rebuildFtsTable built');
+  console.info(`rebuildFtsTable built in ${Date.now() - now}ms`);
 }

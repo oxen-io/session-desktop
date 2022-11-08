@@ -64,7 +64,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
       trimmedGroupName !== this.convo.getRealSessionUsername() ||
       newAvatarObjecturl !== oldAvatarPath
     ) {
-      if (this.convo.isPublic()) {
+      if (this.convo.isOpenGroupV2()) {
         void initiateOpenGroupUpdate(this.convo.id, trimmedGroupName, {
           objectUrl: newAvatarObjecturl,
         });
@@ -91,7 +91,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
       this.state.errorDisplayed ? 'error-shown' : 'error-faded'
     );
 
-    const isAdmin = this.convo.isPublic()
+    const isAdmin = this.convo.isOpenGroupV2()
       ? false // disable editing of opengroup rooms as we don't handle them for now
       : true;
 
@@ -192,7 +192,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
   }
 
   private renderAvatar() {
-    const isPublic = this.convo.isPublic();
+    const isPublic = this.convo.isOpenGroupV2();
     const pubkey = this.convo.id;
 
     const { newAvatarObjecturl, oldAvatarPath } = this.state;

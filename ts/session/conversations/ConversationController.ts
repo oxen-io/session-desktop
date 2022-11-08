@@ -67,16 +67,26 @@ export class ConversationController {
 
     if (
       type !== ConversationTypeEnum.PRIVATE &&
-      type !== ConversationTypeEnum.GROUP &&
-      type !== ConversationTypeEnum.GROUPV3
+      type !== ConversationTypeEnum.CLOSED_GROUP_LEGACY &&
+      type !== ConversationTypeEnum.CLOSED_GROUP_V3 &&
+      type !== ConversationTypeEnum.OPEN_GROUP
     ) {
-      throw new TypeError(`'type' must be 'private' or 'group' or 'groupv3' but got: '${type}'`);
+      throw new TypeError(`'type' must be one of \`ConversationTypeEnum\` but got: '${type}'`);
     }
 
-    if (type === ConversationTypeEnum.GROUPV3 && !PubKey.isClosedGroupV3(id)) {
+    if (type === ConversationTypeEnum.CLOSED_GROUP_V3 && !PubKey.isClosedGroupV3(id)) {
       throw new Error(
-        'required v3 closed group` ` but the pubkey does not match the 03 prefix for them'
+        'required v3 closed group but the pubkey does not match the 03 prefix for them'
       );
+    }
+
+    if (type === ConversationTypeEnum.CLOSED_GROUP_LEGACY && !id.startsWith('05')) {
+      throw new Error(
+        'required legacy closed group but the pubkey does not match the 05 prefix for them'
+      );
+    }
+    if (type === ConversationTypeEnum.OPEN_GROUP && (id.startsWith('05') || id.startsWith('03'))) {
+      throw new Error('required open group but the pubkey starts with a closed group prefix');
     }
 
     if (!this._initialFetchComplete) {
@@ -120,7 +130,7 @@ export class ConversationController {
           })
         );
       }
-      if (!conversation.isPublic() && conversation.isActive()) {
+      if (!conversation.isOpenGroupV2() && conversation.isActive()) {
         // NOTE: we request snodes updating the cache, but ignore the result
 
         void getSwarmFor(id);
@@ -136,14 +146,6 @@ export class ConversationController {
       return pubKey;
     }
     return conversation.getContactProfileNameOrShortenedPubKey();
-  }
-
-  public isMediumGroup(hexEncodedGroupPublicKey: string): boolean {
-    const convo = this.conversations.get(hexEncodedGroupPublicKey);
-    if (convo) {
-      return !!convo.isMediumGroup();
-    }
-    return false;
   }
 
   public async getOrCreateAndWait(

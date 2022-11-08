@@ -12,16 +12,33 @@ import { LastMessageStatusType } from '../state/ducks/conversations';
  * When we do get rid of them, we will be able to remove any GROUP conversation with prefix 05 (as they are old closed groups) and update the remaining GROUP to be opengroups instead
  */
 export enum ConversationTypeEnum {
-  GROUP = 'group',
-  GROUPV3 = 'groupv3',
-  PRIVATE = 'private',
+  OPEN_GROUP = 'open_group', // cannot have 05 or 03 prefix
+  CLOSED_GROUP_LEGACY = 'legacy_closed_group', // must have the 05 prefix
+  CLOSED_GROUP_V3 = 'closed_group_v3', // must have the 03 prefix
+  PRIVATE = 'private', // can have the 05 or blinded (15) prefix
 }
 
 export function isOpenOrClosedGroup(conversationType: ConversationTypeEnum) {
   return (
-    conversationType === ConversationTypeEnum.GROUP ||
-    conversationType === ConversationTypeEnum.GROUPV3
+    conversationType === ConversationTypeEnum.OPEN_GROUP ||
+    conversationType === ConversationTypeEnum.CLOSED_GROUP_LEGACY ||
+    conversationType === ConversationTypeEnum.CLOSED_GROUP_V3
   );
+}
+
+export function isOpenGroup(conversationType: ConversationTypeEnum) {
+  return conversationType === ConversationTypeEnum.OPEN_GROUP;
+}
+
+export function isClosedGroupLegacyOrV3(conversationType: ConversationTypeEnum) {
+  return (
+    conversationType === ConversationTypeEnum.CLOSED_GROUP_LEGACY ||
+    conversationType === ConversationTypeEnum.CLOSED_GROUP_V3
+  );
+}
+
+export function isClosedGroupV3Only(conversationType: ConversationTypeEnum) {
+  return conversationType === ConversationTypeEnum.CLOSED_GROUP_V3;
 }
 
 export function isDirectConversation(conversationType: ConversationTypeEnum) {
@@ -38,7 +55,11 @@ export type ConversationNotificationSettingType = typeof ConversationNotificatio
 
 export interface ConversationAttributes {
   id: string;
-  type: ConversationTypeEnum.PRIVATE | ConversationTypeEnum.GROUPV3 | ConversationTypeEnum.GROUP;
+  type:
+    | ConversationTypeEnum.PRIVATE
+    | ConversationTypeEnum.OPEN_GROUP
+    | ConversationTypeEnum.CLOSED_GROUP_LEGACY
+    | ConversationTypeEnum.CLOSED_GROUP_V3;
 
   // 0 means inactive (undefined and null too but we try to get rid of them and only have 0 = inactive)
   active_at: number;
@@ -72,8 +93,6 @@ export interface ConversationAttributes {
   readCapability: boolean;
   writeCapability: boolean;
   uploadCapability: boolean;
-
-  is_medium_group: boolean;
 
   avatarPointer?: string; // this is the url of the avatar on the file server v2. we use this to detect if we need to redownload the avatar from someone (not used for opengroups)
   avatarInProfile?: string; // this is the avatar path locally once downloaded and stored in the application attachments folder
@@ -123,7 +142,6 @@ export const fillConvoAttributesWithDefaults = (
     isPinned: false,
     isApproved: false,
     didApproveMe: false,
-    is_medium_group: false,
     mentionedUs: false,
     isKickedFromGroup: false,
     left: false,

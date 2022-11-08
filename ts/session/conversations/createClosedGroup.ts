@@ -43,7 +43,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   // Create the group
   const convo = await getConversationController().getOrCreateAndWait(
     groupPublicKey,
-    isV3 ? ConversationTypeEnum.GROUPV3 : ConversationTypeEnum.GROUP
+    isV3 ? ConversationTypeEnum.CLOSED_GROUP_V3 : ConversationTypeEnum.CLOSED_GROUP_LEGACY
   );
   await convo.setIsApproved(true, false);
 

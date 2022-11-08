@@ -109,8 +109,8 @@ export const isClosedGroupConversation = createSelector(
   getSelectedConversation,
   (state: ReduxConversationType | undefined): boolean => {
     return (
-      (state?.type === ConversationTypeEnum.GROUP && !state.isPublic) ||
-      state?.type === ConversationTypeEnum.GROUPV3 ||
+      state?.type === ConversationTypeEnum.CLOSED_GROUP_LEGACY ||
+      state?.type === ConversationTypeEnum.CLOSED_GROUP_V3 ||
       false
     );
   }
@@ -122,7 +122,7 @@ export const isClosedGroupConversation = createSelector(
 export const isPublicGroupConversation = createSelector(
   getSelectedConversation,
   (state: ReduxConversationType | undefined): boolean => {
-    return (state?.type === ConversationTypeEnum.GROUP && state.isPublic) || false;
+    return state?.type === ConversationTypeEnum.OPEN_GROUP || false;
   }
 );
 
@@ -152,7 +152,7 @@ export const getSortedMessagesOfSelectedConversation = createSelector(
       return [];
     }
 
-    const isPublic = convo.isPublic() || false;
+    const isPublic = convo.isOpenGroupV2() || false;
     const sortedMessage = sortMessages(messages, isPublic);
 
     return updateFirstMessageOfSeries(sortedMessage);

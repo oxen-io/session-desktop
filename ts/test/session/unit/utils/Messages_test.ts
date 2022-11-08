@@ -254,7 +254,7 @@ describe('Message Utils', () => {
 
       const convo3 = await getConversationController().getOrCreateAndWait(
         convoId3,
-        ConversationTypeEnum.GROUP
+        ConversationTypeEnum.OPEN_GROUP
       );
       convo3.set({ active_at: Date.now() });
 
@@ -269,14 +269,14 @@ describe('Message Utils', () => {
 
       const convo4 = await getConversationController().getOrCreateAndWait(
         convoId4,
-        ConversationTypeEnum.GROUP
+        ConversationTypeEnum.OPEN_GROUP
       );
       convo4.set({ active_at: undefined });
 
       await OpenGroupData.opengroupRoomsLoad();
       const convo5 = await getConversationController().getOrCreateAndWait(
         convoId4,
-        ConversationTypeEnum.GROUP
+        ConversationTypeEnum.OPEN_GROUP
       );
       convo5.set({ active_at: 0 });
 

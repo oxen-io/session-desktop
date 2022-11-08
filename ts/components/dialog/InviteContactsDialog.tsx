@@ -26,7 +26,7 @@ type Props = {
 const submitForOpenGroup = async (conversationId: string, pubkeys: Array<string>) => {
   const completeUrl = await getCompleteUrlForV2ConvoId(conversationId);
   const convo = getConversationController().get(conversationId);
-  if (!convo || !convo.isPublic()) {
+  if (!convo || !convo.isOpenGroupV2()) {
     throw new Error('submitForOpenGroup group not found');
   }
   const groupInvitation = {
@@ -53,7 +53,7 @@ const submitForOpenGroup = async (conversationId: string, pubkeys: Array<string>
 
 const submitForClosedGroup = async (convoId: string, pubkeys: Array<string>) => {
   const convo = getConversationController().get(convoId);
-  if (!convo || !convo.isGroup()) {
+  if (!convo || !convo.isClosedGroup()) {
     throw new Error('submitForClosedGroup group not found');
   }
   // closed group chats

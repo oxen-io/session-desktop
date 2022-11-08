@@ -121,7 +121,7 @@ export async function deleteMessagesFromSwarmAndCompletelyLocally(
   conversation: ConversationModel,
   messages: Array<MessageModel>
 ) {
-  if (conversation.isMediumGroup()) {
+  if (conversation.isClosedGroup()) {
     window.log.info('Cannot delete message from a closed group swarm, so we just complete delete.');
     await Promise.all(
       messages.map(async message => {
@@ -157,7 +157,7 @@ export async function deleteMessagesFromSwarmAndMarkAsDeletedLocally(
   conversation: ConversationModel,
   messages: Array<MessageModel>
 ) {
-  if (conversation.isMediumGroup()) {
+  if (conversation.isClosedGroup()) {
     window.log.info('Cannot delete messages from a closed group swarm, so we just markDeleted.');
     await Promise.all(
       messages.map(async message => {
@@ -297,7 +297,7 @@ const doDeleteSelectedMessages = async ({
   }
 
   const isAllOurs = selectedMessages.every(message => ourDevicePubkey === message.getSource());
-  if (conversation.isPublic()) {
+  if (conversation.isOpenGroupV2()) {
     return doDeleteSelectedMessagesInSOGS(selectedMessages, conversation, isAllOurs);
   }
 
@@ -399,7 +399,7 @@ async function deleteOpenGroupMessages(
   messages: Array<MessageModel>,
   convo: ConversationModel
 ): Promise<Array<string>> {
-  if (!convo.isPublic()) {
+  if (!convo.isOpenGroupV2()) {
     throw new Error('cannot delete public message on a non public groups');
   }
 

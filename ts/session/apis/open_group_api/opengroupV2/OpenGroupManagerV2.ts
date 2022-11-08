@@ -184,7 +184,7 @@ export class OpenGroupManagerV2 {
       }
       const conversation = await getConversationController().getOrCreateAndWait(
         conversationId,
-        ConversationTypeEnum.GROUP
+        ConversationTypeEnum.OPEN_GROUP
       );
       room.imageID = roomInfos.imageId || undefined;
       room.roomName = roomInfos.name || undefined;

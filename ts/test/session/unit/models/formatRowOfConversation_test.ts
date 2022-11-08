@@ -82,25 +82,7 @@ describe('formatRowOfConversation', () => {
     });
   });
 
-  describe('is_medium_group', () => {
-    it('initialize is_medium_group if they are not given', () => {
-      expect(formatRowOfConversation({})).to.have.deep.property('is_medium_group', false);
-    });
 
-    it('do not override is_medium_group if they are set in the row as integer: true', () => {
-      expect(formatRowOfConversation({ is_medium_group: 1 })).to.have.deep.property(
-        'is_medium_group',
-        true
-      );
-    });
-
-    it('do not override is_medium_group if they are set in the row as integer: false', () => {
-      expect(formatRowOfConversation({ is_medium_group: 0 })).to.have.deep.property(
-        'is_medium_group',
-        false
-      );
-    });
-  });
 
   describe('mentionedUs', () => {
     it('initialize mentionedUs if they are not given', () => {
@@ -284,7 +266,7 @@ describe('formatRowOfConversation', () => {
       formatRowOfConversation(
         fillConvoAttributesWithDefaults({
           id: '123456',
-          type: ConversationTypeEnum.GROUP,
+          type: ConversationTypeEnum.CLOSED_GROUP_LEGACY,
           nickname: 'nickname',
           displayNameInProfile: 'displayNameInProfile',
           profileKey: '',
@@ -299,7 +281,7 @@ describe('formatRowOfConversation', () => {
       formatRowOfConversation(
         fillConvoAttributesWithDefaults({
           id: '1234565',
-          type: ConversationTypeEnum.GROUPV3,
+          type: ConversationTypeEnum.CLOSED_GROUP_V3,
           nickname: 'nickname',
           displayNameInProfile: 'displayNameInProfile',
           profileKey: '',

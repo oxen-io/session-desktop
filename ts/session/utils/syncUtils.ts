@@ -122,7 +122,7 @@ const getValidClosedGroups = async (convos: Array<ConversationModel>) => {
   const closedGroupModels = convos.filter(
     c =>
       !!c.get('active_at') &&
-      c.isMediumGroup() &&
+      c.isClosedGroup() &&
       c.get('members')?.includes(ourPubKey) &&
       !c.get('left') &&
       !c.get('isKickedFromGroup') &&

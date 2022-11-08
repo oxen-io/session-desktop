@@ -604,7 +604,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
 
     let isFromMe = contact ? contact.id === UserUtils.getOurPubKeyStrFromCache() : false;
 
-    if (this.getConversation()?.isPublic() && PubKey.hasBlindedPrefix(author)) {
+    if (this.getConversation()?.isOpenGroupV2() && PubKey.hasBlindedPrefix(author)) {
       const room = OpenGroupData.getV2OpenGroupRoom(this.get('conversationId'));
       if (room && roomHasBlindEnabled(room)) {
         const usFromCache = findCachedBlindedIdFromUnblinded(
@@ -797,11 +797,9 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     // we can only send a single preview
     const firstPreviewWithData = previewWithData?.[0] || null;
 
-    // we want to go for the v1, if this is an OpenGroupV1 or not an open group at all
-    if (conversation?.isPublic()) {
-      if (!conversation?.isOpenGroupV2()) {
-        throw new Error('Only opengroupv2 are supported now');
-      }
+    // 1. a opengroup v3 (python-sogs) hosts the attachments directly
+    // 2. every other type of conversations hosts the attachments on the filserver, encrypted
+    if (conversation?.isOpenGroupV2()) {
       const openGroupV2 = conversation.toOpenGroupV2();
       attachmentPromise = uploadAttachmentsV3(finalAttachments, openGroupV2);
       linkPreviewPromise = uploadLinkPreviewsV3(firstPreviewWithData, openGroupV2);
@@ -888,7 +886,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
       const { body, attachments, preview, quote, fileIdsToLink } = await this.uploadData();
 
-      if (conversation.isPublic()) {
+      if (conversation.isOpenGroupV2()) {
         const openGroupParams: VisibleMessageParams = {
           identifier: this.id,
           timestamp: GetNetworkTime.getNowWithNetworkOffset(),
@@ -943,19 +941,16 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       // Here, the convo is neither an open group, a private convo or ourself. It can only be a medium group.
       // For a medium group, retry send only means trigger a send again to all recipients
       // as they are all polling from the same group swarm pubkey
-      if (!conversation.isMediumGroup()) {
-        throw new Error(
-          'We should only end up with a medium group here. Anything else is an error'
-        );
+      if (conversation.isClosedGroup()) {
+        const closedGroupVisibleMessage = new ClosedGroupVisibleMessage({
+          identifier: this.id,
+          chatMessage,
+          groupId: this.get('conversationId'),
+        });
+
+        return getMessageQueue().sendToGroup(closedGroupVisibleMessage);
       }
-
-      const closedGroupVisibleMessage = new ClosedGroupVisibleMessage({
-        identifier: this.id,
-        chatMessage,
-        groupId: this.get('conversationId'),
-      });
-
-      return getMessageQueue().sendToGroup(closedGroupVisibleMessage);
+      throw new Error('We should only end up with a medium group here. Anything else is an error');
     } catch (e) {
       await this.saveErrors(e);
       return null;

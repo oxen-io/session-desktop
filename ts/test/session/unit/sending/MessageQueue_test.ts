@@ -5,7 +5,7 @@ import Sinon, * as sinon from 'sinon';
 import { describe } from 'mocha';
 import { randomBytes } from 'crypto';
 
-import { GroupUtils, PromiseUtils, UserUtils } from '../../../../session/utils';
+import { PromiseUtils, UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../../test/test-utils';
 import { MessageQueue } from '../../../../session/sending/MessageQueue';
 import { ContentMessage } from '../../../../session/messages/outgoing';
@@ -195,9 +195,6 @@ describe('MessageQueue', () => {
 
     describe('closed groups', () => {
       it('can send to closed group', async () => {
-        const members = TestUtils.generateFakePubKeys(4).map(p => new PubKey(p.key));
-        Sinon.stub(GroupUtils, 'getGroupMembers').returns(members);
-
         const send = Sinon.stub(messageQueueStub, 'sendToPubKey').resolves();
 
         const message = TestUtils.generateClosedGroupMessage();

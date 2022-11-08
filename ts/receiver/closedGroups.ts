@@ -284,7 +284,10 @@ export async function handleNewClosedGroup(
 
   const convo =
     groupConvo ||
-    (await getConversationController().getOrCreateAndWait(groupId, ConversationTypeEnum.GROUP));
+    (await getConversationController().getOrCreateAndWait(
+      groupId,
+      ConversationTypeEnum.CLOSED_GROUP_LEGACY
+    ));
   // ***** Creating a new group *****
   window?.log?.info('Received a new ClosedGroup of id:', groupId);
 
@@ -392,9 +395,9 @@ async function handleClosedGroupEncryptionKeyPair(
     await removeFromCache(envelope);
     return;
   }
-  if (!groupConvo.isMediumGroup()) {
+  if (!groupConvo.isClosedGroup()) {
     window?.log?.warn(
-      `Ignoring closed group encryption key pair for nonexistent medium group. ${groupPublicKey}`
+      `Ignoring closed group encryption key pair for nonexistent closed group. ${groupPublicKey}`
     );
     await removeFromCache(envelope);
     return;

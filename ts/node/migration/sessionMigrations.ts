@@ -1077,9 +1077,11 @@ function updateToSessionSchemaVersion27(currentVersion: number, db: BetterSqlite
         `withIpButNotDuplicateConvo: renaming convo old:${r.id} with saveConversation() new- conversationId:${newConvoId}`
       );
       convoIdsToMigrateFromIpToDns.set(r.id, newConvoId);
+
+      const toSaveToDB = r;
       sqlNode.saveConversation(
         {
-          ...r,
+          ...toSaveToDB,
           id: newConvoId,
         },
         db
@@ -1214,9 +1216,51 @@ function updateToSessionSchemaVersion30(currentVersion: number, db: BetterSqlite
   console.log(`updateToSessionSchemaVersion${targetVersion}: starting...`);
   // this column will only be set when this is a closed group v3 and we are the admin/got promoted to admin
   db.transaction(() => {
-    db.exec(`ALTER TABLE ${CONVERSATIONS_TABLE}
-      ADD COLUMN identityPrivateKey TEXT;
-      `);
+    /** first let's clean things up.
+     *  we want to have:
+     * - private chats with a type 'private' (already OK)
+     * - open groups to have a type as 'open_group'
+     * - legacy closed groups (before v3) to have as type 'legacy_closed_group'
+     * - new closed groups (created with v3) to have as type 'closed_group_v3'
+     *
+     *  we also want to:
+     * - remove any closed groups which was not a medium_group (i.e conversation of type group, with id not starting with 'publicChat' and with `is_medium_group` being false)
+     * - remove the is_medium_group column altogether (once previous steps are done)
+     *
+     */
+
+    // - remove any closed groups which is not a medium_group (i.e conversation of type group, with id not starting with 'publicChat' and with `is_medium_group` being false)
+    db.exec(
+      `DELETE FROM conversations WHERE
+              type = 'group' AND
+              id LIKE '05%' AND is_medium_group <> 1;`
+    );
+
+    // - open groups to have a type as 'open_group'
+    db.exec(
+      `UPDATE conversations SET type = 'open_group' WHERE
+      type = 'group' AND
+      id LIKE 'publicChat%';`
+    );
+
+    // - legacy closed groups (before v3) to have as type 'legacy_closed_group'
+    db.exec(
+      `UPDATE conversations SET type = 'legacy_closed_group' WHERE
+          type = 'group' AND
+          id LIKE '05%';`
+    );
+
+    // - new closed groups (created with v3) to have as type 'closed_group_v3'
+    db.exec(
+      `UPDATE conversations SET type = 'closed_group_v3' WHERE
+              type = 'group' AND
+              id LIKE '03%';`
+    );
+
+    // - remove the is_medium_group column altogether (once previous steps are done)
+    db.exec(`ALTER TABLE conversations DROP COLUMN is_medium_group;`);
+    db.exec(`ALTER TABLE conversations ADD COLUMN identityPrivateKey TEXT;`);
+    // throw null;
     writeSessionSchemaVersion(targetVersion, db);
   })();
 

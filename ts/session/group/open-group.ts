@@ -21,7 +21,7 @@ export async function initiateOpenGroupUpdate(
   // For now, the UI is actually not allowing changing the room name so we do not care.
   const convo = getConversationController().get(groupId);
 
-  if (!convo || !convo.isPublic() || !convo.isOpenGroupV2()) {
+  if (!convo || !convo.isOpenGroupV2()) {
     throw new Error('Only opengroupv2 are supported');
   }
   if (avatar && avatar.objectUrl) {

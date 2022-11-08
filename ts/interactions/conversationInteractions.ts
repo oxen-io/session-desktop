@@ -8,6 +8,7 @@ import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils'
 import {
   ConversationNotificationSettingType,
   ConversationTypeEnum,
+  isOpenOrClosedGroup,
 } from '../models/conversationAttributes';
 
 import _ from 'lodash';
@@ -86,7 +87,7 @@ export async function copyPublicKeyByConvoId(convoId: string) {
 export async function blockConvoById(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
 
-  if (!conversation.id || conversation.isPublic()) {
+  if (!conversation.id || conversation.isOpenGroupV2()) {
     return;
   }
 
@@ -108,7 +109,7 @@ export async function unblockConvoById(conversationId: string) {
     ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
     return;
   }
-  if (!conversation.id || conversation.isPublic()) {
+  if (!conversation.id || conversation.isOpenGroupV2()) {
     return;
   }
   const promise = conversation.isPrivate()
@@ -190,7 +191,7 @@ export const declineConversationWithoutConfirm = async (
 
 export async function showUpdateGroupNameByConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
-  if (conversation.isMediumGroup()) {
+  if (conversation.isClosedGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
@@ -203,7 +204,7 @@ export async function showUpdateGroupNameByConvoId(conversationId: string) {
 
 export async function showUpdateGroupMembersByConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
-  if (conversation.isMediumGroup()) {
+  if (conversation.isClosedGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
@@ -217,7 +218,7 @@ export async function showUpdateGroupMembersByConvoId(conversationId: string) {
 export function showLeaveGroupByConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
 
-  if (!conversation.isGroup()) {
+  if (!isOpenOrClosedGroup(conversation.get('type'))) {
     throw new Error('showLeaveGroupDialog() called with a non group convo.');
   }
 
@@ -225,7 +226,7 @@ export function showLeaveGroupByConvoId(conversationId: string) {
   const message = window.i18n('leaveGroupConfirmation');
   const ourPK = UserUtils.getOurPubKeyStrFromCache();
   const isAdmin = (conversation.get('groupAdmins') || []).includes(ourPK);
-  const isClosedGroup = conversation.get('is_medium_group') || false;
+  const isClosedGroup = conversation.isClosedGroup();
 
   // if this is not a closed group, or we are not admin, we can just show a confirmation dialog
   if (!isClosedGroup || (isClosedGroup && !isAdmin)) {

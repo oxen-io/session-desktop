@@ -82,12 +82,8 @@ export async function initiateClosedGroupUpdate(
   const isV3 = PubKey.isClosedGroupV3(groupId);
   const convo = await getConversationController().getOrCreateAndWait(
     groupId,
-    isV3 ? ConversationTypeEnum.GROUPV3 : ConversationTypeEnum.GROUP
+    isV3 ? ConversationTypeEnum.CLOSED_GROUP_V3 : ConversationTypeEnum.CLOSED_GROUP_LEGACY
   );
-
-  if (!convo.isMediumGroup()) {
-    throw new Error('Legacy group are not supported anymore.');
-  }
 
   // do not give an admins field here. We don't want to be able to update admins and
   // updateOrCreateClosedGroup() will update them if given the choice.
@@ -235,11 +231,11 @@ function isV3(details: GroupInfo | GroupInfoV3): details is GroupInfoV3 {
 
 export async function updateOrCreateClosedGroup(details: GroupInfo | GroupInfoV3) {
   const { id, weWereJustAdded } = details;
+  const type = isV3(details)
+    ? ConversationTypeEnum.CLOSED_GROUP_V3
+    : ConversationTypeEnum.CLOSED_GROUP_LEGACY;
 
-  const conversation = await getConversationController().getOrCreateAndWait(
-    id,
-    ConversationTypeEnum.GROUP
-  );
+  const conversation = await getConversationController().getOrCreateAndWait(id, type);
 
   const updates: Pick<
     ConversationAttributes,
@@ -247,15 +243,13 @@ export async function updateOrCreateClosedGroup(details: GroupInfo | GroupInfoV3
     | 'identityPrivateKey'
     | 'members'
     | 'displayNameInProfile'
-    | 'is_medium_group'
     | 'active_at'
     | 'left'
     | 'lastJoinedTimestamp'
   > = {
     displayNameInProfile: details.name,
     members: details.members,
-    type: isV3(details) ? ConversationTypeEnum.GROUPV3 : ConversationTypeEnum.GROUP,
-    is_medium_group: true,
+    type,
     active_at: details.activeAt ? details.activeAt : 0,
     left: details.activeAt ? false : true,
     lastJoinedTimestamp: details.activeAt && weWereJustAdded ? Date.now() : details.activeAt || 0,
@@ -266,7 +260,7 @@ export async function updateOrCreateClosedGroup(details: GroupInfo | GroupInfoV3
   conversation.set(updates);
 
   const isBlocked = details.blocked || false;
-  if (conversation.isClosedGroup() || conversation.isMediumGroup()) {
+  if (conversation.isClosedGroup()) {
     await BlockedNumberController.setGroupBlocked(conversation.id as string, isBlocked);
   }
 
@@ -471,7 +465,7 @@ async function generateAndSendNewEncryptionKeyPair(
     );
     return;
   }
-  if (!groupConvo.isMediumGroup()) {
+  if (!groupConvo.isClosedGroup()) {
     window?.log?.warn(
       'generateAndSendNewEncryptionKeyPair: conversation not a closed group',
       groupPublicKey

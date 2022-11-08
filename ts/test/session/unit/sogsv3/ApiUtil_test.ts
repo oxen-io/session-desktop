@@ -140,17 +140,17 @@ describe('APIUtils', () => {
 
         const convoOurIp = await getConversationController().getOrCreateAndWait(
           convoIdOurIp,
-          ConversationTypeEnum.GROUP
+          ConversationTypeEnum.OPEN_GROUP
         );
         convoOurIp.set({ active_at: Date.now() });
         const convoOurUrl = await getConversationController().getOrCreateAndWait(
           convoIdOurUrl,
-          ConversationTypeEnum.GROUP
+          ConversationTypeEnum.OPEN_GROUP
         );
         convoOurUrl.set({ active_at: Date.now() });
         const convoNotOur = await getConversationController().getOrCreateAndWait(
           convoIdNotOur,
-          ConversationTypeEnum.GROUP
+          ConversationTypeEnum.OPEN_GROUP
         );
         convoNotOur.set({ active_at: Date.now() });
         await OpenGroupData.opengroupRoomsLoad();

@@ -7,7 +7,7 @@ import { compact, flatten, identity, isEmpty, pickBy, toNumber } from 'lodash';
 import { KeyPrefixType, PubKey } from '../session/types';
 
 import { BlockedNumberController } from '../util/blockedNumberController';
-import { GroupUtils, UserUtils } from '../session/utils';
+import { UserUtils } from '../session/utils';
 import { fromHexToArray, toHex } from '../session/utils/String';
 import { concatUInt8Array, getSodiumRenderer } from '../session/crypto';
 import { getConversationController } from '../session/conversations';
@@ -52,7 +52,11 @@ async function decryptForClosedGroup(envelope: EnvelopePlus, ciphertext: ArrayBu
   window?.log?.info('received closed group message');
   try {
     const hexEncodedGroupPublicKey = envelope.source;
-    if (!GroupUtils.isMediumGroup(PubKey.cast(hexEncodedGroupPublicKey))) {
+    if (
+      !getConversationController()
+        .get(hexEncodedGroupPublicKey)
+        ?.isClosedGroup()
+    ) {
       window?.log?.warn('received medium group message but not for an existing medium group');
       throw new Error('Invalid group public key'); // invalidGroupPublicKey
     }
@@ -389,7 +393,9 @@ export async function innerHandleSwarmContentMessage(
       // this is a closed group message, we have a second conversation to make sure exists
       await getConversationController().getOrCreateAndWait(
         envelope.source,
-        ConversationTypeEnum.GROUP
+        PubKey.isClosedGroupV3(envelope.source)
+          ? ConversationTypeEnum.CLOSED_GROUP_V3
+          : ConversationTypeEnum.CLOSED_GROUP_LEGACY
       );
     }
 

@@ -306,7 +306,7 @@ export class SwarmPolling {
           }
 
           const lastMessages = results.map(r => {
-            return last(r.messages);
+            return last(r.results.messages);
           });
 
           await Promise.all(
@@ -357,10 +357,7 @@ export class SwarmPolling {
 
     const closedGroupsOnly = convos.filter(
       (c: ConversationModel) =>
-        (c.isMediumGroup() || PubKey.isClosedGroupV3(c.id)) &&
-        !c.isBlocked() &&
-        !c.get('isKickedFromGroup') &&
-        !c.get('left')
+        c.isClosedGroup() && !c.isBlocked() && !c.get('isKickedFromGroup') && !c.get('left')
     );
 
     closedGroupsOnly.forEach((c: any) => {
@@ -404,6 +401,7 @@ export class SwarmPolling {
     const pkStr = pubkey.key;
     const cached = await this.getLastHash(edkey, pubkey.key, namespace);
 
+    console.warn('updateLastHash ', { edkey, pkStr, cached, namespace });
     if (!cached || cached !== hash) {
       await Data.updateLastHash({
         convoId: pkStr,
