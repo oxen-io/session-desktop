@@ -30,7 +30,6 @@ import { MessageStatusSelectorProps } from '../../components/conversation/messag
 import { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
-import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { Storage } from '../../util/storage';
 import { ConversationTypeEnum, isOpenOrClosedGroup } from '../../models/conversationAttributes';
@@ -140,21 +139,16 @@ const getMessagesOfSelectedConversation = createSelector(
 // Redux recommends to do filtered and deriving state in a selector rather than ourself
 export const getSortedMessagesOfSelectedConversation = createSelector(
   getMessagesOfSelectedConversation,
-  (messages: Array<MessageModelPropsWithoutConvoProps>): Array<SortedMessageModelProps> => {
+  getSelectedConversationIsPublic,
+  (
+    messages: Array<MessageModelPropsWithoutConvoProps>,
+    isPublic: boolean
+  ): Array<SortedMessageModelProps> => {
     if (messages.length === 0) {
       return [];
     }
 
-    const convoId = messages[0].propsForMessage.convoId;
-    const convo = getConversationController().get(convoId);
-
-    if (!convo) {
-      return [];
-    }
-
-    const isPublic = convo.isOpenGroupV2() || false;
     const sortedMessage = sortMessages(messages, isPublic);
-
     return updateFirstMessageOfSeries(sortedMessage);
   }
 );
@@ -911,9 +905,7 @@ export const getMessageAvatarProps = createSelector(getMessagePropsByMessageId, 
       'authorName',
       'sender',
       'authorProfileName',
-      'conversationType',
       'direction',
-      'isPublic',
       'isSenderAdmin',
     ]),
   };

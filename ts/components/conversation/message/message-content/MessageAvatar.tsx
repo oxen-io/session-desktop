@@ -12,6 +12,7 @@ import {
   getIsTypingEnabled,
   getMessageAvatarProps,
   getSelectedConversationIsGroup,
+  getSelectedConversationIsPublic,
   getSelectedConversationKey,
 } from '../../../../state/selectors/conversations';
 import { Avatar, AvatarSize, CrownIcon } from '../../../avatar/Avatar';
@@ -24,11 +25,9 @@ export type MessageAvatarSelectorProps = Pick<
   | 'sender'
   | 'authorProfileName'
   | 'isSenderAdmin'
-  | 'conversationType'
   | 'direction'
-  | 'isPublic'
   | 'lastMessageOfSeries'
->;
+  >;
 
 type Props = { messageId: string };
 
@@ -39,6 +38,7 @@ export const MessageAvatar = (props: Props) => {
   const avatarProps = useSelector(state => getMessageAvatarProps(state as any, messageId));
   const selectedConvoKey = useSelector(getSelectedConversationKey);
   const isSelectedGroup = useSelector(getSelectedConversationIsGroup);
+  const isSelectedPublic = useSelector(getSelectedConversationIsPublic);
 
   const isTypingEnabled = useSelector(getIsTypingEnabled);
 
@@ -53,7 +53,6 @@ export const MessageAvatar = (props: Props) => {
     direction,
     isSenderAdmin,
     lastMessageOfSeries,
-    isPublic,
   } = avatarProps;
 
   // no avatar when this if this is a private conversation
@@ -63,7 +62,7 @@ export const MessageAvatar = (props: Props) => {
   const userName = authorName || authorProfileName || sender;
 
   const onMessageAvatarClick = useCallback(async () => {
-    if (isPublic && !PubKey.hasBlindedPrefix(sender)) {
+    if (isSelectedPublic && !PubKey.hasBlindedPrefix(sender)) {
       // public chat but session id not blinded. disable showing user details if we do not have an active convo with that user.
       // an unactive convo with that user means that we never chatted with that id directyly, but only through a sogs
       const convoWithSender = getConversationController().get(sender);
@@ -80,12 +79,12 @@ export const MessageAvatar = (props: Props) => {
       }
     }
 
-    if (isPublic && !isTypingEnabled) {
+    if (isSelectedPublic && !isTypingEnabled) {
       window.log.info('onMessageAvatarClick: no typing enabled. Dropping...');
       return;
     }
 
-    if (isPublic && selectedConvoKey) {
+    if (isSelectedPublic && selectedConvoKey) {
       const convoOpen = getConversationController().get(selectedConvoKey);
       const room = OpenGroupData.getV2OpenGroupRoom(convoOpen.id);
       let privateConvoToOpen = sender;
@@ -117,7 +116,7 @@ export const MessageAvatar = (props: Props) => {
         authorAvatarPath,
       })
     );
-  }, [userName, sender, isPublic, authorAvatarPath, selectedConvoKey]);
+  }, [userName, sender, isSelectedPublic, authorAvatarPath, selectedConvoKey]);
 
   if (!lastMessageOfSeries) {
     return <div style={{ marginInlineEnd: '60px' }} key={`msg-avatar-${sender}`} />;
