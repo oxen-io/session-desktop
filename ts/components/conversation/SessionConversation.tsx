@@ -41,7 +41,6 @@ import { arrayBufferToObjectURL, AttachmentUtil, GoogleChrome } from '../../util
 import { SessionButtonColor } from '../basic/SessionButton';
 import { MessageView } from '../MainViewController';
 import { ConversationHeaderWithDetails } from './ConversationHeader';
-import { MessageDetail } from './message/message-item/MessageDetail';
 import {
   makeImageThumbnailBuffer,
   makeVideoScreenshot,
@@ -74,8 +73,7 @@ interface Props {
   selectedConversation?: ReduxConversationType;
   messagesProps: Array<SortedMessageModelProps>;
   selectedMessages: Array<string>;
-  showMessageDetails: boolean;
-  isRightPanelShowing: boolean;
+  isRightOverlayShown: boolean;
   hasOngoingCallWithFocusedConvo: boolean;
 
   // lightbox options
@@ -236,9 +234,8 @@ export class SessionConversation extends React.Component<Props, State> {
     const {
       selectedConversation,
       messagesProps,
-      showMessageDetails,
       selectedMessages,
-      isRightPanelShowing,
+      isRightOverlayShown,
       lightBoxOptions,
       isSelectedConvoInitialLoadingInProgress,
     } = this.props;
@@ -266,9 +263,6 @@ export class SessionConversation extends React.Component<Props, State> {
               onKeyDown={this.onKeyDown}
               role="navigation"
             >
-              <div className={classNames('conversation-info-panel', showMessageDetails && 'show')}>
-                <MessageDetail />
-              </div>
               {lightBoxOptions?.media && this.renderLightBox(lightBoxOptions)}
 
               <div className="conversation-messages">
@@ -297,7 +291,7 @@ export class SessionConversation extends React.Component<Props, State> {
             <div
               className={classNames(
                 'conversation-item__options-pane',
-                isRightPanelShowing && 'show'
+                isRightOverlayShown && 'show'
               )}
             >
               <RightPanel />

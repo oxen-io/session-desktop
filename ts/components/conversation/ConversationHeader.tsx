@@ -15,9 +15,7 @@ import {
   getSelectedConversationIsPublic,
   getSelectedConversationKey,
   getSelectedMessageIds,
-  isMessageDetailView,
   isMessageSelectionMode,
-  isRightPanelShowing,
 } from '../../state/selectors/conversations';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,12 +23,7 @@ import {
   deleteMessagesById,
   deleteMessagesByIdForEveryone,
 } from '../../interactions/conversations/unsendingInteractions';
-import {
-  closeMessageDetailsView,
-  closeRightPanel,
-  openRightPanel,
-  resetSelectedMessageIds,
-} from '../../state/ducks/conversations';
+import { resetSelectedMessageIds } from '../../state/ducks/conversations';
 import { callRecipient } from '../../interactions/conversationInteractions';
 import { getHasIncomingCall, getHasOngoingCall } from '../../state/selectors/call';
 import {
@@ -49,6 +42,8 @@ import { SessionIconButton } from '../icon';
 import { ConversationHeaderMenu } from '../menu/ConversationHeaderMenu';
 import { Flex } from '../basic/Flex';
 import { ExpirationTimerOptions } from '../../util/expiringMessages';
+import { resetRightOverlayMode, setRightOverlayMode } from '../../state/ducks/section';
+import { getRightOverlayMode } from '../../state/selectors/section';
 
 export interface TimerOption {
   name: string;
@@ -147,11 +142,7 @@ const TripleDotContainer = styled.div`
   flex-shrink: 0;
 `;
 
-const TripleDotsMenu = (props: { triggerId: string; showBackButton: boolean }) => {
-  const { showBackButton } = props;
-  if (showBackButton) {
-    return null;
-  }
+const TripleDotsMenu = (props: { triggerId: string }) => {
   return (
     <TripleDotContainer
       role="button"
@@ -188,12 +179,8 @@ const ExpirationLength = (props: { expirationSettingName?: string }) => {
   );
 };
 
-const AvatarHeader = (props: {
-  pubkey: string;
-  showBackButton: boolean;
-  onAvatarClick?: (pubkey: string) => void;
-}) => {
-  const { pubkey, onAvatarClick, showBackButton } = props;
+const AvatarHeader = (props: { pubkey: string; onAvatarClick?: (pubkey: string) => void }) => {
+  const { pubkey, onAvatarClick } = props;
 
   return (
     <span className="module-conversation-header__avatar">
@@ -201,7 +188,7 @@ const AvatarHeader = (props: {
         size={AvatarSize.S}
         onAvatarClick={() => {
           // do not allow right panel to appear if another button is shown on the SessionConversation
-          if (onAvatarClick && !showBackButton) {
+          if (onAvatarClick) {
             onAvatarClick(pubkey);
           }
         }}
@@ -209,23 +196,6 @@ const AvatarHeader = (props: {
         dataTestId="conversation-options-avatar"
       />
     </span>
-  );
-};
-
-const BackButton = (props: { onGoBack: () => void; showBackButton: boolean }) => {
-  const { onGoBack, showBackButton } = props;
-  if (!showBackButton) {
-    return null;
-  }
-
-  return (
-    <SessionIconButton
-      iconType="chevron"
-      iconSize="large"
-      iconRotation={90}
-      onClick={onGoBack}
-      dataTestId="back-button-message-details"
-    />
   );
 };
 
@@ -297,7 +267,7 @@ export const ConversationHeaderSubtitle = (props: { text?: string | null }): JSX
 const ConversationHeaderTitle = () => {
   const headerTitleProps = useSelector(getConversationHeaderTitleProps);
   const notificationSetting = useSelector(getCurrentNotificationSettingText);
-  const isRightPanelOn = useSelector(isRightPanelShowing);
+  const isRightPanelOn = useSelector(getRightOverlayMode);
 
   const convoName = useConversationUsername(headerTitleProps?.conversationKey);
   const dispatch = useDispatch();
@@ -340,9 +310,9 @@ const ConversationHeaderTitle = () => {
       className="module-conversation-header__title"
       onClick={() => {
         if (isRightPanelOn) {
-          dispatch(closeRightPanel());
+          dispatch(resetRightOverlayMode());
         } else {
-          dispatch(openRightPanel());
+          dispatch(setRightOverlayMode({ type: 'default', params: null }));
         }
       }}
       role="button"
@@ -359,7 +329,6 @@ const ConversationHeaderTitle = () => {
 
 export const ConversationHeaderWithDetails = () => {
   const isSelectionMode = useSelector(isMessageSelectionMode);
-  const isMessageDetailOpened = useSelector(isMessageDetailView);
   const selectedConvoKey = useSelector(getSelectedConversationKey);
   const dispatch = useDispatch();
 
@@ -378,13 +347,7 @@ export const ConversationHeaderWithDetails = () => {
   return (
     <div className="module-conversation-header">
       <div className="conversation-header--items-wrapper">
-        <BackButton
-          onGoBack={() => {
-            dispatch(closeMessageDetailsView());
-          }}
-          showBackButton={isMessageDetailOpened}
-        />
-        <TripleDotsMenu triggerId={triggerId} showBackButton={isMessageDetailOpened} />
+        <TripleDotsMenu triggerId={triggerId} />
 
         <div className="module-conversation-header__title-container">
           <div className="module-conversation-header__title-flex">
@@ -406,10 +369,9 @@ export const ConversationHeaderWithDetails = () => {
             <CallButton />
             <AvatarHeader
               onAvatarClick={() => {
-                dispatch(openRightPanel());
+                dispatch(setRightOverlayMode({ type: 'default', params: null }));
               }}
               pubkey={selectedConvoKey}
-              showBackButton={isMessageDetailOpened}
             />
           </Flex>
         )}

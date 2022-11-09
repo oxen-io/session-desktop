@@ -6,7 +6,7 @@ import { SessionButton } from '../../basic/SessionButton';
 import { SessionIdEditable } from '../../basic/SessionIdEditable';
 import { SessionSpinner } from '../../basic/SessionSpinner';
 import { OverlayHeader } from './OverlayHeader';
-import { resetOverlayMode } from '../../../state/ducks/section';
+import { resetLeftOverlayMode } from '../../../state/ducks/section';
 import { PubKey } from '../../../session/types';
 import { ConversationTypeEnum } from '../../../models/conversationAttributes';
 import { getConversationController } from '../../../session/conversations';
@@ -42,7 +42,7 @@ export const OverlayMessage = () => {
   const dispatch = useDispatch();
 
   function closeOverlay() {
-    dispatch(resetOverlayMode());
+    dispatch(resetLeftOverlayMode());
   }
 
   useKey('Escape', closeOverlay);

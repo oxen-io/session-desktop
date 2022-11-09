@@ -6,7 +6,6 @@ import { PubKey } from '../../../../session/types';
 import { openConversationToSpecificMessage } from '../../../../state/ducks/conversations';
 import {
   getMessageQuoteProps,
-  isMessageDetailView,
   isMessageSelectionMode,
 } from '../../../../state/selectors/conversations';
 import { Quote } from './Quote';
@@ -25,7 +24,7 @@ export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'd
 export const MessageQuote = (props: Props) => {
   const selected = useSelector(state => getMessageQuoteProps(state as any, props.messageId));
   const multiSelectMode = useSelector(isMessageSelectionMode);
-  const isMessageDetailViewMode = useSelector(isMessageDetailView);
+  console.warn('FIXME');
 
   const quote = selected ? selected.quote : undefined;
   const direction = selected ? selected.direction : undefined;
@@ -37,11 +36,6 @@ export const MessageQuote = (props: Props) => {
 
       if (!quote) {
         window.log.warn('onQuoteClick: quote not valid');
-        return;
-      }
-
-      if (isMessageDetailViewMode) {
-        // trying to scroll while in the container while the message detail view is shown has unknown effects
         return;
       }
 

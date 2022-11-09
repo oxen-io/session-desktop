@@ -1,12 +1,5 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SessionSettingCategory } from '../../components/settings/SessionSettings';
-
-export const FOCUS_SECTION = 'FOCUS_SECTION';
-export const FOCUS_SETTINGS_SECTION = 'FOCUS_SETTINGS_SECTION';
-export const IS_APP_FOCUSED = 'IS_APP_FOCUSED';
-export const OVERLAY_MODE = 'OVERLAY_MODE';
-export const RESET_OVERLAY_MODE = 'RESET_OVERLAY_MODE';
-export const RIGHT_OVERLAY_MODE = 'RIGHT_OVERLAY_MODE';
-export const RESET_RIGHT_OVERLAY_MODE = 'RESET_RIGHT_OVERLAY_MODE';
 
 export enum SectionType {
   Profile,
@@ -16,145 +9,58 @@ export enum SectionType {
   PathIndicator,
 }
 
-type FocusSectionActionType = {
-  type: 'FOCUS_SECTION';
-  payload: SectionType;
-};
-
-type FocusSettingsSectionActionType = {
-  type: 'FOCUS_SETTINGS_SECTION';
-  payload: SessionSettingCategory;
-};
-
-type IsAppFocusedActionType = {
-  type: 'IS_APP_FOCUSED';
-  payload: boolean;
-};
-
-type OverlayModeActionType = {
-  type: 'OVERLAY_MODE';
-  payload: OverlayMode;
-};
-
-type ResetOverlayModeActionType = {
-  type: 'RESET_OVERLAY_MODE';
-};
-
-type RightOverlayModeActionType = {
-  type: 'RIGHT_OVERLAY_MODE';
-  payload: RightOverlayMode;
-};
-
-type ResetRightOverlayModeActionType = {
-  type: 'RESET_RIGHT_OVERLAY_MODE';
-};
-
-export function showLeftPaneSection(section: SectionType): FocusSectionActionType {
-  return {
-    type: FOCUS_SECTION,
-    payload: section,
-  };
-}
-
-type SectionActionTypes = FocusSectionActionType | FocusSettingsSectionActionType;
-
-export function setIsAppFocused(focused: boolean): IsAppFocusedActionType {
-  return {
-    type: IS_APP_FOCUSED,
-    payload: focused,
-  };
-}
-
-// TODO Should be renamed to LeftOverlayMode
-export type OverlayMode =
+export type LeftOverlayMode =
   | 'choose-action'
   | 'message'
   | 'open-group'
   | 'closed-group'
   | 'message-requests';
 
-export function setOverlayMode(overlayMode: OverlayMode): OverlayModeActionType {
-  return {
-    type: OVERLAY_MODE,
-    payload: overlayMode,
-  };
-}
+type RightPanelDefaultState = { type: 'default'; params: null };
+type RightPanelMessageDetailsState = {
+  type: 'message_info';
+  params: { messageId: string; defaultAttachment: number | undefined };
+};
+type RightPanelAllMediaState = { type: 'show_media'; params: null };
+type RightPanelDisappearingState = { type: 'disappearing_messages'; params: null };
 
-export function resetOverlayMode(): ResetOverlayModeActionType {
-  return {
-    type: RESET_OVERLAY_MODE,
-  };
-}
+export type RightOverlayMode =
+  | RightPanelDefaultState
+  | RightPanelMessageDetailsState
+  | RightPanelAllMediaState
+  | RightPanelDisappearingState;
 
-// TODO possibly more overlays here
-export type RightOverlayMode = 'disappearing-messages' | 'panel-settings';
-
-export function setRightOverlayMode(overlayMode: RightOverlayMode): RightOverlayModeActionType {
-  return {
-    type: RIGHT_OVERLAY_MODE,
-    payload: overlayMode,
-  };
-}
-
-export function resetRightOverlayMode(): ResetRightOverlayModeActionType {
-  return {
-    type: RESET_RIGHT_OVERLAY_MODE,
-  };
-}
-
-export function showSettingsSection(
-  category: SessionSettingCategory
-): FocusSettingsSectionActionType {
-  return {
-    type: FOCUS_SETTINGS_SECTION,
-    payload: category,
-  };
-}
-
-export const actions = {
-  showLeftPaneSection,
-  showSettingsSection,
-  setOverlayMode,
-  resetOverlayMode,
-  setRightOverlayMode,
-  resetRightOverlayMode,
+export type SectionStateType = {
+  focusedSection: SectionType;
+  focusedSettingsSection?: SessionSettingCategory;
+  isAppFocused: boolean;
+  leftOverlayMode: LeftOverlayMode | undefined;
+  rightOverlayMode: RightOverlayMode | undefined;
 };
 
 export const initialSectionState: SectionStateType = {
   focusedSection: SectionType.Message,
   focusedSettingsSection: undefined,
   isAppFocused: false,
-  overlayMode: undefined,
+  leftOverlayMode: undefined,
   rightOverlayMode: undefined,
 };
 
-export type SectionStateType = {
-  focusedSection: SectionType;
-  focusedSettingsSection?: SessionSettingCategory;
-  isAppFocused: boolean;
-  overlayMode: OverlayMode | undefined;
-  rightOverlayMode: RightOverlayMode | undefined;
-};
-
-export const reducer = (
-  state: any = initialSectionState,
-  {
-    type,
-    payload,
-  }: {
-    type: string;
-    payload: SectionActionTypes;
-  }
-): SectionStateType => {
-  switch (type) {
-    case FOCUS_SECTION:
+/**
+ * This slice is the one holding the default joinable rooms fetched once in a while from the default opengroup v2 server.
+ */
+const sectionSlice = createSlice({
+  name: 'sectionRooms',
+  initialState: initialSectionState,
+  reducers: {
+    showLeftPaneSection(state: SectionStateType, action: PayloadAction<SectionType>) {
       // if we change to something else than settings, reset the focused settings section
-      const castedPayload = (payload as unknown) as SectionType;
+      const focusedSection = action.payload;
 
-      if (castedPayload !== SectionType.Settings) {
+      if (focusedSection !== SectionType.Settings) {
         return {
           ...state,
-          focusedSection: castedPayload,
+          focusedSection,
           focusedSettingsSection: undefined,
         };
       }
@@ -162,41 +68,48 @@ export const reducer = (
       // on click on the gear icon: show the appearance tab by default
       return {
         ...state,
-        focusedSection: payload,
+        focusedSection,
         focusedSettingsSection: SessionSettingCategory.Privacy,
       };
-    case FOCUS_SETTINGS_SECTION:
-      return {
-        ...state,
-        focusedSettingsSection: payload,
-      };
+    },
 
-    case IS_APP_FOCUSED:
+    showSettingsSection(state: SectionStateType, action: PayloadAction<SessionSettingCategory>) {
       return {
         ...state,
-        isAppFocused: payload,
+        focusedSettingsSection: action.payload,
       };
-    case OVERLAY_MODE:
-      return {
-        ...state,
-        overlayMode: payload,
-      };
-    case RESET_OVERLAY_MODE:
-      return {
-        ...state,
-        overlayMode: undefined,
-      };
-    case RIGHT_OVERLAY_MODE:
-      return {
-        ...state,
-        rightOverlayMode: payload,
-      };
-    case RESET_RIGHT_OVERLAY_MODE:
-      return {
-        ...state,
-        rightOverlayMode: undefined,
-      };
-    default:
+    },
+    setRightOverlayMode(state: SectionStateType, action: PayloadAction<RightOverlayMode>) {
+      state.rightOverlayMode = action.payload;
       return state;
-  }
-};
+    },
+    resetRightOverlayMode(state: SectionStateType) {
+      state.rightOverlayMode = undefined;
+      return state;
+    },
+    setLeftOverlayMode(state: SectionStateType, action: PayloadAction<LeftOverlayMode>) {
+      state.leftOverlayMode = action.payload;
+      return state;
+    },
+    resetLeftOverlayMode(state: SectionStateType) {
+      state.leftOverlayMode = undefined;
+      return state;
+    },
+    setIsAppFocused(state: SectionStateType, action: PayloadAction<boolean>) {
+      state.isAppFocused = action.payload;
+      return state;
+    },
+  },
+});
+
+export const { actions, reducer } = sectionSlice;
+export const {
+  showLeftPaneSection,
+  showSettingsSection,
+  setLeftOverlayMode,
+  resetLeftOverlayMode,
+  setRightOverlayMode,
+  resetRightOverlayMode,
+  setIsAppFocused,
+} = actions;
+export const sectionReducer = reducer;

@@ -31,7 +31,6 @@ import {
   FindAndFormatContactType,
   LastMessageStatusType,
   MessageModelPropsWithoutConvoProps,
-  MessagePropsDetails,
   messagesChanged,
   PropsForAttachment,
   PropsForExpirationTimer,
@@ -59,20 +58,7 @@ import { OpenGroupData } from '../data/opengroups';
 import { isUsFromCache } from '../session/utils/User';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { AttachmentTypeWithPath, isVoiceMessage } from '../types/Attachment';
-import _, {
-  cloneDeep,
-  debounce,
-  groupBy,
-  isEmpty,
-  map,
-  partition,
-  pick,
-  reduce,
-  reject,
-  size as lodashSize,
-  sortBy,
-  uniq,
-} from 'lodash';
+import _, { cloneDeep, debounce, isEmpty, map, partition, pick, reduce, size, uniq } from 'lodash';
 import { SettingsKey } from '../data/settings-key';
 import {
   deleteExternalMessageFiles,
@@ -710,62 +696,6 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     };
   }
 
-  public async getPropsForMessageDetail(): Promise<MessagePropsDetails> {
-    // We include numbers we didn't successfully send to so we can display errors.
-    // Older messages don't have the recipients included on the message, so we fall
-    //   back to the conversation's current recipients
-    const phoneNumbers: Array<string> = this.isIncoming()
-      ? [this.get('source')]
-      : this.get('sent_to') || [];
-
-    // This will make the error message for outgoing key errors a bit nicer
-    const allErrors = (this.get('errors') || []).map((error: any) => {
-      return error;
-    });
-
-    // If an error has a specific number it's associated with, we'll show it next to
-    //   that contact. Otherwise, it will be a standalone entry.
-    const errors = reject(allErrors, error => Boolean(error.number));
-    const errorsGroupedById = groupBy(allErrors, 'number');
-    const finalContacts = await Promise.all(
-      (phoneNumbers || []).map(async id => {
-        const errorsForContact = errorsGroupedById[id];
-        const isOutgoingKeyError = false;
-
-        const contact = this.findAndFormatContact(id);
-        return {
-          ...contact,
-          // fallback to the message status if we do not have a status with a user
-          // this is useful for medium groups.
-          status: this.getStatus(id) || this.getMessagePropStatus(),
-          errors: errorsForContact,
-          isOutgoingKeyError,
-          isPrimaryDevice: true,
-          profileName: contact.profileName,
-        };
-      })
-    );
-
-    // The prefix created here ensures that contacts with errors are listed
-    //   first; otherwise it's alphabetical
-    const sortedContacts = sortBy(
-      finalContacts,
-      contact => `${contact.isPrimaryDevice ? '0' : '1'}${contact.pubkey}`
-    );
-
-    const toRet: MessagePropsDetails = {
-      sentAt: this.get('sent_at') || 0,
-      receivedAt: this.get('received_at') || 0,
-      convoId: this.get('conversationId'),
-      messageId: this.get('id'),
-      errors,
-      direction: this.get('direction'),
-      contacts: sortedContacts || [],
-    };
-
-    return toRet;
-  }
-
   /**
    * Uploads attachments, previews and quotes.
    *
@@ -999,7 +929,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   }
 
   public hasErrors() {
-    return lodashSize(this.get('errors')) > 0;
+    return size(this.get('errors')) > 0;
   }
 
   public getStatus(pubkey: string) {

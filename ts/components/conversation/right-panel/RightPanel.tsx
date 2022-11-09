@@ -7,10 +7,14 @@ import { OverlayRightPanelSettings } from './overlay/OverlayRightPanelSettings';
 
 const ClosableOverlay = () => {
   const rightOverlayMode = useSelector(getRightOverlayMode);
-  switch (rightOverlayMode) {
-    case 'disappearing-messages':
+  console.warn('rightOverlayMode', rightOverlayMode);
+  if (!rightOverlayMode) {
+    return null;
+  }
+  switch (rightOverlayMode.type) {
+    case 'disappearing_messages':
       return <OverlayDisappearingMessages />;
-    case 'panel-settings':
+    case 'default':
     default:
       return <OverlayRightPanelSettings />;
   }

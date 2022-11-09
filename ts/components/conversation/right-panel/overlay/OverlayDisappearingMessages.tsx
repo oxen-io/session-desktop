@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { setDisappearingMessagesByConvoId } from '../../../../interactions/conversationInteractions';
-import { closeRightPanel } from '../../../../state/ducks/conversations';
-import { resetRightOverlayMode } from '../../../../state/ducks/section';
+import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 import { getSelectedConversationKey } from '../../../../state/selectors/conversations';
 import { getTimerOptions } from '../../../../state/selectors/timerOptions';
 import { Flex } from '../../../basic/Flex';
@@ -63,7 +62,7 @@ const Header = (props: HeaderProps) => {
         iconType={'chevron'}
         iconRotation={90}
         onClick={() => {
-          dispatch(resetRightOverlayMode());
+          dispatch(setRightOverlayMode({ type: 'default', params: null }));
         }}
       />
       <Flex
@@ -81,7 +80,6 @@ const Header = (props: HeaderProps) => {
         iconSize={'tiny'}
         iconType={'exit'}
         onClick={() => {
-          dispatch(closeRightPanel());
           dispatch(resetRightOverlayMode());
         }}
       />

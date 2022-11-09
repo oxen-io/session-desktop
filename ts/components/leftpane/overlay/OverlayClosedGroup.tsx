@@ -9,7 +9,7 @@ import { MemberListItem } from '../../MemberListItem';
 import { OverlayHeader } from './OverlayHeader';
 // tslint:disable: no-submodule-imports use-simple-attributes
 
-import { resetOverlayMode } from '../../../state/ducks/section';
+import { resetLeftOverlayMode } from '../../../state/ducks/section';
 import { getPrivateContactsPubkeys } from '../../../state/selectors/conversations';
 import { SpacerLG } from '../../basic/Text';
 import useKey from 'react-use/lib/useKey';
@@ -98,7 +98,7 @@ export const OverlayClosedGroup = () => {
   } = useSet<string>([]);
 
   function closeOverlay() {
-    dispatch(resetOverlayMode());
+    dispatch(resetLeftOverlayMode());
   }
 
   async function onEnterPressed() {

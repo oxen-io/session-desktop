@@ -39,27 +39,6 @@ export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
   propsForMessage: PropsForMessageWithConvoProps;
 };
 
-export type ContactPropsMessageDetail = {
-  status: string | undefined;
-  pubkey: string;
-  name?: string | null;
-  profileName?: string | null;
-  avatarPath?: string | null;
-  isOutgoingKeyError: boolean;
-
-  errors?: Array<Error>;
-};
-
-export type MessagePropsDetails = {
-  sentAt: number;
-  receivedAt: number;
-  errors: Array<Error>;
-  contacts: Array<ContactPropsMessageDetail>;
-  convoId: string;
-  messageId: string;
-  direction: MessageModelType;
-};
-
 export type LastMessageStatusType = MessageDeliveryStatus | undefined;
 
 export type FindAndFormatContactType = {
@@ -289,8 +268,6 @@ export type ConversationsStateType = {
   selectedConversation?: string;
   messages: Array<MessageModelPropsWithoutConvoProps>;
   firstUnreadMessageId: string | undefined;
-  messageDetailProps?: MessagePropsDetails;
-  showRightPanel: boolean;
   selectedMessageIds: Array<string>;
   lightBox?: LightBoxOptions;
   quotedMessage?: ReplyingToMessageProps;
@@ -447,8 +424,6 @@ export function getEmptyConversationState(): ConversationsStateType {
   return {
     conversationLookup: {},
     messages: [],
-    messageDetailProps: undefined,
-    showRightPanel: false,
     selectedMessageIds: [],
     areMoreMessagesBeingFetched: false, // top or bottom
     showScrollButton: false,
@@ -555,24 +530,7 @@ const conversationsSlice = createSlice({
   name: 'conversations',
   initialState: getEmptyConversationState(),
   reducers: {
-    showMessageDetailsView(
-      state: ConversationsStateType,
-      action: PayloadAction<MessagePropsDetails>
-    ) {
-      // force the right panel to be hidden when showing message detail view
-      return { ...state, messageDetailProps: action.payload, showRightPanel: false };
-    },
 
-    closeMessageDetailsView(state: ConversationsStateType) {
-      return { ...state, messageDetailProps: undefined };
-    },
-
-    openRightPanel(state: ConversationsStateType) {
-      return { ...state, showRightPanel: true };
-    },
-    closeRightPanel(state: ConversationsStateType) {
-      return { ...state, showRightPanel: false };
-    },
     addMessageIdToSelection(state: ConversationsStateType, action: PayloadAction<string>) {
       if (state.selectedMessageIds.some(id => id === action.payload)) {
         return state;
@@ -756,11 +714,9 @@ const conversationsSlice = createSlice({
         messages: action.payload.initialMessages,
 
         areMoreMessagesBeingFetched: false,
-        showRightPanel: false,
         selectedMessageIds: [],
 
         lightBox: undefined,
-        messageDetailProps: undefined,
         quotedMessage: undefined,
 
         nextMessageToPlay: undefined,
@@ -993,10 +949,6 @@ export const {
   resetOldBottomMessageId,
   markConversationFullyRead,
   // layout stuff
-  showMessageDetailsView,
-  closeMessageDetailsView,
-  openRightPanel,
-  closeRightPanel,
   addMessageIdToSelection,
   resetSelectedMessageIds,
   toggleSelectedMessageId,

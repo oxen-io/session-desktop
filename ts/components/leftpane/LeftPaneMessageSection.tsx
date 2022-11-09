@@ -16,11 +16,11 @@ import { OverlayCommunity } from './overlay/OverlayCommunity';
 import { OverlayMessageRequest } from './overlay/OverlayMessageRequest';
 import { OverlayMessage } from './overlay/OverlayMessage';
 import { OverlayClosedGroup } from './overlay/OverlayClosedGroup';
-import { OverlayMode, setOverlayMode } from '../../state/ducks/section';
+import { LeftOverlayMode, setLeftOverlayMode } from '../../state/ducks/section';
 import { OverlayChooseAction } from './overlay/choose-action/OverlayChooseAction';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { getOverlayMode } from '../../state/selectors/section';
+import { getLeftOverlayMode } from '../../state/selectors/section';
 import { StyledLeftPaneList } from './LeftPaneList';
 
 export interface Props {
@@ -29,7 +29,7 @@ export interface Props {
   searchResults?: SearchResultsProps;
 
   messageRequestsEnabled?: boolean;
-  overlayMode: OverlayMode | undefined;
+  leftOverlayMode: LeftOverlayMode | undefined;
 }
 
 const StyledLeftPaneContent = styled.div`
@@ -49,9 +49,9 @@ const StyledConversationListContent = styled.div`
 `;
 
 const ClosableOverlay = () => {
-  const overlayMode = useSelector(getOverlayMode);
+  const leftOverlayMode = useSelector(getLeftOverlayMode);
 
-  switch (overlayMode) {
+  switch (leftOverlayMode) {
     case 'choose-action':
       return <OverlayChooseAction />;
     case 'open-group':
@@ -128,12 +128,12 @@ export class LeftPaneMessageSection extends React.Component<Props> {
   }
 
   public render(): JSX.Element {
-    const { overlayMode } = this.props;
+    const { leftOverlayMode } = this.props;
 
     return (
       <StyledLeftPaneContent>
         <LeftPaneSectionHeader />
-        {overlayMode ? <ClosableOverlay /> : this.renderConversations()}
+        {leftOverlayMode ? <ClosableOverlay /> : this.renderConversations()}
       </StyledLeftPaneContent>
     );
   }
@@ -144,7 +144,7 @@ export class LeftPaneMessageSection extends React.Component<Props> {
         <SessionSearchInput />
         <MessageRequestsBanner
           handleOnClick={() => {
-            window.inboxStore?.dispatch(setOverlayMode('message-requests'));
+            window.inboxStore?.dispatch(setLeftOverlayMode('message-requests'));
           }}
         />
         {this.renderList()}

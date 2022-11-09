@@ -9,13 +9,12 @@ import {
   getSelectedConversationKey,
   getSelectedMessageIds,
   getSortedMessagesOfSelectedConversation,
-  isMessageDetailView,
-  isRightPanelShowing,
 } from '../selectors/conversations';
 import { getOurNumber } from '../selectors/user';
 import { getStagedAttachmentsForCurrentConversation } from '../selectors/stagedAttachments';
 import { getHasOngoingCallWithFocusedConvo } from '../selectors/call';
 import { SessionConversation } from '../../components/conversation/SessionConversation';
+import { isRightOverlayShown } from '../selectors/section';
 
 const mapStateToProps = (state: StateType) => {
   return {
@@ -24,8 +23,7 @@ const mapStateToProps = (state: StateType) => {
     theme: getTheme(state),
     messagesProps: getSortedMessagesOfSelectedConversation(state),
     ourNumber: getOurNumber(state),
-    showMessageDetails: isMessageDetailView(state),
-    isRightPanelShowing: isRightPanelShowing(state),
+    isRightOverlayShown: isRightOverlayShown(state),
     selectedMessages: getSelectedMessageIds(state),
     lightBoxOptions: getLightBoxOptions(state),
     stagedAttachments: getStagedAttachmentsForCurrentConversation(state),

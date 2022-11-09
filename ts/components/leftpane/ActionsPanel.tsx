@@ -20,7 +20,7 @@ import {
 } from '../../state/selectors/conversations';
 import { getFocusedSection } from '../../state/selectors/section';
 import { clearSearch } from '../../state/ducks/search';
-import { resetOverlayMode, SectionType, showLeftPaneSection } from '../../state/ducks/section';
+import { resetLeftOverlayMode, SectionType, showLeftPaneSection } from '../../state/ducks/section';
 
 import { cleanUpOldDecryptedMedias } from '../../session/crypto/DecryptedAttachmentsManager';
 
@@ -82,7 +82,7 @@ const Section = (props: { type: SectionType }) => {
       // message section
       dispatch(clearSearch());
       dispatch(showLeftPaneSection(type));
-      dispatch(resetOverlayMode());
+      dispatch(resetLeftOverlayMode());
     }
   };
 

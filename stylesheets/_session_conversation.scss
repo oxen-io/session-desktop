@@ -23,7 +23,7 @@
   height: 100%;
   right: 0vw;
 
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.2s ease-out;
   transform: translateX(100%);
   will-change: transform;
   width: 25vw;
@@ -33,8 +33,8 @@
   border-left: 1px solid var(--border-color);
 
   &.show {
+    transition: transform 0.3s ease-out;
     transform: none;
-    transition: transform 0.3s ease-in-out;
     z-index: 3;
   }
 }

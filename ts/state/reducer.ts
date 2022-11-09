@@ -5,7 +5,7 @@ import { ConversationsStateType, reducer as conversations } from './ducks/conver
 import { reducer as user, UserStateType } from './ducks/user';
 import { reducer as theme } from './ducks/theme';
 import { reducer as primaryColor } from './ducks/primaryColor';
-import { reducer as section, SectionStateType } from './ducks/section';
+import { sectionReducer as section, SectionStateType } from './ducks/section';
 import { defaultRoomReducer as defaultRooms, DefaultRoomsState } from './ducks/defaultRooms';
 import { callReducer as call, CallStateType } from './ducks/call';
 

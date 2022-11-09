@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 // tslint:disable: use-simple-attributes no-submodule-imports
 
 import { useDispatch } from 'react-redux';
-import { resetOverlayMode, setOverlayMode } from '../../../../state/ducks/section';
+import { resetLeftOverlayMode, setLeftOverlayMode } from '../../../../state/ducks/section';
 import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { SessionIcon, SessionIconType } from '../../../icon';
@@ -47,19 +47,19 @@ const IconOnActionRow = (props: { iconType: SessionIconType }) => {
 export const OverlayChooseAction = () => {
   const dispatch = useDispatch();
   function closeOverlay() {
-    dispatch(resetOverlayMode());
+    dispatch(resetLeftOverlayMode());
   }
 
   function openNewMessage() {
-    dispatch(setOverlayMode('message'));
+    dispatch(setLeftOverlayMode('message'));
   }
 
   function openCreateGroup() {
-    dispatch(setOverlayMode('closed-group'));
+    dispatch(setLeftOverlayMode('closed-group'));
   }
 
   function openJoinCommunity() {
-    dispatch(setOverlayMode('open-group'));
+    dispatch(setLeftOverlayMode('open-group'));
   }
 
   useKey('Escape', closeOverlay);

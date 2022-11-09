@@ -5,7 +5,7 @@ import { disableRecoveryPhrasePrompt } from '../../state/ducks/userConfig';
 import { getShowRecoveryPhrasePrompt } from '../../state/selectors/userConfig';
 import { recoveryPhraseModal } from '../../state/ducks/modalDialog';
 import { Flex } from '../basic/Flex';
-import { getFocusedSection, getOverlayMode } from '../../state/selectors/section';
+import { getFocusedSection, getLeftOverlayMode } from '../../state/selectors/section';
 import { SectionType } from '../../state/ducks/section';
 import { SessionButton } from '../basic/SessionButton';
 import { isSignWithRecoveryPhrase } from '../../util/storage';
@@ -110,12 +110,12 @@ export const LeftPaneBanner = () => {
 export const LeftPaneSectionHeader = () => {
   const showRecoveryPhrasePrompt = useSelector(getShowRecoveryPhrasePrompt);
   const focusedSection = useSelector(getFocusedSection);
-  const overlayMode = useSelector(getOverlayMode);
+  const leftOverlayMode = useSelector(getLeftOverlayMode);
 
   let label: string | undefined;
 
   const isMessageSection = focusedSection === SectionType.Message;
-  const isMessageRequestOverlay = overlayMode && overlayMode === 'message-requests';
+  const isMessageRequestOverlay = leftOverlayMode && leftOverlayMode === 'message-requests';
 
   switch (focusedSection) {
     case SectionType.Settings:

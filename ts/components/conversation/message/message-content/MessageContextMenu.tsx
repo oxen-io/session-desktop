@@ -18,10 +18,8 @@ import {
 } from '../../../../interactions/messageInteractions';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { pushUnblockToSend } from '../../../../session/utils/Toast';
-import {
-  showMessageDetailsView,
-  toggleSelectedMessageId,
-} from '../../../../state/ducks/conversations';
+import { toggleSelectedMessageId } from '../../../../state/ducks/conversations';
+import { setRightOverlayMode } from '../../../../state/ducks/section';
 import { StateType } from '../../../../state/reducer';
 import { getMessageContextMenuProps } from '../../../../state/selectors/conversations';
 import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
@@ -73,6 +71,26 @@ const StyledEmojiPanelContainer = styled.div<{ x: number; y: number }>`
     top: ${props => `${props.y}px`};
   }
 `;
+
+function getAttachmentIndexFromDOM(
+  e: any,
+  attachments: Array<any> | undefined
+): number | undefined {
+  // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment
+  // and the context menu save attachment item to save the right attachment I did not find a better way for now.
+  let targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
+  if (!attachments?.length) {
+    return undefined;
+  }
+
+  if (!targetAttachmentIndex) {
+    targetAttachmentIndex = 0;
+  }
+  if (targetAttachmentIndex > attachments.length) {
+    return undefined;
+  }
+  return targetAttachmentIndex;
+}
 
 // tslint:disable: max-func-body-length cyclomatic-complexity
 export const MessageContextMenu = (props: Props) => {
@@ -134,16 +152,6 @@ export const MessageContextMenu = (props: Props) => {
     }, 100);
   }, []);
 
-  const onShowDetail = async () => {
-    const found = await Data.getMessageById(messageId);
-    if (found) {
-      const messageDetailsProps = await found.getPropsForMessageDetail();
-      dispatch(showMessageDetailsView(messageDetailsProps));
-    } else {
-      window.log.warn(`Message ${messageId} not found in db`);
-    }
-  };
-
   const selectMessageText = window.i18n('selectMessage');
   const deleteMessageJustForMeText = window.i18n('deleteJustForMe');
   const unsendMessageText = window.i18n('deleteForEveryone');
@@ -166,29 +174,41 @@ export const MessageContextMenu = (props: Props) => {
 
   const saveAttachment = useCallback(
     (e: any) => {
-      // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment
-      // and the context menu save attachment item to save the right attachment I did not find a better way for now.
-      let targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
+      const attachmentIndex = getAttachmentIndexFromDOM(e, attachments);
+      if (attachmentIndex === undefined || !attachments) {
+        return;
+      }
       e.event.stopPropagation();
-      if (!attachments?.length) {
-        return;
-      }
 
-      if (!targetAttachmentIndex) {
-        targetAttachmentIndex = 0;
-      }
-      if (targetAttachmentIndex > attachments.length) {
-        return;
-      }
       const messageTimestamp = timestamp || serverTimestamp || 0;
       void saveAttachmentToDisk({
-        attachment: attachments[targetAttachmentIndex],
+        attachment: attachments[attachmentIndex],
         messageTimestamp,
         messageSender: sender,
         conversationId: convoId,
       });
     },
     [convoId, sender, timestamp, serverTimestamp, convoId, attachments]
+  );
+
+  const openMessageInfo = useCallback(
+    async (e: any) => {
+      const attachmentIndex = getAttachmentIndexFromDOM(e, attachments);
+      // if we do not have an attachment index for the messageInfo click, we just open the message details of that message without selecting an attachment
+
+      const found = await Data.getMessageById(messageId);
+      if (found) {
+        dispatch(
+          setRightOverlayMode({
+            type: 'message_info',
+            params: { messageId: messageId, defaultAttachment: attachmentIndex },
+          })
+        );
+      } else {
+        window.log.warn(`openMessageInfo: Message ${messageId} not found in db`);
+      }
+    },
+    [attachments, messageId]
   );
 
   const copyText = useCallback(() => {
@@ -307,12 +327,11 @@ export const MessageContextMenu = (props: Props) => {
             <Item onClick={saveAttachment}>{window.i18n('downloadAttachment')}</Item>
           ) : null}
 
+          <Item onClick={openMessageInfo}>{window.i18n('messageInfo')}</Item>
+
           <Item onClick={copyText}>{window.i18n('copyMessage')}</Item>
           {(isSent || !isOutgoing) && (
             <Item onClick={onReply}>{window.i18n('replyToMessage')}</Item>
-          )}
-          {(!isPublic || isOutgoing) && (
-            <Item onClick={onShowDetail}>{window.i18n('moreInformation')}</Item>
           )}
           {showRetry ? <Item onClick={onRetry}>{window.i18n('resend')}</Item> : null}
           {isDeletable ? (

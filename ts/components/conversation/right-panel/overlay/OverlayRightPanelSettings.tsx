@@ -14,10 +14,7 @@ import {
   showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
 import { Constants } from '../../../../session';
-import {
-  getSelectedConversation,
-  isRightPanelShowing,
-} from '../../../../state/selectors/conversations';
+import { getSelectedConversation } from '../../../../state/selectors/conversations';
 import { AttachmentTypeWithPath } from '../../../../types/Attachment';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../../../basic/SessionButton';
 import { SpacerLG } from '../../../basic/Text';
@@ -26,10 +23,10 @@ import { MediaGallery } from '../../media-gallery/MediaGallery';
 import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import styled from 'styled-components';
 import { SessionIconButton } from '../../../icon';
-import { closeRightPanel } from '../../../../state/ducks/conversations';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
-import { setRightOverlayMode } from '../../../../state/ducks/section';
+import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 import { PanelButtonGroup, PanelIconButton } from '../../../buttons';
+import { isRightOverlayShown } from '../../../../state/selectors/section';
 
 async function getMediaGalleryProps(
   conversationId: string
@@ -122,7 +119,7 @@ const HeaderItem = () => {
         iconSize="medium"
         iconRotation={270}
         onClick={() => {
-          dispatch(closeRightPanel());
+          dispatch(resetRightOverlayMode());
         }}
         style={{ position: 'absolute' }}
         dataTestId="back-button-conversation-options"
@@ -191,7 +188,7 @@ export const OverlayRightPanelSettings = () => {
 
   const dispatch = useDispatch();
   const selectedConversation = useSelector(getSelectedConversation);
-  const isShowing = useSelector(isRightPanelShowing);
+  const isShowing = useSelector(isRightOverlayShown);
 
   useEffect(() => {
     let isRunning = true;
@@ -333,7 +330,7 @@ export const OverlayRightPanelSettings = () => {
             text={window.i18n('disappearingMessages')}
             disableBg={true}
             onClick={() => {
-              dispatch(setRightOverlayMode('disappearing-messages'));
+              dispatch(setRightOverlayMode({ type: 'disappearing_messages', params: null }));
             }}
           />
         </PanelButtonGroup>

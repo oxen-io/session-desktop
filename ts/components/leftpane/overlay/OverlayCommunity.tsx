@@ -8,7 +8,7 @@ import { SessionIdEditable } from '../../basic/SessionIdEditable';
 import { SessionSpinner } from '../../basic/SessionSpinner';
 import { OverlayHeader } from './OverlayHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetOverlayMode } from '../../../state/ducks/section';
+import { resetLeftOverlayMode } from '../../../state/ducks/section';
 import {
   joinOpenGroupV2WithUIEvents,
   JoinSogsRoomUICallbackArgs,
@@ -16,7 +16,7 @@ import {
 import { openGroupV2CompleteURLRegex } from '../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ToastUtils } from '../../../session/utils';
 import useKey from 'react-use/lib/useKey';
-import { getOverlayMode } from '../../../state/selectors/section';
+import { getLeftOverlayMode } from '../../../state/selectors/section';
 import {
   markConversationInitialLoadingInProgress,
   openConversationWithMessages,
@@ -42,10 +42,10 @@ export const OverlayCommunity = () => {
   const [loading, setLoading] = useState(false);
   const [groupUrl, setGroupUrl] = useState('');
 
-  const overlayModeIsCommunity = useSelector(getOverlayMode) === 'open-group';
+  const overlayModeIsCommunity = useSelector(getLeftOverlayMode) === 'open-group';
 
   function closeOverlay() {
-    dispatch(resetOverlayMode());
+    dispatch(resetLeftOverlayMode());
   }
 
   async function onTryJoinRoom(completeUrl?: string) {
