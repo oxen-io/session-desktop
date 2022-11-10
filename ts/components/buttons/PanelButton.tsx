@@ -33,7 +33,7 @@ const StyledRoundedPanelButtonGroup = styled.div`
   overflow: hidden;
   background: var(--right-panel-item-background-color);
   border-radius: 16px;
-  padding: var(--margins-lg);
+  padding: 4px var(--margins-lg);
   margin: 0 var(--margins-lg);
   width: -webkit-fill-available;
 `;
@@ -69,7 +69,7 @@ const StyledPanelButton = styled.button<{
   flex-grow: 1;
   font-family: var(--font-default);
   padding: 0px var(--margins-sm);
-  height: '50px';
+  height: 50px;
   width: 100%;
   transition: var(--default-duration);
   background-color: ${props =>

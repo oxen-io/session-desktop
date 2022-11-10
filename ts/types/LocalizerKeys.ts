@@ -242,6 +242,7 @@ export type LocalizerKeys =
   | 'timerOption_10_seconds'
   | 'helpSettingsTitle'
   | 'openMessageRequestInboxDescription'
+  | 'allMedia'
   | 'notificationPreview'
   | 'noteToSelf'
   | 'failedToAddAsModerator'

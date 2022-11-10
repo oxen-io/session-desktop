@@ -14,14 +14,6 @@ const StyledPanelButton = styled(PanelButton)`
       margin-inline-end: 0;
     }
   }
-
-  :first-child {
-    padding-top: 0;
-  }
-
-  :last-child {
-    padding-bottom: 0;
-  }
 `;
 
 const StyledSubtitle = styled.p`

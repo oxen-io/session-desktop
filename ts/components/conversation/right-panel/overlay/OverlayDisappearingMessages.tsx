@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { setDisappearingMessagesByConvoId } from '../../../../interactions/conversationInteractions';
-import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 import { getSelectedConversationKey } from '../../../../state/selectors/conversations';
 import { getTimerOptions } from '../../../../state/selectors/timerOptions';
 import { Flex } from '../../../basic/Flex';
@@ -11,7 +10,7 @@ import { SpacerLG } from '../../../basic/Text';
 import { PanelButtonGroup } from '../../../buttons';
 import { PanelLabel } from '../../../buttons/PanelButton';
 import { PanelRadioButton } from '../../../buttons/PanelRadioButton';
-import { SessionIconButton } from '../../../icon';
+import { RightOverlayHeader } from './RightOverlayHeader';
 
 const StyledScrollContainer = styled.div`
   width: 100%;
@@ -29,63 +28,6 @@ const StyledContainer = styled(Flex)`
     margin: 35px auto 0;
   }
 `;
-
-const StyledTitle = styled.h2`
-  font-family: var(--font-default);
-  text-align: center;
-  margin-top: 0px;
-  margin-bottom: 0px;
-`;
-
-const StyledSubTitle = styled.h3`
-  font-family: var(--font-default);
-  font-size: 11px;
-  font-weight: 400;
-  text-align: center;
-  padding-top: 0px;
-  margin-top: 0;
-`;
-
-type HeaderProps = {
-  title: string;
-  subtitle: string;
-};
-
-const Header = (props: HeaderProps) => {
-  const { title, subtitle } = props;
-  const dispatch = useDispatch();
-
-  return (
-    <Flex container={true} width={'100%'} padding={'32px var(--margins-lg) var(--margins-md)'}>
-      <SessionIconButton
-        iconSize={'medium'}
-        iconType={'chevron'}
-        iconRotation={90}
-        onClick={() => {
-          dispatch(setRightOverlayMode({ type: 'default', params: null }));
-        }}
-      />
-      <Flex
-        container={true}
-        flexDirection={'column'}
-        justifyContent={'flex-start'}
-        alignItems={'center'}
-        width={'100%'}
-        margin={'-5px auto auto'}
-      >
-        <StyledTitle>{title}</StyledTitle>
-        <StyledSubTitle>{subtitle}</StyledSubTitle>
-      </Flex>
-      <SessionIconButton
-        iconSize={'tiny'}
-        iconType={'exit'}
-        onClick={() => {
-          dispatch(resetRightOverlayMode());
-        }}
-      />
-    </Flex>
-  );
-};
 
 type TimerOptionsProps = {
   options: Array<any>;
@@ -126,9 +68,10 @@ export const OverlayDisappearingMessages = () => {
   return (
     <StyledScrollContainer>
       <StyledContainer container={true} flexDirection={'column'} alignItems={'center'}>
-        <Header
+        <RightOverlayHeader
           title={window.i18n('disappearingMessages')}
           subtitle={window.i18n('disappearingMessagesSubtitle')}
+          hideBackButton={false}
         />
         <TimeOptions options={timerOptions} selected={timeSelected} setSelected={setTimeSelected} />
         <SessionButton

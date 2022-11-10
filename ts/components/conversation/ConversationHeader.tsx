@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { Avatar, AvatarSize } from '../avatar/Avatar';
-
 import { contextMenu } from 'react-contexify';
 import styled from 'styled-components';
 import { ConversationNotificationSettingType } from '../../models/conversationAttributes';
@@ -28,8 +26,8 @@ import { callRecipient } from '../../interactions/conversationInteractions';
 import { getHasIncomingCall, getHasOngoingCall } from '../../state/selectors/call';
 import {
   useConversationUsername,
-  useExpireTimer,
-  useIsKickedFromGroup,
+  // useExpireTimer,
+  // useIsKickedFromGroup,
   useIsRequest,
 } from '../../hooks/useParamSelector';
 import {
@@ -41,9 +39,9 @@ import {
 import { SessionIconButton } from '../icon';
 import { ConversationHeaderMenu } from '../menu/ConversationHeaderMenu';
 import { Flex } from '../basic/Flex';
-import { ExpirationTimerOptions } from '../../util/expiringMessages';
+// import { ExpirationTimerOptions } from '../../util/expiringMessages';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../state/ducks/section';
-import { getRightOverlayMode } from '../../state/selectors/section';
+import { getRightOverlayMode, isRightOverlayShown } from '../../state/selectors/section';
 
 export interface TimerOption {
   name: string;
@@ -159,44 +157,19 @@ const TripleDotsMenu = (props: { triggerId: string }) => {
   );
 };
 
-const ExpirationLength = (props: { expirationSettingName?: string }) => {
-  const { expirationSettingName } = props;
+const GearButton = () => {
+  const dispatch = useDispatch();
+  const isOverlayShown = useSelector(isRightOverlayShown);
 
-  if (!expirationSettingName) {
-    return null;
-  }
+  const onClick = () => {
+    if (isOverlayShown) {
+      dispatch(resetRightOverlayMode());
+    } else {
+      dispatch(setRightOverlayMode({ type: 'default', params: null }));
+    }
+  };
 
-  return (
-    <div className="module-conversation-header__expiration">
-      <div className="module-conversation-header__expiration__clock-icon" />
-      <div
-        className="module-conversation-header__expiration__setting"
-        data-testid="disappearing-messages-indicator"
-      >
-        {expirationSettingName}
-      </div>
-    </div>
-  );
-};
-
-const AvatarHeader = (props: { pubkey: string; onAvatarClick?: (pubkey: string) => void }) => {
-  const { pubkey, onAvatarClick } = props;
-
-  return (
-    <span className="module-conversation-header__avatar">
-      <Avatar
-        size={AvatarSize.S}
-        onAvatarClick={() => {
-          // do not allow right panel to appear if another button is shown on the SessionConversation
-          if (onAvatarClick) {
-            onAvatarClick(pubkey);
-          }
-        }}
-        pubkey={pubkey}
-        dataTestId="conversation-options-avatar"
-      />
-    </span>
-  );
+  return <SessionIconButton iconType="gear" iconSize="medium" onClick={onClick} />;
 };
 
 const CallButton = () => {
@@ -330,25 +303,22 @@ const ConversationHeaderTitle = () => {
 export const ConversationHeaderWithDetails = () => {
   const isSelectionMode = useSelector(isMessageSelectionMode);
   const selectedConvoKey = useSelector(getSelectedConversationKey);
-  const dispatch = useDispatch();
 
   if (!selectedConvoKey) {
     return null;
   }
 
-  const isKickedFromGroup = useIsKickedFromGroup(selectedConvoKey);
-  const expireTimerSetting = useExpireTimer(selectedConvoKey);
-  const expirationSettingName = expireTimerSetting
-    ? ExpirationTimerOptions.getName(expireTimerSetting || 0)
-    : undefined;
+  // const isKickedFromGroup = useIsKickedFromGroup(selectedConvoKey);
+  // const expireTimerSetting = useExpireTimer(selectedConvoKey);
+  // const expirationSettingName = expireTimerSetting
+  //   ? ExpirationTimerOptions.getName(expireTimerSetting || 0)
+  //   : undefined;
 
   const triggerId = 'conversation-header';
 
   return (
     <div className="module-conversation-header">
       <div className="conversation-header--items-wrapper">
-        <TripleDotsMenu triggerId={triggerId} />
-
         <div className="module-conversation-header__title-container">
           <div className="module-conversation-header__title-flex">
             <ConversationHeaderTitle />
@@ -363,19 +333,14 @@ export const ConversationHeaderWithDetails = () => {
             flexGrow={0}
             flexShrink={0}
           >
-            {!isKickedFromGroup && (
+            {/* {!isKickedFromGroup && (
               <ExpirationLength expirationSettingName={expirationSettingName} />
-            )}
+            )} */}
             <CallButton />
-            <AvatarHeader
-              onAvatarClick={() => {
-                dispatch(setRightOverlayMode({ type: 'default', params: null }));
-              }}
-              pubkey={selectedConvoKey}
-            />
           </Flex>
         )}
-
+        <TripleDotsMenu triggerId={triggerId} />
+        <GearButton />
         <ConversationHeaderMenu triggerId={triggerId} />
       </div>
 

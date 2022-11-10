@@ -2,15 +2,23 @@
  * @prettier
  */
 import React from 'react';
+import styled from 'styled-components';
 
 interface Props {
   label: string;
 }
 
-export class EmptyState extends React.Component<Props> {
-  public render() {
-    const { label } = this.props;
+const Empty = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  font-size: 28px;
+`;
 
-    return <div className="module-empty-state">{label}</div>;
-  }
-}
+export const EmptyState = (props: Props) => {
+  const { label } = props;
+
+  return <Empty>{label}</Empty>;
+};

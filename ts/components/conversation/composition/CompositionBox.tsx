@@ -317,7 +317,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     const { showRecordingView } = this.state;
 
     return (
-      <Flex flexDirection="column">
+      <Flex container={true} flexDirection="column" flexShrink={0}>
         <SessionQuotedMessageComposition />
         {this.renderStagedLinkPreview()}
         {this.renderAttachmentsStaged()}

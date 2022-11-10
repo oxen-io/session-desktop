@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 
 import { isImageTypeSupported, isVideoTypeSupported } from '../../../util/GoogleChrome';
 import { useEncryptedFileFetch } from '../../../hooks/useEncryptedFileFetch';
@@ -7,11 +6,85 @@ import { showLightBox } from '../../../state/ducks/conversations';
 import { useDisableDrag } from '../../../hooks/useDisableDrag';
 import { LightBoxOptions } from '../SessionConversation';
 import { MediaItemType } from '../../lightbox/LightboxGallery';
+import styled from 'styled-components';
 
 type Props = {
   mediaItem: MediaItemType;
   mediaItems: Array<MediaItemType>;
 };
+
+const GridItem = styled.button`
+  height: 94px;
+  width: 94px;
+  cursor: pointer;
+  background-color: var(--message-link-preview-background-color);
+  margin-inline-end: 4px;
+  margin-bottom: 4px;
+  position: relative;
+`;
+
+const Icon = styled.div`
+  position: absolute;
+  top: 15px;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  background-color: var(--button-icon-stroke-color);
+  -webkit-mask-size: 100%;
+`;
+
+const StyledIconImage = styled(Icon)`
+  -webkit-mask: url(images/image.svg) no-repeat center;
+`;
+
+const StyledIconVideo = styled(Icon)`
+  -webkit-mask: url(images/movie.svg) no-repeat center;
+`;
+
+const StyledIconGeneric = styled(Icon)`
+  -webkit-mask: url(images/file.svg) no-repeat center;
+`;
+
+const StyledItemImage = styled.img`
+  height: 94px;
+  width: 94px;
+  object-fit: cover;
+`;
+
+const ImageContainer = styled.div`
+  object-fit: cover;
+  position: relative;
+`;
+
+const CircleOverlay = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 42px;
+  height: 42px;
+  background-color: var(--chat-buttons-background-color);
+  border-radius: 21px;
+
+  &:hover {
+    background-color: var(--chat-buttons-background-hover-color);
+  }
+`;
+
+const PlayOverlay = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  height: 36px;
+  width: 36px;
+  background-color: var(--chat-buttons-icon-color);
+  -webkit-mask-size: 100%;
+  -webkit-mask: url(images/play.svg) no-repeat center;
+`;
 
 const MediaGridItemContent = (props: Props) => {
   const { mediaItem } = props;
@@ -39,20 +112,12 @@ const MediaGridItemContent = (props: Props) => {
 
   if (contentType && isImageTypeSupported(contentType)) {
     if (imageBroken || !srcData) {
-      return (
-        <div
-          className={classNames(
-            'module-media-grid-item__icon',
-            'module-media-grid-item__icon-image'
-          )}
-        />
-      );
+      return <StyledIconImage />;
     }
 
     return (
-      <img
+      <StyledItemImage
         alt={i18n('lightboxImageAlt')}
-        className="module-media-grid-item__image"
         src={srcData}
         onError={onImageError}
         onDragStart={disableDrag}
@@ -60,44 +125,30 @@ const MediaGridItemContent = (props: Props) => {
     );
   } else if (contentType && isVideoTypeSupported(contentType)) {
     if (imageBroken || !srcData) {
-      return (
-        <div
-          className={classNames(
-            'module-media-grid-item__icon',
-            'module-media-grid-item__icon-video'
-          )}
-        />
-      );
+      return <StyledIconVideo />;
     }
 
     return (
-      <div className="module-media-grid-item__image-container">
-        <img
+      <ImageContainer>
+        <StyledItemImage
           alt={i18n('lightboxImageAlt')}
-          className="module-media-grid-item__image"
           src={srcData}
           onError={onImageError}
           onDragStart={disableDrag}
         />
-        <div className="module-media-grid-item__circle-overlay">
-          <div className="module-media-grid-item__play-overlay" />
-        </div>
-      </div>
+        <CircleOverlay>
+          <PlayOverlay />
+        </CircleOverlay>
+      </ImageContainer>
     );
   }
 
-  return (
-    <div
-      className={classNames('module-media-grid-item__icon', 'module-media-grid-item__icon-generic')}
-    />
-  );
+  return <StyledIconGeneric />;
 };
 
 export const MediaGridItem = (props: Props) => {
   return (
-    <div
-      className="module-media-grid-item"
-      role="button"
+    <GridItem
       onClick={() => {
         const lightBoxOptions: LightBoxOptions = {
           media: props.mediaItems,
@@ -108,6 +159,6 @@ export const MediaGridItem = (props: Props) => {
       }}
     >
       <MediaGridItemContent {...props} />
-    </div>
+    </GridItem>
   );
 };

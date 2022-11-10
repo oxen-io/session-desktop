@@ -332,12 +332,6 @@
   max-width: 100%;
 }
 
-.module-conversation-header__avatar {
-  cursor: pointer;
-  min-width: 28px;
-  user-select: none;
-}
-
 .module-conversation-header__title {
   margin: 0px 20px;
 
@@ -364,27 +358,6 @@
     overflow: hidden !important;
     text-overflow: ellipsis;
   }
-}
-
-.module-conversation-header__expiration {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-inline-start: 8px;
-  padding-inline-end: 8px;
-  flex-shrink: 0;
-}
-
-.module-conversation-header__expiration__clock-icon {
-  @include color-svg('../images/timer.svg', var(--button-icon-stroke-color));
-  height: 20px;
-  width: 20px;
-  display: inline-block;
-}
-
-.module-conversation-header__expiration__setting {
-  margin-inline-start: 5px;
-  text-align: center;
 }
 
 // Module: Media Gallery
@@ -500,87 +473,6 @@
 .module-document-list-item__date {
   display: inline-block;
   flex-shrink: 0;
-}
-
-// Module: Media Grid Item
-
-.module-media-grid-item {
-  height: 94px;
-  width: 94px;
-  cursor: pointer;
-  background-color: var(--message-link-preview-background-color);
-  margin-inline-end: 4px;
-  margin-bottom: 4px;
-  position: relative;
-}
-
-.module-media-grid-item__image {
-  height: 94px;
-  width: 94px;
-  object-fit: cover;
-}
-
-.module-media-grid-item__icon {
-  position: absolute;
-  top: 15px;
-  bottom: 15px;
-  left: 15px;
-  right: 15px;
-}
-
-.module-media-grid-item__icon-image {
-  @include color-svg('../images/image.svg', var(--button-icon-stroke-color));
-}
-
-.module-media-grid-item__image-container {
-  object-fit: cover;
-  position: relative;
-}
-
-.module-media-grid-item__circle-overlay {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-
-  transform: translate(-50%, -50%);
-
-  width: 42px;
-  height: 42px;
-  background-color: var(--chat-buttons-background-color);
-  border-radius: 21px;
-
-  &:hover {
-    background-color: var(--chat-buttons-background-hover-color);
-  }
-}
-
-.module-media-grid-item__play-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  height: 36px;
-  width: 36px;
-  @include color-svg('../images/play.svg', var(--chat-buttons-icon-color));
-}
-
-.module-media-grid-item__icon-video {
-  @include color-svg('../images/movie.svg', var(--button-icon-stroke-color));
-}
-
-.module-media-grid-item__icon-generic {
-  @include color-svg('../images/file.svg', var(--button-icon-stroke-color));
-}
-
-/* Module: Empty State*/
-
-.module-empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  font-size: 28px;
 }
 
 // Module: Conversation List Item

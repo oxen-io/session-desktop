@@ -1,7 +1,7 @@
 .right-panel {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   width: -webkit-fill-available;
 
   align-items: center;
@@ -38,15 +38,12 @@
     border-top: none;
   }
 
-  .module-empty-state {
-    text-align: center;
-  }
-
   .module-attachment-section__items {
     &-media {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       width: 100%;
+      grid-row-gap: var(--margins-md);
     }
 
     &-documents {
@@ -98,14 +95,5 @@
         }
       }
     }
-  }
-}
-
-.conversation-content {
-  display: flex;
-  height: inherit;
-
-  &-left {
-    flex-grow: 1;
   }
 }

@@ -99,6 +99,14 @@ const ConvoLoadingSpinner = () => {
   );
 };
 
+const ConversationContentContainer = styled.div`
+  height: 100%;
+  display: flex;
+  position: relative;
+  flex-shrink: 100;
+  min-height: 0;
+`;
+
 export class SessionConversation extends React.Component<Props, State> {
   private readonly messageContainerRef: React.RefObject<HTMLDivElement>;
   private dragCounter: number;
@@ -255,7 +263,7 @@ export class SessionConversation extends React.Component<Props, State> {
         {isSelectedConvoInitialLoadingInProgress ? (
           <ConvoLoadingSpinner />
         ) : (
-          <>
+          <ConversationContentContainer>
             <div
               // if you change the classname, also update it on onKeyDown
               className={classNames('conversation-content', selectionMode && 'selection-mode')}
@@ -282,11 +290,6 @@ export class SessionConversation extends React.Component<Props, State> {
               </div>
 
               <ConversationRequestinfo />
-              <CompositionBox
-                sendMessage={this.sendMessageFn}
-                stagedAttachments={this.props.stagedAttachments}
-                onChoseAttachments={this.onChoseAttachments}
-              />
             </div>
             <div
               className={classNames(
@@ -296,8 +299,13 @@ export class SessionConversation extends React.Component<Props, State> {
             >
               <RightPanel />
             </div>
-          </>
+          </ConversationContentContainer>
         )}
+        <CompositionBox
+          sendMessage={this.sendMessageFn}
+          stagedAttachments={this.props.stagedAttachments}
+          onChoseAttachments={this.onChoseAttachments}
+        />
       </SessionTheme>
     );
   }

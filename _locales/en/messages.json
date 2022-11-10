@@ -78,6 +78,7 @@
   "contactAvatarAlt": "Avatar for contact $name$",
   "downloadAttachment": "Download Attachment",
   "messageInfo": "Message Info",
+  "allMedia": "All Media",
   "replyToMessage": "Reply to message",
   "replyingToMessage": "Replying to:",
   "originalMessageNotFound": "Original message not found",

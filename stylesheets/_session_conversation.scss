@@ -19,27 +19,23 @@
 }
 
 .conversation-item__options-pane {
-  position: absolute;
-  height: 100%;
-  right: 0vw;
-
+  display: none;
   transition: transform 0.2s ease-out;
-  transform: translateX(100%);
-  will-change: transform;
   width: 25vw;
   z-index: 5;
 
-  background-color: var(--background-primary-color);
-  border-left: 1px solid var(--border-color);
-
   &.show {
-    transition: transform 0.3s ease-out;
-    transform: none;
+    background-color: var(--background-primary-color);
+    border-left: 1px solid var(--border-color);
+
+    display: flex;
     z-index: 3;
+    height: 100%;
   }
 }
 
 .conversation-header {
+  flex-shrink: 0;
   &--items-wrapper {
     display: flex;
     flex-grow: 1;
@@ -95,8 +91,8 @@
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  position: relative;
   outline: none;
+  flex-shrink: 100;
 
   .conversation-messages {
     display: flex;
@@ -109,24 +105,6 @@
     position: relative;
     background-color: var(--background-secondary-color);
     border-top: 1px solid var(--border-color);
-  }
-
-  .conversation-info-panel {
-    position: absolute;
-    justify-content: flex-start;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    z-index: 5; // to be sure to hide the borders of images in messages
-    background-color: inherit;
-    display: none;
-    padding: 20px;
-
-    &.show {
-      display: flex;
-      background: var(--background-primary-color);
-    }
   }
 }
 

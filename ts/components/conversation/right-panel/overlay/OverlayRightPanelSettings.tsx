@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import React from 'react';
 // tslint:disable-next-line: no-submodule-imports
-import useInterval from 'react-use/lib/useInterval';
 import { useDispatch, useSelector } from 'react-redux';
-import { Data } from '../../../../data/data';
 import {
   deleteAllMessagesByConvoIdWithConfirmation,
   showAddModeratorsByConvoId,
@@ -13,93 +10,14 @@ import {
   showUpdateGroupMembersByConvoId,
   showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
-import { Constants } from '../../../../session';
 import { getSelectedConversation } from '../../../../state/selectors/conversations';
-import { AttachmentTypeWithPath } from '../../../../types/Attachment';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../../../basic/SessionButton';
 import { SpacerLG } from '../../../basic/Text';
-import { MediaItemType } from '../../../lightbox/LightboxGallery';
-import { MediaGallery } from '../../media-gallery/MediaGallery';
-import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import styled from 'styled-components';
 import { SessionIconButton } from '../../../icon';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 import { PanelButtonGroup, PanelIconButton } from '../../../buttons';
-import { isRightOverlayShown } from '../../../../state/selectors/section';
-
-async function getMediaGalleryProps(
-  conversationId: string
-): Promise<{
-  documents: Array<MediaItemType>;
-  media: Array<MediaItemType>;
-}> {
-  // We fetch more documents than media as they don’t require to be loaded
-  // into memory right away. Revisit this once we have infinite scrolling:
-  const rawMedia = await Data.getMessagesWithVisualMediaAttachments(
-    conversationId,
-    Constants.CONVERSATION.DEFAULT_MEDIA_FETCH_COUNT
-  );
-  const rawDocuments = await Data.getMessagesWithFileAttachments(
-    conversationId,
-    Constants.CONVERSATION.DEFAULT_DOCUMENTS_FETCH_COUNT
-  );
-
-  const media = _.flatten(
-    rawMedia.map(attributes => {
-      const { attachments, source, id, timestamp, serverTimestamp, received_at } = attributes;
-
-      return (attachments || [])
-        .filter(
-          (attachment: AttachmentTypeWithPath) =>
-            attachment.thumbnail && !attachment.pending && !attachment.error
-        )
-        .map((attachment: AttachmentTypeWithPath, index: number) => {
-          const { thumbnail } = attachment;
-
-          const mediaItem: MediaItemType = {
-            objectURL: getAbsoluteAttachmentPath(attachment.path),
-            thumbnailObjectUrl: thumbnail ? getAbsoluteAttachmentPath(thumbnail.path) : undefined,
-            contentType: attachment.contentType || '',
-            index,
-            messageTimestamp: timestamp || serverTimestamp || received_at || 0,
-            messageSender: source,
-            messageId: id,
-            attachment,
-          };
-
-          return mediaItem;
-        });
-    })
-  );
-
-  // Unlike visual media, only one non-image attachment is supported
-  const documents = rawDocuments.map(attributes => {
-    // this is to not fail if the attachment is invalid (could be a Long Attachment type which is not supported)
-    if (!attributes.attachments?.length) {
-      // window?.log?.info(
-      //   'Got a message with an empty list of attachment. Skipping...'
-      // );
-      return null;
-    }
-    const attachment = attributes.attachments[0];
-    const { source, id, timestamp, serverTimestamp, received_at } = attributes;
-
-    return {
-      contentType: attachment.contentType,
-      index: 0,
-      attachment,
-      messageTimestamp: timestamp || serverTimestamp || received_at || 0,
-      messageSender: source,
-      messageId: id,
-    };
-  });
-
-  return {
-    media,
-    documents: _.compact(documents), // remove null
-  };
-}
 
 const HeaderItem = () => {
   const selectedConversation = useSelector(getSelectedConversation);
@@ -183,45 +101,8 @@ const StyledGroupSettingsItem = styled.div`
 // tslint:disable: cyclomatic-complexity
 // tslint:disable: max-func-body-length
 export const OverlayRightPanelSettings = () => {
-  const [documents, setDocuments] = useState<Array<MediaItemType>>([]);
-  const [media, setMedia] = useState<Array<MediaItemType>>([]);
-
-  const dispatch = useDispatch();
   const selectedConversation = useSelector(getSelectedConversation);
-  const isShowing = useSelector(isRightOverlayShown);
-
-  useEffect(() => {
-    let isRunning = true;
-
-    if (isShowing && selectedConversation) {
-      void getMediaGalleryProps(selectedConversation.id).then(results => {
-        if (isRunning) {
-          if (!_.isEqual(documents, results.documents)) {
-            setDocuments(results.documents);
-          }
-
-          if (!_.isEqual(media, results.media)) {
-            setMedia(results.media);
-          }
-        }
-      });
-    }
-
-    return () => {
-      isRunning = false;
-      return;
-    };
-  }, [isShowing, selectedConversation?.id]);
-
-  useInterval(async () => {
-    if (isShowing && selectedConversation) {
-      const results = await getMediaGalleryProps(selectedConversation.id);
-      if (results.documents.length !== documents.length || results.media.length !== media.length) {
-        setDocuments(results.documents);
-        setMedia(results.media);
-      }
-    }
-  }, 10000);
+  const dispatch = useDispatch();
 
   if (!selectedConversation) {
     return null;
@@ -241,7 +122,7 @@ export const OverlayRightPanelSettings = () => {
   } = selectedConversation;
   const showMemberCount = !!(subscriberCount && subscriberCount > 0);
   const commonNoShow = isKickedFromGroup || left || isBlocked || !activeAt;
-  const hasDisappearingMessages = !isPublic && !commonNoShow;
+  const hasDisappearingMessagesAvailable = !isPublic && !commonNoShow;
   const leaveGroupString = isPublic
     ? window.i18n('leaveGroup')
     : isKickedFromGroup
@@ -310,21 +191,8 @@ export const OverlayRightPanelSettings = () => {
         </>
       )}
 
-      {showUpdateGroupMembersButton && (
-        <StyledGroupSettingsItem
-          className="right-panel-item"
-          role="button"
-          onClick={async () => {
-            await showUpdateGroupMembersByConvoId(id);
-          }}
-        >
-          {window.i18n('groupMembers')}
-        </StyledGroupSettingsItem>
-      )}
-
-      {hasDisappearingMessages && (
-        /* TODO Move ButtonGroup around all settings items */
-        <PanelButtonGroup>
+      <PanelButtonGroup>
+        {hasDisappearingMessagesAvailable && (
           <PanelIconButton
             iconType={'timer50'}
             text={window.i18n('disappearingMessages')}
@@ -333,10 +201,27 @@ export const OverlayRightPanelSettings = () => {
               dispatch(setRightOverlayMode({ type: 'disappearing_messages', params: null }));
             }}
           />
-        </PanelButtonGroup>
-      )}
+        )}
+        <PanelIconButton
+          iconType={'file'}
+          text={window.i18n('allMedia')}
+          disableBg={true}
+          onClick={() => {
+            dispatch(setRightOverlayMode({ type: 'show_media', params: null }));
+          }}
+        />
+        {showUpdateGroupMembersButton && (
+          <PanelIconButton
+            iconType={'group'}
+            text={window.i18n('groupMembers')}
+            disableBg={true}
+            onClick={async () => {
+              await showUpdateGroupMembersByConvoId(id);
+            }}
+          />
+        )}
+      </PanelButtonGroup>
 
-      <MediaGallery documents={documents} media={media} />
       {isGroup && (
         // tslint:disable-next-line: use-simple-attributes
         <StyledLeaveButton>
