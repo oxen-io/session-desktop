@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { contextMenu } from 'react-contexify';
 import styled from 'styled-components';
 import { ConversationNotificationSettingType } from '../../models/conversationAttributes';
 import {
@@ -37,7 +36,6 @@ import {
   SessionButtonType,
 } from '../basic/SessionButton';
 import { SessionIconButton } from '../icon';
-import { ConversationHeaderMenu } from '../menu/ConversationHeaderMenu';
 import { Flex } from '../basic/Flex';
 // import { ExpirationTimerOptions } from '../../util/expiringMessages';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../state/ducks/section';
@@ -134,29 +132,6 @@ const SelectionOverlay = () => {
   );
 };
 
-const TripleDotContainer = styled.div`
-  user-select: none;
-  flex-grow: 0;
-  flex-shrink: 0;
-`;
-
-const TripleDotsMenu = (props: { triggerId: string }) => {
-  return (
-    <TripleDotContainer
-      role="button"
-      onClick={(e: any) => {
-        contextMenu.show({
-          id: props.triggerId,
-          event: e,
-        });
-      }}
-      data-testid="three-dots-conversation-options"
-    >
-      <SessionIconButton iconType="ellipses" iconSize="medium" />
-    </TripleDotContainer>
-  );
-};
-
 const GearButton = () => {
   const dispatch = useDispatch();
   const isOverlayShown = useSelector(isRightOverlayShown);
@@ -169,7 +144,14 @@ const GearButton = () => {
     }
   };
 
-  return <SessionIconButton iconType="gear" iconSize="medium" onClick={onClick} />;
+  return (
+    <SessionIconButton
+      iconType="gear"
+      iconSize="medium"
+      onClick={onClick}
+      data-testid="gear-conversation-options"
+    />
+  );
 };
 
 const CallButton = () => {
@@ -314,8 +296,6 @@ export const ConversationHeaderWithDetails = () => {
   //   ? ExpirationTimerOptions.getName(expireTimerSetting || 0)
   //   : undefined;
 
-  const triggerId = 'conversation-header';
-
   return (
     <div className="module-conversation-header">
       <div className="conversation-header--items-wrapper">
@@ -339,9 +319,7 @@ export const ConversationHeaderWithDetails = () => {
             <CallButton />
           </Flex>
         )}
-        <TripleDotsMenu triggerId={triggerId} />
         <GearButton />
-        <ConversationHeaderMenu triggerId={triggerId} />
       </div>
 
       {isSelectionMode && <SelectionOverlay />}

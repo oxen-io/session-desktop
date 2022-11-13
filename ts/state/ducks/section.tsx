@@ -23,12 +23,14 @@ type RightPanelMessageDetailsState = {
 };
 type RightPanelAllMediaState = { type: 'show_media'; params: null };
 type RightPanelDisappearingState = { type: 'disappearing_messages'; params: null };
+type RightPanelNotificationsState = { type: 'notifications'; params: null };
 
 export type RightOverlayMode =
   | RightPanelDefaultState
   | RightPanelMessageDetailsState
   | RightPanelAllMediaState
-  | RightPanelDisappearingState;
+  | RightPanelDisappearingState
+  | RightPanelNotificationsState;
 
 export type SectionStateType = {
   focusedSection: SectionType;

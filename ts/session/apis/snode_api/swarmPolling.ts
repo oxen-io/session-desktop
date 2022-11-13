@@ -142,7 +142,6 @@ export class SwarmPolling {
     }
     // we always poll as often as possible for our pubkey
     const ourPubkey = UserUtils.getOurPubKeyFromCache();
-    // const directPromises = Promise.resolve();
     const directPromises = Promise.all([this.pollOnceForKey(ourPubkey, false, [0])]).then(
       () => undefined
     );
@@ -399,7 +398,7 @@ export class SwarmPolling {
     const pkStr = pubkey.key;
     const cached = await this.getLastHash(edkey, pubkey.key, namespace);
 
-    console.warn('updateLastHash ', { edkey, pkStr, cached, namespace });
+    // console.warn('updateLastHash ', { edkey, pkStr, cached, namespace });
     if (!cached || cached !== hash) {
       await Data.updateLastHash({
         convoId: pkStr,

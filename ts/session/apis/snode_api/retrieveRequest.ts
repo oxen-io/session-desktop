@@ -67,7 +67,7 @@ async function buildRetrieveRequest(
         pubkey,
         last_hash: lastHashes.at(index) || '',
         namespace,
-        timestamp: GetNetworkTime.getNowWithNetworkOffset(),
+        // timestamp: GetNetworkTime.getNowWithNetworkOffset(),
       };
 
       if (namespace === -10) {
@@ -130,7 +130,7 @@ async function retrieveNextMessages(
   // let exceptions bubble up
   // no retry for this one as this a call we do every few seconds while polling for messages
 
-  console.warn('retrieveRequestsParams', retrieveRequestsParams);
+  // console.warn('retrieveRequestsParams', retrieveRequestsParams);
   const results = await doSnodeBatchRequest(retrieveRequestsParams, targetNode, 4000);
 
   if (!results || !results.length) {
@@ -160,7 +160,7 @@ async function retrieveNextMessages(
     );
   }
 
-  console.warn('what should we do if we dont get a 200 on any of those fetches?');
+  // console.warn('what should we do if we dont get a 200 on any of those fetches?');
 
   try {
     // we rely on the code of the

@@ -22,6 +22,7 @@
   display: none;
   transition: transform 0.2s ease-out;
   width: 25vw;
+  min-width: 300px;
   z-index: 5;
 
   &.show {
@@ -36,6 +37,8 @@
 
 .conversation-header {
   flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+
   &--items-wrapper {
     display: flex;
     flex-grow: 1;
@@ -104,7 +107,6 @@
     outline: none;
     position: relative;
     background-color: var(--background-secondary-color);
-    border-top: 1px solid var(--border-color);
   }
 }
 

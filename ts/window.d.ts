@@ -31,8 +31,8 @@ declare global {
     getSettingValue: (id: string, comparisonValue?: any) => any;
     setSettingValue: (id: string, value: any) => Promise<void>;
 
-    i18n: LocalizerType;
     log: any;
+    i18n: LocalizerType;
     sessionFeatureFlags: {
       useOnionRequests: boolean;
       useTestNet: boolean;

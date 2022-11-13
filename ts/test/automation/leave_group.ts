@@ -3,7 +3,7 @@ import { clickOnMatchingText, clickOnTestIdWithText, waitForTestIdWithText } fro
 
 export const leaveGroup = async (window: Page) => {
   // go to three dots menu
-  await clickOnTestIdWithText(window, 'three-dots-conversation-options');
+  await clickOnTestIdWithText(window, 'gear-conversation-options');
   // Select Leave Group
   await clickOnMatchingText(window, 'Leave Group');
   // Confirm leave group

@@ -53,6 +53,7 @@ const SpacerStyled = styled.div<SpacerProps>`
       : props.size === 'sm'
       ? 'var(--margins-sm)'
       : 'var(--margins-xs)'};
+  flex-shrink: 0;
 `;
 
 const Spacer = (props: SpacerProps) => {

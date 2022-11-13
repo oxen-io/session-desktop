@@ -13,13 +13,8 @@ import { Flex } from '../../../basic/Flex';
 import { SpacerLG } from '../../../basic/Text';
 import { MediaItemType } from '../../../lightbox/LightboxGallery';
 import { MediaGallery } from '../../media-gallery/MediaGallery';
+import { StyledScrollContainer } from '../RightPanel';
 import { RightOverlayHeader } from './RightOverlayHeader';
-
-const StyledScrollContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: hidden auto;
-`;
 
 const StyledContainer = styled(Flex)`
   width: 100%;

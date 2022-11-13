@@ -1,4 +1,4 @@
-import { isArray } from 'lodash';
+import { clone, isArray } from 'lodash';
 import { Snode } from '../../../data/data';
 import { SnodeResponse } from './onions';
 import { snodeRpc } from './sessionRpc';
@@ -20,6 +20,7 @@ export async function doSnodeBatchRequest(
   timeout: number,
   associatedWith?: string
 ): Promise<NotEmptyArrayOfBatchResults> {
+  console.warn('subRequests for /batch:', clone(subRequests));
   const result = await snodeRpc({
     method: 'batch',
     params: { requests: subRequests },

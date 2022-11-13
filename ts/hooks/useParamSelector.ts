@@ -91,10 +91,6 @@ export function useHasNickname(convoId?: string) {
   return Boolean(convoProps && convoProps.hasNickname);
 }
 
-export function useNotificationSetting(convoId?: string) {
-  const convoProps = useConversationPropsById(convoId);
-  return convoProps?.currentNotificationSetting || 'all';
-}
 export function useIsPublic(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.isPublic);

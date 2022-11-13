@@ -32,7 +32,7 @@ test('Block User', async () => {
   //Click on three dots menu
   await clickOnTestIdWithText(windowA, 'message-section');
 
-  await clickOnTestIdWithText(windowA, 'three-dots-conversation-options');
+  await clickOnTestIdWithText(windowA, 'gear-conversation-options');
   // Select block
   await clickOnMatchingText(windowA, 'Block');
   // Verify toast notification 'blocked'

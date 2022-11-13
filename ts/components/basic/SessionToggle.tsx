@@ -22,7 +22,7 @@ const StyledKnob = styled.div<{ active: boolean }>`
 `;
 
 const StyledSessionToggle = styled.div<{ active: boolean }>`
-  width: 51px;
+  width: var(--toggle-width);
   height: 25px;
   background-color: (--toggle-switch-off-background-color);
   border: 1px solid var(--toggle-switch-off-border-color);

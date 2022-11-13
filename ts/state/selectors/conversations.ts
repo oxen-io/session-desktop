@@ -31,7 +31,11 @@ import { GenericReadableMessageSelectorProps } from '../../components/conversati
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { UserUtils } from '../../session/utils';
 import { Storage } from '../../util/storage';
-import { ConversationTypeEnum, isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import {
+  ConversationNotificationSettingType,
+  ConversationTypeEnum,
+  isOpenOrClosedGroup,
+} from '../../models/conversationAttributes';
 
 import { MessageReactsSelectorProps } from '../../components/conversation/message/message-content/MessageReactions';
 import { filter, isEmpty, pick, sortBy } from 'lodash';
@@ -562,6 +566,16 @@ export const getConversationHeaderTitleProps = createSelector(getSelectedConvers
     currentNotificationSetting: state.currentNotificationSetting,
   };
 });
+
+export const getNotificationOfSelectedConversation = createSelector(
+  getSelectedConversation,
+  state => {
+    if (!state) {
+      return undefined;
+    }
+    return state.currentNotificationSetting as ConversationNotificationSettingType;
+  }
+);
 
 /**
  * Returns the formatted text for notification setting.

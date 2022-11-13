@@ -355,7 +355,11 @@
   "beginYourSession": "Begin your Session.",
   "welcomeToYourSession": "Welcome to your Session",
   "searchFor...": "Search conversations and contacts",
+  "searchConversation": "Search Conversation",
   "searchForContactsOnly": "Search for contacts",
+  "autoDownloadMedia": "Auto-download Media",
+
+  "autoDownloadMediaDescription": "Automatically download media and files from this chat.",
   "enterSessionID": "Enter Session ID",
   "enterSessionIDOfRecipient": "Enter your contact's Session ID or ONS",
   "message": "Message",

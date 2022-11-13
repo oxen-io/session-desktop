@@ -15,7 +15,6 @@ import {
   useIsPrivate,
   useIsPublic,
   useIsRequest,
-  useNotificationSetting,
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
 import {
@@ -27,7 +26,6 @@ import {
   deleteAllMessagesByConvoIdWithConfirmation,
   markAllReadByConvoId,
   setDisappearingMessagesByConvoId,
-  setNotificationForConvoId,
   showAddModeratorsByConvoId,
   showBanUserByConvoId,
   showInviteContactByConvoId,
@@ -37,10 +35,7 @@ import {
   showUpdateGroupNameByConvoId,
   unblockConvoById,
 } from '../../interactions/conversationInteractions';
-import {
-  ConversationNotificationSetting,
-  ConversationNotificationSettingType,
-} from '../../models/conversationAttributes';
+
 import { getConversationController } from '../../session/conversations';
 import {
   changeNickNameModal,
@@ -51,7 +46,6 @@ import { SectionType } from '../../state/ducks/section';
 import { hideMessageRequestBanner } from '../../state/ducks/userConfig';
 import { getFocusedSection } from '../../state/selectors/section';
 import { getTimerOptions } from '../../state/selectors/timerOptions';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { ContextConversationId } from '../leftpane/conversation-list-item/ConversationListItem';
 
@@ -64,15 +58,6 @@ function showTimerOptions(
   isActive: boolean
 ): boolean {
   return !isPublic && !left && !isKickedFromGroup && !isBlocked && !isRequest && isActive;
-}
-
-function showNotificationConvo(
-  isKickedFromGroup: boolean,
-  left: boolean,
-  isBlocked: boolean,
-  isRequest: boolean
-): boolean {
-  return !left && !isKickedFromGroup && !isBlocked && !isRequest;
 }
 
 function showBlock(isMe: boolean, isPrivate: boolean, isRequest: boolean): boolean {
@@ -450,61 +435,6 @@ export const DisappearingMessageMenuItem = (): JSX.Element | null => {
             {item.name}
           </Item>
         ))}
-      </Submenu>
-    );
-  }
-  return null;
-};
-
-export const NotificationForConvoMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const left = useIsLeft(convoId);
-  const isBlocked = useIsBlocked(convoId);
-  const isPrivate = useIsPrivate(convoId);
-  const isRequest = useIsRequest(convoId);
-  const currentNotificationSetting = useNotificationSetting(convoId);
-
-  if (
-    showNotificationConvo(Boolean(isKickedFromGroup), Boolean(left), Boolean(isBlocked), isRequest)
-  ) {
-    // const isRtlMode = isRtlBody();'
-
-    // exclude mentions_only settings for private chats as this does not make much sense
-    const notificationForConvoOptions = ConversationNotificationSetting.filter(n =>
-      isPrivate ? n !== 'mentions_only' : true
-    ).map((n: ConversationNotificationSettingType) => {
-      // do this separately so typescript's compiler likes it
-      const keyToUse: LocalizerKeys =
-        n === 'all' || !n
-          ? 'notificationForConvo_all'
-          : n === 'disabled'
-          ? 'notificationForConvo_disabled'
-          : 'notificationForConvo_mentions_only';
-      return { value: n, name: window.i18n(keyToUse) };
-    });
-
-    return (
-      // Remove the && false to make context menu work with RTL support
-      <Submenu
-        label={window.i18n('notificationForConvo') as any}
-        // rtl={isRtlMode && false}
-      >
-        {(notificationForConvoOptions || []).map(item => {
-          const disabled = item.value === currentNotificationSetting;
-
-          return (
-            <Item
-              key={item.value}
-              onClick={async () => {
-                await setNotificationForConvoId(convoId, item.value);
-              }}
-              disabled={disabled}
-            >
-              {item.name}
-            </Item>
-          );
-        })}
       </Submenu>
     );
   }

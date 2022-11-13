@@ -1,18 +1,18 @@
 import React, { ReactNode } from 'react';
 import styled, { CSSProperties } from 'styled-components';
+import { Flex } from '../basic/Flex';
 
 // NOTE Used for descendant components
 export const StyledContent = styled.div`
   display: flex;
   align-items: center;
+  flex-grow: 1;
   width: 100%;
 `;
 
 export const StyledText = styled.span`
   font-size: var(--font-size-md);
   font-weight: 500;
-  margin-inline-start: var(--margins-lg);
-  margin-inline-end: var(--margins-lg);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -30,12 +30,16 @@ export const PanelLabel = styled.p`
 `;
 
 const StyledRoundedPanelButtonGroup = styled.div`
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: auto;
   background: var(--right-panel-item-background-color);
   border-radius: 16px;
   padding: 4px var(--margins-lg);
   margin: 0 var(--margins-lg);
   width: -webkit-fill-available;
+  flex-shrink: 0;
 `;
 
 const PanelButtonContainer = styled.div`
@@ -68,8 +72,8 @@ const StyledPanelButton = styled.button<{
   flex-shrink: 0;
   flex-grow: 1;
   font-family: var(--font-default);
-  padding: 0px var(--margins-sm);
-  height: 50px;
+  padding: 10px var(--margins-sm);
+  min-height: 30px;
   width: 100%;
   transition: var(--default-duration);
   background-color: ${props =>
@@ -103,5 +107,27 @@ export const PanelButton = (props: PanelButtonProps) => {
     >
       {children}
     </StyledPanelButton>
+  );
+};
+
+const StyledSubtitle = styled.p`
+  font-size: var(--font-size-xs);
+  margin: 0;
+  text-align: initial;
+`;
+
+export const PanelButtonText = (props: { text: string; subtitle?: string }) => {
+  return (
+    <Flex
+      container={true}
+      width={'100%'}
+      flexDirection={'column'}
+      alignItems={'flex-start'}
+      margin="0 var(--margins-lg) 0 var(--margins-lg)"
+      minWidth="0"
+    >
+      <StyledText>{props.text}</StyledText>
+      {!!props.subtitle && <StyledSubtitle>{props.subtitle}</StyledSubtitle>}
+    </Flex>
   );
 };

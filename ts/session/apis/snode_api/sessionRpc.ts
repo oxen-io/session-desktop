@@ -129,7 +129,7 @@ export async function snodeRpc(
     params: clone(params),
   };
 
-  console.warn('snodeRPC', body);
+  // console.warn('snodeRPC', body);
 
   const fetchOptions: LokiFetchOptions = {
     method: 'POST',

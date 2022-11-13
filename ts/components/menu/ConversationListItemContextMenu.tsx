@@ -15,7 +15,6 @@ import {
   InviteContactMenuItem,
   LeaveGroupMenuItem,
   MarkAllReadMenuItem,
-  NotificationForConvoMenuItem,
   PinConversationMenuItem,
   ShowUserDetailsMenuItem,
   UnbanMenuItem,
@@ -34,7 +33,6 @@ const ConversationListItemContextMenu = (props: PropsContextConversationItem) =>
       <Menu id={triggerId} animation={animation.fade}>
         <AcceptMenuItem />
         <DeclineMenuItem />
-        <NotificationForConvoMenuItem />
         <PinConversationMenuItem />
         <BlockMenuItem />
         <CopyMenuItem />

@@ -255,7 +255,7 @@ export async function updateOrCreateClosedGroup(details: GroupInfo | GroupInfoV3
     lastJoinedTimestamp: details.activeAt && weWereJustAdded ? Date.now() : details.activeAt || 0,
     identityPrivateKey: isV3(details) ? details.identityPrivateKey : undefined,
   };
-  console.warn('updates', updates);
+  // console.warn('updates', updates);
 
   conversation.set(updates);
 

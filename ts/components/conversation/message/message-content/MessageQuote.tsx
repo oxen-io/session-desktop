@@ -24,7 +24,7 @@ export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'd
 export const MessageQuote = (props: Props) => {
   const selected = useSelector(state => getMessageQuoteProps(state as any, props.messageId));
   const multiSelectMode = useSelector(isMessageSelectionMode);
-  console.warn('FIXME');
+  // console.warn('FIXME');
 
   const quote = selected ? selected.quote : undefined;
   const direction = selected ? selected.direction : undefined;

@@ -1,4 +1,3 @@
-
 export type SwarmForSubRequest = { method: 'get_swarm'; params: { pubkey: string } };
 
 type RetrieveMaxCountSize = { max_count?: number; max_size?: number };
@@ -6,7 +5,7 @@ type RetrieveAlwaysNeeded = {
   pubkey: string;
   namespace: number;
   last_hash: string;
-  timestamp: number;
+  timestamp?: number;
 };
 
 export type RetrievePubkeySubRequestType = {
@@ -131,4 +130,3 @@ export type NotEmptyArrayOfBatchResults = NonEmptyArray<{
   code: number;
   body: Record<string, any>;
 }>;
-

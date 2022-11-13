@@ -10,13 +10,8 @@ import { SpacerLG } from '../../../basic/Text';
 import { PanelButtonGroup } from '../../../buttons';
 import { PanelLabel } from '../../../buttons/PanelButton';
 import { PanelRadioButton } from '../../../buttons/PanelRadioButton';
+import { StyledScrollContainer } from '../RightPanel';
 import { RightOverlayHeader } from './RightOverlayHeader';
-
-const StyledScrollContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: hidden auto;
-`;
 
 const StyledContainer = styled(Flex)`
   width: 100%;
