@@ -369,7 +369,7 @@ export async function fetchLinkPreviewMetadata(
   try {
     response = await fetchWithRedirects(fetchFn, href, {
       headers: {
-        Accept: 'text/html,application/xhtml+xml',
+        // do not add "Accept" header here as it cause issues for some domains (9gag for instance)
         'User-Agent': 'WhatsApp',
       },
       signal: abortSignal,
