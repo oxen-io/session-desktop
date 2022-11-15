@@ -45,7 +45,7 @@ const StyledMessageContentContainer = styled.div<{ direction: 'left' | 'right' }
 `;
 
 const StyledMessageWithAuthor = styled.div<{ isIncoming: boolean }>`
-  max-width: ${props => (props.isIncoming ? '100%' : 'calc(100% - 17px)')};
+  max-width: '95%';
 `;
 
 export const MessageContentWithStatuses = (props: Props) => {
@@ -58,7 +58,7 @@ export const MessageContentWithStatuses = (props: Props) => {
 
   const onClickOnMessageOuterContainer = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      if (multiSelectMode && messageId) {
+      if (multiSelectMode && messageId && !props?.isDetailView) {
         event.preventDefault();
         event.stopPropagation();
         dispatch(toggleSelectedMessageId(messageId));
@@ -71,7 +71,7 @@ export const MessageContentWithStatuses = (props: Props) => {
     const currentSelection = window.getSelection();
     const currentSelectionString = currentSelection?.toString() || undefined;
 
-    if ((e.target as any).localName !== 'em-emoji-picker') {
+    if ((e.target as any).localName !== 'em-emoji-picker' && !props?.isDetailView) {
       if (
         !currentSelectionString ||
         currentSelectionString.length === 0 ||
@@ -118,22 +118,26 @@ export const MessageContentWithStatuses = (props: Props) => {
         onDoubleClickCapture={onDoubleClickReplyToMessage}
         data-testid={dataTestId}
       >
-        <MessageStatus
-          dataTestId="msg-status-incoming"
-          messageId={messageId}
-          isCorrectSide={isIncoming}
-        />
+        {!isDetailView && (
+          <MessageStatus
+            dataTestId="msg-status-incoming"
+            messageId={messageId}
+            isCorrectSide={isIncoming}
+          />
+        )}
         <StyledMessageWithAuthor isIncoming={isIncoming}>
-          <MessageAuthorText messageId={messageId} />
+          {!isDetailView && <MessageAuthorText messageId={messageId} />}
 
           <MessageContent messageId={messageId} isDetailView={isDetailView} />
         </StyledMessageWithAuthor>
-        <MessageStatus
-          dataTestId="msg-status-outgoing"
-          messageId={messageId}
-          isCorrectSide={!isIncoming}
-        />
-        {!isDeleted && (
+        {!isDetailView && (
+          <MessageStatus
+            dataTestId="msg-status-outgoing"
+            messageId={messageId}
+            isCorrectSide={!isIncoming}
+          />
+        )}
+        {!isDeleted && !isDetailView && (
           <MessageContextMenu
             messageId={messageId}
             contextMenuId={ctxMenuID}
@@ -141,7 +145,7 @@ export const MessageContentWithStatuses = (props: Props) => {
           />
         )}
       </div>
-      {enableReactions && (
+      {enableReactions && !isDetailView && (
         <MessageReactions
           messageId={messageId}
           onClick={handleMessageReaction}

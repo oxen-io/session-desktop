@@ -1,4 +1,4 @@
-import { clone, isArray } from 'lodash';
+import { isArray } from 'lodash';
 import { Snode } from '../../../data/data';
 import { SnodeResponse } from './onions';
 import { snodeRpc } from './sessionRpc';
@@ -20,7 +20,6 @@ export async function doSnodeBatchRequest(
   timeout: number,
   associatedWith?: string
 ): Promise<NotEmptyArrayOfBatchResults> {
-  console.warn('subRequests for /batch:', clone(subRequests));
   const result = await snodeRpc({
     method: 'batch',
     params: { requests: subRequests },
@@ -46,7 +45,6 @@ export async function doSnodeBatchRequest(
  */
 function decodeBatchRequest(snodeResponse: SnodeResponse): NotEmptyArrayOfBatchResults {
   try {
-    console.warn('decodeBatch: ', snodeResponse);
     if (snodeResponse.status !== 200) {
       throw new Error(`decodeBatchRequest invalid status code: ${snodeResponse.status}`);
     }

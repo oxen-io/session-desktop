@@ -19,12 +19,14 @@ export type MessageLinkPreviewSelectorProps = Pick<
 type Props = {
   handleImageError: () => void;
   messageId: string;
+  isDetailView?: boolean;
 };
 
 const linkPreviewsImageSize = 100;
 
 export const MessageLinkPreview = (props: Props) => {
-  const selected = useSelector(state => getMessageLinkPreviewProps(state as any, props.messageId));
+  const { isDetailView, messageId } = props;
+  const selected = useSelector(state => getMessageLinkPreviewProps(state as any, messageId));
   const dispatch = useDispatch();
   const isMessageSelectionMode = useSelector(getIsMessageSelectionMode);
 
@@ -50,7 +52,7 @@ export const MessageLinkPreview = (props: Props) => {
   const previewHasImage = first.image && isImageAttachment(first.image);
 
   function openLinkFromPreview() {
-    if (isMessageSelectionMode) {
+    if (isMessageSelectionMode || isDetailView) {
       return;
     }
     if (previews?.length && previews[0].url) {

@@ -12,6 +12,7 @@ import { MessageBody } from './MessageBody';
 
 type Props = {
   messageId: string;
+  isDetailView?: boolean;
 };
 
 export type MessageTextSelectorProps = Pick<
@@ -43,7 +44,7 @@ export const MessageText = (props: Props) => {
       {isDeleted && <SessionIcon iconType="delete" iconSize="small" />}
       <MessageBody
         text={contents || ''}
-        disableLinks={multiSelectMode}
+        disableLinks={multiSelectMode || props.isDetailView || false}
         disableJumbomoji={false}
         isGroup={isOpenOrClosedGroup(conversationType)}
       />

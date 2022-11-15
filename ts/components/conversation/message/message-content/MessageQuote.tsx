@@ -17,14 +17,15 @@ import { MessageModel } from '../../../../models/message';
 
 type Props = {
   messageId: string;
+  isDetailView?: boolean;
 };
 
 export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'direction'>;
 
 export const MessageQuote = (props: Props) => {
-  const selected = useSelector(state => getMessageQuoteProps(state as any, props.messageId));
+  const { isDetailView, messageId } = props;
+  const selected = useSelector(state => getMessageQuoteProps(state as any, messageId));
   const multiSelectMode = useSelector(isMessageSelectionMode);
-  // console.warn('FIXME');
 
   const quote = selected ? selected.quote : undefined;
   const direction = selected ? selected.direction : undefined;
@@ -34,7 +35,7 @@ export const MessageQuote = (props: Props) => {
       event.preventDefault();
       event.stopPropagation();
 
-      if (!quote) {
+      if (!quote || isDetailView) {
         window.log.warn('onQuoteClick: quote not valid');
         return;
       }
@@ -68,7 +69,7 @@ export const MessageQuote = (props: Props) => {
         shouldHighlightMessage: true,
       });
     },
-    [quote, multiSelectMode, props.messageId]
+    [quote, multiSelectMode, props.messageId, isDetailView]
   );
   if (!selected) {
     return null;

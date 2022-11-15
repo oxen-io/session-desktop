@@ -26,7 +26,7 @@ import {
   updateRemoveModeratorsModal,
 } from '../state/ducks/modalDialog';
 import { Data, hasLinkPreviewPopupBeenDisplayed, lastAvatarUploadTimestamp } from '../data/data';
-import { quoteMessage, resetConversationExternal } from '../state/ducks/conversations';
+import { conversationReset, quoteMessage, resetConversationExternal } from '../state/ducks/conversations';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { IMAGE_JPEG } from '../types/MIME';
 import { fromHexToArray, toHex } from '../session/utils/String';
@@ -307,6 +307,9 @@ export function showChangeNickNameByConvoId(conversationId: string) {
 }
 
 export async function deleteAllMessagesByConvoIdNoConfirmation(conversationId: string) {
+  if (!conversationId) {
+    throw new Error('deleteAllMessagesByConvoIdNoConfirmation needs a convoId');
+  }
   const conversation = getConversationController().get(conversationId);
   await Data.removeAllMessagesInConversation(conversationId);
 
@@ -319,6 +322,8 @@ export async function deleteAllMessagesByConvoIdNoConfirmation(conversationId: s
   });
 
   await conversation.commit();
+
+  window.inboxStore?.dispatch(conversationReset(conversationId))
 }
 
 export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: string) {
@@ -333,7 +338,7 @@ export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: strin
 
   window?.inboxStore?.dispatch(
     updateConfirmModal({
-      title: window.i18n('deleteMessages'),
+      title: window.i18n('clearMessages'),
       message: window.i18n('deleteConversationConfirmation'),
       onClickOk,
       okTheme: SessionButtonColor.Danger,

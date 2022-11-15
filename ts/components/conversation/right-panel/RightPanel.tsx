@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { getRightOverlayMode } from '../../../state/selectors/section';
 import { OverlayAllMedia } from './overlay/OverlayAllMedia';
 import { OverlayDisappearingMessages } from './overlay/OverlayDisappearingMessages';
-import { OverlayMessageInfo } from './overlay/OverlayMessageInfo';
+import { OverlayMessageInfo } from './overlay/message-info/OverlayMessageInfo';
 import { OverlayNotification } from './overlay/OverlayNotification';
 import { OverlayRightPanelSettings } from './overlay/OverlayRightPanelSettings';
 

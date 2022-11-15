@@ -1004,6 +1004,34 @@ export const getMessageTextProps = createSelector(getMessagePropsByMessageId, (p
   return msgProps;
 });
 
+export const getMessageDetailsProps = createSelector(
+  getMessagePropsByMessageId,
+  (msgProps: MessageModelPropsWithConvoProps | undefined) => {
+    if (!msgProps) {
+      return undefined;
+    }
+    const msgDetailsProps = pick(msgProps.propsForMessage, [
+      'sender',
+      'text',
+      'receivedAt',
+      'timestamp',
+
+      'direction',
+      'status',
+      'isDeleted',
+      'isDeletable',
+      'isDeletableForEveryone',
+      'receivedAt',
+
+      'conversationType',
+      'serverTimestamp',
+      'serverId',
+      'messageHash',
+    ]);
+    return msgDetailsProps;
+  }
+);
+
 export const getMessageContextMenuProps = createSelector(getMessagePropsByMessageId, (props):
   | MessageContextMenuSelectorProps
   | undefined => {

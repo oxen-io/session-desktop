@@ -23,30 +23,21 @@ import {
   clearNickNameByConvoId,
   copyPublicKeyByConvoId,
   declineConversationWithConfirm,
-  deleteAllMessagesByConvoIdWithConfirmation,
   markAllReadByConvoId,
   setDisappearingMessagesByConvoId,
   showAddModeratorsByConvoId,
-  showBanUserByConvoId,
   showInviteContactByConvoId,
-  showLeaveGroupByConvoId,
   showRemoveModeratorsByConvoId,
-  showUnbanUserByConvoId,
   showUpdateGroupNameByConvoId,
   unblockConvoById,
 } from '../../interactions/conversationInteractions';
 
 import { getConversationController } from '../../session/conversations';
-import {
-  changeNickNameModal,
-  updateConfirmModal,
-  updateUserDetailsModal,
-} from '../../state/ducks/modalDialog';
+import { changeNickNameModal, updateUserDetailsModal } from '../../state/ducks/modalDialog';
 import { SectionType } from '../../state/ducks/section';
 import { hideMessageRequestBanner } from '../../state/ducks/userConfig';
 import { getFocusedSection } from '../../state/selectors/section';
 import { getTimerOptions } from '../../state/selectors/timerOptions';
-import { SessionButtonColor } from '../basic/SessionButton';
 import { ContextConversationId } from '../leftpane/conversation-list-item/ConversationListItem';
 
 function showTimerOptions(
@@ -82,22 +73,40 @@ function showCopyId(isPublic: boolean, isPrivate: boolean, isBlinded: boolean): 
   return (isPrivate && !isBlinded) || isPublic;
 }
 
-function showDeleteContact(
-  isGroup: boolean,
-  isPublic: boolean,
-  isGroupLeft: boolean,
-  isKickedFromGroup: boolean,
-  isRequest: boolean
-): boolean {
-  // you need to have left a closed group first to be able to delete it completely.
-  return (!isGroup && !isRequest) || (isGroup && (isGroupLeft || isKickedFromGroup || isPublic));
+export function showDeleteContactOnly({
+  isPrivate,
+  isRequest,
+}: {
+  isPrivate: boolean;
+  isRequest: boolean;
+}): boolean {
+  // we want to show that item only if this is a private chat and not a request
+
+  return isPrivate && !isRequest;
 }
 
-const showUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
-  return !isKickedFromGroup && weAreAdmin && isPublic;
-};
+/**
+ * Before removing a closed group we must leave it. That's why we have two buttons for two different actions.
+ *
+ * You can leave a closed group without removing the corresponding conversation.
 
-const showBanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
+ */
+export function showDeleteLeftClosedGroup({
+  isClosedGroup,
+  left,
+  isKickedFromGroup,
+}: {
+  isClosedGroup: boolean;
+  left: boolean;
+  isKickedFromGroup: boolean;
+}): boolean {
+  // we want to show that item only if this is a private chat and not a request
+
+  return isClosedGroup && (left || isKickedFromGroup);
+}
+
+
+export const showBanUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
   return !isKickedFromGroup && weAreAdmin && isPublic;
 };
 
@@ -125,13 +134,37 @@ function showUpdateGroupName(
   return !isKickedFromGroup && !left && weAreAdmin;
 }
 
-function showLeaveGroup(
-  isKickedFromGroup: boolean,
-  left: boolean,
-  isGroup: boolean,
-  isPublic: boolean
-): boolean {
+/**
+ * Returns true for a closed group we are not kicked out or left.
+ * For a public group, we use the `showOpenGroup`
+ */
+export function showLeaveGroup({
+  isGroup,
+  isKickedFromGroup,
+  isPublic,
+  left,
+}: {
+  isKickedFromGroup: boolean;
+  left: boolean;
+  isGroup: boolean;
+  isPublic: boolean;
+}): boolean {
   return !isKickedFromGroup && !left && isGroup && !isPublic;
+}
+
+/**
+ * Returns true for an open group we have not left.
+ */
+export function showLeaveOpenGroup({
+  isKickedFromGroup,
+  isPublic,
+  left,
+}: {
+  isKickedFromGroup: boolean;
+  left: boolean;
+  isPublic: boolean;
+}): boolean {
+  return !isKickedFromGroup && !left && isPublic;
 }
 
 function showInviteContact(isPublic: boolean): boolean {
@@ -174,72 +207,6 @@ export const PinConversationMenuItem = (): JSX.Element | null => {
     const menuText = isPinned ? window.i18n('unpinConversation') : window.i18n('pinConversation');
     return <Item onClick={togglePinConversation}>{menuText}</Item>;
   }
-  return null;
-};
-
-export const DeleteContactMenuItem = () => {
-  const dispatch = useDispatch();
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isLeft = useIsLeft(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const isPrivate = useIsPrivate(convoId);
-  const isRequest = useIsRequest(convoId);
-
-  if (showDeleteContact(!isPrivate, isPublic, isLeft, isKickedFromGroup, isRequest)) {
-    let menuItemText: string;
-    if (isPublic) {
-      menuItemText = window.i18n('leaveGroup');
-    } else {
-      menuItemText = isPrivate
-        ? window.i18n('editMenuDeleteContact')
-        : window.i18n('editMenuDeleteGroup');
-    }
-
-    const onClickClose = () => {
-      dispatch(updateConfirmModal(null));
-    };
-
-    const showConfirmationModal = () => {
-      dispatch(
-        updateConfirmModal({
-          title: menuItemText,
-          message: isPrivate
-            ? window.i18n('deleteContactConfirmation')
-            : window.i18n('leaveGroupConfirmation'),
-          onClickClose,
-          okTheme: SessionButtonColor.Danger,
-          onClickOk: async () => {
-            await getConversationController().deleteContact(convoId);
-          },
-        })
-      );
-    };
-
-    return <Item onClick={showConfirmationModal}>{menuItemText}</Item>;
-  }
-  return null;
-};
-
-export const LeaveGroupMenuItem = () => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isLeft = useIsLeft(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const isPrivate = useIsPrivate(convoId);
-
-  if (showLeaveGroup(isKickedFromGroup, isLeft, !isPrivate, isPublic)) {
-    return (
-      <Item
-        onClick={() => {
-          showLeaveGroupByConvoId(convoId);
-        }}
-      >
-        {window.i18n('leaveGroup')}
-      </Item>
-    );
-  }
-
   return null;
 };
 
@@ -326,46 +293,6 @@ export const AddModeratorsMenuItem = (): JSX.Element | null => {
         }}
       >
         {window.i18n('addModerators')}
-      </Item>
-    );
-  }
-  return null;
-};
-
-export const UnbanMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const weAreAdmin = useWeAreAdmin(convoId);
-
-  if (showUnbanUser(weAreAdmin, isPublic, isKickedFromGroup)) {
-    return (
-      <Item
-        onClick={() => {
-          showUnbanUserByConvoId(convoId);
-        }}
-      >
-        {window.i18n('unbanUser')}
-      </Item>
-    );
-  }
-  return null;
-};
-
-export const BanMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const weAreAdmin = useWeAreAdmin(convoId);
-
-  if (showBanUser(weAreAdmin, isPublic, isKickedFromGroup)) {
-    return (
-      <Item
-        onClick={() => {
-          showBanUserByConvoId(convoId);
-        }}
-      >
-        {window.i18n('banUser')}
       </Item>
     );
   }
@@ -500,24 +427,9 @@ export const ChangeNicknameMenuItem = () => {
   return null;
 };
 
-export const DeleteMessagesMenuItem = () => {
-  const convoId = useContext(ContextConversationId);
-  const isRequest = useIsRequest(convoId);
-
-  if (isRequest) {
-    return null;
-  }
-
-  return (
-    <Item
-      onClick={() => {
-        deleteAllMessagesByConvoIdWithConfirmation(convoId);
-      }}
-    >
-      {window.i18n('deleteMessages')}
-    </Item>
-  );
-};
+export function showDeleteMessagesItem(isRequest: boolean) {
+  return !isRequest;
+}
 
 export const HideBannerMenuItem = (): JSX.Element => {
   const dispatch = useDispatch();

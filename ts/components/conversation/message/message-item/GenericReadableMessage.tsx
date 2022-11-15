@@ -237,7 +237,7 @@ export const GenericReadableMessage = (props: Props) => {
       isUnread={!!isUnread}
       key={`readable-message-${messageId}`}
     >
-      <MessageAvatar messageId={messageId} />
+      {!isDetailView && <MessageAvatar messageId={messageId} />}
       {expirationLength && expirationTimestamp && (
         <ExpireTimer
           isCorrectSide={!isIncoming}

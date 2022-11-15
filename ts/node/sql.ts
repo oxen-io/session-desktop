@@ -962,6 +962,16 @@ function removeMessage(id: string, instance?: BetterSqlite3.Database) {
     .run(id);
 }
 
+function removeAllMessagesInConversation(
+  conversationId: string,
+  instance?: BetterSqlite3.Database
+) {
+  // Our node interface doesn't seem to allow you to replace one single ? with an array
+  assertGlobalInstanceOrInstance(instance)
+    .prepare(`DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = $conversationId;`)
+    .run({ conversationId });
+}
+
 function getMessageIdsFromServerIds(serverIds: Array<string | number>, conversationId: string) {
   if (!Array.isArray(serverIds)) {
     return [];
@@ -2285,6 +2295,7 @@ export const sqlNode = {
   updateLastHash,
   saveMessages,
   removeMessage,
+  removeAllMessagesInConversation,
   getUnreadByConversation,
   markAllAsReadByConversationNoExpiration,
   getUnreadCountByConversation,

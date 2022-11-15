@@ -4,7 +4,10 @@ import { ConversationModel } from '../models/conversation';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
-import { getMessageReactsProps } from '../state/selectors/conversations';
+import {
+  getMessageDetailsProps,
+  getMessageReactsProps,
+} from '../state/selectors/conversations';
 
 export function useAvatarPath(convoId: string | undefined) {
   const convoProps = useConversationPropsById(convoId);
@@ -177,5 +180,18 @@ export function useMessageReactsPropsById(messageId?: string) {
       return null;
     }
     return messageReactsProps;
+  });
+}
+
+export function useMessageDetailsPropsById(messageId?: string) {
+  return useSelector((state: StateType) => {
+    if (!messageId) {
+      return null;
+    }
+    const messageDetailsProps = getMessageDetailsProps(state, messageId);
+    if (!messageDetailsProps) {
+      return null;
+    }
+    return messageDetailsProps;
   });
 }

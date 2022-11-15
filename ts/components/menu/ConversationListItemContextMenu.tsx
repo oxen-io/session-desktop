@@ -1,23 +1,18 @@
 import React from 'react';
 import { animation, Menu } from 'react-contexify';
-import _ from 'lodash';
+import { isEqual } from 'lodash';
 
 import {
   AcceptMenuItem,
-  BanMenuItem,
   BlockMenuItem,
   ChangeNicknameMenuItem,
   ClearNicknameMenuItem,
   CopyMenuItem,
   DeclineMenuItem,
-  DeleteContactMenuItem,
-  DeleteMessagesMenuItem,
   InviteContactMenuItem,
-  LeaveGroupMenuItem,
   MarkAllReadMenuItem,
   PinConversationMenuItem,
   ShowUserDetailsMenuItem,
-  UnbanMenuItem,
 } from './Menu';
 import { SessionContextMenuContainer } from '../SessionContextMenuContainer';
 
@@ -39,12 +34,7 @@ const ConversationListItemContextMenu = (props: PropsContextConversationItem) =>
         <MarkAllReadMenuItem />
         <ChangeNicknameMenuItem />
         <ClearNicknameMenuItem />
-        <DeleteMessagesMenuItem />
-        <BanMenuItem />
-        <UnbanMenuItem />
         <InviteContactMenuItem />
-        <DeleteContactMenuItem />
-        <LeaveGroupMenuItem />
         <ShowUserDetailsMenuItem />
       </Menu>
     </SessionContextMenuContainer>
@@ -52,7 +42,7 @@ const ConversationListItemContextMenu = (props: PropsContextConversationItem) =>
 };
 
 function propsAreEqual(prev: PropsContextConversationItem, next: PropsContextConversationItem) {
-  return _.isEqual(prev, next);
+  return isEqual(prev, next);
 }
 export const MemoConversationListItemContextMenu = React.memo(
   ConversationListItemContextMenu,

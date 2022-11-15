@@ -149,7 +149,6 @@ export type PropsForMessageWithoutConvoProps = {
   sender: string; // this is the sender
   convoId: string; // this is the conversation in which this message was sent
   text?: string;
-
   receivedAt?: number;
   serverTimestamp?: number;
   serverId?: number;
@@ -530,7 +529,6 @@ const conversationsSlice = createSlice({
   name: 'conversations',
   initialState: getEmptyConversationState(),
   reducers: {
-
     addMessageIdToSelection(state: ConversationsStateType, action: PayloadAction<string>) {
       if (state.selectedMessageIds.some(id => id === action.payload)) {
         return state;

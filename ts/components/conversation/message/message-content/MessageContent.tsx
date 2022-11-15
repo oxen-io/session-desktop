@@ -91,10 +91,11 @@ export const IsMessageVisibleContext = createContext(false);
 // tslint:disable: use-simple-attributes
 
 export const MessageContent = (props: Props) => {
+  const { isDetailView, messageId } = props;
   const [highlight, setHighlight] = useState(false);
   const [didScroll, setDidScroll] = useState(false);
   const contentProps = useSelector(state =>
-    getMessageContentSelectorProps(state as any, props.messageId)
+    getMessageContentSelectorProps(state as any, messageId)
   );
   const [isMessageVisible, setMessageIsVisible] = useState(false);
 
@@ -184,17 +185,18 @@ export const MessageContent = (props: Props) => {
             <StyledMessageOpaqueContent messageDirection={direction} highlight={highlight}>
               {!isDeleted && (
                 <>
-                  <MessageQuote messageId={props.messageId} />
+                  <MessageQuote messageId={props.messageId} isDetailView={isDetailView} />
                   <MessageLinkPreview
                     messageId={props.messageId}
                     handleImageError={handleImageError}
+                    isDetailView={isDetailView}
                   />
                 </>
               )}
-              <MessageText messageId={props.messageId} />
+              <MessageText messageId={props.messageId} isDetailView={isDetailView} />
             </StyledMessageOpaqueContent>
           )}
-          {!isDeleted && (
+          {!isDeleted && !isDetailView && (
             <MessageAttachment
               messageId={props.messageId}
               imageBroken={imageBroken}

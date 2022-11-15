@@ -57,7 +57,7 @@ const StyledMessagesContainer = styled.div<{}>`
   flex-direction: column-reverse;
   position: relative;
   overflow-x: hidden;
-  min-width: 370px;
+  min-width: 270px; // let the right panel be visible even on the minimum window size
   scrollbar-width: 4px;
   padding: var(--margins-sm) 0 var(--margins-lg);
 

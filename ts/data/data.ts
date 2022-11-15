@@ -139,6 +139,7 @@ export const Data = {
   saveMessages,
   removeMessage,
   _removeMessages,
+  removeAllMessagesInConversation,
   getMessageIdsFromServerIds,
   getMessageById,
   getMessageBySenderAndSentAt,
@@ -160,7 +161,6 @@ export const Data = {
   hasConversationOutgoingMessage,
   getLastHashBySnode,
   getSeenMessagesByHashList,
-  removeAllMessagesInConversation,
   getMessagesBySentAt,
   getExpiredMessages,
   getOutgoingWithoutExpiresAt,
@@ -394,6 +394,10 @@ async function removeMessage(id: string): Promise<void> {
   }
 }
 
+async function removeAllMessagesInConversation(convoId: string): Promise<void> {
+  await channels.removeAllMessagesInConversation(convoId);
+}
+
 // Note: this method will not clean up external files, just delete from SQL
 async function _removeMessages(ids: Array<string>): Promise<void> {
   await channels.removeMessage(ids);
@@ -620,30 +624,6 @@ async function getLastHashBySnode(
 
 async function getSeenMessagesByHashList(hashes: Array<string>): Promise<any> {
   return channels.getSeenMessagesByHashList(hashes);
-}
-
-async function removeAllMessagesInConversation(conversationId: string): Promise<void> {
-  let messages;
-  do {
-    // Yes, we really want the await in the loop. We're deleting 500 at a
-    //   time so we don't use too much memory.
-    // eslint-disable-next-line no-await-in-loop
-    messages = await getLastMessagesByConversation(conversationId, 500, false);
-    if (!messages.length) {
-      return;
-    }
-
-    const ids = messages.map(message => message.id);
-
-    // Note: It's very important that these models are fully hydrated because
-    //   we need to delete all associated on-disk files along with the database delete.
-    // eslint-disable-next-line no-await-in-loop
-
-    await Promise.all(messages.map(message => message.cleanup()));
-
-    // eslint-disable-next-line no-await-in-loop
-    await channels.removeMessage(ids);
-  } while (messages.length > 0);
 }
 
 async function getMessagesBySentAt(sentAt: number): Promise<MessageCollection> {
