@@ -18,7 +18,7 @@ import {
   getOurPrimaryConversation,
   getUnreadMessageCount,
 } from '../../state/selectors/conversations';
-import { getFocusedSection } from '../../state/selectors/section';
+import { useFocusedSection } from '../../state/selectors/section';
 import { clearSearch } from '../../state/ducks/search';
 import { resetLeftOverlayMode, SectionType, showLeftPaneSection } from '../../state/ducks/section';
 
@@ -55,7 +55,7 @@ const Section = (props: { type: SectionType }) => {
   const { type } = props;
 
   const isDarkMode = useSelector(isDarkTheme);
-  const focusedSection = useSelector(getFocusedSection);
+  const focusedSection = useFocusedSection();
   const isSelected = focusedSection === props.type;
 
   const handleClick = async () => {

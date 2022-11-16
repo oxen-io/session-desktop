@@ -4,21 +4,21 @@ import { createSelector } from '@reduxjs/toolkit';
 import { StateType } from '../reducer';
 
 import { SearchStateType } from '../ducks/search';
-import { getConversationLookup, getSelectedConversationKey } from './conversations';
+import { getConversationLookup } from './conversations';
 import { ConversationLookupType } from '../ducks/conversations';
+import { selectedConversationSelectors } from './selectedConversation';
 
 export const getSearch = (state: StateType): SearchStateType => state.search;
 
-export const getQuery = createSelector(getSearch, (state: SearchStateType): string => state.query);
-
-export const isSearching = createSelector(getSearch, (state: SearchStateType) => {
-  const { query } = state;
+export const isSearching = (state: StateType) => {
+  const search = getSearch(state);
+  const { query } = search;
 
   return Boolean(query && query.trim().length > 1);
-});
+};
 
 export const getSearchResults = createSelector(
-  [getSearch, getConversationLookup, getSelectedConversationKey],
+  [getSearch, getConversationLookup, selectedConversationSelectors.getSelectedConversationKey],
   (searchState: SearchStateType, lookup: ConversationLookupType, selectedConversation?: string) => {
     return {
       contactsAndGroups: compact(

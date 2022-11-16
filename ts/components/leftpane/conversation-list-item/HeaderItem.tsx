@@ -12,7 +12,7 @@ import {
 } from '../../../state/ducks/conversations';
 import { SectionType } from '../../../state/ducks/section';
 import { isSearching } from '../../../state/selectors/search';
-import { getFocusedSection } from '../../../state/selectors/section';
+import { useFocusedSection } from '../../../state/selectors/section';
 import { Timestamp } from '../../conversation/Timestamp';
 import { SessionIcon } from '../../icon';
 import { ContextConversationId } from './ConversationListItem';
@@ -73,7 +73,7 @@ function useHeaderItemProps(conversationId: string) {
 }
 
 const ListItemIcons = () => {
-  const isMessagesSection = useSelector(getFocusedSection) === SectionType.Message;
+  const isMessagesSection = useFocusedSection() === SectionType.Message;
   const conversationId = useContext(ContextConversationId);
   const isPinned = useIsPinned(conversationId);
 

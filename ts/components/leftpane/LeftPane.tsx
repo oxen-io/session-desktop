@@ -6,7 +6,7 @@ import { SectionType } from '../../state/ducks/section';
 import { SessionTheme } from '../../themes/SessionTheme';
 import { getLeftPaneLists } from '../../state/selectors/conversations';
 import { getSearchResults, isSearching } from '../../state/selectors/search';
-import { getFocusedSection, getLeftOverlayMode } from '../../state/selectors/section';
+import { useFocusedSection, useLeftOverlayMode } from '../../state/selectors/section';
 import { getHideMessageRequestBanner } from '../../state/selectors/userConfig';
 import { CallInFullScreenContainer } from '../calling/CallInFullScreenContainer';
 import { DraggableCallContainer } from '../calling/DraggableCallContainer';
@@ -29,7 +29,7 @@ const InnerLeftPaneMessageSection = () => {
 
   const lists = showSearch ? undefined : useSelector(getLeftPaneLists);
   const messageRequestsEnabled = useSelector(getHideMessageRequestBanner);
-  const leftOverlayMode = useSelector(getLeftOverlayMode);
+  const leftOverlayMode = useLeftOverlayMode();
 
   return (
     // tslint:disable-next-line: use-simple-attributes
@@ -44,7 +44,7 @@ const InnerLeftPaneMessageSection = () => {
 };
 
 const LeftPaneSection = () => {
-  const focusedSection = useSelector(getFocusedSection);
+  const focusedSection = useFocusedSection();
 
   if (focusedSection === SectionType.Message) {
     return <InnerLeftPaneMessageSection />;

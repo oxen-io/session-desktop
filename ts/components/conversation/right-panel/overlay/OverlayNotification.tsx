@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import {
   useIsKickedFromGroup,
   useIsLeft,
@@ -12,11 +11,12 @@ import {
   ConversationNotificationSetting,
   ConversationNotificationSettingType,
 } from '../../../../models/conversationAttributes';
+
+import {  useRightOverlayMode } from '../../../../state/selectors/section';
 import {
-  getNotificationOfSelectedConversation,
-  getSelectedConversationKey,
-} from '../../../../state/selectors/conversations';
-import { getRightOverlayMode } from '../../../../state/selectors/section';
+  useSelectedConversationKey,
+  useSelectedNotificationSetting,
+} from '../../../../state/selectors/selectedConversation';
 import { LocalizerKeys } from '../../../../types/LocalizerKeys';
 import { Flex } from '../../../basic/Flex';
 import { PanelButtonGroup } from '../../../buttons';
@@ -34,13 +34,13 @@ function showNotificationConvo(
 }
 
 const NotificationOptions = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   const isKickedFromGroup = useIsKickedFromGroup(selectedConvoId);
   const left = useIsLeft(selectedConvoId);
   const isBlocked = useIsBlocked(selectedConvoId);
   const isPrivate = useIsPrivate(selectedConvoId);
   const isRequest = useIsRequest(selectedConvoId);
-  const selectedConvoSetting = useSelector(getNotificationOfSelectedConversation);
+  const selectedConvoSetting = useSelectedNotificationSetting();
 
   if (!selectedConvoId) {
     return null;
@@ -90,7 +90,7 @@ const NotificationOptions = () => {
 };
 
 export const OverlayNotification = () => {
-  const rightOverlay = useSelector(getRightOverlayMode);
+  const rightOverlay = useRightOverlayMode();
 
   if (!rightOverlay || rightOverlay.type !== 'notifications') {
     return null;

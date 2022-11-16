@@ -31,13 +31,7 @@ import { ToastUtils } from '../../../session/utils';
 import { ReduxConversationType } from '../../../state/ducks/conversations';
 import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
 import { StateType } from '../../../state/reducer';
-import {
-  getIsTypingEnabled,
-  getMentionsInput,
-  getQuotedMessage,
-  getSelectedConversation,
-  getSelectedConversationKey,
-} from '../../../state/selectors/conversations';
+import { getMentionsInput, getQuotedMessage } from '../../../state/selectors/conversations';
 import { AttachmentUtil } from '../../../util';
 import { Flex } from '../../basic/Flex';
 import { CaptionEditor } from '../../CaptionEditor';
@@ -57,6 +51,7 @@ import { renderEmojiQuickResultRow, searchEmojiForQuery } from './EmojiQuickResu
 import { LinkPreviews } from '../../../util/linkPreviews';
 import styled from 'styled-components';
 import { FixedBaseEmoji } from '../../../types/Reaction';
+import { selectedConversationSelectors } from '../../../state/selectors/selectedConversation';
 
 export interface ReplyingToMessageProps {
   convoId: string;
@@ -1082,9 +1077,9 @@ class CompositionBoxInner extends React.Component<Props, State> {
 const mapStateToProps = (state: StateType) => {
   return {
     quotedMessageProps: getQuotedMessage(state),
-    selectedConversation: getSelectedConversation(state),
-    selectedConversationKey: getSelectedConversationKey(state),
-    typingEnabled: getIsTypingEnabled(state),
+    selectedConversation: selectedConversationSelectors.getSelectedConversation(state),
+    selectedConversationKey: selectedConversationSelectors.getSelectedConversationKey(state),
+    typingEnabled: selectedConversationSelectors.getIsTypingEnabled(state),
   };
 };
 

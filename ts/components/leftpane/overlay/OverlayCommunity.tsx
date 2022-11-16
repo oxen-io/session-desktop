@@ -7,7 +7,7 @@ import { SessionButton } from '../../basic/SessionButton';
 import { SessionIdEditable } from '../../basic/SessionIdEditable';
 import { SessionSpinner } from '../../basic/SessionSpinner';
 import { OverlayHeader } from './OverlayHeader';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { resetLeftOverlayMode } from '../../../state/ducks/section';
 import {
   joinOpenGroupV2WithUIEvents,
@@ -16,7 +16,7 @@ import {
 import { openGroupV2CompleteURLRegex } from '../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ToastUtils } from '../../../session/utils';
 import useKey from 'react-use/lib/useKey';
-import { getLeftOverlayMode } from '../../../state/selectors/section';
+import { useLeftOverlayMode } from '../../../state/selectors/section';
 import {
   markConversationInitialLoadingInProgress,
   openConversationWithMessages,
@@ -42,7 +42,7 @@ export const OverlayCommunity = () => {
   const [loading, setLoading] = useState(false);
   const [groupUrl, setGroupUrl] = useState('');
 
-  const overlayModeIsCommunity = useSelector(getLeftOverlayMode) === 'open-group';
+  const overlayModeIsCommunity = useLeftOverlayMode() === 'open-group';
 
   function closeOverlay() {
     dispatch(resetLeftOverlayMode());

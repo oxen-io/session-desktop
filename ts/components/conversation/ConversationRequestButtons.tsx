@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useIsRequest } from '../../hooks/useParamSelector';
 import {
@@ -8,9 +7,9 @@ import {
 } from '../../interactions/conversationInteractions';
 import { getConversationController } from '../../session/conversations';
 import {
-  getSelectedConversation,
-  hasSelectedConversationIncomingMessages,
-} from '../../state/selectors/conversations';
+  useSelectedConversationKey,
+  useSelectedHasIncomingMessages,
+} from '../../state/selectors/selectedConversation';
 import { SessionButton, SessionButtonColor } from '../basic/SessionButton';
 
 const handleDeclineConversationRequest = (convoId: string) => {
@@ -44,12 +43,12 @@ const ConversationBannerRow = styled.div`
 `;
 
 export const ConversationMessageRequestButtons = () => {
-  const selectedConversation = useSelector(getSelectedConversation);
+  const selectedConversationKey = useSelectedConversationKey();
 
-  const hasIncomingMessages = useSelector(hasSelectedConversationIncomingMessages);
-  const isIncomingMessageRequest = useIsRequest(selectedConversation?.id);
+  const hasIncomingMessages = useSelectedHasIncomingMessages();
+  const isIncomingMessageRequest = useIsRequest(selectedConversationKey);
 
-  if (!selectedConversation || !hasIncomingMessages) {
+  if (!selectedConversationKey || !hasIncomingMessages) {
     return null;
   }
 
@@ -62,7 +61,7 @@ export const ConversationMessageRequestButtons = () => {
       <ConversationBannerRow>
         <SessionButton
           onClick={async () => {
-            await handleAcceptConversationRequest(selectedConversation.id);
+            await handleAcceptConversationRequest(selectedConversationKey);
           }}
           text={window.i18n('accept')}
           dataTestId="accept-message-request"
@@ -71,7 +70,7 @@ export const ConversationMessageRequestButtons = () => {
           buttonColor={SessionButtonColor.Danger}
           text={window.i18n('decline')}
           onClick={() => {
-            handleDeclineConversationRequest(selectedConversation.id);
+            handleDeclineConversationRequest(selectedConversationKey);
           }}
           dataTestId="decline-message-request"
         />

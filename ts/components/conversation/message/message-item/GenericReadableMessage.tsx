@@ -9,11 +9,7 @@ import { Data } from '../../../../data/data';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { getConversationController } from '../../../../session/conversations';
 import { messageExpired } from '../../../../state/ducks/conversations';
-import {
-  getGenericReadableMessageSelectorProps,
-  getIsMessageSelected,
-  isMessageSelectionMode,
-} from '../../../../state/selectors/conversations';
+import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
 import { getIncrement } from '../../../../util/timer';
 import { ExpireTimer } from '../../ExpireTimer';
 import { MessageAvatar } from '../message-content/MessageAvatar';
@@ -21,6 +17,10 @@ import { MessageContentWithStatuses } from '../message-content/MessageContentWit
 import { ReadableMessage } from './ReadableMessage';
 import styled, { keyframes } from 'styled-components';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
+import {
+  useGenericReadableMessageSelectorProps,
+  useMessageIsSelected,
+} from '../../../../state/selectors/messages';
 
 export type GenericReadableMessageSelectorProps = Pick<
   MessageRenderingProps,
@@ -145,10 +145,7 @@ export const GenericReadableMessage = (props: Props) => {
 
   const [enableReactions, setEnableReactions] = useState(true);
 
-  const msgProps = useSelector(state =>
-    getGenericReadableMessageSelectorProps(state as any, props.messageId)
-  );
-
+  const msgProps = useGenericReadableMessageSelectorProps(props.messageId);
   const expiringProps: ExpiringProps = {
     convoId: msgProps?.convoId,
     expirationLength: msgProps?.expirationLength,
@@ -158,9 +155,7 @@ export const GenericReadableMessage = (props: Props) => {
   };
   const { isExpired } = useIsExpired(expiringProps);
 
-  const isMessageSelected = useSelector(state =>
-    getIsMessageSelected(state as any, props.messageId)
-  );
+  const isMessageSelected = useMessageIsSelected(props.messageId);
   const multiSelectMode = useSelector(isMessageSelectionMode);
 
   const [isRightClicked, setIsRightClicked] = useState(false);

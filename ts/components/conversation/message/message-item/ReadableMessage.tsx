@@ -13,15 +13,13 @@ import {
 import {
   areMoreMessagesBeingFetched,
   getConversationHasUnread,
-  getLoadedMessagesLength,
   getMostRecentMessageId,
-  getOldestMessageId,
   getQuotedMessageToAnimate,
-  getSelectedConversationKey,
   getShowScrollButton,
-  getYoungestMessageId,
 } from '../../../../state/selectors/conversations';
-import { getIsAppFocused } from '../../../../state/selectors/section';
+import { useOldestMessageId, useYoungestMessageId } from '../../../../state/selectors/messages';
+import {  useGetAppIsFocused } from '../../../../state/selectors/section';
+import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
 import { ScrollToLoadedMessageContext } from '../../SessionMessagesListContainer';
 
 type ReadableMessageProps = {
@@ -60,14 +58,13 @@ const debouncedTriggerLoadMoreBottom = debounce(
 export const ReadableMessage = (props: ReadableMessageProps) => {
   const { messageId, onContextMenu, className, receivedAt, isUnread } = props;
 
-  const isAppFocused = useSelector(getIsAppFocused);
+  const isAppFocused = useGetAppIsFocused();
   const dispatch = useDispatch();
 
-  const selectedConversationKey = useSelector(getSelectedConversationKey);
-  const loadedMessagesLength = useSelector(getLoadedMessagesLength);
+  const selectedConversationKey = useSelectedConversationKey();
   const mostRecentMessageId = useSelector(getMostRecentMessageId);
-  const oldestMessageId = useSelector(getOldestMessageId);
-  const youngestMessageId = useSelector(getYoungestMessageId);
+  const oldestMessageId = useOldestMessageId();
+  const youngestMessageId = useYoungestMessageId();
   const fetchingMoreInProgress = useSelector(areMoreMessagesBeingFetched);
   const conversationHasUnread = useSelector(getConversationHasUnread);
   const scrollButtonVisible = useSelector(getShowScrollButton);
@@ -166,7 +163,6 @@ export const ReadableMessage = (props: ReadableMessageProps) => {
       oldestMessageId,
       fetchingMoreInProgress,
       isAppFocused,
-      loadedMessagesLength,
       receivedAt,
       shouldMarkReadWhenVisible,
       messageId,

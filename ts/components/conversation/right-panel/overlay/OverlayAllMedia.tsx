@@ -1,12 +1,11 @@
 import _, { compact, flatten, isEqual } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useInterval } from 'react-use';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
 import { Constants } from '../../../../session';
-import { getSelectedConversation } from '../../../../state/selectors/conversations';
-import { getRightOverlayMode } from '../../../../state/selectors/section';
+import { useRightOverlayMode } from '../../../../state/selectors/section';
+import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
 import { AttachmentTypeWithPath } from '../../../../types/Attachment';
 import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import { Flex } from '../../../basic/Flex';
@@ -30,15 +29,15 @@ const StyledContainer = styled(Flex)`
 export const OverlayAllMedia = () => {
   const [documents, setDocuments] = useState<Array<MediaItemType>>([]);
   const [media, setMedia] = useState<Array<MediaItemType>>([]);
-  const rightOverlay = useSelector(getRightOverlayMode);
+  const rightOverlay = useRightOverlayMode();
 
-  const selectedConversation = useSelector(getSelectedConversation);
+  const selectedConversationKey = useSelectedConversationKey();
 
   useEffect(() => {
     let isRunning = true;
 
-    if (selectedConversation) {
-      void getMediaGalleryProps(selectedConversation.id).then(results => {
+    if (selectedConversationKey) {
+      void getMediaGalleryProps(selectedConversationKey).then(results => {
         if (isRunning) {
           if (!isEqual(documents, results.documents)) {
             setDocuments(results.documents);
@@ -58,8 +57,8 @@ export const OverlayAllMedia = () => {
   }, []);
 
   useInterval(async () => {
-    if (selectedConversation) {
-      const results = await getMediaGalleryProps(selectedConversation.id);
+    if (selectedConversationKey) {
+      const results = await getMediaGalleryProps(selectedConversationKey);
       if (results.documents.length !== documents.length || results.media.length !== media.length) {
         setDocuments(results.documents);
         setMedia(results.media);

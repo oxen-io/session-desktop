@@ -1,15 +1,14 @@
 import moment from 'moment';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useMessageDetailsPropsById } from '../../../../../hooks/useParamSelector';
 import { replyToMessage } from '../../../../../interactions/conversationInteractions';
 import {
   deleteMessagesById,
   deleteMessagesByIdForEveryone,
 } from '../../../../../interactions/conversations/unsendingInteractions';
-import { getSelectedConversationKey } from '../../../../../state/selectors/conversations';
-import { getRightOverlayMode } from '../../../../../state/selectors/section';
+import { useMessageDetailsProps } from '../../../../../state/selectors/messages';
+import {  useRightOverlayMode } from '../../../../../state/selectors/section';
+import { useSelectedConversationKey } from '../../../../../state/selectors/selectedConversation';
 import { Flex } from '../../../../basic/Flex';
 import { SpacerLG } from '../../../../basic/Text';
 import { PanelButtonGroup, PanelIconButton } from '../../../../buttons';
@@ -81,11 +80,11 @@ const MessageBodyContainer = styled.div`
 `;
 
 export const OverlayMessageInfo = () => {
-  const rightOverlay = useSelector(getRightOverlayMode);
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const rightOverlay = useRightOverlayMode();
+  const selectedConvoId = useSelectedConversationKey();
   const { messageId } = rightOverlay?.params || {};
 
-  const messageDetailsProps = useMessageDetailsPropsById(messageId);
+  const messageDetailsProps = useMessageDetailsProps(messageId);
 
   if (!rightOverlay || rightOverlay.type !== 'message_info' || !messageId || !selectedConvoId) {
     return null;

@@ -5,7 +5,7 @@ import { disableRecoveryPhrasePrompt } from '../../state/ducks/userConfig';
 import { getShowRecoveryPhrasePrompt } from '../../state/selectors/userConfig';
 import { recoveryPhraseModal } from '../../state/ducks/modalDialog';
 import { Flex } from '../basic/Flex';
-import { getFocusedSection, getLeftOverlayMode } from '../../state/selectors/section';
+import { useFocusedSection, useLeftOverlayMode } from '../../state/selectors/section';
 import { SectionType } from '../../state/ducks/section';
 import { SessionButton } from '../basic/SessionButton';
 import { isSignWithRecoveryPhrase } from '../../util/storage';
@@ -85,7 +85,7 @@ const BannerInner = () => {
 };
 
 export const LeftPaneBanner = () => {
-  const section = useSelector(getFocusedSection);
+  const section = useFocusedSection();
   const isSignInWithRecoveryPhrase = isSignWithRecoveryPhrase();
 
   if (section !== SectionType.Message || isSignInWithRecoveryPhrase) {
@@ -109,8 +109,8 @@ export const LeftPaneBanner = () => {
 
 export const LeftPaneSectionHeader = () => {
   const showRecoveryPhrasePrompt = useSelector(getShowRecoveryPhrasePrompt);
-  const focusedSection = useSelector(getFocusedSection);
-  const leftOverlayMode = useSelector(getLeftOverlayMode);
+  const focusedSection = useFocusedSection();
+  const leftOverlayMode = useLeftOverlayMode();
 
   let label: string | undefined;
 

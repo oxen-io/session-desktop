@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { setDisappearingMessagesByConvoId } from '../../../../interactions/conversationInteractions';
-import { getSelectedConversationKey } from '../../../../state/selectors/conversations';
+import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
 import { getTimerOptions } from '../../../../state/selectors/timerOptions';
 import { Flex } from '../../../basic/Flex';
 import { SessionButton } from '../../../basic/SessionButton';
@@ -55,7 +55,7 @@ const TimeOptions = (props: TimerOptionsProps) => {
 };
 
 export const OverlayDisappearingMessages = () => {
-  const selectedConversationKey = useSelector(getSelectedConversationKey);
+  const selectedConversationKey = useSelectedConversationKey();
   const timerOptions = useSelector(getTimerOptions).timerOptions;
 
   const [timeSelected, setTimeSelected] = useState(timerOptions[0].value);

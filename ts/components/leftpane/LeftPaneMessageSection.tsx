@@ -19,8 +19,7 @@ import { OverlayClosedGroup } from './overlay/OverlayClosedGroup';
 import { LeftOverlayMode, setLeftOverlayMode } from '../../state/ducks/section';
 import { OverlayChooseAction } from './overlay/choose-action/OverlayChooseAction';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import { getLeftOverlayMode } from '../../state/selectors/section';
+import { useLeftOverlayMode } from '../../state/selectors/section';
 import { StyledLeftPaneList } from './LeftPaneList';
 
 export interface Props {
@@ -49,7 +48,7 @@ const StyledConversationListContent = styled.div`
 `;
 
 const ClosableOverlay = () => {
-  const leftOverlayMode = useSelector(getLeftOverlayMode);
+  const leftOverlayMode = useLeftOverlayMode();
 
   switch (leftOverlayMode) {
     case 'choose-action':

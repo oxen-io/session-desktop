@@ -10,12 +10,12 @@ import {
   getUrl,
   isVideoAttachment,
 } from '../../types/Attachment';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   removeAllStagedAttachmentsInConversation,
   removeStagedAttachmentInConversation,
 } from '../../state/ducks/stagedAttachments';
-import { getSelectedConversationKey } from '../../state/selectors/conversations';
+import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 
 type Props = {
   attachments: Array<AttachmentType>;
@@ -30,7 +30,7 @@ export const StagedAttachmentList = (props: Props) => {
   const { attachments, onAddAttachment, onClickAttachment } = props;
 
   const dispatch = useDispatch();
-  const conversationKey = useSelector(getSelectedConversationKey);
+  const conversationKey = useSelectedConversationKey();
 
   const onRemoveAllStaged = () => {
     if (!conversationKey) {

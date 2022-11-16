@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getRightOverlayMode } from '../../../state/selectors/section';
+import { useRightOverlayMode } from '../../../state/selectors/section';
 import { OverlayAllMedia } from './overlay/OverlayAllMedia';
 import { OverlayDisappearingMessages } from './overlay/OverlayDisappearingMessages';
 import { OverlayMessageInfo } from './overlay/message-info/OverlayMessageInfo';
@@ -16,7 +15,7 @@ export const StyledScrollContainer = styled.div`
 `;
 
 const ClosableOverlay = () => {
-  const rightOverlayMode = useSelector(getRightOverlayMode);
+  const rightOverlayMode = useRightOverlayMode();
   if (!rightOverlayMode) {
     return null;
   }

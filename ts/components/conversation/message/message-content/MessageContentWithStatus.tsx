@@ -6,10 +6,8 @@ import { replyToMessage } from '../../../../interactions/conversationInteraction
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { toggleSelectedMessageId } from '../../../../state/ducks/conversations';
 import { updateReactListModal } from '../../../../state/ducks/modalDialog';
-import {
-  getMessageContentWithStatusesSelectorProps,
-  isMessageSelectionMode,
-} from '../../../../state/selectors/conversations';
+import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
+import { useMessageContentWithStatusesSelectorProps } from '../../../../state/selectors/messages';
 import { Reactions } from '../../../../util/reactions';
 
 import { MessageAuthorText } from './MessageAuthorText';
@@ -49,9 +47,7 @@ const StyledMessageWithAuthor = styled.div<{ isIncoming: boolean }>`
 `;
 
 export const MessageContentWithStatuses = (props: Props) => {
-  const contentProps = useSelector(state =>
-    getMessageContentWithStatusesSelectorProps(state as any, props.messageId)
-  );
+  const contentProps = useMessageContentWithStatusesSelectorProps(props.messageId);
   const dispatch = useDispatch();
 
   const multiSelectMode = useSelector(isMessageSelectionMode);

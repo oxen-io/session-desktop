@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { animation, Item, Menu, useContextMenu } from 'react-contexify';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useClickAway, useMouse } from 'react-use';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
@@ -20,8 +20,7 @@ import { MessageRenderingProps } from '../../../../models/messageType';
 import { pushUnblockToSend } from '../../../../session/utils/Toast';
 import { toggleSelectedMessageId } from '../../../../state/ducks/conversations';
 import { setRightOverlayMode } from '../../../../state/ducks/section';
-import { StateType } from '../../../../state/reducer';
-import { getMessageContextMenuProps } from '../../../../state/selectors/conversations';
+import { useMessageContextMenuProps } from '../../../../state/selectors/messages';
 import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
 import { Reactions } from '../../../../util/reactions';
 import { SessionContextMenuContainer } from '../../../SessionContextMenuContainer';
@@ -98,7 +97,7 @@ export const MessageContextMenu = (props: Props) => {
   const dispatch = useDispatch();
   const { hideAll } = useContextMenu();
 
-  const selected = useSelector((state: StateType) => getMessageContextMenuProps(state, messageId));
+  const selected = useMessageContextMenuProps(messageId);
 
   if (!selected) {
     return null;

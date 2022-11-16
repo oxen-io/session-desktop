@@ -4,14 +4,12 @@ import _ from 'lodash';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { PubKey } from '../../../../session/types';
 import { openConversationToSpecificMessage } from '../../../../state/ducks/conversations';
-import {
-  getMessageQuoteProps,
-  isMessageSelectionMode,
-} from '../../../../state/selectors/conversations';
+import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
 import { Quote } from './Quote';
 import { ToastUtils } from '../../../../session/utils';
 import { Data } from '../../../../data/data';
 import { MessageModel } from '../../../../models/message';
+import { useMessageQuoteProps } from '../../../../state/selectors/messages';
 
 // tslint:disable: use-simple-attributes
 
@@ -24,7 +22,7 @@ export type MessageQuoteSelectorProps = Pick<MessageRenderingProps, 'quote' | 'd
 
 export const MessageQuote = (props: Props) => {
   const { isDetailView, messageId } = props;
-  const selected = useSelector(state => getMessageQuoteProps(state as any, messageId));
+  const selected = useMessageQuoteProps(messageId);
   const multiSelectMode = useSelector(isMessageSelectionMode);
 
   const quote = selected ? selected.quote : undefined;

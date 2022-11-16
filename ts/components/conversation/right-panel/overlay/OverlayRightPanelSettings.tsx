@@ -1,6 +1,6 @@
 import React from 'react';
 // tslint:disable-next-line: no-submodule-imports
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   deleteAllMessagesByConvoIdWithConfirmation,
   showAddModeratorsByConvoId,
@@ -12,12 +12,7 @@ import {
   showUpdateGroupMembersByConvoId,
   showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
-import {
-  getCurrentNotificationSettingText,
-  getSelectedConversation,
-  getSelectedConversationIsPublic,
-  getSelectedConversationKey,
-} from '../../../../state/selectors/conversations';
+
 import { SpacerLG } from '../../../basic/Text';
 import { SessionIconButton } from '../../../icon';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
@@ -45,13 +40,26 @@ import {
 import styled from 'styled-components';
 import { updateConfirmModal } from '../../../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../../../basic/SessionButton';
+import {
+  useSelectedConversationKey,
+  useSelectedDisplayNameInProfile,
+  useSelectedIsActive,
+  useSelectedIsBlocked,
+  useSelectedIsKickedFromGroup,
+  useSelectedIsLeft,
+  useSelectedIsOpenOrClosedGroup,
+  useSelectedIsPublic,
+  useSelectedNotificationSettingText,
+  useSelectedSubsbriberCount,
+  useSelectedWeAreAdmin,
+} from '../../../../state/selectors/selectedConversation';
 
 type ShowItemProps = { show: boolean };
 
 const BackButtonContainer = styled.div``;
 
 const HeaderItem = () => {
-  const selectedConversationKey = useSelector(getSelectedConversationKey);
+  const selectedConversationKey = useSelectedConversationKey();
   const dispatch = useDispatch();
 
   if (!selectedConversationKey) {
@@ -77,7 +85,7 @@ const HeaderItem = () => {
 };
 
 const InviteContactPublicItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!props.show || !selectedConvoId) {
     return null;
@@ -96,7 +104,7 @@ const InviteContactPublicItem = (props: ShowItemProps) => {
 };
 
 const InviteContactClosedItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!props.show || !selectedConvoId) {
     return null;
@@ -115,7 +123,7 @@ const InviteContactClosedItem = (props: ShowItemProps) => {
 };
 
 const AddRemoveModsItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   if (!props.show || !selectedConvoId) {
     return null;
   }
@@ -144,8 +152,8 @@ const AddRemoveModsItem = (props: ShowItemProps) => {
 };
 
 const UpdateGroupNameItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
-  const selectedIsPublic = useSelector(getSelectedConversationIsPublic);
+  const selectedConvoId = useSelectedConversationKey();
+  const selectedIsPublic = useSelectedIsPublic();
   if (!props.show || !selectedConvoId) {
     return null;
   }
@@ -213,7 +221,7 @@ const DisappearingMessageItem = (props: ShowItemProps) => {
 };
 
 const GroupMembersItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!props.show || !selectedConvoId) {
     return null;
@@ -232,7 +240,7 @@ const GroupMembersItem = (props: ShowItemProps) => {
 };
 
 const ClearMessagesItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   const isRequest = useIsRequest(selectedConvoId);
 
   if (!selectedConvoId) {
@@ -254,7 +262,7 @@ const ClearMessagesItem = () => {
 };
 
 const LeaveClosedGroupItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   const selectedConvoIdisGroup = useIsClosedGroup(selectedConvoId);
 
   const isKickedFromGroup = useIsKickedFromGroup(selectedConvoId);
@@ -277,7 +285,7 @@ const LeaveClosedGroupItem = () => {
 };
 
 const BanMenuItem = (props: ShowItemProps): JSX.Element | null => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!props.show || !selectedConvoId) {
     return null;
@@ -295,7 +303,7 @@ const BanMenuItem = (props: ShowItemProps): JSX.Element | null => {
 };
 
 const UnbanMenuItem = (props: ShowItemProps): JSX.Element | null => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!props.show || !selectedConvoId) {
     return null;
@@ -314,7 +322,7 @@ const UnbanMenuItem = (props: ShowItemProps): JSX.Element | null => {
 
 const DeleteContactItem = () => {
   const dispatch = useDispatch();
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   const isPrivate = useIsPrivate(selectedConvoId);
   const isClosedGroup = useIsClosedGroup(selectedConvoId);
   const isKickedFromGroup = useIsKickedFromGroup(selectedConvoId);
@@ -367,7 +375,7 @@ const DeleteContactItem = () => {
 };
 
 const DeleteOpenGroupItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
   const dispatch = useDispatch();
   const isPublic = useIsPublic(selectedConvoId);
   const isKickedFromGroup = useIsKickedFromGroup(selectedConvoId);
@@ -408,7 +416,7 @@ const DeleteOpenGroupItem = () => {
 };
 
 const PinConversationItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   const isRequest = useIsRequest(selectedConvoId);
   const isPinned = useIsPinned(selectedConvoId) || false;
@@ -437,8 +445,8 @@ const PinConversationItem = () => {
 };
 
 const NotificationItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
-  const currentSettingLocalizedString = useSelector(getCurrentNotificationSettingText);
+  const selectedConvoId = useSelectedConversationKey();
+  const currentSettingLocalizedString = useSelectedNotificationSettingText();
   const dispatch = useDispatch();
 
   if (!selectedConvoId) {
@@ -464,7 +472,7 @@ const NotificationItem = () => {
 };
 
 const AutoDownloadMediaItem = () => {
-  const selectedConvoId = useSelector(getSelectedConversationKey);
+  const selectedConvoId = useSelectedConversationKey();
 
   if (!selectedConvoId) {
     return null;
@@ -493,25 +501,23 @@ const StyledTitleGroup = styled.div`
 // tslint:disable: cyclomatic-complexity
 // tslint:disable: max-func-body-length
 export const OverlayRightPanelSettings = () => {
-  const selectedConversation = useSelector(getSelectedConversation);
+  const selectedConversationId = useSelectedConversationKey();
+  const isPublic = useSelectedIsPublic();
+  const isBlocked = useSelectedIsBlocked();
+  const isGroup = useSelectedIsOpenOrClosedGroup();
+  const isActive = useSelectedIsActive();
+  const displayNameInProfile = useSelectedDisplayNameInProfile();
+  const isKickedFromGroup = useSelectedIsKickedFromGroup();
+  const left = useSelectedIsLeft();
+  const weAreAdmin = useSelectedWeAreAdmin();
+  const subscriberCount = useSelectedSubsbriberCount();
 
-  if (!selectedConversation) {
+  if (!selectedConversationId) {
     return null;
   }
 
-  const {
-    subscriberCount,
-    displayNameInProfile,
-    isKickedFromGroup = false,
-    left = false,
-    isPublic = false,
-    weAreAdmin = false,
-    isBlocked,
-    isGroup = false,
-    activeAt,
-  } = selectedConversation;
   const showMemberCount = !!(subscriberCount && subscriberCount > 0);
-  const commonNoShow = isKickedFromGroup || left || isBlocked || !activeAt;
+  const commonNoShow = isKickedFromGroup || left || isBlocked || !isActive;
   const hasDisappearingMessagesGroupAvailable = !isPublic && isGroup && !commonNoShow;
   const hasDisappearingMessagesPrivateAvailable = !isGroup && !commonNoShow;
 

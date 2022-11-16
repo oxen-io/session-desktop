@@ -8,10 +8,7 @@ import {
   showLightBox,
   toggleSelectedMessageId,
 } from '../../../../state/ducks/conversations';
-import {
-  getMessageAttachmentProps,
-  isMessageSelectionMode,
-} from '../../../../state/selectors/conversations';
+import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
 import {
   AttachmentType,
   AttachmentTypeWithPath,
@@ -31,6 +28,7 @@ import { LightBoxOptions } from '../../SessionConversation';
 import { ClickToTrustSender } from './ClickToTrustSender';
 import styled from 'styled-components';
 import classNames from 'classnames';
+import { useMessageAttachmentProps } from '../../../../state/selectors/messages';
 
 export type MessageAttachmentSelectorProps = Pick<
   MessageRenderingProps,
@@ -64,7 +62,7 @@ export const MessageAttachment = (props: Props) => {
   const { messageId, imageBroken, handleImageError } = props;
 
   const dispatch = useDispatch();
-  const attachmentProps = useSelector(state => getMessageAttachmentProps(state as any, messageId));
+  const attachmentProps = useMessageAttachmentProps(props.messageId);
   const multiSelectMode = useSelector(isMessageSelectionMode);
   const onClickOnImageGrid = useCallback(
     (attachment: AttachmentTypeWithPath | AttachmentType) => {

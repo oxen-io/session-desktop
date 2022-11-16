@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { findCachedBlindedMatchOrLookItUp } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
@@ -8,13 +8,13 @@ import { getSodiumRenderer } from '../../../../session/crypto';
 import { PubKey } from '../../../../session/types';
 import { openConversationWithMessages } from '../../../../state/ducks/conversations';
 import { updateUserDetailsModal } from '../../../../state/ducks/modalDialog';
+import { useMessageAvatarProps } from '../../../../state/selectors/messages';
 import {
-  getIsTypingEnabled,
-  getMessageAvatarProps,
-  getSelectedConversationIsGroup,
-  getSelectedConversationIsPublic,
-  getSelectedConversationKey,
-} from '../../../../state/selectors/conversations';
+  useSelectedConversationKey,
+  useSelectedIsOpenOrClosedGroup,
+  useSelectedIsPublic,
+  useSelectedTypingEnabled,
+} from '../../../../state/selectors/selectedConversation';
 import { Avatar, AvatarSize, CrownIcon } from '../../../avatar/Avatar';
 // tslint:disable: use-simple-attributes
 
@@ -27,7 +27,7 @@ export type MessageAvatarSelectorProps = Pick<
   | 'isSenderAdmin'
   | 'direction'
   | 'lastMessageOfSeries'
-  >;
+>;
 
 type Props = { messageId: string };
 
@@ -35,12 +35,11 @@ export const MessageAvatar = (props: Props) => {
   const { messageId } = props;
 
   const dispatch = useDispatch();
-  const avatarProps = useSelector(state => getMessageAvatarProps(state as any, messageId));
-  const selectedConvoKey = useSelector(getSelectedConversationKey);
-  const isSelectedGroup = useSelector(getSelectedConversationIsGroup);
-  const isSelectedPublic = useSelector(getSelectedConversationIsPublic);
-
-  const isTypingEnabled = useSelector(getIsTypingEnabled);
+  const avatarProps = useMessageAvatarProps(messageId);
+  const selectedConvoKey = useSelectedConversationKey();
+  const isSelectedGroup = useSelectedIsOpenOrClosedGroup();
+  const isSelectedPublic = useSelectedIsPublic();
+  const isTypingEnabled = useSelectedTypingEnabled();
 
   if (!avatarProps) {
     return null;

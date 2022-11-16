@@ -1,11 +1,9 @@
 import React from 'react';
 
-import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { useSelector } from 'react-redux';
-import { getGenericReadableMessageSelectorProps } from '../../../../state/selectors/conversations';
 import { GenericReadableMessage } from './GenericReadableMessage';
 import { THUMBNAIL_SIDE } from '../../../../types/attachments/VisualAttachment';
+import { useGenericReadableMessageSelectorProps } from '../../../../state/selectors/messages';
 
 // Same as MIN_WIDTH in ImageGrid.tsx
 export const MINIMUM_LINK_PREVIEW_IMAGE_WIDTH = THUMBNAIL_SIDE;
@@ -16,9 +14,7 @@ type Props = {
 };
 
 export const Message = (props: Props) => {
-  const msgProps = useSelector(state =>
-    getGenericReadableMessageSelectorProps(state as any, props.messageId)
-  );
+  const msgProps = useGenericReadableMessageSelectorProps(props.messageId);
 
   const ctxMenuID = `ctx-menu-message-${uuidv4()}`;
 

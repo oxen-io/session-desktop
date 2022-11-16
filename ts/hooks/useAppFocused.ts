@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getIsAppFocused } from '../state/selectors/section';
+import { useDispatch } from 'react-redux';
+import { useGetAppIsFocused } from '../state/selectors/section';
 import { ipcRenderer } from 'electron';
 import { setIsAppFocused } from '../state/ducks/section';
 
@@ -10,7 +10,7 @@ import { setIsAppFocused } from '../state/ducks/section';
  */
 export function useAppIsFocused() {
   const dispatch = useDispatch();
-  const isFocusedFromStore = useSelector(getIsAppFocused);
+  const isFocusedFromStore = useGetAppIsFocused();
 
   const ipcCallback = (_event: unknown, isFocused: unknown) => {
     if (isFocusedFromStore !== isFocused) {

@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import {
-  getMessageTextProps,
   isMessageSelectionMode,
 } from '../../../../state/selectors/conversations';
+import { useMessageTextProps } from '../../../../state/selectors/messages';
 import { SessionIcon } from '../../../icon';
 import { MessageBody } from './MessageBody';
 
@@ -21,7 +21,7 @@ export type MessageTextSelectorProps = Pick<
 >;
 
 export const MessageText = (props: Props) => {
-  const selected = useSelector(state => getMessageTextProps(state as any, props.messageId));
+  const selected = useMessageTextProps(props.messageId);
   const multiSelectMode = useSelector(isMessageSelectionMode);
 
   if (!selected) {

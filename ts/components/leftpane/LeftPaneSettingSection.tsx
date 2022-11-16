@@ -2,14 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { LeftPaneSectionHeader } from './LeftPaneSectionHeader';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   SectionType,
   setLeftOverlayMode,
   showLeftPaneSection,
   showSettingsSection,
 } from '../../state/ducks/section';
-import { getFocusedSettingsSection } from '../../state/selectors/section';
+import {  useFocusedSettingsSection } from '../../state/selectors/section';
 import { recoveryPhraseModal, updateDeleteAccountModal } from '../../state/ducks/modalDialog';
 import { SessionIcon } from '../icon';
 import { SessionSettingCategory } from '../settings/SessionSettings';
@@ -89,7 +89,7 @@ const LeftPaneSettingsCategoryRow = (props: {
   const { item } = props;
   const { id, title } = item;
   const dispatch = useDispatch();
-  const focusedSettingsSection = useSelector(getFocusedSettingsSection);
+  const focusedSettingsSection = useFocusedSettingsSection();
 
   const dataTestId = `${title.toLowerCase().replace(' ', '-')}-settings-menu-item`;
 

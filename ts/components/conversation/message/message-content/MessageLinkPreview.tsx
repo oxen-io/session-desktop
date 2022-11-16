@@ -4,12 +4,10 @@ import { isImageAttachment } from '../../../../types/Attachment';
 import { Image } from '../../Image';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getIsMessageSelectionMode,
-  getMessageLinkPreviewProps,
-} from '../../../../state/selectors/conversations';
+import { getIsMessageSelectionMode } from '../../../../state/selectors/conversations';
 import { SessionIcon } from '../../../icon';
 import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
+import { useMessageLinkPreviewProps } from '../../../../state/selectors/messages';
 
 export type MessageLinkPreviewSelectorProps = Pick<
   MessageRenderingProps,
@@ -26,7 +24,7 @@ const linkPreviewsImageSize = 100;
 
 export const MessageLinkPreview = (props: Props) => {
   const { isDetailView, messageId } = props;
-  const selected = useSelector(state => getMessageLinkPreviewProps(state as any, messageId));
+  const selected = useMessageLinkPreviewProps(messageId);
   const dispatch = useDispatch();
   const isMessageSelectionMode = useSelector(getIsMessageSelectionMode);
 

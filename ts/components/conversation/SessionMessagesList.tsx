@@ -12,12 +12,7 @@ import {
   PropsForGroupInvitation,
   PropsForGroupUpdate,
 } from '../../state/ducks/conversations';
-import {
-  getOldBottomMessageId,
-  getOldTopMessageId,
-  getSelectedConversationKey,
-  getSortedMessagesTypesOfSelectedConversation,
-} from '../../state/selectors/conversations';
+import { getOldBottomMessageId, getOldTopMessageId } from '../../state/selectors/conversations';
 import { GroupUpdateMessage } from './message/message-item/GroupUpdateMessage';
 import { MessageRequestResponse } from './message/message-item/MessageRequestResponse';
 import { MessageDateBreak } from './message/message-item/DateBreak';
@@ -28,6 +23,8 @@ import { CallNotification } from './message/message-item/notification-bubble/Cal
 import { SessionLastSeenIndicator } from './SessionLastSeenIndicator';
 import { TimerNotification } from './TimerNotification';
 import { DataExtractionNotification } from './message/message-item/DataExtractionNotification';
+import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
+import { useSortedMessageWithTypesProps } from '../../state/selectors/messages';
 
 function isNotTextboxEvent(e: KeyboardEvent) {
   return (e?.target as any)?.type === undefined;
@@ -45,8 +42,8 @@ export const SessionMessagesList = (props: {
   onHomePressed: () => void;
   onEndPressed: () => void;
 }) => {
-  const messagesProps = useSelector(getSortedMessagesTypesOfSelectedConversation);
-  const convoKey = useSelector(getSelectedConversationKey);
+  const messagesProps = useSortedMessageWithTypesProps();
+  const convoKey = useSelectedConversationKey();
 
   const [didScroll, setDidScroll] = useState(false);
   const oldTopMessageId = useSelector(getOldTopMessageId);

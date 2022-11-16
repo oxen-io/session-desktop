@@ -1,8 +1,6 @@
-import { createSelector } from '@reduxjs/toolkit';
 import { StagedAttachmentType } from '../../components/conversation/composition/CompositionBox';
 import { StagedAttachmentsStateType } from '../ducks/stagedAttachments';
 import { StateType } from '../reducer';
-import { getSelectedConversationKey } from './conversations';
 
 export const getStagedAttachmentsState = (state: StateType): StagedAttachmentsStateType =>
   state.stagedAttachments;
@@ -17,12 +15,10 @@ const getStagedAttachmentsForConversation = (
   return state.stagedAttachments[conversationKey] || [];
 };
 
-export const getStagedAttachmentsForCurrentConversation = createSelector(
-  [getSelectedConversationKey, getStagedAttachmentsState],
-  (
-    selectedConversationKey: string | undefined,
-    state: StagedAttachmentsStateType
-  ): Array<StagedAttachmentType> | undefined => {
-    return getStagedAttachmentsForConversation(state, selectedConversationKey);
-  }
-);
+export const getStagedAttachmentsForCurrentConversation = (
+  state: StateType
+): Array<StagedAttachmentType> | undefined => {
+  const stagedAttachments = getStagedAttachmentsState(state);
+  const selectedConvo = state.conversations.selectedConversation;
+  return getStagedAttachmentsForConversation(stagedAttachments, selectedConvo);
+};

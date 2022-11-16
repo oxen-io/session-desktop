@@ -6,8 +6,6 @@ import { useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { MessageModelType, MessageRenderingProps } from '../../../../models/messageType';
 import {
-  getMessageContentSelectorProps,
-  getMessageTextProps,
   getQuotedMessageToAnimate,
   getShouldHighlightMessage,
 } from '../../../../state/selectors/conversations';
@@ -17,6 +15,10 @@ import { MessageQuote } from './MessageQuote';
 import { MessageText } from './MessageText';
 import { ScrollToLoadedMessageContext } from '../../SessionMessagesListContainer';
 import styled, { css } from 'styled-components';
+import {
+  useMessageContentSelectorProps,
+  useMessageTextProps,
+} from '../../../../state/selectors/messages';
 
 export type MessageContentSelectorProps = Pick<
   MessageRenderingProps,
@@ -94,9 +96,7 @@ export const MessageContent = (props: Props) => {
   const { isDetailView, messageId } = props;
   const [highlight, setHighlight] = useState(false);
   const [didScroll, setDidScroll] = useState(false);
-  const contentProps = useSelector(state =>
-    getMessageContentSelectorProps(state as any, messageId)
-  );
+  const contentProps = useMessageContentSelectorProps(messageId);
   const [isMessageVisible, setMessageIsVisible] = useState(false);
 
   const scrollToLoadedMessage = useContext(ScrollToLoadedMessageContext);
@@ -150,7 +150,7 @@ export const MessageContent = (props: Props) => {
 
   const { direction, text, timestamp, serverTimestamp, previews } = contentProps;
 
-  const selectedMsg = useSelector(state => getMessageTextProps(state as any, props.messageId));
+  const selectedMsg = useMessageTextProps(props.messageId);
 
   let isDeleted = false;
   if (selectedMsg && selectedMsg.isDeleted !== undefined) {

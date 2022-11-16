@@ -7,9 +7,9 @@ import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
 import { setNextMessageToPlayId } from '../../state/ducks/conversations';
 import {
   getNextMessageToPlayId,
-  getSortedMessagesOfSelectedConversation,
   isMessageSelectionMode,
 } from '../../state/selectors/conversations';
+import { messagesSelectors } from '../../state/selectors/messages';
 import { getAudioAutoplay } from '../../state/selectors/userConfig';
 import { SessionButton, SessionButtonType } from '../basic/SessionButton';
 import { SessionIcon } from '../icon';
@@ -37,7 +37,7 @@ export const AudioPlayerWithEncryptedFile = (props: {
   const player = useRef<H5AudioPlayer | null>(null);
 
   const autoPlaySetting = useSelector(getAudioAutoplay);
-  const messageProps = useSelector(getSortedMessagesOfSelectedConversation);
+  const messageProps = useSelector(messagesSelectors.getSortedMessagesOfSelectedConversation);
   const nextMessageToPlayId = useSelector(getNextMessageToPlayId);
   const multiSelectMode = useSelector(isMessageSelectionMode);
 

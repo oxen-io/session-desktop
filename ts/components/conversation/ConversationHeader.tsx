@@ -2,18 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components';
 import { ConversationNotificationSettingType } from '../../models/conversationAttributes';
-import {
-  getConversationHeaderTitleProps,
-  getCurrentNotificationSettingText,
-  getIsSelectedActive,
-  getIsSelectedBlocked,
-  getIsSelectedNoteToSelf,
-  getIsSelectedPrivate,
-  getSelectedConversationIsPublic,
-  getSelectedConversationKey,
-  getSelectedMessageIds,
-  isMessageSelectionMode,
-} from '../../state/selectors/conversations';
+import { getSelectedMessageIds, isMessageSelectionMode } from '../../state/selectors/conversations';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -39,7 +28,20 @@ import { SessionIconButton } from '../icon';
 import { Flex } from '../basic/Flex';
 // import { ExpirationTimerOptions } from '../../util/expiringMessages';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../state/ducks/section';
-import { getRightOverlayMode, isRightOverlayShown } from '../../state/selectors/section';
+import { isRightOverlayShown, useRightOverlayMode } from '../../state/selectors/section';
+import {
+  useSelectedConversationKey,
+  useSelectedIsActive,
+  useSelectedIsBlocked,
+  useSelectedIsKickedFromGroup,
+  useSelectedIsNoteToSelf,
+  useSelectedIsOpenOrClosedGroup,
+  useSelectedIsPrivate,
+  useSelectedIsPublic,
+  useSelectedMembers,
+  useSelectedNotificationSetting,
+  useSelectedSubsbriberCount,
+} from '../../state/selectors/selectedConversation';
 
 export interface TimerOption {
   name: string;
@@ -79,8 +81,8 @@ export type ConversationHeaderProps = {
 
 const SelectionOverlay = () => {
   const selectedMessageIds = useSelector(getSelectedMessageIds);
-  const selectedConversationKey = useSelector(getSelectedConversationKey);
-  const isPublic = useSelector(getSelectedConversationIsPublic);
+  const selectedConversationKey = useSelectedConversationKey();
+  const isPublic = useSelectedIsPublic();
   const dispatch = useDispatch();
 
   const { i18n } = window;
@@ -155,11 +157,11 @@ const GearButton = () => {
 };
 
 const CallButton = () => {
-  const isPrivate = useSelector(getIsSelectedPrivate);
-  const isBlocked = useSelector(getIsSelectedBlocked);
-  const activeAt = useSelector(getIsSelectedActive);
-  const isMe = useSelector(getIsSelectedNoteToSelf);
-  const selectedConvoKey = useSelector(getSelectedConversationKey);
+  const isPrivate = useSelectedIsPrivate();
+  const isBlocked = useSelectedIsBlocked();
+  const activeAt = useSelectedIsActive();
+  const isMe = useSelectedIsNoteToSelf();
+  const selectedConvoKey = useSelectedConversationKey();
 
   const hasIncomingCall = useSelector(getHasIncomingCall);
   const hasOngoingCall = useSelector(getHasOngoingCall);
@@ -195,17 +197,6 @@ export const StyledSubtitleContainer = styled.div`
   }
 `;
 
-export type ConversationHeaderTitleProps = {
-  conversationKey: string;
-  isMe: boolean;
-  isGroup: boolean;
-  isPublic: boolean;
-  members: Array<any>;
-  subscriberCount?: number;
-  isKickedFromGroup: boolean;
-  currentNotificationSetting?: ConversationNotificationSettingType;
-};
-
 /**
  * The subtitle beneath a conversation title when looking at a conversation screen.
  * @param props props for subtitle. Text to be displayed
@@ -220,17 +211,22 @@ export const ConversationHeaderSubtitle = (props: { text?: string | null }): JSX
 };
 
 const ConversationHeaderTitle = () => {
-  const headerTitleProps = useSelector(getConversationHeaderTitleProps);
-  const notificationSetting = useSelector(getCurrentNotificationSettingText);
-  const isRightPanelOn = useSelector(getRightOverlayMode);
+  const selectedConversationKey = useSelectedConversationKey();
+  const notificationSetting = useSelectedNotificationSetting();
+  const isRightPanelOn = useRightOverlayMode();
 
-  const convoName = useConversationUsername(headerTitleProps?.conversationKey);
+  const isMe = useSelectedIsNoteToSelf();
+  const isGroup = useSelectedIsOpenOrClosedGroup();
+  const isPublic = useSelectedIsPublic();
+  const subscriberCount = useSelectedSubsbriberCount();
+  const isKickedFromGroup = useSelectedIsKickedFromGroup();
+  const members = useSelectedMembers();
+
+  const convoName = useConversationUsername(selectedConversationKey);
   const dispatch = useDispatch();
-  if (!headerTitleProps) {
+  if (!selectedConversationKey) {
     return null;
   }
-
-  const { isGroup, isPublic, members, subscriberCount, isMe, isKickedFromGroup } = headerTitleProps;
 
   const { i18n } = window;
 
@@ -284,7 +280,7 @@ const ConversationHeaderTitle = () => {
 
 export const ConversationHeaderWithDetails = () => {
   const isSelectionMode = useSelector(isMessageSelectionMode);
-  const selectedConvoKey = useSelector(getSelectedConversationKey);
+  const selectedConvoKey = useSelectedConversationKey();
 
   if (!selectedConvoKey) {
     return null;

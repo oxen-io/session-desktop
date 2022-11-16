@@ -8,11 +8,11 @@ import { Lightbox } from './Lightbox';
 // tslint:disable-next-line: no-submodule-imports
 import useKey from 'react-use/lib/useKey';
 import { AttachmentTypeWithPath } from '../../types/Attachment';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { showLightBox } from '../../state/ducks/conversations';
-import { getSelectedConversationKey } from '../../state/selectors/conversations';
 import { MIME } from '../../types';
 import { saveAttachmentToDisk } from '../../util/attachmentsUtil';
+import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 
 export interface MediaItemType {
   objectURL?: string;
@@ -33,7 +33,7 @@ type Props = {
 export const LightboxGallery = (props: Props) => {
   const { media } = props;
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const selectedConversation = useSelector(getSelectedConversationKey) as string;
+  const selectedConversation = useSelectedConversationKey() as string;
 
   const dispatch = useDispatch();
 

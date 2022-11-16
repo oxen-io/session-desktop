@@ -1,10 +1,10 @@
 import React, { ReactElement, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { useMessageReactsPropsById } from '../../hooks/useParamSelector';
 import { clearSogsReactionByServerId } from '../../session/apis/open_group_api/sogsv3/sogsV3ClearReaction';
 import { getConversationController } from '../../session/conversations';
 import { updateReactClearAllModal } from '../../state/ducks/modalDialog';
+import { useMessageReactsProps } from '../../state/selectors/messages';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionSpinner } from '../basic/SessionSpinner';
@@ -53,7 +53,7 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
   const [clearingInProgress, setClearingInProgress] = useState(false);
 
   const dispatch = useDispatch();
-  const msgProps = useMessageReactsPropsById(messageId);
+  const msgProps = useMessageReactsProps(messageId);
 
   if (!msgProps) {
     return <></>;

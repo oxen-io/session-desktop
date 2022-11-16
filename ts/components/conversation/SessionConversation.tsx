@@ -29,7 +29,6 @@ import {
   quoteMessage,
   ReduxConversationType,
   resetSelectedMessageIds,
-  SortedMessageModelProps,
   updateMentionsMembers,
 } from '../../state/ducks/conversations';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
@@ -71,7 +70,7 @@ interface Props {
   ourNumber: string;
   selectedConversationKey: string;
   selectedConversation?: ReduxConversationType;
-  messagesProps: Array<SortedMessageModelProps>;
+  hasMessages: boolean;
   selectedMessages: Array<string>;
   isRightOverlayShown: boolean;
   hasOngoingCallWithFocusedConvo: boolean;
@@ -241,14 +240,14 @@ export class SessionConversation extends React.Component<Props, State> {
 
     const {
       selectedConversation,
-      messagesProps,
+      hasMessages,
       selectedMessages,
       isRightOverlayShown,
       lightBoxOptions,
       isSelectedConvoInitialLoadingInProgress,
     } = this.props;
 
-    if (!selectedConversation || !messagesProps) {
+    if (!selectedConversation || !hasMessages) {
       // return an empty message view
       return <MessageView />;
     }

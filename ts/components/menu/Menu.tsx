@@ -36,7 +36,7 @@ import { getConversationController } from '../../session/conversations';
 import { changeNickNameModal, updateUserDetailsModal } from '../../state/ducks/modalDialog';
 import { SectionType } from '../../state/ducks/section';
 import { hideMessageRequestBanner } from '../../state/ducks/userConfig';
-import { getFocusedSection } from '../../state/selectors/section';
+import { useFocusedSection } from '../../state/selectors/section';
 import { getTimerOptions } from '../../state/selectors/timerOptions';
 import { ContextConversationId } from '../leftpane/conversation-list-item/ConversationListItem';
 
@@ -105,8 +105,11 @@ export function showDeleteLeftClosedGroup({
   return isClosedGroup && (left || isKickedFromGroup);
 }
 
-
-export const showBanUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
+export const showBanUnbanUser = (
+  weAreAdmin: boolean,
+  isPublic: boolean,
+  isKickedFromGroup: boolean
+) => {
   return !isKickedFromGroup && weAreAdmin && isPublic;
 };
 
@@ -193,7 +196,7 @@ export const InviteContactMenuItem = (): JSX.Element | null => {
 
 export const PinConversationMenuItem = (): JSX.Element | null => {
   const conversationId = useContext(ContextConversationId);
-  const isMessagesSection = useSelector(getFocusedSection) === SectionType.Message;
+  const isMessagesSection = useFocusedSection() === SectionType.Message;
   const isRequest = useIsRequest(conversationId);
 
   if (isMessagesSection && !isRequest) {

@@ -15,14 +15,11 @@ import {
   SortedMessageModelProps,
 } from '../../state/ducks/conversations';
 import { StateType } from '../../state/reducer';
-import {
-  getQuotedMessageToAnimate,
-  getSelectedConversation,
-  getSelectedConversationKey,
-  getSortedMessagesOfSelectedConversation,
-} from '../../state/selectors/conversations';
+import { getQuotedMessageToAnimate } from '../../state/selectors/conversations';
 import { TypingBubble } from './TypingBubble';
 import styled from 'styled-components';
+import { selectedConversationSelectors } from '../../state/selectors/selectedConversation';
+import { messagesSelectors } from '../../state/selectors/messages';
 
 export type SessionMessageListProps = {
   messageContainerRef: React.RefObject<HTMLDivElement>;
@@ -297,9 +294,9 @@ class SessionMessagesListContainerInner extends React.Component<Props> {
 
 const mapStateToProps = (state: StateType) => {
   return {
-    conversationKey: getSelectedConversationKey(state),
-    conversation: getSelectedConversation(state),
-    messagesProps: getSortedMessagesOfSelectedConversation(state),
+    conversationKey: selectedConversationSelectors.getSelectedConversationKey(state),
+    conversation: selectedConversationSelectors.getSelectedConversation(state),
+    messagesProps: messagesSelectors.getSortedMessagesOfSelectedConversation(state),
     animateQuotedMessageId: getQuotedMessageToAnimate(state),
   };
 };

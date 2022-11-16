@@ -8,9 +8,8 @@ import { Flex } from '../../../basic/Flex';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { Reaction, ReactionProps } from '../reactions/Reaction';
 import { SessionIcon } from '../../../icon';
-import { useMessageReactsPropsById } from '../../../../hooks/useParamSelector';
-import { getSelectedConversationIsGroup } from '../../../../state/selectors/conversations';
-import { useSelector } from 'react-redux';
+import { useMessageReactsProps } from '../../../../state/selectors/messages';
+import { useSelectedIsOpenOrClosedGroup } from '../../../../state/selectors/selectedConversation';
 
 export const popupXDefault = -81;
 export const popupYDefault = -90;
@@ -162,9 +161,9 @@ export const MessageReactions = (props: Props): ReactElement => {
   const [popupX, setPopupX] = useState(popupXDefault);
   const [popupY, setPopupY] = useState(popupYDefault);
 
-  const msgProps = useMessageReactsPropsById(messageId);
+  const msgProps = useMessageReactsProps(messageId);
 
-  const inGroup = useSelector(getSelectedConversationIsGroup);
+  const inGroup = useSelectedIsOpenOrClosedGroup();
 
   useEffect(() => {
     if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {
