@@ -15,9 +15,11 @@ import { MessageTextSelectorProps } from '../../components/conversation/message/
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
 import { UserUtils } from '../../session/utils';
 import {
+  ConversationLookupType,
   MessageModelPropsWithConvoProps,
   MessageModelPropsWithoutConvoProps,
   SortedMessageModelProps,
+  UnsortedMessageModelPropsWithConvoProps,
 } from '../ducks/conversations';
 import { StateType } from '../reducer';
 import { getSelectedMessageIds } from './conversations';
@@ -197,6 +199,8 @@ const getSortedMessagesOfSelectedConversation = createSelector(
       return [];
     }
 
+    console.error('getSortedMessagesOfSelectedConversation');
+
     const sortedMessage = sortMessages(messages, isPublic);
     return updateFirstMessageOfSeries(sortedMessage);
   }
@@ -234,20 +238,16 @@ export function useYoungestMessageId() {
   return useSelector(getYoungestMessageId);
 }
 
-// tslint:disable-next-line: cyclomatic-complexity
-const getMessagePropsByMessageId = (
-  state: StateType,
-  id?: string
-): MessageModelPropsWithConvoProps | undefined => {
-  if (!id) {
-    return undefined;
-  }
-  const messages = getSortedMessagesOfSelectedConversation(state);
-  const conversations = state.conversations.conversationLookup;
-  const foundMessageProps: SortedMessageModelProps | undefined = messages?.find(
-    m => m?.propsForMessage?.id === id
-  );
+function isSortedMessage(
+  msg: MessageModelPropsWithoutConvoProps | SortedMessageModelProps
+): msg is SortedMessageModelProps {
+  return (msg as SortedMessageModelProps).firstMessageOfSeries !== undefined;
+}
 
+function fillWithAuthorDetails(
+  conversations: ConversationLookupType,
+  foundMessageProps?: MessageModelPropsWithoutConvoProps | SortedMessageModelProps
+): MessageModelPropsWithConvoProps | UnsortedMessageModelPropsWithConvoProps | undefined {
   if (!foundMessageProps || !foundMessageProps.propsForMessage.convoId) {
     return undefined;
   }
@@ -296,7 +296,30 @@ const getMessagePropsByMessageId = (
       foundSenderConversation.displayNameInProfile ||
       window.i18n('anonymous');
 
-  const messageProps: MessageModelPropsWithConvoProps = {
+  if (isSortedMessage(foundMessageProps)) {
+    const messageProps: MessageModelPropsWithConvoProps = {
+      ...foundMessageProps,
+      propsForMessage: {
+        ...foundMessageProps.propsForMessage,
+        isBlocked: !!foundMessageConversation.isBlocked,
+        isPublic: !!isPublic,
+        isOpenGroupV2: !!isPublic,
+        isSenderAdmin,
+        isDeletable,
+        isDeletableForEveryone,
+        weAreAdmin,
+        conversationType: foundMessageConversation.type,
+        sender,
+        authorAvatarPath: foundSenderConversation.avatarPath || null,
+        isKickedFromGroup: foundMessageConversation.isKickedFromGroup || false,
+        authorProfileName: authorProfileName || 'Unknown',
+        authorName,
+      },
+    };
+
+    return messageProps;
+  }
+  const messageProps: UnsortedMessageModelPropsWithConvoProps = {
     ...foundMessageProps,
     propsForMessage: {
       ...foundMessageProps.propsForMessage,
@@ -317,17 +340,54 @@ const getMessagePropsByMessageId = (
   };
 
   return messageProps;
+}
+
+// tslint:disable-next-line: cyclomatic-complexity
+const getSortedMessagePropsByMessageId = (
+  state: StateType,
+  id?: string
+): MessageModelPropsWithConvoProps | undefined => {
+  if (!id) {
+    return undefined;
+  }
+  const messages = getSortedMessagesOfSelectedConversation(state);
+  const conversations = state.conversations.conversationLookup;
+  const foundMessageProps: SortedMessageModelProps | undefined = messages?.find(
+    m => m?.propsForMessage?.id === id
+  );
+  return fillWithAuthorDetails(conversations, foundMessageProps) as
+    | MessageModelPropsWithConvoProps
+    | undefined;
+};
+
+// tslint:disable-next-line: cyclomatic-complexity
+const getUnsortedMessagePropsByMessageId = (
+  state: StateType,
+  id?: string
+): UnsortedMessageModelPropsWithConvoProps | undefined => {
+  if (!id) {
+    return undefined;
+  }
+  const messages = state.conversations.messages;
+  const conversations = state.conversations.conversationLookup;
+  const foundMessageProps: MessageModelPropsWithoutConvoProps | undefined = messages?.find(
+    m => m?.propsForMessage?.id === id
+  );
+
+  return fillWithAuthorDetails(conversations, foundMessageProps) as
+    | UnsortedMessageModelPropsWithConvoProps
+    | undefined;
 };
 
 const getMessageAvatarProps = (
   state: StateType,
   messageId?: string
 ): MessageAvatarSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  // for the avatar we do need to know if this the first message of the serie or not. So we use the `Sorted` function
+  const props = getSortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
-  console.info('getMessageAvatarProps break me down');
 
   const messageAvatarProps: MessageAvatarSelectorProps = {
     lastMessageOfSeries: props.lastMessageOfSeries,
@@ -355,7 +415,7 @@ const getMessageReactsProps = (
   if (!messageId) {
     return null;
   }
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return null;
   }
@@ -397,7 +457,7 @@ const getMessageLinkPreviewProps = (
   state: StateType,
   messageId?: string
 ): MessageLinkPreviewSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -419,7 +479,7 @@ const getMessageQuoteProps = (
   state: StateType,
   messageId?: string
 ): MessageQuoteSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -437,7 +497,7 @@ const getMessageStatusProps = (
   state: StateType,
   messageId?: string
 ): MessageStatusSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -455,7 +515,7 @@ const getMessageTextProps = (
   state: StateType,
   messageId?: string
 ): MessageTextSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -479,7 +539,7 @@ const getMessageDetailsProps = (state: StateType, messageId?: string) => {
   if (!messageId) {
     return null;
   }
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return null;
   }
@@ -522,7 +582,7 @@ const getMessageContextMenuProps = (
   state: StateType,
   messageId?: string
 ): MessageContextMenuSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -556,12 +616,12 @@ const getMessageAuthorProps = (
   state: StateType,
   messageId?: string
 ): MessageAuthorSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getSortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
 
-  console.warn('getMessageAuthorProps break me appart');
+  // console.info('getMessageAuthorProps break me appart');
   const msgProps: MessageAuthorSelectorProps = {
     firstMessageOfSeries: props.firstMessageOfSeries,
     ...pick(props.propsForMessage, ['authorName', 'sender', 'authorProfileName', 'direction']),
@@ -578,7 +638,7 @@ const getMessageAttachmentProps = (
   state: StateType,
   messageId?: string
 ): MessageAttachmentSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -603,7 +663,7 @@ export function useMessageAttachmentProps(messageId?: string) {
 }
 
 const getIsMessageSelected = (state: StateType, messageId?: string): boolean => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   const selectedIds = getSelectedMessageIds(state);
   if (!props || isEmpty(props)) {
     return false;
@@ -622,7 +682,7 @@ const getMessageContentSelectorProps = (
   state: StateType,
   messageId?: string
 ): MessageContentSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -649,7 +709,7 @@ const getMessageContentWithStatusesSelectorProps = (
   state: StateType,
   messageId?: string
 ): MessageContentWithStatusSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }
@@ -671,7 +731,7 @@ const getGenericReadableMessageSelectorProps = (
   state: StateType,
   messageId?: string
 ): GenericReadableMessageSelectorProps | undefined => {
-  const props = getMessagePropsByMessageId(state, messageId);
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return undefined;
   }

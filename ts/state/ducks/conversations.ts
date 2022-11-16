@@ -39,6 +39,10 @@ export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
   propsForMessage: PropsForMessageWithConvoProps;
 };
 
+export type UnsortedMessageModelPropsWithConvoProps = MessageModelPropsWithoutConvoProps & {
+  propsForMessage: PropsForMessageWithConvoProps;
+};
+
 export type LastMessageStatusType = MessageDeliveryStatus | undefined;
 
 export type FindAndFormatContactType = {
