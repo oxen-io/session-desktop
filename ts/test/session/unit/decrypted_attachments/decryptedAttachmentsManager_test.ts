@@ -66,12 +66,6 @@ describe('DecryptedAttachmentsManager', () => {
         TestUtils.stubCreateObjectUrl();
       });
 
-      it('url starts with attachment path but is not already decrypted', () => {
-        expect(
-          DecryptedAttachmentsManager.getAlreadyDecryptedMediaUrl('/local/attachment/attachment1')
-        ).to.be.eq(null);
-      });
-
       it('url starts with attachment path but is not already decrypted', async () => {
         expect(
           DecryptedAttachmentsManager.getAlreadyDecryptedMediaUrl('/local/attachment/attachment1')
@@ -92,8 +86,9 @@ describe('DecryptedAttachmentsManager', () => {
         expect(getItemById.callCount).to.be.eq(1);
 
         const now = `${Date.now()}`;
-        expect(resolved).to.be.not.empty;
-        expect(resolved.startsWith(now.slice(0, 9))).to.be.true;
+        console.warn('resolved.resolved', resolved.resolved);
+        expect(resolved.resolved).to.be.not.empty;
+        expect(resolved.resolved.startsWith(now.slice(0, 9))).to.be.true;
       });
 
       it('url starts with attachment path and is already decrypted', async () => {
@@ -116,8 +111,8 @@ describe('DecryptedAttachmentsManager', () => {
         expect(getItemById.callCount).to.be.eq(1);
 
         const now = `${Date.now()}`;
-        expect(resolved).to.be.not.empty;
-        expect(resolved.startsWith(now.slice(0, 9))).to.be.true;
+        expect(resolved.resolved).to.be.not.empty;
+        expect(resolved.resolved.startsWith(now.slice(0, 9))).to.be.true;
 
         const resolved2 = await DecryptedAttachmentsManager.getDecryptedMediaUrl(
           '/local/attachment/attachment1',
@@ -131,8 +126,8 @@ describe('DecryptedAttachmentsManager', () => {
         expect(getItemById.callCount).to.be.eq(1);
 
         const now2 = `${Date.now()}`;
-        expect(resolved2).to.be.not.empty;
-        expect(resolved2.startsWith(now2.slice(0, 9))).to.be.true;
+        expect(resolved2.resolved).to.be.not.empty;
+        expect(resolved2.resolved.startsWith(now2.slice(0, 9))).to.be.true;
       });
     });
   }); // tslint:disable: no-empty

@@ -406,11 +406,11 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
 
     const decryptedAvatarUrl = await getDecryptedMediaUrl(currentAttachmentPath, IMAGE_JPEG, true);
 
-    if (!decryptedAvatarUrl) {
+    if (!decryptedAvatarUrl.resolved) {
       window.log.warn('Could not decrypt avatar stored locally..');
       return;
     }
-    const blob = await urlToBlob(decryptedAvatarUrl);
+    const blob = await urlToBlob(decryptedAvatarUrl.resolved);
 
     decryptedAvatarData = await blob.arrayBuffer();
   }

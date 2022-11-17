@@ -15,12 +15,19 @@ import {
   getAttachmentPath,
 } from '../../types/MessageAttachment';
 import { decryptAttachmentBufferRenderer } from '../../util/local_attachments_encrypter';
+import Queue from 'queue-promise';
+
+const queue = new Queue({
+  concurrent: 1,
+  interval: 100,
+});
+type DecryptResolve = { requested: string; resolved: string };
 
 export const urlToDecryptedBlobMap = new Map<
   string,
   { decrypted: string; lastAccessTimestamp: number; forceRetain: boolean }
 >();
-export const urlToDecryptingPromise = new Map<string, Promise<string>>();
+export const urlToDecryptingPromise = new Map<string, Promise<DecryptResolve>>();
 
 export const cleanUpOldDecryptedMedias = () => {
   const currentTimestamp = Date.now();
@@ -63,16 +70,65 @@ export const readFileContent = async (url: string) => {
   return fse.readFile(url);
 };
 
+queue.on('reject', error => {
+  window.log.warn('[decryptEncryptedUrl] failed with', error);
+});
+
+async function getPromiseToEnqueue(
+  url: string,
+  contentType: string,
+  isAvatar: boolean,
+  callback: (result: DecryptResolve) => void
+) {
+  const taskToRun = new Promise<DecryptResolve>(async resolve => {
+    window.log.info('about to read and decrypt file :', url, path.isAbsolute(url));
+    try {
+      const absUrl = path.isAbsolute(url) ? url : getAbsoluteAttachmentPath(url);
+      const encryptedFileContent = await readFileContent(absUrl);
+      const decryptedContent = await decryptAttachmentBufferRenderer(encryptedFileContent.buffer);
+      if (decryptedContent?.length) {
+        const arrayBuffer = decryptedContent.buffer;
+        const obj = makeObjectUrl(arrayBuffer, contentType);
+
+        if (!urlToDecryptedBlobMap.has(url)) {
+          urlToDecryptedBlobMap.set(url, {
+            decrypted: obj,
+            lastAccessTimestamp: Date.now(),
+            forceRetain: isAvatar,
+          });
+        }
+        urlToDecryptingPromise.delete(url);
+        resolve({ requested: url, resolved: obj });
+        callback({ requested: url, resolved: obj });
+
+        return;
+      }
+      urlToDecryptingPromise.delete(url);
+      // failed to decrypt, fallback to url image loading
+      // it might be a media we received before the update encrypting attachments locally.
+      resolve({ requested: url, resolved: url });
+      callback({ requested: url, resolved: url });
+      return;
+    } catch (e) {
+      urlToDecryptingPromise.delete(url);
+      window.log.warn(e);
+      resolve({ requested: url, resolved: '' });
+      callback({ requested: url, resolved: url });
+    }
+  });
+  return taskToRun;
+}
+
 export const getDecryptedMediaUrl = async (
   url: string,
   contentType: string,
   isAvatar: boolean
-): Promise<string> => {
+): Promise<DecryptResolve> => {
   if (!url) {
-    return url;
+    return { requested: url, resolved: url };
   }
   if (url.startsWith('blob:')) {
-    return url;
+    return { requested: url, resolved: url };
   }
 
   const isAbsolute = path.isAbsolute(url);
@@ -98,58 +154,27 @@ export const getDecryptedMediaUrl = async (
       });
       // typescript does not realize that the has above makes sure the get is not undefined
 
-      return existingObjUrl;
+      return { requested: url, resolved: existingObjUrl };
     }
 
     if (urlToDecryptingPromise.has(url)) {
-      return urlToDecryptingPromise.get(url) as Promise<string>;
+      return urlToDecryptingPromise.get(url) as Promise<DecryptResolve>;
     }
+    const resolvedInQueue = new Promise<DecryptResolve>(resolve => {
+      const callback = (result: DecryptResolve) => {
+        resolve(result);
+      };
+      queue.enqueue(async () => getPromiseToEnqueue(url, contentType, isAvatar, callback));
+    });
+    // now, create a promise waiting for the one on the queue to resolve
 
-    urlToDecryptingPromise.set(
-      url,
-      new Promise(async resolve => {
-        window.log.info('about to read and decrypt file :', url, path.isAbsolute(url));
-        try {
-          const absUrl = path.isAbsolute(url) ? url : getAbsoluteAttachmentPath(url);
-          const encryptedFileContent = await readFileContent(absUrl);
-          const decryptedContent = await decryptAttachmentBufferRenderer(
-            encryptedFileContent.buffer
-          );
-          if (decryptedContent?.length) {
-            const arrayBuffer = decryptedContent.buffer;
-            const obj = makeObjectUrl(arrayBuffer, contentType);
+    urlToDecryptingPromise.set(url, resolvedInQueue);
 
-            if (!urlToDecryptedBlobMap.has(url)) {
-              urlToDecryptedBlobMap.set(url, {
-                decrypted: obj,
-                lastAccessTimestamp: Date.now(),
-                forceRetain: isAvatar,
-              });
-            }
-            window.log.info(' file decrypted :', url, ' as ', obj);
-            urlToDecryptingPromise.delete(url);
-            resolve(obj);
-            return;
-          } else {
-            // failed to decrypt, fallback to url image loading
-            // it might be a media we received before the update encrypting attachments locally.
-            urlToDecryptingPromise.delete(url);
-            window.log.info('error decrypting file :', url);
-            resolve(url);
-
-            return;
-          }
-        } catch (e) {
-          window.log.warn(e);
-        }
-      })
-    );
-
-    return urlToDecryptingPromise.get(url) as Promise<string>;
+    return urlToDecryptingPromise.get(url) as Promise<DecryptResolve>;
   } else {
     // Not sure what we got here. Just return the file.
 
-    return url;
+    return { requested: url, resolved: url };
   }
 };
 
@@ -181,7 +206,7 @@ export const getAlreadyDecryptedMediaUrl = (url: string): string | null => {
 
 export const getDecryptedBlob = async (url: string, contentType: string): Promise<Blob> => {
   const decryptedUrl = await getDecryptedMediaUrl(url, contentType, false);
-  return urlToBlob(decryptedUrl);
+  return urlToBlob(decryptedUrl.resolved);
 };
 
 /**

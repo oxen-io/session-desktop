@@ -392,7 +392,7 @@ export const saveAttachmentToDisk = async ({
 }) => {
   const decryptedUrl = await getDecryptedMediaUrl(attachment.url, attachment.contentType, false);
   save({
-    attachment: { ...attachment, url: decryptedUrl },
+    attachment: { ...attachment, url: decryptedUrl.resolved },
     document,
     getAbsolutePath: getAbsoluteAttachmentPath,
     timestamp: messageTimestamp,

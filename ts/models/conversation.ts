@@ -1746,11 +1746,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     }
     const decryptedAvatarUrl = await getDecryptedMediaUrl(avatarUrl, IMAGE_JPEG, true);
 
-    if (!decryptedAvatarUrl) {
+    if (!decryptedAvatarUrl.resolved) {
       window.log.warn('Could not decrypt avatar stored locally for getNotificationIcon..');
       return noIconUrl;
     }
-    return decryptedAvatarUrl;
+    return decryptedAvatarUrl.resolved;
   }
 
   public async notify(message: MessageModel) {

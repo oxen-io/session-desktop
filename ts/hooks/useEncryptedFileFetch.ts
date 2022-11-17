@@ -20,7 +20,7 @@ export const useEncryptedFileFetch = (url: string, contentType: string, isAvatar
     perfEnd(`getDecryptedMediaUrl-${url}`, `getDecryptedMediaUrl-${url}`);
 
     if (mountedRef.current) {
-      setUrlToLoad(decryptedUrl);
+      setUrlToLoad(decryptedUrl.resolved);
       setLoading(false);
     }
   }

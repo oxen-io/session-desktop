@@ -39,7 +39,7 @@ export const getImageDimensions = async ({
     });
     // TODO image/jpeg is hard coded, but it does not look to cause any issues
     const decryptedUrl = await getDecryptedMediaUrl(objectUrl, 'image/jpg', false);
-    image.src = decryptedUrl;
+    image.src = decryptedUrl.resolved;
   });
 
 export const makeImageThumbnailBuffer = async ({
@@ -95,7 +95,7 @@ export const makeVideoScreenshot = async ({
     });
 
     const decryptedUrl = await getDecryptedMediaUrl(objectUrl, contentType, false);
-    video.src = decryptedUrl;
+    video.src = decryptedUrl.resolved;
     video.muted = true;
     // for some reason, this is to be started, otherwise the generated thumbnail will be empty
     await video.play();
