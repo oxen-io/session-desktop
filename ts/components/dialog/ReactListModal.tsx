@@ -3,7 +3,6 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../data/data';
-import { useWeAreModerator } from '../../hooks/useParamSelector';
 import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { UserUtils } from '../../session/utils';
 import {
@@ -11,8 +10,11 @@ import {
   updateReactListModal,
   updateUserDetailsModal,
 } from '../../state/ducks/modalDialog';
-import { useMessageReactsProps } from '../../state/selectors/messages';
-import { useSelectedIsPublic } from '../../state/selectors/selectedConversation';
+import { useMessageSortedReactsProps } from '../../state/selectors/messages';
+import {
+  useSelectedIsPublic,
+  useSelectedWeAreAdmin,
+} from '../../state/selectors/selectedConversation';
 import { SortedReactionList } from '../../types/Reaction';
 import { nativeEmojiData } from '../../util/emoji';
 import { Reactions } from '../../util/reactions';
@@ -228,9 +230,9 @@ export const ReactListModal = (props: Props): ReactElement => {
   const [count, setCount] = useState<number | null>(null);
   const [senders, setSenders] = useState<Array<string>>([]);
 
-  const msgProps = useMessageReactsProps(messageId);
+  const sortedReacts = useMessageSortedReactsProps(messageId);
   const isPublic = useSelectedIsPublic();
-  const weAreModerator = useWeAreModerator(msgProps?.convoId);
+  const weAreModerator = useSelectedWeAreAdmin();
   const me = UserUtils.getOurPubKeyStrFromCache();
 
   // tslint:disable: cyclomatic-complexity
@@ -242,15 +244,14 @@ export const ReactListModal = (props: Props): ReactElement => {
       setCurrentReact(reaction);
     }
 
-    if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {
-      setReactions(msgProps?.sortedReacts);
+    if (sortedReacts && !isEqual(reactions, sortedReacts)) {
+      setReactions(sortedReacts);
     }
 
     if (
       reactions &&
       reactions.length > 0 &&
-      ((msgProps?.sortedReacts && msgProps.sortedReacts.length === 0) ||
-        msgProps?.sortedReacts === undefined)
+      ((sortedReacts && sortedReacts.length === 0) || sortedReacts === undefined)
     ) {
       setReactions([]);
     }
@@ -284,12 +285,12 @@ export const ReactListModal = (props: Props): ReactElement => {
     me,
     reaction,
     reactionsMap[currentReact]?.count,
-    msgProps?.sortedReacts,
+    sortedReacts,
     reactionsMap,
     senders,
   ]);
 
-  if (!msgProps) {
+  if (isEmpty(sortedReacts)) {
     return <></>;
   }
 

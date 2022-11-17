@@ -209,13 +209,22 @@ export class SwarmPolling {
         return this.pollNodeForKey(n, pubkey, namespaces);
       })
     );
+    const batchPollSettled =
+      promisesSettled[0].status === 'fulfilled' ? promisesSettled[0].value : null;
+    const firstBatchResults = batchPollSettled?.[0];
+    let arrayOfResults: Array<any> = [];
+    if (!firstBatchResults || firstBatchResults.code !== 200) {
+      window.log.warn('batch poll failed with code ', firstBatchResults?.code);
+    } else {
+      const arrayOfResultsWithNull = firstBatchResults?.results?.messages || [];
 
-    const arrayOfResultsWithNull = promisesSettled.map(entry =>
-      entry.status === 'fulfilled' ? entry.value : null
+      // filter out null (exception thrown)
+      arrayOfResults = _.compact(arrayOfResultsWithNull);
+    }
+
+    console.info(
+      'for now, we only want to extract the first result from the batch request results.'
     );
-
-    // filter out null (exception thrown)
-    const arrayOfResults = _.compact(arrayOfResultsWithNull);
 
     // Merge results into one list of unique messages
     const messages = _.uniqBy(_.flatten(arrayOfResults), (x: any) => x.hash);

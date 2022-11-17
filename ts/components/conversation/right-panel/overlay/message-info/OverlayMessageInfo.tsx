@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -116,6 +117,8 @@ const MessageInfoPage = (props: { messageId: string }) => {
     sender,
     messageHash,
     attachments,
+    errors,
+    status,
   } = messageDetailsProps;
 
   const sent = `${window.i18n('sent')}:`;
@@ -138,6 +141,14 @@ const MessageInfoPage = (props: { messageId: string }) => {
     );
   };
 
+  const hasError = !isEmpty(errors);
+
+  const errorString = hasError
+    ? errors?.reduce((previous, current) => {
+        return `${previous} ${current.name}: "${current.message}";`;
+      }, '')
+    : null;
+
   return (
     <>
       <MessageBodyContainer>
@@ -151,7 +162,10 @@ const MessageInfoPage = (props: { messageId: string }) => {
         {hasServerId && <LabelWithInfo label={serverIdStr} info={`${serverId}`} />}
         {hasMessageHash && <LabelWithInfo label={messageHashStr} info={messageHash} />}
         <MessageInfoAuthor sender={sender} />
-
+        {!!status && <LabelWithInfo label={window.i18n('status')} info={status} />}
+        {hasError && (
+          <LabelWithInfo label={window.i18n('error')} info={errorString || 'Unknown error'} />
+        )}
         <PanelButtonGroup>
           {messageDetailsProps.isDeletable && (
             <PanelIconButton
@@ -269,6 +283,7 @@ const AttachmentsInfoPage = (props: { messageId: string; defaultAttachment: numb
 
   const isImageOrVideo = isImage || isVideo;
 
+  console.warn('TODO');
   function onError() {
     console.warn('TODO');
   }
@@ -328,10 +343,17 @@ const AttachmentsInfoPage = (props: { messageId: string; defaultAttachment: numb
 
 export const OverlayMessageInfo = () => {
   const rightOverlay = useRightOverlayMode();
+  const dispatch = useDispatch();
   const selectedConvoId = useSelectedConversationKey();
   const { messageId, defaultAttachment } = rightOverlay?.params || {};
 
   const messageDetailsProps = useMessageDetailsProps(messageId);
+
+  useEffect(() => {
+    if (messageId && !messageDetailsProps && rightOverlay?.type === 'message_info') {
+      dispatch(resetRightOverlayMode());
+    }
+  }, [messageId, messageDetailsProps]);
 
   if (!rightOverlay || rightOverlay.type !== 'message_info' || !messageId || !selectedConvoId) {
     return null;
@@ -340,8 +362,7 @@ export const OverlayMessageInfo = () => {
   if (!messageDetailsProps) {
     return null;
   }
-  const { attachments } = messageDetailsProps;
-  
+
   const showMessageInfoPage = defaultAttachment === undefined;
 
   return (

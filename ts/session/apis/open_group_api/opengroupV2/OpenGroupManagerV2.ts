@@ -111,7 +111,11 @@ export class OpenGroupManagerV2 {
     if (this.isPolling) {
       return;
     }
-    const allConvos = await OpenGroupData.getAllOpenGroupV2Conversations();
+    const convoCollection = await OpenGroupData.getAllOpenGroupV2Conversations();
+    const allConvosIds = convoCollection?.models.map(m => m.id) as Array<string>;
+    const allConvosLowerCase = allConvosIds.map(m => {
+      return m.toLowerCase();
+    });
 
     let allRoomInfos = OpenGroupData.getAllV2OpenGroupRoomsMap();
 
@@ -123,7 +127,7 @@ export class OpenGroupManagerV2 {
         [...allRoomInfos.values()].map(async infos => {
           try {
             const roomConvoId = getOpenGroupV2ConversationId(infos.serverUrl, infos.roomId);
-            if (!allConvos.get(roomConvoId)) {
+            if (!allConvosLowerCase.includes(roomConvoId.toLowerCase())) {
               // remove the roomInfos locally for this open group room
               await OpenGroupData.removeV2OpenGroupRoom(roomConvoId);
               getOpenGroupManager().removeRoomFromPolledRooms(infos);

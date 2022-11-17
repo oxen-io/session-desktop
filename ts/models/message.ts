@@ -463,6 +463,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       props.isDeleted = this.get('isDeleted');
     }
 
+    if (!isEmpty(this.get('errors'))) {
+      props.errors = this.get('errors') || undefined;
+    }
+
     if (this.get('messageHash')) {
       props.messageHash = this.get('messageHash');
     }

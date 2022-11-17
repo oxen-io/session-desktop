@@ -8,6 +8,7 @@ import { toggleSelectedMessageId } from '../../../../state/ducks/conversations';
 import { updateReactListModal } from '../../../../state/ducks/modalDialog';
 import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
 import { useMessageContentWithStatusesSelectorProps } from '../../../../state/selectors/messages';
+import { useSelectedHasReactions } from '../../../../state/selectors/selectedConversation';
 import { Reactions } from '../../../../util/reactions';
 
 import { MessageAuthorText } from './MessageAuthorText';
@@ -26,7 +27,6 @@ type Props = {
   ctxMenuID: string;
   isDetailView?: boolean;
   dataTestId?: string;
-  enableReactions: boolean;
 };
 // tslint:disable: use-simple-attributes
 
@@ -49,6 +49,7 @@ const StyledMessageWithAuthor = styled.div<{ isIncoming: boolean }>`
 export const MessageContentWithStatuses = (props: Props) => {
   const contentProps = useMessageContentWithStatusesSelectorProps(props.messageId);
   const dispatch = useDispatch();
+  const hasReactions = useSelectedHasReactions();
 
   const multiSelectMode = useSelector(isMessageSelectionMode);
 
@@ -83,7 +84,7 @@ export const MessageContentWithStatuses = (props: Props) => {
     }
   };
 
-  const { messageId, ctxMenuID, isDetailView, dataTestId, enableReactions } = props;
+  const { messageId, ctxMenuID, isDetailView, dataTestId } = props;
   if (!contentProps) {
     return null;
   }
@@ -137,11 +138,11 @@ export const MessageContentWithStatuses = (props: Props) => {
           <MessageContextMenu
             messageId={messageId}
             contextMenuId={ctxMenuID}
-            enableReactions={enableReactions}
+            enableReactions={hasReactions}
           />
         )}
       </div>
-      {enableReactions && !isDetailView && (
+      {hasReactions && !isDetailView && (
         <MessageReactions
           messageId={messageId}
           onClick={handleMessageReaction}

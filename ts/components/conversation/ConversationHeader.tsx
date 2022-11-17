@@ -249,9 +249,7 @@ const ConversationHeaderTitle = () => {
     memberCountText = isPublic ? i18n('activeMembers', [count]) : i18n('members', [count]);
   }
 
-  const notificationSubtitle = notificationSetting
-    ? window.i18n('notificationSubtitle', [notificationSetting])
-    : null;
+  const notificationSubtitle = window.i18n('notificationSubtitle', [notificationSetting]);
   const fullTextSubtitle = memberCountText
     ? `${memberCountText} ● ${notificationSubtitle}`
     : `${notificationSubtitle}`;

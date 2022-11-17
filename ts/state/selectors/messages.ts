@@ -9,7 +9,6 @@ import { MessageContentWithStatusSelectorProps } from '../../components/conversa
 import { MessageContextMenuSelectorProps } from '../../components/conversation/message/message-content/MessageContextMenu';
 import { MessageLinkPreviewSelectorProps } from '../../components/conversation/message/message-content/MessageLinkPreview';
 import { MessageQuoteSelectorProps } from '../../components/conversation/message/message-content/MessageQuote';
-import { MessageReactsSelectorProps } from '../../components/conversation/message/message-content/MessageReactions';
 import { MessageStatusSelectorProps } from '../../components/conversation/message/message-content/MessageStatus';
 import { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
@@ -408,49 +407,49 @@ export function useMessageAvatarProps(messageId?: string) {
   return useSelector((state: StateType) => getMessageAvatarProps(state, messageId));
 }
 
-const getMessageReactsProps = (
-  state: StateType,
-  messageId?: string
-): MessageReactsSelectorProps | null => {
+function getMessageSortedReactsProps(state: StateType, messageId?: string) {
   if (!messageId) {
-    return null;
+    return [];
   }
+  const props = getUnsortedMessagePropsByMessageId(state, messageId);
+  if (!props || isEmpty(props)) {
+    return [];
+  }
+
+  const { reacts } = props.propsForMessage;
+
+  if (reacts) {
+    // NOTE we don't want to render reactions that have 'senders' as an object this is a deprecated type used during development 25/08/2022
+    const oldReactions = Object.values(reacts).filter(reaction => !Array.isArray(reaction.senders));
+
+    if (oldReactions.length > 0) {
+      return [];
+    }
+
+    const sortedReacts = Object.entries(reacts).sort((a, b) => {
+      return a[1].index < b[1].index ? -1 : a[1].index > b[1].index ? 1 : 0;
+    });
+
+    return sortedReacts;
+  }
+
+  return [];
+}
+
+export function useMessageSortedReactsProps(messageId?: string) {
+  return useSelector((state: StateType) => getMessageSortedReactsProps(state, messageId));
+}
+
+function getMessageServerId(state: StateType, messageId?: string) {
   const props = getUnsortedMessagePropsByMessageId(state, messageId);
   if (!props || isEmpty(props)) {
     return null;
   }
-  console.error('getMessageReactsProps break me down');
+  return props.propsForMessage.serverId;
+}
 
-  const msgProps: MessageReactsSelectorProps = pick(props.propsForMessage, [
-    'convoId',
-    'conversationType',
-    'isPublic',
-    'reacts',
-    'serverId',
-  ]);
-
-  if (msgProps.reacts) {
-    // NOTE we don't want to render reactions that have 'senders' as an object this is a deprecated type used during development 25/08/2022
-    const oldReactions = Object.values(msgProps.reacts).filter(
-      reaction => !Array.isArray(reaction.senders)
-    );
-
-    if (oldReactions.length > 0) {
-      msgProps.reacts = undefined;
-      return msgProps;
-    }
-
-    const sortedReacts = Object.entries(msgProps.reacts).sort((a, b) => {
-      return a[1].index < b[1].index ? -1 : a[1].index > b[1].index ? 1 : 0;
-    });
-    msgProps.sortedReacts = sortedReacts;
-  }
-
-  return msgProps;
-};
-
-export function useMessageReactsProps(messageId?: string) {
-  return useSelector((state: StateType) => getMessageReactsProps(state, messageId));
+export function useServerId(messageId?: string) {
+  return useSelector((state: StateType) => getMessageServerId(state, messageId));
 }
 
 const getMessageLinkPreviewProps = (
@@ -552,6 +551,7 @@ const getMessageDetailsProps = (state: StateType, messageId?: string) => {
 
     'direction',
     'status',
+    'errors',
     'isDeleted',
     'isDeletable',
     'isDeletableForEveryone',
@@ -572,11 +572,7 @@ export function useMessageDetailsProps(messageId?: string) {
     if (!messageId) {
       return null;
     }
-    const messageDetailsProps = getMessageDetailsProps(state, messageId);
-    if (!messageDetailsProps) {
-      return null;
-    }
-    return messageDetailsProps;
+    return getMessageDetailsProps(state, messageId) || null;
   });
 }
 

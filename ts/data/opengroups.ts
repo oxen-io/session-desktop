@@ -142,7 +142,6 @@ async function saveV2OpenGroupRoom(room: OpenGroupV2Room): Promise<void> {
   if (!room.conversationId || !room.roomId || !room.serverUrl || !room.serverPublicKey) {
     throw new Error('Cannot save v2 room, invalid data');
   }
-
   const found =
     (room.conversationId &&
       throwIfNotLoaded().find(m => m.conversationId === room.conversationId)) ||

@@ -29,7 +29,7 @@ export interface MessageAttributes {
   groupInvitation?: any;
   attachments?: any;
   conversationId: string;
-  errors?: any;
+  errors?: Array<any> | null;
   flags?: number;
   hasAttachments: 1 | 0;
   hasFileAttachments: 1 | 0;

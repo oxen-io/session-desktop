@@ -5,6 +5,7 @@ import {
   CLOSED_GROUP_V2_KEY_PAIRS_TABLE,
   CONVERSATIONS_TABLE,
   dropFtsAndTriggers,
+  formatRowOfConversation,
   GUARD_NODE_TABLE,
   jsonToObject,
   LAST_HASHES_TABLE,
@@ -1015,11 +1016,21 @@ function updateToSessionSchemaVersion27(currentVersion: number, db: BetterSqlite
     /**
      * Then, update the conversations table by doing the same thing
      */
+    const opengroupRows = db
+      .prepare(
+        `SELECT * FROM ${CONVERSATIONS_TABLE} WHERE
+       type = 'group' AND
+       id LIKE 'publicChat:__%@%'
+      ORDER BY id ASC;`
+      )
+      .all();
+
+    const formattedOpengroup = (opengroupRows || []).map(formatRowOfConversation);
     const allSessionV2ConvosIp = compact(
-      sqlNode.getAllOpenGroupV2Conversations(db).filter(m => m?.id.includes(ipToRemove))
+      formattedOpengroup.filter(m => m?.id.includes(ipToRemove))
     );
     const allSessionV2ConvosDns = compact(
-      sqlNode.getAllOpenGroupV2Conversations(db).filter(m => m?.id.includes(domainNameToUse))
+      formattedOpengroup.filter(m => m?.id.includes(domainNameToUse))
     );
 
     const duplicatesConvosIpAndDns = allSessionV2ConvosIp.filter(ip => {

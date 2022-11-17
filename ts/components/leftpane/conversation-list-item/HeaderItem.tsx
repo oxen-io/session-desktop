@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../../data/data';
@@ -119,43 +119,42 @@ const MentionAtSymbol = styled.span`
   }
 `;
 
+const openConvoToLastMention = async (
+  e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+  conversationId: string
+) => {
+  e.stopPropagation();
+  e.preventDefault();
+
+  // mousedown is invoked sooner than onClick, but for both right and left click
+  if (e.button === 0) {
+    const usInThatConversation =
+      getUsBlindedInThatServer(conversationId) || UserUtils.getOurPubKeyStrFromCache();
+
+    const oldestMessageUnreadWithMention =
+      (await Data.getFirstUnreadMessageWithMention(conversationId, usInThatConversation)) || null;
+    if (oldestMessageUnreadWithMention) {
+      await openConversationToSpecificMessage({
+        conversationKey: conversationId,
+        messageIdToNavigateTo: oldestMessageUnreadWithMention,
+        shouldHighlightMessage: true,
+      });
+    } else {
+      window.log.info('cannot open to latest mention as no unread mention are found');
+      await openConversationWithMessages({
+        conversationKey: conversationId,
+        messageId: null,
+      });
+    }
+  }
+};
+
 export const ConversationListItemHeaderItem = () => {
   const conversationId = useContext(ContextConversationId);
 
   const isSearchingMode = useSelector(isSearching);
 
   const convoProps = useHeaderItemProps(conversationId);
-
-  const openConvoToLastMention = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement>) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      // mousedown is invoked sooner than onClick, but for both right and left click
-      if (e.button === 0) {
-        const usInThatConversation =
-          getUsBlindedInThatServer(conversationId) || UserUtils.getOurPubKeyStrFromCache();
-
-        const oldestMessageUnreadWithMention =
-          (await Data.getFirstUnreadMessageWithMention(conversationId, usInThatConversation)) ||
-          null;
-        if (oldestMessageUnreadWithMention) {
-          await openConversationToSpecificMessage({
-            conversationKey: conversationId,
-            messageIdToNavigateTo: oldestMessageUnreadWithMention,
-            shouldHighlightMessage: true,
-          });
-        } else {
-          window.log.info('cannot open to latest mention as no unread mention are found');
-          await openConversationWithMessages({
-            conversationKey: conversationId,
-            messageId: null,
-          });
-        }
-      }
-    },
-    [conversationId]
-  );
 
   if (!convoProps) {
     return null;
@@ -166,7 +165,10 @@ export const ConversationListItemHeaderItem = () => {
   let unreadCountDiv = null;
   if (unreadCount > 0) {
     atSymbol = mentionedUs ? (
-      <MentionAtSymbol title="Open to latest mention" onMouseDown={openConvoToLastMention}>
+      <MentionAtSymbol
+        title="Open to latest mention"
+        onMouseDown={e => openConvoToLastMention(e, conversationId)}
+      >
         @
       </MentionAtSymbol>
     ) : null;

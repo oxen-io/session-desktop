@@ -178,6 +178,7 @@ export type PropsForMessageWithoutConvoProps = {
   expirationTimestamp?: number | null;
   isExpired?: boolean;
   isTrustedForAttachmentDownload?: boolean;
+  errors?: Array<any>;
 };
 
 export type PropsForMessageWithConvoProps = PropsForMessageWithoutConvoProps & {
@@ -255,6 +256,8 @@ export interface ReduxConversationType {
   readCapability?: boolean;
   writeCapability?: boolean;
   uploadCapability?: boolean;
+
+  hasReactions?: boolean;
 }
 
 export interface NotificationForConvoOption {

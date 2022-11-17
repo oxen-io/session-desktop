@@ -435,6 +435,10 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       }
     }
 
+    if (this.hasReactions()) {
+      toRet.hasReactions = true;
+    }
+
     const lastMessageText = this.get('lastMessage');
     if (lastMessageText && lastMessageText.length) {
       const lastMessageStatus = this.get('lastMessageStatus');

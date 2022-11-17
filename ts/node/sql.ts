@@ -622,8 +622,7 @@ function getAllOpenGroupV2Conversations(instance?: BetterSqlite3.Database) {
   const rows = assertGlobalInstanceOrInstance(instance)
     .prepare(
       `SELECT * FROM ${CONVERSATIONS_TABLE} WHERE
-      type = 'group' AND
-      id LIKE 'publicChat:__%@%'
+      type = 'open_group'
      ORDER BY id ASC;`
     )
     .all();
@@ -638,8 +637,7 @@ function getAllOpenGroupV2ConversationsIds(): Array<string> {
   const rows = assertGlobalInstance()
     .prepare(
       `SELECT id FROM ${CONVERSATIONS_TABLE} WHERE
-      type = 'group' AND
-      id LIKE 'publicChat:__%@%'
+      type = 'open_group'
      ORDER BY id ASC;`
     )
     .all();

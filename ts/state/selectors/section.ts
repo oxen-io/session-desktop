@@ -40,3 +40,7 @@ export const useRightOverlayMode = () => {
 
 export const isRightOverlayShown = (state: StateType): boolean =>
   getSection(state).rightOverlayMode !== undefined;
+
+export const useIsRightOverlayShown = () => {
+  return useSelector(isRightOverlayShown);
+};

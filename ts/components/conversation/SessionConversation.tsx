@@ -70,7 +70,6 @@ interface Props {
   ourNumber: string;
   selectedConversationKey: string;
   selectedConversation?: ReduxConversationType;
-  hasMessages: boolean;
   selectedMessages: Array<string>;
   isRightOverlayShown: boolean;
   hasOngoingCallWithFocusedConvo: boolean;
@@ -240,14 +239,13 @@ export class SessionConversation extends React.Component<Props, State> {
 
     const {
       selectedConversation,
-      hasMessages,
       selectedMessages,
       isRightOverlayShown,
       lightBoxOptions,
       isSelectedConvoInitialLoadingInProgress,
     } = this.props;
 
-    if (!selectedConversation || !hasMessages) {
+    if (!selectedConversation) {
       // return an empty message view
       return <MessageView />;
     }

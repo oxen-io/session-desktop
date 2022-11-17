@@ -41,6 +41,15 @@ const isClosedGroup = (state: StateType): boolean => {
 };
 
 /**
+ * Returns true if the current conversation selected is a closed group v3 ONLY and false otherwise.
+ */
+const isClosedGroupV3 = (state: StateType): boolean => {
+  const selectedConvo = getSelectedConversation(state);
+
+  return selectedConvo?.type === ConversationTypeEnum.CLOSED_GROUP_V3 || false;
+};
+
+/**
  * Returns true if the current conversation selected is a public group and false otherwise.
  */
 const isPublicGroup = (state: StateType): boolean => {
@@ -51,10 +60,8 @@ const isPublicGroup = (state: StateType): boolean => {
 
 const getNotificationOfSelectedConversation = (state: StateType) => {
   const selectedConvo = getSelectedConversation(state);
-  if (!selectedConvo) {
-    return undefined;
-  }
-  return selectedConvo.currentNotificationSetting as ConversationNotificationSettingType;
+  return (selectedConvo?.currentNotificationSetting ||
+    'all') as ConversationNotificationSettingType;
 };
 
 /**
@@ -132,6 +139,10 @@ const hasSelectedConversationIncomingMessages = (state: StateType): boolean => {
   return messages.some(m => m.propsForMessage.direction === 'incoming');
 };
 
+const hasSelectedReactions = (state: StateType): boolean => {
+  return getSelectedConversation(state)?.hasReactions || false;
+};
+
 const getIsTypingEnabled = (state: StateType): boolean => {
   const selectedConvo = getSelectedConversation(state);
   if (!selectedConvo) {
@@ -141,10 +152,6 @@ const getIsTypingEnabled = (state: StateType): boolean => {
 
   return !(isBlocked || isKickedFromGroup || left || (isPublic && !writeCapability));
 };
-
-function hasMessages(state: StateType): boolean {
-  return Boolean(state.conversations.messages?.length);
-}
 
 function getIsSelectedConvoInitialLoadingInProgress(state: StateType): boolean {
   return Boolean(getSelectedConversation(state)?.isInitialFetchingInProgress);
@@ -157,7 +164,6 @@ function getIsSelectedConvoInitialLoadingInProgress(state: StateType): boolean {
 export const selectedConversationSelectors = {
   getSelectedConversation,
   getSelectedConversationKey,
-  hasMessages,
   getIsSelectedConvoInitialLoadingInProgress,
   getIsTypingEnabled,
   isPublicGroup,
@@ -183,6 +189,10 @@ export function useSelectedIsPublic() {
 
 export function useSelectedIsOpenOrClosedGroup() {
   return useSelector(isClosedOrOpenGroup);
+}
+
+export function useSelectedIsClosedGroupV3() {
+  return useSelector(isClosedGroupV3);
 }
 
 export function useSelectedIsBlocked() {
@@ -247,4 +257,8 @@ export function useSelectedMembers(): Array<string> {
 
 export function useSelectedHasIncomingMessages(): boolean {
   return useSelector(hasSelectedConversationIncomingMessages);
+}
+
+export function useSelectedHasReactions(): boolean {
+  return useSelector(hasSelectedReactions);
 }

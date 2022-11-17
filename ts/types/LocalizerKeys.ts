@@ -377,6 +377,7 @@ export type LocalizerKeys =
   | 'passwordTypeError'
   | 'createClosedGroupPlaceholder'
   | 'editProfileModalTitle'
+  | 'status'
   | 'noCameraFound'
   | 'setAccountPasswordTitle'
   | 'callMediaPermissionsDescription'

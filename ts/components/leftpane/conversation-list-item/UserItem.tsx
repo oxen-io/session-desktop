@@ -4,11 +4,14 @@ import {
   useConversationRealName,
   useConversationUsername,
   useHasNickname,
+  useIsClosedGroup,
   useIsMe,
+  useIsPublic,
 } from '../../../hooks/useParamSelector';
 import { PubKey } from '../../../session/types';
 import { isSearching } from '../../../state/selectors/search';
 import { ContactName } from '../../conversation/ContactName';
+import { SessionIcon } from '../../icon';
 import { ContextConversationId } from './ConversationListItem';
 
 export const UserItem = () => {
@@ -22,6 +25,8 @@ export const UserItem = () => {
   const username = useConversationUsername(conversationId);
   const realName = useConversationRealName(conversationId);
   const hasNickname = useHasNickname(conversationId);
+  const isOpenGroup = useIsPublic(conversationId);
+  const isClosedGroup = useIsClosedGroup(conversationId);
 
   const displayedPubkey = username ? shortenedPubkey : conversationId;
   const displayName = isMe
@@ -45,6 +50,13 @@ export const UserItem = () => {
         boldProfileName={true}
         shouldShowPubkey={shouldShowPubkey}
       />
+      {(isOpenGroup || isClosedGroup) && (
+        <SessionIcon
+          iconSize={'medium'}
+          iconType={isOpenGroup ? 'communities' : 'users'}
+          iconPadding="0 0 0 var(--margins-xs)"
+        />
+      )}
     </div>
   );
 };

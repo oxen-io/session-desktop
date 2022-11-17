@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { clearSogsReactionByServerId } from '../../session/apis/open_group_api/sogsv3/sogsV3ClearReaction';
 import { getConversationController } from '../../session/conversations';
 import { updateReactClearAllModal } from '../../state/ducks/modalDialog';
-import { useMessageReactsProps } from '../../state/selectors/messages';
+import { useServerId } from '../../state/selectors/messages';
+import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionSpinner } from '../basic/SessionSpinner';
@@ -53,13 +54,13 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
   const [clearingInProgress, setClearingInProgress] = useState(false);
 
   const dispatch = useDispatch();
-  const msgProps = useMessageReactsProps(messageId);
+  const serverId = useServerId(messageId);
+  const convoId = useSelectedConversationKey();
 
-  if (!msgProps) {
+  if (serverId === undefined || !convoId) {
     return <></>;
   }
 
-  const { convoId, serverId } = msgProps;
   const roomInfos = getConversationController()
     .get(convoId)
     .toOpenGroupV2();

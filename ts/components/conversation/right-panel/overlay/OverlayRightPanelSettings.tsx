@@ -45,6 +45,8 @@ import {
   useSelectedDisplayNameInProfile,
   useSelectedIsActive,
   useSelectedIsBlocked,
+  useSelectedIsClosedGroup,
+  useSelectedIsClosedGroupV3,
   useSelectedIsKickedFromGroup,
   useSelectedIsLeft,
   useSelectedIsOpenOrClosedGroup,
@@ -511,6 +513,8 @@ export const OverlayRightPanelSettings = () => {
   const isPublic = useSelectedIsPublic();
   const isBlocked = useSelectedIsBlocked();
   const isGroup = useSelectedIsOpenOrClosedGroup();
+  const isClosedGroup = useSelectedIsClosedGroup();
+  const isGroupV3 = useSelectedIsClosedGroupV3();
   const isActive = useSelectedIsActive();
   const displayNameInProfile = useSelectedDisplayNameInProfile();
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
@@ -534,7 +538,22 @@ export const OverlayRightPanelSettings = () => {
   const showUpdateGroupMembersButton = Boolean(!isPublic && isGroup && !commonNoShow);
   const showInviteContactsPublic = Boolean(isPublic && !isKickedFromGroup && !isBlocked && !left);
   const showInviteContactsClosed = Boolean(
-    isGroup && !isPublic && !isKickedFromGroup && !isBlocked && !left
+    isGroup && !isPublic && !isKickedFromGroup && !isBlocked && !left && !isGroupV3
+  );
+
+  /**
+   * The user can see the group members here if this a closed group and this is a not a v3group where we are the admin.
+   * This is because for an admin of a v3, we can edit the group through EditGroup
+   */
+  const showMembersNonAdmin = Boolean(
+    (isGroup &&
+      !isPublic &&
+      !isKickedFromGroup &&
+      !isBlocked &&
+      !left &&
+      isGroupV3 &&
+      !weAreAdmin) ||
+      !isGroupV3
   );
 
   const showBanUnbanUserItem = showBanUnbanUser(weAreAdmin, isPublic, isKickedFromGroup);
@@ -566,7 +585,7 @@ export const OverlayRightPanelSettings = () => {
         <PinConversationItem />
         <NotificationItem />
         <DisappearingMessageItem show={hasDisappearingMessagesPrivateAvailable} />
-        <GroupMembersItem show={showUpdateGroupMembersButton} />
+        <GroupMembersItem show={showMembersNonAdmin} />
         <AutoDownloadMediaItem />
       </PanelButtonGroup>
       <SpacerLG />
@@ -574,12 +593,21 @@ export const OverlayRightPanelSettings = () => {
         <>
           <StyledTitleGroup>{window.i18n('adminSettings')}</StyledTitleGroup>
           <PanelButtonGroup>
-            <UpdateGroupNameItem show={showUpdateGroupNameButton} />
-            <DisappearingMessageItem show={hasDisappearingMessagesGroupAvailable} />
-            <GroupMembersItem show={showUpdateGroupMembersButton} />
-            <AddRemoveModsItem show={showAddRemoveModeratorsButton} />
-            <BanMenuItem show={showBanUnbanUserItem} />
-            <UnbanMenuItem show={showBanUnbanUserItem} />
+            {isClosedGroup && (
+              <>
+                <UpdateGroupNameItem show={showUpdateGroupNameButton} />
+                <DisappearingMessageItem show={hasDisappearingMessagesGroupAvailable} />
+                <GroupMembersItem show={showUpdateGroupMembersButton} />
+              </>
+            )}
+
+            {isPublic && (
+              <>
+                <AddRemoveModsItem show={showAddRemoveModeratorsButton} />
+                <BanMenuItem show={showBanUnbanUserItem} />
+                <UnbanMenuItem show={showBanUnbanUserItem} />
+              </>
+            )}
           </PanelButtonGroup>
         </>
       )}

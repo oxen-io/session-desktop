@@ -223,7 +223,7 @@
 .module-quote-container {
   margin-bottom: var(--margins-xs);
   margin-top: var(--margins-xs);
-  min-width: 300px; // if the quoted content is small it doesn't look very good so we set a minimum
+  min-width: 200px; // if the quoted content is small it doesn't look very good so we set a minimum
   padding-right: var(--margins-xs);
 
   /* This is not within the module-quote class so we handle it separately */

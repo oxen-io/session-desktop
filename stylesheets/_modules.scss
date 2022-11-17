@@ -257,10 +257,17 @@
   line-height: 16px;
 }
 
-.module-conversation__user,
+.module-conversation__user {
+  display: flex;
+  align-items: center;
+}
+
 .module-message__author {
   margin-top: var(--margins-sm);
   margin-bottom: var(--margins-xs);
+}
+
+.module-conversation__user {
   font-size: var(--font-size-sm);
   font-weight: 300;
   line-height: 18px;

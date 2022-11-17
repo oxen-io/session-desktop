@@ -1,14 +1,12 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { MessageRenderingProps } from '../../../../models/messageType';
-import { isEmpty, isEqual } from 'lodash';
-import { SortedReactionList } from '../../../../types/Reaction';
+import { isEmpty } from 'lodash';
 import { StyledPopupContainer } from '../reactions/ReactionPopup';
 import { Flex } from '../../../basic/Flex';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { Reaction, ReactionProps } from '../reactions/Reaction';
 import { SessionIcon } from '../../../icon';
-import { useMessageReactsProps } from '../../../../state/selectors/messages';
+import { useMessageSortedReactsProps } from '../../../../state/selectors/messages';
 import { useSelectedIsOpenOrClosedGroup } from '../../../../state/selectors/selectedConversation';
 
 export const popupXDefault = -81;
@@ -79,6 +77,7 @@ interface ExpandReactionsProps extends ReactionsProps {
 
 const CompressedReactions = (props: ExpandReactionsProps): ReactElement => {
   const { messageId, reactions, inModal, handleExpand } = props;
+
   return (
     <StyledMessageReactions
       container={true}
@@ -124,11 +123,6 @@ const ExpandedReactions = (props: ExpandReactionsProps): ReactElement => {
   );
 };
 
-export type MessageReactsSelectorProps = Pick<
-  MessageRenderingProps,
-  'convoId' | 'serverId' | 'reacts' | 'sortedReacts'
->;
-
 type Props = {
   messageId: string;
   hasReactLimit?: boolean;
@@ -151,7 +145,6 @@ export const MessageReactions = (props: Props): ReactElement => {
     inModal = false,
     onSelected,
   } = props;
-  const [reactions, setReactions] = useState<SortedReactionList>([]);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const handleExpand = () => {
@@ -161,31 +154,20 @@ export const MessageReactions = (props: Props): ReactElement => {
   const [popupX, setPopupX] = useState(popupXDefault);
   const [popupY, setPopupY] = useState(popupYDefault);
 
-  const msgProps = useMessageReactsProps(messageId);
+  const sortedReacts = useMessageSortedReactsProps(messageId);
 
   const inGroup = useSelectedIsOpenOrClosedGroup();
 
-  useEffect(() => {
-    if (msgProps?.sortedReacts && !isEqual(reactions, msgProps?.sortedReacts)) {
-      setReactions(msgProps?.sortedReacts);
-    }
 
-    if (!isEmpty(reactions) && isEmpty(msgProps?.sortedReacts)) {
-      setReactions([]);
-    }
-  }, [msgProps?.sortedReacts, reactions]);
-
-  if (!msgProps) {
+  if (isEmpty(sortedReacts)) {
     return <></>;
   }
-
-  const { sortedReacts } = msgProps;
 
   const reactLimit = 6;
 
   const reactionsProps = {
     messageId,
-    reactions,
+    reactions: sortedReacts,
     inModal,
     inGroup,
     handlePopupX: setPopupX,
@@ -198,7 +180,6 @@ export const MessageReactions = (props: Props): ReactElement => {
   };
 
   const ExtendedReactions = isExpanded ? ExpandedReactions : CompressedReactions;
-
   return (
     <StyledMessageReactionsContainer
       container={true}
@@ -209,7 +190,7 @@ export const MessageReactions = (props: Props): ReactElement => {
       y={popupY}
     >
       {sortedReacts &&
-        sortedReacts?.length !== 0 &&
+        sortedReacts.length !== 0 &&
         (!hasReactLimit || sortedReacts.length <= reactLimit ? (
           <Reactions {...reactionsProps} />
         ) : (
