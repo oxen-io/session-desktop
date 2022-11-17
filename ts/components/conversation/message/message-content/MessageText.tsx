@@ -3,9 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
 import { MessageRenderingProps } from '../../../../models/messageType';
-import {
-  isMessageSelectionMode,
-} from '../../../../state/selectors/conversations';
+import { isMessageSelectionMode } from '../../../../state/selectors/conversations';
 import { useMessageTextProps } from '../../../../state/selectors/messages';
 import { SessionIcon } from '../../../icon';
 import { MessageBody } from './MessageBody';

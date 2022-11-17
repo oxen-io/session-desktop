@@ -89,7 +89,7 @@ export function showDeleteContactOnly({
  * Before removing a closed group we must leave it. That's why we have two buttons for two different actions.
  *
  * You can leave a closed group without removing the corresponding conversation.
-
+ *
  */
 export function showDeleteLeftClosedGroup({
   isClosedGroup,

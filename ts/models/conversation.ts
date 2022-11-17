@@ -1231,11 +1231,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (this.isOpenGroupV2() || !expireTimerSet) {
       // for opengroups, we batch everything as there is no expiration timer to take care (and potentially a lot of messages)
 
-      const isOpenGroup = this.isOpenGroupV2();
+      const isOpenGroupConvo = this.isOpenGroupV2();
       // if this is an opengroup there is no need to send read receipt, and so no need to fetch messages updated.
       const allReadMessages = await Data.markAllAsReadByConversationNoExpiration(
         this.id,
-        !isOpenGroup
+        !isOpenGroupConvo
       );
       this.set({ mentionedUs: false, unreadCount: 0 });
 

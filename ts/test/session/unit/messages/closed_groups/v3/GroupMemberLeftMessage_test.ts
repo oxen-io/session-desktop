@@ -4,6 +4,7 @@ import { SignalService } from '../../../../../../protobuf';
 import { v4 } from 'uuid';
 import { Constants } from '../../../../../../session';
 import { GroupMemberLeftMessage } from '../../../../../../session/messages/outgoing/controlMessage/group/v3/GroupMemberLeftMessage';
+// tslint:disable: chai-vague-errors no-unused-expression
 
 describe('GroupMemberLeftMessage', () => {
   it('can create valid message', () => {

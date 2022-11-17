@@ -58,7 +58,7 @@ import { OpenGroupData } from '../data/opengroups';
 import { isUsFromCache } from '../session/utils/User';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { AttachmentTypeWithPath, isVoiceMessage } from '../types/Attachment';
-import _, { cloneDeep, debounce, isEmpty, map, partition, pick, reduce, size, uniq } from 'lodash';
+import _, { cloneDeep, debounce, isEmpty, map, partition, pick, reduce, uniq } from 'lodash';
 import { SettingsKey } from '../data/settings-key';
 import {
   deleteExternalMessageFiles,
@@ -929,7 +929,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   }
 
   public hasErrors() {
-    return size(this.get('errors')) > 0;
+    return _.size(this.get('errors')) > 0;
   }
 
   public getStatus(pubkey: string) {

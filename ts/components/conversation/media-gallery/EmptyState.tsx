@@ -4,9 +4,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface Props {
+type Props = {
   label: string;
-}
+};
 
 const Empty = styled.div`
   display: flex;

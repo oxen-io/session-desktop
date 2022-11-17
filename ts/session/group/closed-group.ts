@@ -79,10 +79,10 @@ export async function initiateClosedGroupUpdate(
   groupName: string,
   members: Array<string>
 ) {
-  const isV3 = PubKey.isClosedGroupV3(groupId);
+  const isGroupV3 = PubKey.isClosedGroupV3(groupId);
   const convo = await getConversationController().getOrCreateAndWait(
     groupId,
-    isV3 ? ConversationTypeEnum.CLOSED_GROUP_V3 : ConversationTypeEnum.CLOSED_GROUP_LEGACY
+    isGroupV3 ? ConversationTypeEnum.CLOSED_GROUP_V3 : ConversationTypeEnum.CLOSED_GROUP_LEGACY
   );
 
   // do not give an admins field here. We don't want to be able to update admins and

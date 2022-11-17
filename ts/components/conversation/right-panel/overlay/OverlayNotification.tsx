@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  useIsBlocked,
   useIsKickedFromGroup,
   useIsLeft,
-  useIsBlocked,
   useIsPrivate,
   useIsRequest,
 } from '../../../../hooks/useParamSelector';
@@ -12,7 +12,7 @@ import {
   ConversationNotificationSettingType,
 } from '../../../../models/conversationAttributes';
 
-import {  useRightOverlayMode } from '../../../../state/selectors/section';
+import { useRightOverlayMode } from '../../../../state/selectors/section';
 import {
   useSelectedConversationKey,
   useSelectedNotificationSetting,
@@ -80,7 +80,7 @@ const NotificationOptions = () => {
                 await setNotificationForConvoId(selectedConvoId, item.value);
               }}
               disableBg={true}
-            ></PanelRadioButton>
+            />
           );
         })}
       </>

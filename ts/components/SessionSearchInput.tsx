@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { clearSearch, search, updateSearchTerm } from '../state/ducks/search';
 import { getConversationsCount } from '../state/selectors/conversations';
-import {  useLeftOverlayMode } from '../state/selectors/section';
+import { useLeftOverlayMode } from '../state/selectors/section';
 import { cleanSearchTerm } from '../util/cleanSearchTerm';
 import { SessionIconButton } from './icon';
 

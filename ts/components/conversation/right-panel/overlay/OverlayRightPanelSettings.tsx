@@ -145,7 +145,7 @@ const AddRemoveModsItem = (props: ShowItemProps) => {
         }}
         text={window.i18n('removeModerators')}
         disableBg={true}
-        iconType={'addModerator'}
+        iconType={'deleteModerator'}
       />
     </>
   );
@@ -256,7 +256,9 @@ const ClearMessagesItem = () => {
       iconType={'clearMessages'}
       text={window.i18n('clearMessages')}
       disableBg={true}
-      onClick={() => deleteAllMessagesByConvoIdWithConfirmation(selectedConvoId)}
+      onClick={() => {
+        deleteAllMessagesByConvoIdWithConfirmation(selectedConvoId);
+      }}
     />
   );
 };
@@ -272,7 +274,9 @@ const LeaveClosedGroupItem = () => {
     return null;
   }
 
-  const leaveGroupAction = () => showLeaveGroupByConvoId(selectedConvoId);
+  const leaveGroupAction = () => {
+    showLeaveGroupByConvoId(selectedConvoId);
+  };
 
   return (
     <PanelIconButton
@@ -292,7 +296,7 @@ const BanMenuItem = (props: ShowItemProps): JSX.Element | null => {
   }
   return (
     <PanelIconButton
-      iconType={'forbidden'}
+      iconType={'banUser'}
       text={window.i18n('banUser')}
       disableBg={true}
       onClick={() => {
@@ -310,7 +314,7 @@ const UnbanMenuItem = (props: ShowItemProps): JSX.Element | null => {
   }
   return (
     <PanelIconButton
-      iconType={'forbidden'}
+      iconType={'unbanUser'}
       text={window.i18n('unbanUser')}
       disableBg={true}
       onClick={() => {
@@ -486,7 +490,9 @@ const AutoDownloadMediaItem = () => {
       subtitle={window.i18n('autoDownloadMediaDescription')}
       isActive={true}
       disableBg={true}
-      onClick={() => {}}
+      onClick={() => {
+        console.error('AutoDownloadMediaItem TODO');
+      }}
     />
   );
 };

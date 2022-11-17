@@ -86,7 +86,6 @@ describe('DecryptedAttachmentsManager', () => {
         expect(getItemById.callCount).to.be.eq(1);
 
         const now = `${Date.now()}`;
-        console.warn('resolved.resolved', resolved.resolved);
         expect(resolved.resolved).to.be.not.empty;
         expect(resolved.resolved.startsWith(now.slice(0, 9))).to.be.true;
       });

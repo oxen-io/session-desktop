@@ -82,8 +82,6 @@ describe('formatRowOfConversation', () => {
     });
   });
 
-
-
   describe('mentionedUs', () => {
     it('initialize mentionedUs if they are not given', () => {
       expect(formatRowOfConversation({})).to.have.deep.property('mentionedUs', false);

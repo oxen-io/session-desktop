@@ -18,7 +18,7 @@ import {
   getShowScrollButton,
 } from '../../../../state/selectors/conversations';
 import { useOldestMessageId, useYoungestMessageId } from '../../../../state/selectors/messages';
-import {  useGetAppIsFocused } from '../../../../state/selectors/section';
+import { useGetAppIsFocused } from '../../../../state/selectors/section';
 import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
 import { ScrollToLoadedMessageContext } from '../../SessionMessagesListContainer';
 

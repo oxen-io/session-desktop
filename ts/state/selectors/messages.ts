@@ -243,7 +243,7 @@ function isSortedMessage(
 ): msg is SortedMessageModelProps {
   return (msg as SortedMessageModelProps).firstMessageOfSeries !== undefined;
 }
-
+// tslint:disable: cyclomatic-complexity max-func-body-length use-simple-attributes
 function fillWithAuthorDetails(
   conversations: ConversationLookupType,
   foundMessageProps?: MessageModelPropsWithoutConvoProps | SortedMessageModelProps
@@ -297,7 +297,7 @@ function fillWithAuthorDetails(
       window.i18n('anonymous');
 
   if (isSortedMessage(foundMessageProps)) {
-    const messageProps: MessageModelPropsWithConvoProps = {
+    const sortedMessageProps: MessageModelPropsWithConvoProps = {
       ...foundMessageProps,
       propsForMessage: {
         ...foundMessageProps.propsForMessage,
@@ -317,9 +317,9 @@ function fillWithAuthorDetails(
       },
     };
 
-    return messageProps;
+    return sortedMessageProps;
   }
-  const messageProps: UnsortedMessageModelPropsWithConvoProps = {
+  const unsortedMessageProps: UnsortedMessageModelPropsWithConvoProps = {
     ...foundMessageProps,
     propsForMessage: {
       ...foundMessageProps.propsForMessage,
@@ -339,7 +339,7 @@ function fillWithAuthorDetails(
     },
   };
 
-  return messageProps;
+  return unsortedMessageProps;
 }
 
 // tslint:disable-next-line: cyclomatic-complexity
@@ -419,7 +419,7 @@ const getMessageReactsProps = (
   if (!props || isEmpty(props)) {
     return null;
   }
-  console.info('getMessageReactsProps break me down');
+  console.error('getMessageReactsProps break me down');
 
   const msgProps: MessageReactsSelectorProps = pick(props.propsForMessage, [
     'convoId',
@@ -561,6 +561,8 @@ const getMessageDetailsProps = (state: StateType, messageId?: string) => {
     'serverTimestamp',
     'serverId',
     'messageHash',
+
+    'attachments',
   ]);
   return msgDetailsProps;
 };

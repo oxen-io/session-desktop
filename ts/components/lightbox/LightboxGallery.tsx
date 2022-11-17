@@ -31,7 +31,7 @@ type Props = {
 };
 
 export const LightboxGallery = (props: Props) => {
-  const { media } = props;
+  const { media, selectedIndex } = props;
   const [currentIndex, setCurrentIndex] = useState(-1);
   const selectedConversation = useSelectedConversationKey() as string;
 
@@ -39,7 +39,7 @@ export const LightboxGallery = (props: Props) => {
 
   // just run once, when the component is mounted. It's to show the lightbox on the specified index at start.
   useEffect(() => {
-    setCurrentIndex(props.selectedIndex);
+    setCurrentIndex(selectedIndex);
   }, []);
 
   const selectedMedia = media[currentIndex];
@@ -92,9 +92,7 @@ export const LightboxGallery = (props: Props) => {
     return null;
   }
   const objectURL = selectedMedia?.objectURL || 'images/alert-outline.svg';
-  const { attachment } = selectedMedia;
 
-  const caption = attachment?.caption;
   return (
     // tslint:disable: use-simple-attributes
     <Lightbox
@@ -102,7 +100,6 @@ export const LightboxGallery = (props: Props) => {
       onNext={hasNext ? onNext : undefined}
       onSave={handleSave}
       objectURL={objectURL}
-      caption={caption}
       contentType={selectedMedia.contentType}
     />
   );

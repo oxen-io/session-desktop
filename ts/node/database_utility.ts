@@ -80,7 +80,7 @@ const allowedKeysFormatRowOfConversation = [
 
 const keysAllowedButNotSaved = ['is_medium_group', 'json'];
 
-//tslint-disable cyclomatic-complexity
+// tslint:disable: cyclomatic-complexity max-func-body-length use-simple-attributes
 export function formatRowOfConversation(row?: Record<string, any>): ConversationAttributes | null {
   if (!row) {
     return null;

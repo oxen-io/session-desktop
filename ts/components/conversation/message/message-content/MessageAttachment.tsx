@@ -206,18 +206,18 @@ function attachmentIsAttachmentTypeWithPath(attac: any): attac is AttachmentType
   return attac.path !== undefined;
 }
 
-const onClickAttachment = async (onClickProps: {
-  attachment: AttachmentTypeWithPath | AttachmentType;
-  messageId: string;
-}) => {
-  let index = -1;
-
-  const found = await Data.getMessageById(onClickProps.messageId);
+export async function showLightboxFromAttachmentProps(
+  messageId: string,
+  selected: AttachmentTypeWithPath | AttachmentType | PropsForAttachment
+) {
+  const found = await Data.getMessageById(messageId);
   if (!found) {
     window.log.warn('Such message not found');
     return;
   }
   const msgAttachments = found.getPropsForMessage().attachments;
+
+  let index = -1;
 
   const media = (msgAttachments || []).map(attachmentForMedia => {
     index++;
@@ -231,17 +231,24 @@ const onClickAttachment = async (onClickProps: {
       attachment: attachmentForMedia,
       messageSender: found.getSource(),
       messageTimestamp,
-      messageId: onClickProps.messageId,
+      messageId,
     };
   });
 
-  if (attachmentIsAttachmentTypeWithPath(onClickProps.attachment)) {
+  if (attachmentIsAttachmentTypeWithPath(selected)) {
     const lightBoxOptions: LightBoxOptions = {
       media: media as any,
-      attachment: onClickProps.attachment,
+      attachment: selected,
     };
     window.inboxStore?.dispatch(showLightBox(lightBoxOptions));
   } else {
     window.log.warn('Attachment is not of the right type');
   }
+}
+
+const onClickAttachment = async (onClickProps: {
+  attachment: AttachmentTypeWithPath | AttachmentType;
+  messageId: string;
+}) => {
+  await showLightboxFromAttachmentProps(onClickProps.messageId, onClickProps.attachment);
 };

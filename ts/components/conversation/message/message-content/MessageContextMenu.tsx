@@ -77,13 +77,13 @@ function getAttachmentIndexFromDOM(
 ): number | undefined {
   // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment
   // and the context menu save attachment item to save the right attachment I did not find a better way for now.
-  let targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
+  const targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
   if (!attachments?.length) {
     return undefined;
   }
 
   if (!targetAttachmentIndex) {
-    targetAttachmentIndex = 0;
+    return undefined;
   }
   if (targetAttachmentIndex > attachments.length) {
     return undefined;
@@ -190,25 +190,20 @@ export const MessageContextMenu = (props: Props) => {
     [convoId, sender, timestamp, serverTimestamp, convoId, attachments]
   );
 
-  const openMessageInfo = useCallback(
-    async (e: any) => {
-      const attachmentIndex = getAttachmentIndexFromDOM(e, attachments);
-      // if we do not have an attachment index for the messageInfo click, we just open the message details of that message without selecting an attachment
-
-      const found = await Data.getMessageById(messageId);
-      if (found) {
-        dispatch(
-          setRightOverlayMode({
-            type: 'message_info',
-            params: { messageId: messageId, defaultAttachment: attachmentIndex },
-          })
-        );
-      } else {
-        window.log.warn(`openMessageInfo: Message ${messageId} not found in db`);
-      }
-    },
-    [attachments, messageId]
-  );
+  const openMessageInfo = useCallback(async () => {
+    const found = await Data.getMessageById(messageId);
+    if (found) {
+      // Do not auto select the right attachment, it doesn't look natural
+      dispatch(
+        setRightOverlayMode({
+          type: 'message_info',
+          params: { messageId: messageId, defaultAttachment: undefined },
+        })
+      );
+    } else {
+      window.log.warn(`openMessageInfo: Message ${messageId} not found in db`);
+    }
+  }, [attachments, messageId]);
 
   const copyText = useCallback(() => {
     MessageInteraction.copyBodyToClipboard(text);

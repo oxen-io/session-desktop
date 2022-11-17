@@ -9,7 +9,7 @@ import {
   showLeftPaneSection,
   showSettingsSection,
 } from '../../state/ducks/section';
-import {  useFocusedSettingsSection } from '../../state/selectors/section';
+import { useFocusedSettingsSection } from '../../state/selectors/section';
 import { recoveryPhraseModal, updateDeleteAccountModal } from '../../state/ducks/modalDialog';
 import { SessionIcon } from '../icon';
 import { SessionSettingCategory } from '../settings/SessionSettings';

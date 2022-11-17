@@ -26,7 +26,11 @@ import {
   updateRemoveModeratorsModal,
 } from '../state/ducks/modalDialog';
 import { Data, hasLinkPreviewPopupBeenDisplayed, lastAvatarUploadTimestamp } from '../data/data';
-import { conversationReset, quoteMessage, resetConversationExternal } from '../state/ducks/conversations';
+import {
+  conversationReset,
+  quoteMessage,
+  resetConversationExternal,
+} from '../state/ducks/conversations';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { IMAGE_JPEG } from '../types/MIME';
 import { fromHexToArray, toHex } from '../session/utils/String';
@@ -323,7 +327,7 @@ export async function deleteAllMessagesByConvoIdNoConfirmation(conversationId: s
 
   await conversation.commit();
 
-  window.inboxStore?.dispatch(conversationReset(conversationId))
+  window.inboxStore?.dispatch(conversationReset(conversationId));
 }
 
 export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: string) {
@@ -467,7 +471,7 @@ export async function replyToMessage(messageId: string) {
   const quotedMessageModel = await Data.getMessageById(messageId);
   if (!quotedMessageModel) {
     window.log.warn('Failed to find message to reply to');
-    return;
+    return false;
   }
   const conversationModel = getConversationController().getOrThrow(
     quotedMessageModel.get('conversationId')
@@ -480,6 +484,7 @@ export async function replyToMessage(messageId: string) {
   } else {
     window.inboxStore?.dispatch(quoteMessage(undefined));
   }
+  return true;
 }
 
 /**

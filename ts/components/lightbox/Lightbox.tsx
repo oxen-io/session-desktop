@@ -27,7 +27,6 @@ const colorSVG = (url: string, color: string) => {
 type Props = {
   contentType: MIME.MIMEType | undefined;
   objectURL: string;
-  caption?: string;
   onNext?: () => void;
   onPrevious?: () => void;
   onSave?: () => void;
@@ -79,18 +78,6 @@ const styles = {
     maxWidth: '80vw',
     maxHeight: '80vh',
     objectFit: 'contain',
-  } as React.CSSProperties,
-  caption: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    color: 'black',
-    padding: '1em',
-    paddingLeft: '3em',
-    paddingRight: '3em',
-    backgroundColor: 'var(--lightbox-caption-background-color)',
   } as React.CSSProperties,
   controlsOffsetPlaceholder: {
     width: CONTROLS_WIDTH,
@@ -277,7 +264,7 @@ export const LightboxObject = ({
 export const Lightbox = (props: Props) => {
   const renderedRef = useRef<any>(null);
   const dispatch = useDispatch();
-  const { caption, contentType, objectURL, onNext, onPrevious, onSave } = props;
+  const { contentType, objectURL, onNext, onPrevious, onSave } = props;
 
   const onObjectClick = (event: any) => {
     event.stopPropagation();
@@ -305,7 +292,6 @@ export const Lightbox = (props: Props) => {
                 onObjectClick={onObjectClick}
               />
             ) : null}
-            {caption ? <div style={styles.caption as any}>{caption}</div> : null}
           </div>
         </div>
         <div style={styles.controls as any}>
