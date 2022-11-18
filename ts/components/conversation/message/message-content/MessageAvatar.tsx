@@ -14,6 +14,8 @@ import {
   getSelectedConversationKey,
 } from '../../../../state/selectors/conversations';
 import { Avatar, AvatarSize, CrownIcon } from '../../../avatar/Avatar';
+import { useMessageReactsPropsById } from '../../../../hooks/useParamSelector';
+import classNames from 'classnames';
 // tslint:disable: use-simple-attributes
 
 export type MessageAvatarSelectorProps = Pick<
@@ -33,6 +35,7 @@ type Props = { messageId: string };
 
 export const MessageAvatar = (props: Props) => {
   const { messageId } = props;
+  const hasReacts = useMessageReactsPropsById(messageId)?.reacts ? true : false;
 
   const dispatch = useDispatch();
   const avatarProps = useSelector(state => getMessageAvatarProps(state as any, messageId));
@@ -122,7 +125,13 @@ export const MessageAvatar = (props: Props) => {
   }
 
   return (
-    <div className="module-message__author-avatar" key={`msg-avatar-${sender}`}>
+    <div
+      className={classNames(
+        'module-message__author-avatar',
+        hasReacts ? 'module-message__author-avatar-not-bottom' : ''
+      )}
+      key={`msg-avatar-${sender}`}
+    >
       <Avatar size={AvatarSize.S} onAvatarClick={onMessageAvatarClick} pubkey={sender} />
       {isSenderAdmin && <CrownIcon />}
     </div>

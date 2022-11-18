@@ -13,7 +13,6 @@ import {
   getGenericReadableMessageSelectorProps,
   getIsMessageSelected,
   isMessageSelectionMode,
-  getMessageTextProps,
 } from '../../../../state/selectors/conversations';
 import { getIncrement } from '../../../../util/timer';
 import { ExpireTimer } from '../../ExpireTimer';
@@ -112,10 +111,9 @@ const highlightedMessageAnimation = keyframes`
 const StyledReadableMessage = styled(ReadableMessage)<{
   selected: boolean;
   isRightClicked: boolean;
-  isLongTextOrImage: boolean;
 }>`
   display: flex;
-  align-items: ${props => (props.isLongTextOrImage ? 'flex-end' : 'center')};
+  align-items: flex-end;
   width: 100%;
   letter-spacing: 0.03em;
   padding: var(--margins-xs) var(--margins-lg) 0;
@@ -151,12 +149,6 @@ export const GenericReadableMessage = (props: Props) => {
   const msgProps = useSelector(state =>
     getGenericReadableMessageSelectorProps(state as any, props.messageId)
   );
-
-  const numCharactersText: any = useSelector(
-    state => getMessageTextProps(state as any, props.messageId)?.text?.length
-  );
-  const isLongTextOrImage =
-    numCharactersText === undefined ? true : numCharactersText > 60 ? true : false;
 
   const expiringProps: ExpiringProps = {
     convoId: msgProps?.convoId,
@@ -234,7 +226,6 @@ export const GenericReadableMessage = (props: Props) => {
 
   return (
     <StyledReadableMessage
-      isLongTextOrImage={isLongTextOrImage}
       messageId={messageId}
       selected={selected}
       isRightClicked={isRightClicked}
