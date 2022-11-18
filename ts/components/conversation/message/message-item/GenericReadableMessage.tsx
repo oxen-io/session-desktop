@@ -115,7 +115,7 @@ const StyledReadableMessage = styled(ReadableMessage)<{
   isLongTextOrImage: boolean;
 }>`
   display: flex;
-  align-items: ${props => (props.isLongTextOrImage ? 'flex-start' : 'center')};
+  align-items: ${props => (props.isLongTextOrImage ? 'flex-end' : 'center')};
   width: 100%;
   letter-spacing: 0.03em;
   padding: var(--margins-xs) var(--margins-lg) 0;
