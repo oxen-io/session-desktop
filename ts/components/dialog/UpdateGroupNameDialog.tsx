@@ -3,14 +3,13 @@ import classNames from 'classnames';
 
 import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { SpacerMD } from '../basic/Text';
-import { updateGroupNameModal } from '../../state/ducks/modalDialog';
+import { updatePublicGroupNameModal } from '../../state/ducks/modalDialog';
 import autoBind from 'auto-bind';
 import { ConversationModel } from '../../models/conversation';
 import { getConversationController } from '../../session/conversations';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { initiateOpenGroupUpdate } from '../../session/group/open-group';
-import { initiateClosedGroupUpdate } from '../../session/group/closed-group';
 import { pickFileForAvatar } from '../../types/attachments/VisualAttachment';
 
 type Props = {
@@ -25,7 +24,7 @@ interface State {
   newAvatarObjecturl: string | null;
 }
 
-export class UpdateGroupNameDialog extends React.Component<Props, State> {
+export class UpdatePublicGroupNameDialog extends React.Component<Props, State> {
   private readonly convo: ConversationModel;
 
   constructor(props: Props) {
@@ -33,6 +32,9 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
 
     autoBind(this);
     this.convo = getConversationController().get(props.conversationId);
+    if (!this.convo.isOpenGroupV2()) {
+      throw new Error('Not a public group');
+    }
 
     this.state = {
       groupName: this.convo.getRealSessionUsername(),
@@ -52,6 +54,9 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
   }
 
   public onClickOK() {
+    if (!this.convo.isOpenGroupV2()) {
+      throw new Error('Not an opengroup');
+    }
     const { groupName, newAvatarObjecturl, oldAvatarPath } = this.state;
     const trimmedGroupName = groupName?.trim();
     if (!trimmedGroupName) {
@@ -64,15 +69,9 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
       trimmedGroupName !== this.convo.getRealSessionUsername() ||
       newAvatarObjecturl !== oldAvatarPath
     ) {
-      if (this.convo.isOpenGroupV2()) {
-        void initiateOpenGroupUpdate(this.convo.id, trimmedGroupName, {
-          objectUrl: newAvatarObjecturl,
-        });
-      } else {
-        const members = this.convo.get('members') || [];
-
-        void initiateClosedGroupUpdate(this.convo.id, trimmedGroupName, members);
-      }
+      void initiateOpenGroupUpdate(this.convo.id, trimmedGroupName, {
+        objectUrl: newAvatarObjecturl,
+      });
     }
 
     this.closeDialog();
@@ -91,9 +90,8 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
       this.state.errorDisplayed ? 'error-shown' : 'error-faded'
     );
 
-    const isAdmin = this.convo.isOpenGroupV2()
-      ? false // disable editing of opengroup rooms as we don't handle them for now
-      : true;
+    // disable editing of opengroup rooms as we don't handle them for now
+    const isAdmin = false;
 
     return (
       <SessionWrapperModal
@@ -113,7 +111,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
         {this.renderAvatar()}
         <SpacerMD />
 
-        {isAdmin ? (
+        {isAdmin && (
           <input
             type="text"
             className="profile-name-input"
@@ -126,7 +124,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
             autoFocus={true}
             data-testid="group-name-input"
           />
-        ) : null}
+        )}
 
         <div className="session-modal__button-group">
           <SessionButton
@@ -178,7 +176,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
   private closeDialog() {
     window.removeEventListener('keyup', this.onKeyUp);
 
-    window.inboxStore?.dispatch(updateGroupNameModal(null));
+    window.inboxStore?.dispatch(updatePublicGroupNameModal(null));
   }
 
   private onGroupNameChanged(event: any) {

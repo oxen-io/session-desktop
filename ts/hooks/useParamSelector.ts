@@ -73,6 +73,11 @@ export function useIsClosedGroup(convoId?: string) {
   return (convoProps && convoProps.isGroup && !convoProps.isPublic) || false;
 }
 
+export function useIsOpenOrClosedGroup(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return (convoProps && convoProps.isGroup) || false;
+}
+
 export function useIsPrivate(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.isPrivate);
@@ -113,6 +118,16 @@ export function useIsLeft(convoId?: string) {
 export function useIsKickedFromGroup(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.isKickedFromGroup);
+}
+
+export function useGroupMembers(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return (convoProps && convoProps.members) || [];
+}
+
+export function useGroupAdmins(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return (convoProps && convoProps.groupAdmins) || [];
 }
 
 export function useWeAreAdmin(convoId?: string) {

@@ -1,21 +1,17 @@
 import React, { useContext } from 'react';
 
-import { Item, Submenu } from 'react-contexify';
-import { useDispatch, useSelector } from 'react-redux';
+import { Item } from 'react-contexify';
+import { useDispatch } from 'react-redux';
 import {
   useAvatarPath,
   useConversationUsername,
   useHasNickname,
-  useIsActive,
   useIsBlinded,
   useIsBlocked,
-  useIsKickedFromGroup,
-  useIsLeft,
   useIsMe,
   useIsPrivate,
   useIsPublic,
   useIsRequest,
-  useWeAreAdmin,
 } from '../../hooks/useParamSelector';
 import {
   approveConvoAndSendResponse,
@@ -24,11 +20,6 @@ import {
   copyPublicKeyByConvoId,
   declineConversationWithConfirm,
   markAllReadByConvoId,
-  setDisappearingMessagesByConvoId,
-  showAddModeratorsByConvoId,
-  showInviteContactByConvoId,
-  showRemoveModeratorsByConvoId,
-  showUpdateGroupNameByConvoId,
   unblockConvoById,
 } from '../../interactions/conversationInteractions';
 
@@ -37,19 +28,7 @@ import { changeNickNameModal, updateUserDetailsModal } from '../../state/ducks/m
 import { SectionType } from '../../state/ducks/section';
 import { hideMessageRequestBanner } from '../../state/ducks/userConfig';
 import { useFocusedSection } from '../../state/selectors/section';
-import { getTimerOptions } from '../../state/selectors/timerOptions';
 import { ContextConversationId } from '../leftpane/conversation-list-item/ConversationListItem';
-
-function showTimerOptions(
-  isPublic: boolean,
-  isKickedFromGroup: boolean,
-  left: boolean,
-  isBlocked: boolean,
-  isRequest: boolean,
-  isActive: boolean
-): boolean {
-  return !isPublic && !left && !isKickedFromGroup && !isBlocked && !isRequest && isActive;
-}
 
 function showBlock(isMe: boolean, isPrivate: boolean, isRequest: boolean): boolean {
   return !isMe && isPrivate && !isRequest;
@@ -105,38 +84,6 @@ export function showDeleteLeftClosedGroup({
   return isClosedGroup && (left || isKickedFromGroup);
 }
 
-export const showBanUnbanUser = (
-  weAreAdmin: boolean,
-  isPublic: boolean,
-  isKickedFromGroup: boolean
-) => {
-  return !isKickedFromGroup && weAreAdmin && isPublic;
-};
-
-function showAddModerators(
-  weAreAdmin: boolean,
-  isPublic: boolean,
-  isKickedFromGroup: boolean
-): boolean {
-  return !isKickedFromGroup && weAreAdmin && isPublic;
-}
-
-function showRemoveModerators(
-  weAreAdmin: boolean,
-  isPublic: boolean,
-  isKickedFromGroup: boolean
-): boolean {
-  return !isKickedFromGroup && weAreAdmin && isPublic;
-}
-
-function showUpdateGroupName(
-  weAreAdmin: boolean,
-  isKickedFromGroup: boolean,
-  left: boolean
-): boolean {
-  return !isKickedFromGroup && !left && weAreAdmin;
-}
-
 /**
  * Returns true for a closed group we are not kicked out or left.
  * For a public group, we use the `showOpenGroup`
@@ -170,29 +117,7 @@ export function showLeaveOpenGroup({
   return !isKickedFromGroup && !left && isPublic;
 }
 
-function showInviteContact(isPublic: boolean): boolean {
-  return isPublic;
-}
-
 /** Menu items standardized */
-
-export const InviteContactMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-
-  if (showInviteContact(isPublic)) {
-    return (
-      <Item
-        onClick={() => {
-          showInviteContactByConvoId(convoId);
-        }}
-      >
-        {window.i18n('inviteContacts')}
-      </Item>
-    );
-  }
-  return null;
-};
 
 export const PinConversationMenuItem = (): JSX.Element | null => {
   const conversationId = useContext(ContextConversationId);
@@ -242,66 +167,6 @@ export const ShowUserDetailsMenuItem = () => {
   return null;
 };
 
-export const UpdateGroupNameMenuItem = () => {
-  const convoId = useContext(ContextConversationId);
-  const left = useIsLeft(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const weAreAdmin = useWeAreAdmin(convoId);
-
-  if (showUpdateGroupName(weAreAdmin, isKickedFromGroup, left)) {
-    return (
-      <Item
-        onClick={async () => {
-          await showUpdateGroupNameByConvoId(convoId);
-        }}
-      >
-        {window.i18n('editGroup')}
-      </Item>
-    );
-  }
-  return null;
-};
-
-export const RemoveModeratorsMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const weAreAdmin = useWeAreAdmin(convoId);
-
-  if (showRemoveModerators(weAreAdmin, Boolean(isPublic), Boolean(isKickedFromGroup))) {
-    return (
-      <Item
-        onClick={() => {
-          showRemoveModeratorsByConvoId(convoId);
-        }}
-      >
-        {window.i18n('removeModerators')}
-      </Item>
-    );
-  }
-  return null;
-};
-
-export const AddModeratorsMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isPublic = useIsPublic(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const weAreAdmin = useWeAreAdmin(convoId);
-
-  if (showAddModerators(weAreAdmin, isPublic, isKickedFromGroup)) {
-    return (
-      <Item
-        onClick={() => {
-          showAddModeratorsByConvoId(convoId);
-        }}
-      >
-        {window.i18n('addModerators')}
-      </Item>
-    );
-  }
-  return null;
-};
-
 export const CopyMenuItem = (): JSX.Element | null => {
   const convoId = useContext(ContextConversationId);
   const isPublic = useIsPublic(convoId);
@@ -325,50 +190,6 @@ export const MarkAllReadMenuItem = (): JSX.Element | null => {
   } else {
     return null;
   }
-};
-
-export const DisappearingMessageMenuItem = (): JSX.Element | null => {
-  const convoId = useContext(ContextConversationId);
-  const isBlocked = useIsBlocked(convoId);
-  const isActive = useIsActive(convoId);
-  const isPublic = useIsPublic(convoId);
-  const isLeft = useIsLeft(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
-  const timerOptions = useSelector(getTimerOptions).timerOptions;
-  const isRequest = useIsRequest(convoId);
-
-  if (
-    showTimerOptions(
-      Boolean(isPublic),
-      Boolean(isKickedFromGroup),
-      Boolean(isLeft),
-      Boolean(isBlocked),
-      isRequest,
-      isActive
-    )
-  ) {
-    // const isRtlMode = isRtlBody();
-
-    return (
-      // Remove the && false to make context menu work with RTL support
-      <Submenu
-        label={window.i18n('disappearingMessages')}
-        // rtl={isRtlMode && false}
-      >
-        {timerOptions.map(item => (
-          <Item
-            key={item.value}
-            onClick={async () => {
-              await setDisappearingMessagesByConvoId(convoId, item.value);
-            }}
-          >
-            {item.name}
-          </Item>
-        ))}
-      </Submenu>
-    );
-  }
-  return null;
 };
 
 export function isRtlBody(): boolean {

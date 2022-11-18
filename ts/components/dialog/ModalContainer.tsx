@@ -12,11 +12,12 @@ import {
   getOnionPathDialog,
   getReactClearAllDialog,
   getReactListDialog,
+  getReadOnlyGroupMembersModal,
   getRecoveryPhraseDialog,
   getRemoveModeratorsModal,
   getSessionPasswordDialog,
-  getUpdateGroupMembersModal,
-  getUpdateGroupNameModal,
+  getUpdateClosedGroupModal,
+  getUpdatePublicGroupNameModal,
   getUserDetailsModal,
 } from '../../state/selectors/modal';
 import { AdminLeaveClosedGroupDialog } from './AdminLeaveClosedGroupDialog';
@@ -30,20 +31,22 @@ import { SessionPasswordDialog } from './SessionPasswordDialog';
 import { SessionSeedModal } from './SessionSeedModal';
 import { AddModeratorsDialog } from './ModeratorsAddDialog';
 import { RemoveModeratorsDialog } from './ModeratorsRemoveDialog';
-import { UpdateGroupMembersDialog } from './UpdateGroupMembersDialog';
-import { UpdateGroupNameDialog } from './UpdateGroupNameDialog';
 import { SessionNicknameDialog } from './SessionNicknameDialog';
 import { BanOrUnBanUserDialog } from './BanOrUnbanUserDialog';
 import { ReactListModal } from './ReactListModal';
 import { ReactClearAllModal } from './ReactClearAllModal';
+import { UpdatePublicGroupNameDialog } from './UpdateGroupNameDialog';
+import { ReadOnlyGroupMembersDialog } from './ReadOnlyGroupMembersDialog';
+import { UpdateClosedGroupDialog } from './UpdateClosedGroupDialog';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
   const inviteModalState = useSelector(getInviteContactModal);
   const addModeratorsModalState = useSelector(getAddModeratorsModal);
   const removeModeratorsModalState = useSelector(getRemoveModeratorsModal);
-  const updateGroupMembersModalState = useSelector(getUpdateGroupMembersModal);
-  const updateGroupNameModalState = useSelector(getUpdateGroupNameModal);
+  const readOnlyGroupMembersState = useSelector(getReadOnlyGroupMembersModal);
+  const updateClosedGroupState = useSelector(getUpdateClosedGroupModal);
+  const updatePublicGroupNameModalState = useSelector(getUpdatePublicGroupNameModal);
   const userDetailsModalState = useSelector(getUserDetailsModal);
   const changeNicknameModal = useSelector(getChangeNickNameDialog);
   const editProfileModalState = useSelector(getEditProfileDialog);
@@ -62,10 +65,11 @@ export const ModalContainer = () => {
       {inviteModalState && <InviteContactsDialog {...inviteModalState} />}
       {addModeratorsModalState && <AddModeratorsDialog {...addModeratorsModalState} />}
       {removeModeratorsModalState && <RemoveModeratorsDialog {...removeModeratorsModalState} />}
-      {updateGroupMembersModalState && (
-        <UpdateGroupMembersDialog {...updateGroupMembersModalState} />
+      {readOnlyGroupMembersState && <ReadOnlyGroupMembersDialog {...readOnlyGroupMembersState} />}
+      {updateClosedGroupState && <UpdateClosedGroupDialog {...updateClosedGroupState} />}
+      {updatePublicGroupNameModalState && (
+        <UpdatePublicGroupNameDialog {...updatePublicGroupNameModalState} />
       )}
-      {updateGroupNameModalState && <UpdateGroupNameDialog {...updateGroupNameModalState} />}
       {userDetailsModalState && <UserDetailsDialog {...userDetailsModalState} />}
       {changeNicknameModal && <SessionNicknameDialog {...changeNicknameModal} />}
       {editProfileModalState && <EditProfileDialog {...editProfileModalState} />}

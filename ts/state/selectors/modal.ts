@@ -13,11 +13,12 @@ import {
   ModalState,
   OnionPathModalState,
   ReactModalsState,
+  ReadOnlyGroupMembersModalState,
   RecoveryPhraseModalState,
   RemoveModeratorsModalState,
   SessionPasswordModalState,
-  UpdateGroupMembersModalState,
-  UpdateGroupNameModalState,
+  UpdateClosedGroupModalState,
+  UpdatePublicGroupNameModalState,
   UserDetailsModalState,
 } from '../ducks/modalDialog';
 
@@ -50,14 +51,19 @@ export const getBanOrUnbanUserModalState = createSelector(
   (state: ModalState): BanOrUnbanUserModalState => state.banOrUnbanUserModal
 );
 
-export const getUpdateGroupNameModal = createSelector(
+export const getUpdatePublicGroupNameModal = createSelector(
   getModal,
-  (state: ModalState): UpdateGroupNameModalState => state.groupNameModal
+  (state: ModalState): UpdatePublicGroupNameModalState => state.publicGroupNameModal
 );
 
-export const getUpdateGroupMembersModal = createSelector(
+export const getReadOnlyGroupMembersModal = createSelector(
   getModal,
-  (state: ModalState): UpdateGroupMembersModalState => state.groupMembersModal
+  (state: ModalState): ReadOnlyGroupMembersModalState => state.readOnlyGroupMembersModal
+);
+
+export const getUpdateClosedGroupModal = createSelector(
+  getModal,
+  (state: ModalState): UpdateClosedGroupModalState => state.updateClosedGroupModal
 );
 
 export const getUserDetailsModal = createSelector(

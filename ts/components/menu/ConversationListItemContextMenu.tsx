@@ -9,7 +9,6 @@ import {
   ClearNicknameMenuItem,
   CopyMenuItem,
   DeclineMenuItem,
-  InviteContactMenuItem,
   MarkAllReadMenuItem,
   PinConversationMenuItem,
   ShowUserDetailsMenuItem,
@@ -34,7 +33,6 @@ const ConversationListItemContextMenu = (props: PropsContextConversationItem) =>
         <MarkAllReadMenuItem />
         <ChangeNicknameMenuItem />
         <ClearNicknameMenuItem />
-        <InviteContactMenuItem />
         <ShowUserDetailsMenuItem />
       </Menu>
     </SessionContextMenuContainer>

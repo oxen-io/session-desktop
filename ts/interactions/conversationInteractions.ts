@@ -7,7 +7,6 @@ import { OpenGroupData } from '../data/opengroups';
 import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
 import {
   ConversationNotificationSettingType,
-  ConversationTypeEnum,
   isOpenOrClosedGroup,
 } from '../models/conversationAttributes';
 
@@ -20,8 +19,6 @@ import {
   updateAddModeratorsModal,
   updateBanOrUnbanUserModal,
   updateConfirmModal,
-  updateGroupMembersModal,
-  updateGroupNameModal,
   updateInviteContactModal,
   updateRemoveModeratorsModal,
 } from '../state/ducks/modalDialog';
@@ -192,32 +189,6 @@ export const declineConversationWithoutConfirm = async (
     await forceSyncConfigurationNowIfNeeded();
   }
 };
-
-export async function showUpdateGroupNameByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
-  if (conversation.isClosedGroup()) {
-    // make sure all the members' convo exists so we can add or remove them
-    await Promise.all(
-      conversation
-        .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
-    );
-  }
-  window.inboxStore?.dispatch(updateGroupNameModal({ conversationId }));
-}
-
-export async function showUpdateGroupMembersByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
-  if (conversation.isClosedGroup()) {
-    // make sure all the members' convo exists so we can add or remove them
-    await Promise.all(
-      conversation
-        .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
-    );
-  }
-  window.inboxStore?.dispatch(updateGroupMembersModal({ conversationId }));
-}
 
 export function showLeaveGroupByConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);

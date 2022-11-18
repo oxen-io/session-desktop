@@ -3,8 +3,7 @@ import React from 'react';
 import { ToastUtils, UserUtils } from '../../session/utils';
 
 import _ from 'lodash';
-import { SpacerLG, Text } from '../basic/Text';
-import { updateGroupMembersModal } from '../../state/ducks/modalDialog';
+import { SpacerLG } from '../basic/Text';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { MemberListItem } from '../MemberListItem';
 import { SessionWrapperModal } from '../SessionWrapperModal';
@@ -16,6 +15,7 @@ import { useSet } from '../../hooks/useSet';
 import { getConversationController } from '../../session/conversations';
 import { initiateClosedGroupUpdate } from '../../session/group/closed-group';
 import styled from 'styled-components';
+import { updateClosedGroupModal } from '../../state/ducks/modalDialog';
 
 type Props = {
   conversationId: string;
@@ -67,49 +67,6 @@ const ClassicMemberList = (props: {
   );
 };
 
-const ZombiesList = ({ convoId }: { convoId: string }) => {
-  const convoProps = useConversationPropsById(convoId);
-
-  function onZombieClicked() {
-    if (!convoProps?.weAreAdmin) {
-      ToastUtils.pushOnlyAdminCanRemove();
-    }
-  }
-  if (!convoProps || !convoProps.zombies?.length) {
-    return null;
-  }
-  const { zombies, weAreAdmin } = convoProps;
-
-  const zombieElements = zombies.map((zombie: string) => {
-    const isSelected = weAreAdmin || false; // && !member.checkmarked;
-    return (
-      <MemberListItem
-        isSelected={isSelected}
-        onSelect={onZombieClicked}
-        onUnselect={onZombieClicked}
-        isZombie={true}
-        key={zombie}
-        pubkey={zombie}
-      />
-    );
-  });
-  return (
-    <>
-      <SpacerLG />
-      {weAreAdmin && (
-        <Text
-          padding="20px"
-          text={window.i18n('removeResidueMembers')}
-          subtle={true}
-          maxWidth="400px"
-          textAlign="center"
-        />
-      )}
-      {zombieElements}
-    </>
-  );
-};
-
 // tslint:disable-next-line: max-func-body-length
 async function onSubmit(convoId: string, membersAfterUpdate: Array<string>) {
   // not ideal to get the props here, but this is not run often
@@ -117,7 +74,7 @@ async function onSubmit(convoId: string, membersAfterUpdate: Array<string>) {
     .get(convoId)
     .getConversationModelProps();
   if (!convoProps || !convoProps.isGroup || convoProps.isPublic) {
-    throw new Error('Invalid convo for updateGroupMembersDialog');
+    throw new Error('Invalid convo for UpdateClosedGroupDialog');
   }
   if (!convoProps.weAreAdmin) {
     window.log.warn('Skipping update of members, we are not the admin');
@@ -169,7 +126,7 @@ async function onSubmit(convoId: string, membersAfterUpdate: Array<string>) {
   );
 }
 
-export const UpdateGroupMembersDialog = (props: Props) => {
+export const UpdateClosedGroupDialog = (props: Props) => {
   const { conversationId } = props;
   const convoProps = useConversationPropsById(conversationId);
   const existingMembers = convoProps?.members || [];
@@ -181,13 +138,13 @@ export const UpdateGroupMembersDialog = (props: Props) => {
   const dispatch = useDispatch();
 
   if (!convoProps || !convoProps.isGroup || convoProps.isPublic) {
-    throw new Error('UpdateGroupMembersDialog invalid convoProps');
+    throw new Error('UpdateClosedGroupDialog invalid convoProps');
   }
 
   const weAreAdmin = convoProps.weAreAdmin || false;
 
   const closeDialog = () => {
-    dispatch(updateGroupMembersModal(null));
+    dispatch(updateClosedGroupModal(null));
   };
 
   const onClickOK = async () => {
@@ -243,7 +200,6 @@ export const UpdateGroupMembersDialog = (props: Props) => {
           selectedMembers={membersToKeepWithUpdate}
         />
       </StyledClassicMemberList>
-      <ZombiesList convoId={conversationId} />
       {showNoMembersMessage && <p>{window.i18n('noMembersInThisGroup')}</p>}
 
       <SpacerLG />

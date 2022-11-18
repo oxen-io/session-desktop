@@ -9,8 +9,6 @@ import {
   showLeaveGroupByConvoId,
   showRemoveModeratorsByConvoId,
   showUnbanUserByConvoId,
-  showUpdateGroupMembersByConvoId,
-  showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
 
 import { SpacerLG } from '../../../basic/Text';
@@ -31,14 +29,18 @@ import {
 import { getConversationController } from '../../../../session/conversations';
 import { PanelIconButtonWithToggle } from '../../../buttons/PanelIconButton';
 import {
-  showBanUnbanUser,
   showDeleteContactOnly,
   showDeleteLeftClosedGroup,
   showDeleteMessagesItem,
   showLeaveOpenGroup,
 } from '../../../menu/Menu';
 import styled from 'styled-components';
-import { updateConfirmModal } from '../../../../state/ducks/modalDialog';
+import {
+  showReadOnlyGroupMembersModal,
+  updateClosedGroupModal,
+  updateConfirmModal,
+  updatePublicGroupNameModal,
+} from '../../../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../../../basic/SessionButton';
 import {
   useSelectedConversationKey,
@@ -55,8 +57,15 @@ import {
   useSelectedSubsbriberCount,
   useSelectedWeAreAdmin,
 } from '../../../../state/selectors/selectedConversation';
+import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
 
 type ShowItemProps = { show: boolean };
+
+function assertOrThrow(throwIfTrue: boolean, message: string) {
+  if (throwIfTrue) {
+    throw new Error(message);
+  }
+}
 
 const BackButtonContainer = styled.div``;
 
@@ -88,29 +97,13 @@ const HeaderItem = () => {
 
 const InviteContactPublicItem = (props: ShowItemProps) => {
   const selectedConvoId = useSelectedConversationKey();
+  const selectedIsPublic = useSelectedIsPublic();
 
   if (!props.show || !selectedConvoId) {
     return null;
   }
-  return (
-    <PanelIconButton
-      onClick={() => {
-        showInviteContactByConvoId(selectedConvoId);
-      }}
-      text={window.i18n('inviteContacts')}
-      disableBg={true}
-      iconType={'addUser'}
-      dataTestId="add-user-button"
-    />
-  );
-};
 
-const InviteContactClosedItem = (props: ShowItemProps) => {
-  const selectedConvoId = useSelectedConversationKey();
-
-  if (!props.show || !selectedConvoId) {
-    return null;
-  }
+  assertOrThrow(!selectedIsPublic, 'Invite public needs open group chat');
   return (
     <PanelIconButton
       onClick={() => {
@@ -126,9 +119,12 @@ const InviteContactClosedItem = (props: ShowItemProps) => {
 
 const AddRemoveModsItem = (props: ShowItemProps) => {
   const selectedConvoId = useSelectedConversationKey();
+  const selectedIsPublic = useSelectedIsPublic();
+
   if (!props.show || !selectedConvoId) {
     return null;
   }
+  assertOrThrow(!selectedIsPublic, 'add/remove mods needs open group chat');
 
   return (
     <>
@@ -153,23 +149,96 @@ const AddRemoveModsItem = (props: ShowItemProps) => {
   );
 };
 
-const UpdateGroupNameItem = (props: ShowItemProps) => {
+async function createAllConvosForClosedGroupMembers(conversationId: string) {
+  const groupConvo = getConversationController().get(conversationId);
+  if (!groupConvo) {
+    throw new Error('createAllConvosForClosedGroupMembers needs a groupconvo');
+  }
+  // make sure all the members' convo exists so we can add or remove them
+  await Promise.all(
+    groupConvo
+      .get('members')
+      .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
+  );
+}
+
+const UpdateGroupNamePublicItem = (props: ShowItemProps) => {
+  const dispatch = useDispatch();
   const selectedConvoId = useSelectedConversationKey();
   const selectedIsPublic = useSelectedIsPublic();
+  /**
+   * closed groups name update is made from the Edit Group menu, not from here anymore
+   */
   if (!props.show || !selectedConvoId) {
     return null;
   }
+  assertOrThrow(!selectedIsPublic, 'update group name public needs open group chat');
 
-  const text = selectedIsPublic ? window.i18n('editGroup') : window.i18n('editGroupName');
+  const text = window.i18n('editGroup');
 
   return (
     <PanelIconButton
       onClick={async () => {
-        await showUpdateGroupNameByConvoId(selectedConvoId);
+        await createAllConvosForClosedGroupMembers(selectedConvoId);
+        dispatch(updatePublicGroupNameModal({ conversationId: selectedConvoId }));
       }}
       text={text}
       disableBg={true}
       iconType={'group'}
+    />
+  );
+};
+
+const UpdateClosedGroupItem = (props: ShowItemProps) => {
+  const dispatch = useDispatch();
+  const selectedConvoId = useSelectedConversationKey();
+  const isClosedGroup = useSelectedIsClosedGroup();
+
+  /**
+   * closed groups name update is made from the Edit Group menu, not from here anymore
+   */
+  if (!props.show || !selectedConvoId) {
+    return null;
+  }
+  assertOrThrow(!isClosedGroup, 'update closed group needs closed group chat');
+
+  const text = window.i18n('editGroup');
+
+  return (
+    <PanelIconButton
+      onClick={async () => {
+        await createAllConvosForClosedGroupMembers(selectedConvoId);
+        dispatch(updateClosedGroupModal({ conversationId: selectedConvoId }));
+      }}
+      text={text}
+      disableBg={true}
+      iconType={'group'}
+    />
+  );
+};
+
+const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
+  const dispatch = useDispatch();
+  const selectedConvoId = useSelectedConversationKey();
+  const isClosedGroupV3 = useSelectedIsClosedGroup();
+
+  /**
+   * closed groups name update is made from the Edit Group menu, not from here anymore
+   */
+  if (!props.show || !selectedConvoId) {
+    return null;
+  }
+  assertOrThrow(!isClosedGroupV3, 'Promote admin only works for closed group v3');
+
+  return (
+    <PanelIconButton
+      onClick={async () => {
+        await createAllConvosForClosedGroupMembers(selectedConvoId);
+        dispatch(updateClosedGroupModal({ conversationId: selectedConvoId }));
+      }}
+      text={window.i18n('addModerators')}
+      disableBg={true}
+      iconType={'addModerator'}
     />
   );
 };
@@ -222,20 +291,31 @@ const DisappearingMessageItem = (props: ShowItemProps) => {
   );
 };
 
-const GroupMembersItem = (props: ShowItemProps) => {
+/**
+ * Read only, no change allowed from the dialog shown in this one
+ */
+const ReadOnlyGroupMembersItem = (props: ShowItemProps) => {
   const selectedConvoId = useSelectedConversationKey();
+  const weAreAdmin = useSelectedWeAreAdmin();
+  const isPublic = useSelectedWeAreAdmin();
+  const dispatch = useDispatch();
 
   if (!props.show || !selectedConvoId) {
     return null;
   }
-
+  //group member when we are admin is shown in the group update now
+  assertOrThrow(
+    weAreAdmin || isPublic,
+    'ReadOnlyGroupMembersItem only used for closed group where we are not admins'
+  );
   return (
     <PanelIconButton
       iconType={'group'}
       text={window.i18n('groupMembers')}
       disableBg={true}
       onClick={async () => {
-        await showUpdateGroupMembersByConvoId(selectedConvoId);
+        await createAllConvosForClosedGroupMembers(selectedConvoId);
+        dispatch(showReadOnlyGroupMembersModal({ conversationId: selectedConvoId }));
       }}
     />
   );
@@ -296,6 +376,7 @@ const BanMenuItem = (props: ShowItemProps): JSX.Element | null => {
   if (!props.show || !selectedConvoId) {
     return null;
   }
+
   return (
     <PanelIconButton
       iconType={'banUser'}
@@ -324,6 +405,18 @@ const UnbanMenuItem = (props: ShowItemProps): JSX.Element | null => {
       }}
     />
   );
+};
+
+const BanUnbanMenUItem = (props: ShowItemProps) => {
+  if (props.show) {
+    return (
+      <>
+        <BanMenuItem show={props.show} />
+        <UnbanMenuItem show={props.show} />
+      </>
+    );
+  }
+  return null;
 };
 
 const DeleteContactItem = () => {
@@ -506,6 +599,10 @@ const StyledTitleGroup = styled.div`
   margin-block-end: var(--margins-xs);
 `;
 
+const showBanUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
+  return !isKickedFromGroup && weAreAdmin && isPublic;
+};
+
 // tslint:disable: cyclomatic-complexity
 // tslint:disable: max-func-body-length
 export const OverlayRightPanelSettings = () => {
@@ -514,7 +611,7 @@ export const OverlayRightPanelSettings = () => {
   const isBlocked = useSelectedIsBlocked();
   const isGroup = useSelectedIsOpenOrClosedGroup();
   const isClosedGroup = useSelectedIsClosedGroup();
-  const isGroupV3 = useSelectedIsClosedGroupV3();
+  const isClosedGroupV3 = useSelectedIsClosedGroupV3();
   const isActive = useSelectedIsActive();
   const displayNameInProfile = useSelectedDisplayNameInProfile();
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
@@ -525,46 +622,50 @@ export const OverlayRightPanelSettings = () => {
   if (!selectedConversationId) {
     return null;
   }
-
-  const showMemberCount = !!(subscriberCount && subscriberCount > 0);
   const commonNoShow = isKickedFromGroup || left || isBlocked || !isActive;
-  const hasDisappearingMessagesGroupAvailable = !isPublic && isGroup && !commonNoShow;
   const hasDisappearingMessagesPrivateAvailable = !isGroup && !commonNoShow;
 
-  const showUpdateGroupNameButton = Boolean(
-    isGroup && (!isPublic || (isPublic && weAreAdmin)) && !commonNoShow
-  );
-  const showAddRemoveModeratorsButton = Boolean(weAreAdmin && !commonNoShow && isPublic);
-  const showUpdateGroupMembersButton = Boolean(!isPublic && isGroup && !commonNoShow);
-  const showInviteContactsPublic = Boolean(isPublic && !isKickedFromGroup && !isBlocked && !left);
-  const showInviteContactsClosed = Boolean(
-    isGroup && !isPublic && !isKickedFromGroup && !isBlocked && !left && !isGroupV3
-  );
+  /**
+   * Open or closed groups toggle show/hide
+   */
+  const showMemberCount = !!(subscriberCount && subscriberCount > 0);
 
   /**
-   * The user can see the group members here if this a closed group and this is a not a v3group where we are the admin.
-   * This is because for an admin of a v3, we can edit the group through EditGroup
+   * Closed groups toggle show/hide buttons.
+   * Notes:
+   * 1. We want the group name update inside the "Edit Group" modal now.
+   * 2. An admin of a v3 closed group should only see the Edit Group and not the Show Members button
    */
-  const showMembersNonAdmin = Boolean(
-    (isGroup &&
-      !isPublic &&
-      !isKickedFromGroup &&
-      !isBlocked &&
-      !left &&
-      isGroupV3 &&
-      !weAreAdmin) ||
-      !isGroupV3
-  );
+  const hasDisappearingMessagesGroupAvailable =
+    isClosedGroup && !commonNoShow && ((isClosedGroupV3 && weAreAdmin) || !isClosedGroupV3);
+  const showEditClosedGroupButton = Boolean(isClosedGroup && weAreAdmin && !commonNoShow);
+  const showReadOnlyMembers = !commonNoShow && !weAreAdmin && isClosedGroup;
+  const showPromoteAdminButton = weAreAdmin && isClosedGroupV3 && !commonNoShow;
 
+  /**
+   * Public groups toggle show/hide buttons
+   */
+  const showInviteContactsPublic = Boolean(isPublic && !isKickedFromGroup && !isBlocked && !left);
+  const showUpdateGroupNameButtonPublic = Boolean(isPublic && weAreAdmin && !commonNoShow);
+  const showAddRemoveModeratorsButton = Boolean(weAreAdmin && !commonNoShow && isPublic);
   const showBanUnbanUserItem = showBanUnbanUser(weAreAdmin, isPublic, isKickedFromGroup);
 
-  const showAdminSettings =
-    isGroup &&
-    (showUpdateGroupNameButton ||
-      showAddRemoveModeratorsButton ||
+  /**
+   * Decide if we need to show the "Admin Settings" section at all or not
+   */
+
+  const adminSettingsClosedGroupShown =
+    isClosedGroup &&
+    (hasDisappearingMessagesGroupAvailable ||
       hasDisappearingMessagesGroupAvailable ||
-      showUpdateGroupMembersButton ||
-      showAddRemoveModeratorsButton);
+      showPromoteAdminButton ||
+      showEditClosedGroupButton);
+  const adminSettingsPublicGroupShown =
+    isPublic &&
+    (showUpdateGroupNameButtonPublic || showAddRemoveModeratorsButton || showBanUnbanUserItem);
+
+  const showAdminSettings =
+    isGroup && (adminSettingsClosedGroupShown || adminSettingsPublicGroupShown);
 
   return (
     <>
@@ -581,11 +682,10 @@ export const OverlayRightPanelSettings = () => {
         <SearchConversationItem />
         <AllMediaItem />
         <InviteContactPublicItem show={showInviteContactsPublic} />
-        <InviteContactClosedItem show={showInviteContactsClosed} />
         <PinConversationItem />
         <NotificationItem />
         <DisappearingMessageItem show={hasDisappearingMessagesPrivateAvailable} />
-        <GroupMembersItem show={showMembersNonAdmin} />
+        <ReadOnlyGroupMembersItem show={showReadOnlyMembers} />
         <AutoDownloadMediaItem />
       </PanelButtonGroup>
       <SpacerLG />
@@ -595,17 +695,17 @@ export const OverlayRightPanelSettings = () => {
           <PanelButtonGroup>
             {isClosedGroup && (
               <>
-                <UpdateGroupNameItem show={showUpdateGroupNameButton} />
-                <DisappearingMessageItem show={hasDisappearingMessagesGroupAvailable} />
-                <GroupMembersItem show={showUpdateGroupMembersButton} />
+                <UpdateClosedGroupItem show={showEditClosedGroupButton} />
+                <DisappearingMessageItem show={hasDisappearingMessagesGroupAvailable} />{' '}
+                <PromoteAdminClosedGroupItem show={showPromoteAdminButton} />
               </>
             )}
 
             {isPublic && (
               <>
+                <UpdateGroupNamePublicItem show={showUpdateGroupNameButtonPublic} />
                 <AddRemoveModsItem show={showAddRemoveModeratorsButton} />
-                <BanMenuItem show={showBanUnbanUserItem} />
-                <UnbanMenuItem show={showBanUnbanUserItem} />
+                <BanUnbanMenUItem show={showBanUnbanUserItem} />
               </>
             )}
           </PanelButtonGroup>

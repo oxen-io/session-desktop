@@ -120,7 +120,7 @@
   "sent": "Sent",
   "received": "Received",
   "sendMessage": "Message",
-  "groupMembers": "Members",
+  "groupMembers": "Group Members",
   "resend": "Resend",
   "deleteConversationConfirmation": "Permanently delete the messages in this conversation?",
   "clear": "Clear",

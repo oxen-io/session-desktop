@@ -12,8 +12,10 @@ export type BanOrUnbanUserModalState = {
 } | null;
 export type AddModeratorsModalState = InviteContactModalState;
 export type RemoveModeratorsModalState = InviteContactModalState;
-export type UpdateGroupMembersModalState = InviteContactModalState;
-export type UpdateGroupNameModalState = InviteContactModalState;
+export type ReadOnlyGroupMembersModalState = InviteContactModalState;
+export type UpdateClosedGroupModalState = InviteContactModalState;
+
+export type UpdatePublicGroupNameModalState = InviteContactModalState;
 export type ChangeNickNameModalState = InviteContactModalState;
 export type AdminLeaveClosedGroupModalState = InviteContactModalState;
 export type EditProfileModalState = {} | null;
@@ -40,8 +42,9 @@ export type ModalState = {
   banOrUnbanUserModal: BanOrUnbanUserModalState;
   removeModeratorsModal: RemoveModeratorsModalState;
   addModeratorsModal: AddModeratorsModalState;
-  groupNameModal: UpdateGroupNameModalState;
-  groupMembersModal: UpdateGroupMembersModalState;
+  publicGroupNameModal: UpdatePublicGroupNameModalState;
+  readOnlyGroupMembersModal: ReadOnlyGroupMembersModalState;
+  updateClosedGroupModal: UpdateClosedGroupModalState;
   userDetailsModal: UserDetailsModalState;
   nickNameModal: ChangeNickNameModalState;
   editProfileModal: EditProfileModalState;
@@ -60,8 +63,9 @@ export const initialModalState: ModalState = {
   addModeratorsModal: null,
   removeModeratorsModal: null,
   banOrUnbanUserModal: null,
-  groupNameModal: null,
-  groupMembersModal: null,
+  publicGroupNameModal: null,
+  readOnlyGroupMembersModal: null,
+  updateClosedGroupModal: null,
   userDetailsModal: null,
   nickNameModal: null,
   editProfileModal: null,
@@ -93,11 +97,20 @@ const ModalSlice = createSlice({
     updateRemoveModeratorsModal(state, action: PayloadAction<RemoveModeratorsModalState | null>) {
       return { ...state, removeModeratorsModal: action.payload };
     },
-    updateGroupNameModal(state, action: PayloadAction<UpdateGroupNameModalState | null>) {
-      return { ...state, groupNameModal: action.payload };
+    updatePublicGroupNameModal(
+      state,
+      action: PayloadAction<UpdatePublicGroupNameModalState | null>
+    ) {
+      return { ...state, publicGroupNameModal: action.payload };
     },
-    updateGroupMembersModal(state, action: PayloadAction<UpdateGroupMembersModalState | null>) {
-      return { ...state, groupMembersModal: action.payload };
+    showReadOnlyGroupMembersModal(
+      state,
+      action: PayloadAction<ReadOnlyGroupMembersModalState | null>
+    ) {
+      return { ...state, readOnlyGroupMembersModal: action.payload };
+    },
+    updateClosedGroupModal(state, action: PayloadAction<UpdateClosedGroupModalState | null>) {
+      return { ...state, updateClosedGroupModal: action.payload };
     },
     updateUserDetailsModal(state, action: PayloadAction<UserDetailsModalState | null>) {
       return { ...state, userDetailsModal: action.payload };
@@ -138,8 +151,9 @@ export const {
   updateInviteContactModal,
   updateAddModeratorsModal,
   updateRemoveModeratorsModal,
-  updateGroupNameModal,
-  updateGroupMembersModal,
+  updatePublicGroupNameModal,
+  showReadOnlyGroupMembersModal,
+  updateClosedGroupModal,
   updateUserDetailsModal,
   changeNickNameModal,
   editProfileModal,
