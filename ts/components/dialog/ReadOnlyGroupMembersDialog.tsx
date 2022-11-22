@@ -12,12 +12,11 @@ import {
   useIsPublic,
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
-// tslint:disable-next-line: no-submodule-imports
-import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { showReadOnlyGroupMembersModal } from '../../state/ducks/modalDialog';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
 import { resetRightOverlayMode } from '../../state/ducks/section';
+import { useEscapeAction } from '../../hooks/useEscapeAction';
 
 type Props = {
   conversationId: string;
@@ -81,9 +80,7 @@ export const ReadOnlyGroupMembersDialog = (props: Props) => {
     dispatch(showReadOnlyGroupMembersModal(null));
   };
 
-  useKey((event: KeyboardEvent) => {
-    return event.key === 'Esc' || event.key === 'Escape';
-  }, closeDialog);
+  useEscapeAction(closeDialog);
 
   const showNoMembersMessage = members.length === 0;
   const titleText = window.i18n('groupMembers');

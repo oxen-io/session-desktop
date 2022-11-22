@@ -578,7 +578,7 @@ function saveConversation(data: ConversationAttributes, instance?: BetterSqlite3
       displayNameInProfile,
       conversationIdOrigin,
       identityPrivateKey,
-      description
+      description: description || null,
     });
 }
 

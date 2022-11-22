@@ -45,14 +45,6 @@ export function useConversationRealName(convoId?: string) {
   return convoProps?.isPrivate ? convoProps?.displayNameInProfile : undefined;
 }
 
-/**
- * Returns the current description set for this group.
- * Returns undefined if this is not a valid group (open or closed)
- */
-export function useConversationDescription(convoId?: string) {
-  const convoProps = useConversationPropsById(convoId);
-  return convoProps?.isGroup ? convoProps?.description : undefined;
-}
 
 /**
  * Returns either the nickname, the profileName, in '"' or the full pubkeys given

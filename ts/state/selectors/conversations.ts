@@ -21,6 +21,7 @@ import { ConversationTypeEnum, isOpenOrClosedGroup } from '../../models/conversa
 
 import { filter, sortBy } from 'lodash';
 import { selectedConversationSelectors } from './selectedConversation';
+import { useSelector } from 'react-redux';
 
 export const getConversations = (state: StateType): ConversationsStateType => state.conversations;
 
@@ -398,3 +399,7 @@ export const getOldBottomMessageId = createSelector(
   getConversations,
   (state: ConversationsStateType): string | null => state.oldBottomMessageId || null
 );
+
+export const usePrivateContactsPubkeys = () => {
+  return useSelector(getPrivateContactsPubkeys);
+};

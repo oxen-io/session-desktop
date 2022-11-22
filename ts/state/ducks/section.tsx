@@ -24,13 +24,19 @@ type RightPanelMessageDetailsState = {
 type RightPanelAllMediaState = { type: 'show_media'; params: null };
 type RightPanelDisappearingState = { type: 'disappearing_messages'; params: null };
 type RightPanelNotificationsState = { type: 'notifications'; params: null };
+type RightPanelEditClosedGroupState = { type: 'closed_group_edit'; params: null };
+type RightPanelEditClosedGroupNameState = { type: 'closed_group_edit_name'; params: null };
+type RightPanelEditClosedGroupInviteState = { type: 'closed_group_invite'; params: null };
 
 export type RightOverlayMode =
   | RightPanelDefaultState
   | RightPanelMessageDetailsState
   | RightPanelAllMediaState
   | RightPanelDisappearingState
-  | RightPanelNotificationsState;
+  | RightPanelNotificationsState
+  | RightPanelEditClosedGroupState
+  | RightPanelEditClosedGroupNameState
+  | RightPanelEditClosedGroupInviteState;
 
 export type SectionStateType = {
   focusedSection: SectionType;

@@ -5,7 +5,7 @@ import {
   deleteAllMessagesByConvoIdWithConfirmation,
   showAddModeratorsByConvoId,
   showBanUserByConvoId,
-  showInviteContactByConvoId,
+  showInvitePublicByConvoId,
   showLeaveGroupByConvoId,
   showRemoveModeratorsByConvoId,
   showUnbanUserByConvoId,
@@ -16,7 +16,6 @@ import { SessionIconButton } from '../../../icon';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 import { PanelButtonGroup, PanelIconButton } from '../../../buttons';
-import { ToastUtils } from '../../../../session/utils';
 import {
   useIsClosedGroup,
   useIsKickedFromGroup,
@@ -38,7 +37,6 @@ import styled from 'styled-components';
 import {
   promoteAdminToClosedGroup,
   showReadOnlyGroupMembersModal,
-  updateClosedGroupModal,
   updateConfirmModal,
   updatePublicGroupNameModal,
 } from '../../../../state/ducks/modalDialog';
@@ -109,7 +107,7 @@ const InviteContactPublicItem = (props: ShowItemProps) => {
   return (
     <PanelIconButton
       onClick={() => {
-        showInviteContactByConvoId(selectedConvoId);
+        showInvitePublicByConvoId(selectedConvoId);
       }}
       text={window.i18n('inviteContacts')}
       disableBg={true}
@@ -210,7 +208,12 @@ const UpdateClosedGroupItem = (props: ShowItemProps) => {
     <PanelIconButton
       onClick={async () => {
         await createAllConvosForClosedGroupMembers(selectedConvoId);
-        dispatch(updateClosedGroupModal({ conversationId: selectedConvoId }));
+        dispatch(
+          setRightOverlayMode({
+            type: 'closed_group_edit',
+            params: null,
+          })
+        );
       }}
       text={text}
       disableBg={true}
@@ -223,7 +226,6 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
   const dispatch = useDispatch();
   const selectedConvoId = useSelectedConversationKey();
   const isClosedGroupV3 = useSelectedIsClosedGroup();
-  console.warn('promote admin todo ');
 
   /**
    * closed groups name update is made from the Edit Group menu, not from here anymore
@@ -238,6 +240,7 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
       onClick={async () => {
         await createAllConvosForClosedGroupMembers(selectedConvoId);
         dispatch(promoteAdminToClosedGroup({ conversationId: selectedConvoId }));
+        console.warn('promote admin todo ');
       }}
       text={window.i18n('addModerators')}
       disableBg={true}
@@ -247,15 +250,13 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
 };
 
 const SearchConversationItem = () => {
-  console.error('search per conversation TODO');
-
   return (
     <PanelIconButton
       iconType={'search'}
       text={window.i18n('searchConversation')}
       disableBg={true}
       onClick={() => {
-        ToastUtils.pushToastError('DOME', 'DOME');
+        console.error('search per conversation TODO');
       }}
     />
   );
@@ -579,8 +580,6 @@ const AutoDownloadMediaItem = () => {
   if (!selectedConvoId) {
     return null;
   }
-
-  console.error('AutoDownloadMediaItem TODO');
 
   return (
     <PanelIconButtonWithToggle

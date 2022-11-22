@@ -92,6 +92,14 @@ const getMembers = (state: StateType) => {
   return getSelectedConversation(state)?.members || [];
 };
 
+const getZombies = (state: StateType) => {
+  return getSelectedConversation(state)?.zombies || [];
+};
+
+const getAdmins = (state: StateType) => {
+  return getSelectedConversation(state)?.groupAdmins || [];
+};
+
 const getIsSelectedBlocked = (state: StateType): boolean => {
   return getSelectedConversation(state)?.isBlocked || false;
 };
@@ -255,10 +263,35 @@ export function useSelectedMembers(): Array<string> {
   return useSelector(getMembers);
 }
 
+export function useSelectedZombies(): Array<string> {
+  return useSelector(getZombies);
+}
+
+export function useSelectedAdmins(): Array<string> {
+  return useSelector(getAdmins);
+}
+
 export function useSelectedHasIncomingMessages(): boolean {
   return useSelector(hasSelectedConversationIncomingMessages);
 }
 
 export function useSelectedHasReactions(): boolean {
   return useSelector(hasSelectedReactions);
+}
+
+const getDescription = (state: StateType): string | undefined => {
+  return getSelectedConversation(state)?.isGroup
+    ? getSelectedConversation(state)?.description
+    : undefined;
+};
+
+/**
+ * Returns the current description set for the selected conversation.
+ * Returns undefined if this is not a valid group (open or closed)
+ */
+export function useSelectedDescription(): string | undefined {
+  return (
+    useSelector(getDescription) ||
+    'very logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn description'
+  );
 }

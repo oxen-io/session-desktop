@@ -74,6 +74,7 @@ export const OverlayMessage = () => {
   }
 
   async function handleMessageButtonClick() {
+    debugger;
     if ((!pubkeyOrOns && !pubkeyOrOns.length) || !pubkeyOrOns.trim().length) {
       ToastUtils.pushToastError('invalidPubKey', window.i18n('invalidNumberError')); // or ons name
       return;

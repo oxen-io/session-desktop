@@ -9,7 +9,7 @@ import {
   ConfirmModalState,
   DeleteAccountModalState,
   EditProfileModalState,
-  InviteContactModalState,
+  InvitePublicModalState,
   ModalState,
   OnionPathModalState,
   ReactModalsState,
@@ -17,7 +17,6 @@ import {
   RecoveryPhraseModalState,
   RemoveModeratorsModalState,
   SessionPasswordModalState,
-  UpdateClosedGroupModalState,
   UpdatePublicGroupNameModalState,
   UserDetailsModalState,
 } from '../ducks/modalDialog';
@@ -31,9 +30,9 @@ export const getConfirmModal = createSelector(
   (state: ModalState): ConfirmModalState => state.confirmModal
 );
 
-export const getInviteContactModal = createSelector(
+export const getInvitePublicModalState = createSelector(
   getModal,
-  (state: ModalState): InviteContactModalState => state.inviteContactModal
+  (state: ModalState): InvitePublicModalState => state.invitePublicModal
 );
 
 export const getAddModeratorsModal = createSelector(
@@ -59,11 +58,6 @@ export const getUpdatePublicGroupNameModal = createSelector(
 export const getReadOnlyGroupMembersModal = createSelector(
   getModal,
   (state: ModalState): ReadOnlyGroupMembersModalState => state.readOnlyGroupMembersModal
-);
-
-export const getUpdateClosedGroupModal = createSelector(
-  getModal,
-  (state: ModalState): UpdateClosedGroupModalState => state.updateClosedGroupModal
 );
 
 export const getUserDetailsModal = createSelector(

@@ -13,12 +13,11 @@ import {
   useIsClosedGroupV3,
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
-// tslint:disable-next-line: no-submodule-imports
-import useKey from 'react-use/lib/useKey';
 import { getConversationController } from '../../session/conversations';
 import styled from 'styled-components';
 import { promoteAdminToClosedGroup } from '../../state/ducks/modalDialog';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { useEscapeAction } from '../../hooks/useEscapeAction';
 
 type Props = {
   conversationId: string;
@@ -81,7 +80,6 @@ async function onTriggerPromoteAdmin(convoId: string, memberToPromote: string) {
     return;
   }
   console.warn('onPromoteAdmin ', memberToPromote);
-  // TODO
   debugger;
 }
 
@@ -111,11 +109,11 @@ export const PromoteAdminClosedGroupDialog = (props: Props) => {
   const membersWithoutAdmins = difference(existingMembers, existingAdmins);
 
   if (!isGroupV3) {
-    throw new Error('UpdateClosedGroupDialog invalid group');
+    throw new Error('PromoteAdminClosedGroupDialog invalid group');
   }
 
   if (!weAreAdmin) {
-    throw new Error('UpdateClosedGroupDialog weAreAdmin is false');
+    throw new Error('PromoteAdminClosedGroupDialog weAreAdmin is false');
   }
 
   const closeDialog = () => {
@@ -146,9 +144,7 @@ export const PromoteAdminClosedGroupDialog = (props: Props) => {
     }
   };
 
-  useKey((event: KeyboardEvent) => {
-    return event.key === 'Esc' || event.key === 'Escape';
-  }, closeDialog);
+  useEscapeAction(closeDialog);
 
   const showNoMembersMessage = existingMembers.length === 0;
   const okText = window.i18n('add');

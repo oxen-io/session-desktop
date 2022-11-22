@@ -19,7 +19,7 @@ import {
   updateAddModeratorsModal,
   updateBanOrUnbanUserModal,
   updateConfirmModal,
-  updateInviteContactModal,
+  updateInvitePublicModal,
   updateRemoveModeratorsModal,
 } from '../state/ducks/modalDialog';
 import { Data, hasLinkPreviewPopupBeenDisplayed, lastAvatarUploadTimestamp } from '../data/data';
@@ -227,8 +227,8 @@ export function showLeaveGroupByConvoId(conversationId: string) {
     );
   }
 }
-export function showInviteContactByConvoId(conversationId: string) {
-  window.inboxStore?.dispatch(updateInviteContactModal({ conversationId }));
+export function showInvitePublicByConvoId(conversationId: string) {
+  window.inboxStore?.dispatch(updateInvitePublicModal({ conversationId }));
 }
 
 export function showAddModeratorsByConvoId(conversationId: string) {

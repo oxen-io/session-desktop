@@ -8,7 +8,7 @@ import {
   getConfirmModal,
   getDeleteAccountModalState,
   getEditProfileDialog,
-  getInviteContactModal,
+  getInvitePublicModalState,
   getOnionPathDialog,
   getReactClearAllDialog,
   getReactListDialog,
@@ -16,12 +16,11 @@ import {
   getRecoveryPhraseDialog,
   getRemoveModeratorsModal,
   getSessionPasswordDialog,
-  getUpdateClosedGroupModal,
   getUpdatePublicGroupNameModal,
   getUserDetailsModal,
 } from '../../state/selectors/modal';
 import { AdminLeaveClosedGroupDialog } from './AdminLeaveClosedGroupDialog';
-import { InviteContactsDialog } from './InviteContactsDialog';
+import { InvitePublicDialog } from './InvitePublicDialog';
 import { DeleteAccountModal } from './DeleteAccountModal';
 import { EditProfileDialog } from './EditProfileDialog';
 import { OnionPathModal } from './OnionStatusPathDialog';
@@ -35,19 +34,17 @@ import { SessionNicknameDialog } from './SessionNicknameDialog';
 import { BanOrUnBanUserDialog } from './BanOrUnbanUserDialog';
 import { ReactListModal } from './ReactListModal';
 import { ReactClearAllModal } from './ReactClearAllModal';
-import { UpdatePublicGroupNameDialog } from './UpdateGroupNameDialog';
+import { UpdatePublicGroupNameDialog } from './UpdatePublicGroupNameDialog';
 import { ReadOnlyGroupMembersDialog } from './ReadOnlyGroupMembersDialog';
-import { UpdateClosedGroupDialog } from './UpdateClosedGroupDialog';
 import { PromoteAdminClosedGroupDialog } from './PromoteAdminClosedGroupDialog';
 import { StateType } from '../../state/reducer';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
-  const inviteModalState = useSelector(getInviteContactModal);
+  const inviteModalState = useSelector(getInvitePublicModalState);
   const addModeratorsModalState = useSelector(getAddModeratorsModal);
   const removeModeratorsModalState = useSelector(getRemoveModeratorsModal);
   const readOnlyGroupMembersState = useSelector(getReadOnlyGroupMembersModal);
-  const updateClosedGroupState = useSelector(getUpdateClosedGroupModal);
   const promoteAdminClosedGroupState = useSelector(
     (state: StateType) => state.modals.promoteAdminClosedGroupModal
   );
@@ -67,11 +64,10 @@ export const ModalContainer = () => {
   return (
     <>
       {banOrUnbanUserModalState && <BanOrUnBanUserDialog {...banOrUnbanUserModalState} />}
-      {inviteModalState && <InviteContactsDialog {...inviteModalState} />}
+      {inviteModalState && <InvitePublicDialog {...inviteModalState} />}
       {addModeratorsModalState && <AddModeratorsDialog {...addModeratorsModalState} />}
       {removeModeratorsModalState && <RemoveModeratorsDialog {...removeModeratorsModalState} />}
       {readOnlyGroupMembersState && <ReadOnlyGroupMembersDialog {...readOnlyGroupMembersState} />}
-      {updateClosedGroupState && <UpdateClosedGroupDialog {...updateClosedGroupState} />}
       {promoteAdminClosedGroupState && (
         <PromoteAdminClosedGroupDialog {...promoteAdminClosedGroupState} />
       )}

@@ -11,6 +11,7 @@ export interface FlexProps {
     | 'flex-end'
     | 'center'
     | 'space-between'
+    | 'space-evenly'
     | 'space-around'
     | 'initial'
     | 'inherit';

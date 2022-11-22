@@ -198,7 +198,6 @@ const getSortedMessagesOfSelectedConversation = createSelector(
       return [];
     }
 
-    console.error('getSortedMessagesOfSelectedConversation');
 
     const sortedMessage = sortMessages(messages, isPublic);
     return updateFirstMessageOfSeries(sortedMessage);

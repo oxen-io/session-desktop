@@ -7,11 +7,15 @@ import { OverlayDisappearingMessages } from './overlay/OverlayDisappearingMessag
 import { OverlayMessageInfo } from './overlay/message-info/OverlayMessageInfo';
 import { OverlayNotification } from './overlay/OverlayNotification';
 import { OverlayRightPanelSettings } from './overlay/OverlayRightPanelSettings';
+import { OverlayEditClosedGroup } from './overlay/OverlayEditClosedGroup';
+import { OverlayClosedGroupEditName } from './overlay/OverlayClosedGroupEditName';
+import { OverlayClosedGroupInvite } from './overlay/OverlayClosedGroupInvite';
 
 export const StyledScrollContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: hidden auto;
+  padding-inline: 5px;
 `;
 
 const ClosableOverlay = () => {
@@ -28,6 +32,12 @@ const ClosableOverlay = () => {
       return <OverlayAllMedia />;
     case 'notifications':
       return <OverlayNotification />;
+    case 'closed_group_edit':
+      return <OverlayEditClosedGroup />;
+    case 'closed_group_edit_name':
+      return <OverlayClosedGroupEditName />;
+    case 'closed_group_invite':
+      return <OverlayClosedGroupInvite />;
     case 'default':
       return <OverlayRightPanelSettings />;
 

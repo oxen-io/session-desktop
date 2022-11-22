@@ -76,6 +76,7 @@ const allowedKeysFormatRowOfConversation = [
   'displayNameInProfile',
   'conversationIdOrigin',
   'identityPrivateKey',
+  'description',
 ];
 
 const keysAllowedButNotSaved = ['is_medium_group', 'json'];
@@ -231,6 +232,7 @@ const allowedKeysOfConversationAttributes = [
   'displayNameInProfile',
   'conversationIdOrigin',
   'identityPrivateKey',
+  'description',
 ];
 
 /**

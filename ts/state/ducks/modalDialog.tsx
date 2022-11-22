@@ -4,21 +4,21 @@ import { PasswordAction } from '../../components/dialog/SessionPasswordDialog';
 export type BanType = 'ban' | 'unban';
 
 export type ConfirmModalState = SessionConfirmDialogProps | null;
-export type InviteContactModalState = { conversationId: string } | null;
+type BasicModalState = { conversationId: string } | null;
+export type InvitePublicModalState = BasicModalState;
 export type BanOrUnbanUserModalState = {
   conversationId: string;
   banType: BanType;
   pubkey?: string;
 } | null;
-export type AddModeratorsModalState = InviteContactModalState;
-export type RemoveModeratorsModalState = InviteContactModalState;
-export type ReadOnlyGroupMembersModalState = InviteContactModalState;
-export type UpdateClosedGroupModalState = InviteContactModalState;
-export type PromoteAdminClosedGroupModalState = InviteContactModalState;
+export type AddModeratorsModalState = BasicModalState;
+export type RemoveModeratorsModalState = BasicModalState;
+export type ReadOnlyGroupMembersModalState = BasicModalState;
+export type PromoteAdminClosedGroupModalState = BasicModalState;
 
-export type UpdatePublicGroupNameModalState = InviteContactModalState;
-export type ChangeNickNameModalState = InviteContactModalState;
-export type AdminLeaveClosedGroupModalState = InviteContactModalState;
+export type UpdatePublicGroupNameModalState = BasicModalState;
+export type ChangeNickNameModalState = BasicModalState;
+export type AdminLeaveClosedGroupModalState = BasicModalState;
 export type EditProfileModalState = {} | null;
 export type OnionPathModalState = EditProfileModalState;
 export type RecoveryPhraseModalState = EditProfileModalState;
@@ -39,13 +39,12 @@ export type ReactModalsState = {
 
 export type ModalState = {
   confirmModal: ConfirmModalState;
-  inviteContactModal: InviteContactModalState;
+  invitePublicModal: InvitePublicModalState;
   banOrUnbanUserModal: BanOrUnbanUserModalState;
   removeModeratorsModal: RemoveModeratorsModalState;
   addModeratorsModal: AddModeratorsModalState;
   publicGroupNameModal: UpdatePublicGroupNameModalState;
   readOnlyGroupMembersModal: ReadOnlyGroupMembersModalState;
-  updateClosedGroupModal: UpdateClosedGroupModalState;
   promoteAdminClosedGroupModal: PromoteAdminClosedGroupModalState;
   userDetailsModal: UserDetailsModalState;
   nickNameModal: ChangeNickNameModalState;
@@ -61,13 +60,12 @@ export type ModalState = {
 
 export const initialModalState: ModalState = {
   confirmModal: null,
-  inviteContactModal: null,
+  invitePublicModal: null,
   addModeratorsModal: null,
   removeModeratorsModal: null,
   banOrUnbanUserModal: null,
   publicGroupNameModal: null,
   readOnlyGroupMembersModal: null,
-  updateClosedGroupModal: null,
   promoteAdminClosedGroupModal: null,
   userDetailsModal: null,
   nickNameModal: null,
@@ -88,8 +86,8 @@ const ModalSlice = createSlice({
     updateConfirmModal(state, action: PayloadAction<ConfirmModalState | null>) {
       return { ...state, confirmModal: action.payload };
     },
-    updateInviteContactModal(state, action: PayloadAction<InviteContactModalState | null>) {
-      return { ...state, inviteContactModal: action.payload };
+    updateInvitePublicModal(state, action: PayloadAction<InvitePublicModalState | null>) {
+      return { ...state, invitePublicModal: action.payload };
     },
     updateBanOrUnbanUserModal(state, action: PayloadAction<BanOrUnbanUserModalState | null>) {
       return { ...state, banOrUnbanUserModal: action.payload };
@@ -111,9 +109,6 @@ const ModalSlice = createSlice({
       action: PayloadAction<ReadOnlyGroupMembersModalState | null>
     ) {
       return { ...state, readOnlyGroupMembersModal: action.payload };
-    },
-    updateClosedGroupModal(state, action: PayloadAction<UpdateClosedGroupModalState | null>) {
-      return { ...state, updateClosedGroupModal: action.payload };
     },
     promoteAdminToClosedGroup(
       state,
@@ -157,12 +152,11 @@ const ModalSlice = createSlice({
 export const { actions, reducer } = ModalSlice;
 export const {
   updateConfirmModal,
-  updateInviteContactModal,
+  updateInvitePublicModal,
   updateAddModeratorsModal,
   updateRemoveModeratorsModal,
   updatePublicGroupNameModal,
   showReadOnlyGroupMembersModal,
-  updateClosedGroupModal,
   promoteAdminToClosedGroup,
   updateUserDetailsModal,
   changeNickNameModal,
