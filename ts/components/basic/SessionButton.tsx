@@ -42,7 +42,7 @@ const StyledButton = styled.div<{
   user-select: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: var(--default-duration);
+  transition: background-color var(--default-duration), color var(--default-duration);
   background-repeat: no-repeat;
   overflow: hidden;
   height: 34px;

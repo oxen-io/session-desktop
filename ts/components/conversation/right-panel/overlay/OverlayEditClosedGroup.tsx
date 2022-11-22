@@ -1,5 +1,5 @@
-import _, { concat, difference, includes, uniq, xor } from 'lodash';
-import React, { useEffect } from 'react';
+import { concat, difference, uniq } from 'lodash';
+import React, { Dispatch, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
@@ -10,9 +10,11 @@ import {
   useConversationUsername,
 } from '../../../../hooks/useParamSelector';
 import { useSet } from '../../../../hooks/useSet';
+import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
 import { getConversationController } from '../../../../session/conversations';
 import { initiateClosedGroupUpdate } from '../../../../session/group/closed-group';
 import { UserUtils, ToastUtils } from '../../../../session/utils';
+import { updateRemoveMembersWithMessagesModal } from '../../../../state/ducks/modalDialog';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
 
 import { useRightOverlayMode } from '../../../../state/selectors/section';
@@ -83,11 +85,20 @@ const ClassicMemberList = (props: {
   );
 };
 
-async function onEditClosedGroup(convoId: string, membersSelectedToRemove: Array<string>) {
+async function onEditClosedGroup(
+  convoId: string,
+  membersSelectedToRemove: Array<string>,
+  dispatch: Dispatch<any>
+) {
+  const ourPK = UserUtils.getOurPubKeyStrFromCache();
+
   // not ideal to get the props here, but this is not run often
   const convoProps = getConversationController()
     .get(convoId)
     .getConversationModelProps();
+
+  const isV3Group = convoProps.type === ConversationTypeEnum.CLOSED_GROUP_V3;
+
   if (!convoProps || !convoProps.isGroup || convoProps.isPublic) {
     throw new Error('Invalid convo for OverlayEditClosedGroup');
   }
@@ -95,54 +106,32 @@ async function onEditClosedGroup(convoId: string, membersSelectedToRemove: Array
     window.log.warn('Skipping update of members, we are not the admin');
     return;
   }
-  const existingMembers = convoProps.members || [];
-
-  const ourPK = UserUtils.getOurPubKeyStrFromCache();
-  const membersAfterUpdate = difference(existingMembers, membersSelectedToRemove);
-
-  const allMembersAfterUpdate = uniq(concat(membersAfterUpdate, [ourPK]));
-
-  // membersAfterUpdate won't include the zombies. We are the admin and we want to remove them not matter what
-
-  // We need to NOT trigger an group update if the list of member is the same.
-  // We need to merge all members, including zombies for this call.
-  // We consider that the admin ALWAYS wants to remove zombies (actually they should be removed
-  // automatically by him when the LEFT message is received)
-
-  const existingZombies = convoProps.zombies || [];
-
-  const allExistingMembersWithZombies = _.uniq(existingMembers.concat(existingZombies));
-
-  const notPresentInOld = allMembersAfterUpdate.filter(
-    m => !allExistingMembersWithZombies.includes(m)
-  );
-
-  debugger; // we need to make sure this is still OK for v2 grouips and add the logic for v3 groups
-
-  // be sure to include zombies in here
-  const membersToRemove = allExistingMembersWithZombies.filter(
-    m => !allMembersAfterUpdate.includes(m)
-  );
-
-  // do the xor between the two. if the length is 0, it means the before and the after is the same.
-  const xorResult = xor(membersToRemove, notPresentInOld);
-  if (xorResult.length === 0) {
-    window.log.info('skipping group update: no detected changes in group member list');
-
+  if (!membersSelectedToRemove.length) {
+    window.log.warn('Skipping update of members, we changes detected');
     return;
   }
+  // we deprecate legacy closed groups and we do not need to keep track of zombies for v3 closed groups
+  const existingMembers = convoProps.members || [];
+  const membersAfterUpdate = difference(existingMembers, membersSelectedToRemove);
+  const allMembersAfterUpdate = uniq(concat(membersAfterUpdate, [ourPK]));
+  debugger; // we need to make sure this is still OK for v2 grouips and add the logic for v3 groups
 
-  // If any extra devices of removed exist in newMembers, ensure that you filter them
-  // Note: I think this is useless
-  const filteredMembers = allMembersAfterUpdate.filter(
-    memberAfterUpdate => !includes(membersToRemove, memberAfterUpdate)
-  );
+  if (!isV3Group) {
+    await initiateClosedGroupUpdate(
+      convoId,
+      convoProps.displayNameInProfile || 'Unknown',
+      allMembersAfterUpdate
+    );
+  } else {
+    // for v3 closed group, we want to ask if we need to remove the associated messages too
 
-  void initiateClosedGroupUpdate(
-    convoId,
-    convoProps.displayNameInProfile || 'Unknown',
-    filteredMembers
-  );
+    dispatch(
+      updateRemoveMembersWithMessagesModal({
+        conversationId: convoId,
+        membersToRemove: membersSelectedToRemove,
+      })
+    );
+  }
 }
 
 const GroupInfosContainer = styled.div`
@@ -202,7 +191,9 @@ export const OverlayEditClosedGroup = () => {
   const admins = useSelectedAdmins();
   const weAreAdmin = useSelectedWeAreAdmin();
 
-  const { addTo, removeFrom, uniqueValues: membersToRemove } = useSet<string>([]);
+  const { addTo, removeFrom, uniqueValues: membersToRemove, empty: emptyMembersToRemove } = useSet<
+    string
+  >([]);
 
   const dispatch = useDispatch();
 
@@ -222,8 +213,10 @@ export const OverlayEditClosedGroup = () => {
     if (!conversationId) {
       throw new Error('we need a conversationId');
     }
-    await onEditClosedGroup(conversationId, membersToRemove);
-    hideOverlay();
+    emptyMembersToRemove();
+
+    await onEditClosedGroup(conversationId, membersToRemove, dispatch);
+    // hideOverlay();
   };
 
   useEscapeAction(hideOverlay);

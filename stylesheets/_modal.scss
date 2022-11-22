@@ -21,11 +21,6 @@
   }
 }
 
-/* remove scroll bars */
-.loki-dialog .add-moderators-dialog .content {
-  padding: 1.1em;
-}
-
 .session-modal {
   .contact-selection-list {
     width: 100%;
@@ -46,40 +41,10 @@
   }
 }
 
-.add-moderators-dialog,
-.remove-moderators-dialog,
-.invite-friends-dialog {
-  .content {
-    max-width: 100% !important;
-  }
-  .contact-selection-list {
-    width: 100%;
-  }
-
-  .buttons {
-    margin: 8px;
-  }
-
-  .group-name {
-    font-size: larger;
-  }
-
-  .titleText {
-    font-size: large;
-    text-align: center;
-  }
-
-  .no-contacts {
-    text-align: center;
-  }
-
-  .hidden {
-    display: none;
-  }
+.no-contacts {
+  text-align: center;
 }
 
-.add-moderators-dialog,
-.remove-moderators-dialog,
 .edit-profile-dialog {
   .error-message {
     text-align: center;

@@ -325,11 +325,6 @@ export const getUnreadMessageCount = createSelector(getLeftPaneLists, (state): n
   return state.unreadCount;
 });
 
-export const getNumberOfPinnedConversations = createSelector(getConversations, (state): number => {
-  const values = Object.values(state.conversationLookup);
-  return values.filter(conversation => conversation.isPinned).length;
-});
-
 export const isMessageSelectionMode = (state: StateType): boolean =>
   Boolean(state.conversations.selectedMessageIds.length > 0);
 
@@ -390,16 +385,34 @@ export const getMostRecentMessageId = (state: StateType): string | null => {
   return state.conversations.mostRecentMessageId;
 };
 
-export const getOldTopMessageId = createSelector(
-  getConversations,
-  (state: ConversationsStateType): string | null => state.oldTopMessageId || null
-);
+export const getOldTopMessageId = (state: StateType): string | null =>
+  state.conversations.oldTopMessageId || null;
 
-export const getOldBottomMessageId = createSelector(
-  getConversations,
-  (state: ConversationsStateType): string | null => state.oldBottomMessageId || null
-);
+export const getOldBottomMessageId = (state: StateType): string | null =>
+  state.conversations.oldBottomMessageId || null;
 
 export const usePrivateContactsPubkeys = () => {
   return useSelector(getPrivateContactsPubkeys);
+};
+
+function getDisplayNamesIfLessThan(
+  state: StateType,
+  maxCount: number,
+  pubkeys?: Array<string>
+): Array<string> | 'overflow' {
+  if (!pubkeys?.length || pubkeys.length > maxCount) {
+    return [];
+  }
+  return pubkeys.map(
+    p => state.conversations.conversationLookup[p]?.displayNameInProfile || window.i18n('anonymous')
+  );
+}
+
+/**
+ * If pubkeys length is less or equal than maxCount, return the display name of those pubkeys.
+ * If the array is empty, return []
+ * If we are overflowing, return a single string with "overflow"
+ */
+export const useDisplayNamesOfPubkeys = (pubkeys: Array<string> | undefined, maxCount: number) => {
+  return useSelector((state: StateType) => getDisplayNamesIfLessThan(state, maxCount, pubkeys));
 };

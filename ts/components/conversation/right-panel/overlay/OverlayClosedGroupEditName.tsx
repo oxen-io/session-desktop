@@ -23,11 +23,13 @@ import { RightOverlayHeader } from './RightOverlayHeader';
 const NewGroupNameInput = styled.input`
   width: 100%;
   border-color: var(--input-border-color);
+  outline: none;
 `;
 
 const DescriptionText = styled.textarea`
   width: 100%;
   border-color: var(--input-border-color);
+  outline: none;
 `;
 
 const Label = styled.label`

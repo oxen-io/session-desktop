@@ -2,13 +2,13 @@ import React from 'react';
 // tslint:disable-next-line: no-submodule-imports
 import { useDispatch } from 'react-redux';
 import {
-  deleteAllMessagesByConvoIdWithConfirmation,
   showAddModeratorsByConvoId,
   showBanUserByConvoId,
   showInvitePublicByConvoId,
   showLeaveGroupByConvoId,
   showRemoveModeratorsByConvoId,
   showUnbanUserByConvoId,
+  useDeleteAllMessagesByConvoIdWithConfirmation,
 } from '../../../../interactions/conversationInteractions';
 
 import { SpacerLG } from '../../../basic/Text';
@@ -250,16 +250,21 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
 };
 
 const SearchConversationItem = () => {
-  return (
-    <PanelIconButton
-      iconType={'search'}
-      text={window.i18n('searchConversation')}
-      disableBg={true}
-      onClick={() => {
-        console.error('search per conversation TODO');
-      }}
-    />
-  );
+  // we do not support this yet.
+  const weSupportSearchSingleConversation = false;
+  if (weSupportSearchSingleConversation) {
+    return (
+      <PanelIconButton
+        iconType={'search'}
+        text={window.i18n('searchConversation')}
+        disableBg={true}
+        onClick={() => {
+          console.error('search per conversation TODO');
+        }}
+      />
+    );
+  }
+  return null;
 };
 
 const AllMediaItem = () => {
@@ -328,6 +333,7 @@ const ReadOnlyGroupMembersItem = (props: ShowItemProps) => {
 const ClearMessagesItem = () => {
   const selectedConvoId = useSelectedConversationKey();
   const isRequest = useIsRequest(selectedConvoId);
+  const clearMessageCallback = useDeleteAllMessagesByConvoIdWithConfirmation(selectedConvoId);
 
   if (!selectedConvoId) {
     return null;
@@ -342,9 +348,7 @@ const ClearMessagesItem = () => {
       iconType={'clearMessages'}
       text={window.i18n('clearMessages')}
       disableBg={true}
-      onClick={() => {
-        deleteAllMessagesByConvoIdWithConfirmation(selectedConvoId);
-      }}
+      onClick={clearMessageCallback}
     />
   );
 };
@@ -522,7 +526,7 @@ const PinConversationItem = () => {
   const selectedConvoId = useSelectedConversationKey();
 
   const isRequest = useIsRequest(selectedConvoId);
-  const isPinned = useIsPinned(selectedConvoId) || false;
+  const isPinned = useIsPinned(selectedConvoId);
 
   if (isRequest || !selectedConvoId) {
     return null;

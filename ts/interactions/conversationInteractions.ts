@@ -42,6 +42,9 @@ import { setLastProfileUpdateTimestamp } from '../util/storage';
 import { getSodiumRenderer } from '../session/crypto';
 import { encryptProfile } from '../util/crypto/profileEncrypter';
 import { uploadFileToFsWithOnionV4 } from '../session/apis/file_server_api/FileServerApi';
+import { useDispatch } from 'react-redux';
+import { useIsClosedGroupV3, useWeAreAdmin } from '../hooks/useParamSelector';
+import { useCallback } from 'react';
 
 export const getCompleteUrlForV2ConvoId = async (convoId: string) => {
   if (convoId.match(openGroupV2ConversationIdRegex)) {
@@ -301,25 +304,47 @@ export async function deleteAllMessagesByConvoIdNoConfirmation(conversationId: s
   window.inboxStore?.dispatch(conversationReset(conversationId));
 }
 
-export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: string) {
-  const onClickClose = () => {
-    window?.inboxStore?.dispatch(updateConfirmModal(null));
-  };
+export function useDeleteAllMessagesByConvoIdWithConfirmation(conversationId?: string) {
+  const dispatch = useDispatch();
+  // only if this is a v3 closed group and we are an admin, we can offer the delete messages for everyone option
+  const isV3ClosedGroup = useIsClosedGroupV3(conversationId);
+  const weAreAdmin = useWeAreAdmin(conversationId);
 
-  const onClickOk = async () => {
-    await deleteAllMessagesByConvoIdNoConfirmation(conversationId);
-    onClickClose();
-  };
+  return useCallback(() => {
+    const onClickClose = () => {
+      dispatch(updateConfirmModal(null));
+    };
 
-  window?.inboxStore?.dispatch(
-    updateConfirmModal({
-      title: window.i18n('clearMessages'),
-      message: window.i18n('deleteConversationConfirmation'),
-      onClickOk,
-      okTheme: SessionButtonColor.Danger,
-      onClickClose,
-    })
-  );
+    const onClickOk = async () => {
+      if (conversationId) {
+        await deleteAllMessagesByConvoIdNoConfirmation(conversationId);
+        onClickClose();
+      }
+    };
+    const canDeleteMessagesOnGroupSwarm = isV3ClosedGroup && weAreAdmin;
+
+    const message = canDeleteMessagesOnGroupSwarm
+      ? window.i18n('deleteAllMessagesGroupSwarm')
+      : window.i18n('deleteMessagesThisDevice');
+
+    const okText = canDeleteMessagesOnGroupSwarm
+      ? window.i18n('forEveryone')
+      : window.i18n('clear');
+
+    const cancelText = canDeleteMessagesOnGroupSwarm ? window.i18n('forMe') : window.i18n('cancel');
+
+    dispatch(
+      updateConfirmModal({
+        title: window.i18n('clearAllMessages'),
+        message,
+        onClickOk,
+        okTheme: SessionButtonColor.Danger,
+        onClickClose,
+        okText,
+        cancelText,
+      })
+    );
+  }, [isV3ClosedGroup, weAreAdmin, conversationId]);
 }
 
 export async function setDisappearingMessagesByConvoId(
@@ -470,8 +495,6 @@ export async function showLinkSharingConfirmationModalDialog(e: any) {
     if (!alreadyDisplayedPopup) {
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          shouldShowConfirm:
-            !window.getSettingValue('link-preview-setting') && !alreadyDisplayedPopup,
           title: window.i18n('linkPreviewsTitle'),
           message: window.i18n('linkPreviewsConfirmMessage'),
           okTheme: SessionButtonColor.Danger,

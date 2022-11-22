@@ -1,6 +1,5 @@
 import * as CallSelectors from './call';
 import * as ConversationSelectors from './conversations';
-import * as ModalSelectors from './modal';
 import * as OnionsSelectors from './onions';
 import * as PrimaryColorSelectors from './primaryColor';
 import * as SearchSelectors from './search';
@@ -14,7 +13,6 @@ import * as UserConfigSelectors from './userConfig';
 export {
   CallSelectors,
   ConversationSelectors,
-  ModalSelectors,
   OnionsSelectors,
   PrimaryColorSelectors,
   SearchSelectors,

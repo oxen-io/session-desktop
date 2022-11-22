@@ -36,7 +36,6 @@ export interface SessionConfirmDialogProps {
   closeTheme?: SessionButtonColor;
   sessionIcon?: SessionIconType;
   iconSize?: SessionIconSize;
-  shouldShowConfirm?: boolean | undefined;
   showExitIcon?: boolean | undefined;
 }
 
@@ -52,7 +51,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
     hideCancel = false,
     sessionIcon,
     iconSize,
-    shouldShowConfirm,
     onClickCancel,
     showExitIcon,
     closeAfterInput = true,
@@ -82,10 +80,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
       window.inboxStore?.dispatch(updateConfirmModal(null));
     }
   };
-
-  if (shouldShowConfirm && !shouldShowConfirm) {
-    return null;
-  }
 
   /**
    * Performs specified on close action then removes the modal.

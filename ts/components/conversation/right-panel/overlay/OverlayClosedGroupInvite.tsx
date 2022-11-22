@@ -85,7 +85,9 @@ export const OverlayClosedGroupInvite = () => {
 
   const potentialMembers = difference(privateContactPubkeys, alreadyMembers, zombies);
 
-  const { uniqueValues: selectedContacts, addTo, removeFrom } = useSet<string>();
+  const { uniqueValues: selectedContacts, addTo, removeFrom, empty: emptySelected } = useSet<
+    string
+  >();
   const hasSelectedContacts = Boolean(selectedContacts.length);
 
   useEffect(() => {
@@ -129,6 +131,8 @@ export const OverlayClosedGroupInvite = () => {
           <SessionButton
             text={window.i18n('invite')}
             onClick={() => {
+              emptySelected();
+
               void inviteToClosedGroup(conversationId, selectedContacts);
             }}
           />

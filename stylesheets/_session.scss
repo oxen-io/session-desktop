@@ -337,6 +337,7 @@ label {
   &-main-message {
     font-size: $session-font-md;
     line-height: 1.5;
+    max-width: 450px;
   }
 
   &-sub-message {

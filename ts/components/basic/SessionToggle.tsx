@@ -1,6 +1,4 @@
 import React from 'react';
-import { updateConfirmModal } from '../../state/ducks/modalDialog';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 const StyledKnob = styled.div<{ active: boolean }>`
@@ -49,38 +47,9 @@ type Props = {
 };
 
 export const SessionToggle = (props: Props) => {
-  const dispatch = useDispatch();
-
   const clickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
-    const stateManager = (e: any) => {
-      e.stopPropagation();
-      props.onClick();
-    };
-
-    if (props.confirmationDialogParams && props.confirmationDialogParams.shouldShowConfirm) {
-      // If item needs a confirmation dialog to turn ON, render it
-      const closeConfirmModal = () => {
-        dispatch(updateConfirmModal(null));
-      };
-
-      dispatch(
-        updateConfirmModal({
-          onClickOk: () => {
-            stateManager(event);
-            closeConfirmModal();
-          },
-          onClickClose: () => {
-            updateConfirmModal(null);
-          },
-          ...props.confirmationDialogParams,
-          updateConfirmModal,
-        })
-      );
-
-      return;
-    }
-
-    stateManager(event);
+    event.stopPropagation();
+    props.onClick();
   };
 
   return (
