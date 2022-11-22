@@ -1271,6 +1271,7 @@ function updateToSessionSchemaVersion30(currentVersion: number, db: BetterSqlite
     // - remove the is_medium_group column altogether (once previous steps are done)
     db.exec(`ALTER TABLE conversations DROP COLUMN is_medium_group;`);
     db.exec(`ALTER TABLE conversations ADD COLUMN identityPrivateKey TEXT;`);
+    db.exec(`ALTER TABLE conversations ADD COLUMN description TEXT;`);
     // throw null;
     writeSessionSchemaVersion(targetVersion, db);
   })();

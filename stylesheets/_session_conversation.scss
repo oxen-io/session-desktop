@@ -21,8 +21,8 @@
 .conversation-item__options-pane {
   display: none;
   transition: transform 0.2s ease-out;
-  width: 25vw;
-  min-width: 300px;
+
+  width: 400px;
   z-index: 5;
 
   &.show {

@@ -258,6 +258,7 @@ export interface ReduxConversationType {
   uploadCapability?: boolean;
 
   hasReactions?: boolean;
+  description?: string;
 }
 
 export interface NotificationForConvoOption {
@@ -439,6 +440,7 @@ export function getEmptyConversationState(): ConversationsStateType {
     oldBottomMessageId: null,
     shouldHighlightMessage: false,
     mostRecentMessageId: null,
+    selectedConversation: '058be746b540d379f73c220565e02d25328117a18f1da4faf51b218c42ae1b3c33',
   };
 }
 

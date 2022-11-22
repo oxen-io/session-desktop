@@ -5,11 +5,9 @@
   width: -webkit-fill-available;
   align-items: center;
   overflow: auto;
+  padding: var(--margins-lg);
 
   &-header {
-    margin-top: var(--margins-lg);
-    margin-inline-start: var(--margins-sm);
-    margin-inline-end: var(--margins-sm);
     width: -webkit-fill-available;
     display: flex;
     flex-direction: column;

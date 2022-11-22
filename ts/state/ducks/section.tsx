@@ -45,7 +45,7 @@ export const initialSectionState: SectionStateType = {
   focusedSettingsSection: undefined,
   isAppFocused: false,
   leftOverlayMode: undefined,
-  rightOverlayMode: undefined,
+  rightOverlayMode: { type: 'default', params: null },
 };
 
 /**

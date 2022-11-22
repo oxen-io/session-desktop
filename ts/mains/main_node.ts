@@ -207,10 +207,11 @@ function captureClicks(window: BrowserWindow) {
 }
 
 function getDefaultWindowSize() {
+  // when the right panel is displayed we need at least a width of 1100px
   return {
-    defaultWidth: isTestIntegration ? 1500 : 880,
+    defaultWidth: isTestIntegration ? 1500 : 1100,
     defaultHeight: 820,
-    minWidth: 880,
+    minWidth: 1100,
     minHeight: 600,
   };
 }

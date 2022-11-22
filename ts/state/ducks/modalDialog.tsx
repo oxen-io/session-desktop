@@ -14,6 +14,7 @@ export type AddModeratorsModalState = InviteContactModalState;
 export type RemoveModeratorsModalState = InviteContactModalState;
 export type ReadOnlyGroupMembersModalState = InviteContactModalState;
 export type UpdateClosedGroupModalState = InviteContactModalState;
+export type PromoteAdminClosedGroupModalState = InviteContactModalState;
 
 export type UpdatePublicGroupNameModalState = InviteContactModalState;
 export type ChangeNickNameModalState = InviteContactModalState;
@@ -45,6 +46,7 @@ export type ModalState = {
   publicGroupNameModal: UpdatePublicGroupNameModalState;
   readOnlyGroupMembersModal: ReadOnlyGroupMembersModalState;
   updateClosedGroupModal: UpdateClosedGroupModalState;
+  promoteAdminClosedGroupModal: PromoteAdminClosedGroupModalState;
   userDetailsModal: UserDetailsModalState;
   nickNameModal: ChangeNickNameModalState;
   editProfileModal: EditProfileModalState;
@@ -66,6 +68,7 @@ export const initialModalState: ModalState = {
   publicGroupNameModal: null,
   readOnlyGroupMembersModal: null,
   updateClosedGroupModal: null,
+  promoteAdminClosedGroupModal: null,
   userDetailsModal: null,
   nickNameModal: null,
   editProfileModal: null,
@@ -112,6 +115,12 @@ const ModalSlice = createSlice({
     updateClosedGroupModal(state, action: PayloadAction<UpdateClosedGroupModalState | null>) {
       return { ...state, updateClosedGroupModal: action.payload };
     },
+    promoteAdminToClosedGroup(
+      state,
+      action: PayloadAction<PromoteAdminClosedGroupModalState | null>
+    ) {
+      return { ...state, promoteAdminClosedGroupModal: action.payload };
+    },
     updateUserDetailsModal(state, action: PayloadAction<UserDetailsModalState | null>) {
       return { ...state, userDetailsModal: action.payload };
     },
@@ -154,6 +163,7 @@ export const {
   updatePublicGroupNameModal,
   showReadOnlyGroupMembersModal,
   updateClosedGroupModal,
+  promoteAdminToClosedGroup,
   updateUserDetailsModal,
   changeNickNameModal,
   editProfileModal,

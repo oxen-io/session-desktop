@@ -80,9 +80,7 @@ export class UpdatePublicGroupNameDialog extends React.Component<Props, State> {
   public render() {
     const okText = window.i18n('ok');
     const cancelText = window.i18n('cancel');
-    const titleText = window.i18n('updateGroupDialogTitle', [
-      this.convo.getRealSessionUsername() || 'Unknown',
-    ]);
+    const titleText = window.i18n('updateGroupDialogTitle');
 
     const errorMsg = this.state.errorMessage;
     const errorMessageClasses = classNames(

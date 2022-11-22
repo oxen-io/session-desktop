@@ -460,6 +460,7 @@ function saveConversation(data: ConversationAttributes, instance?: BetterSqlite3
     displayNameInProfile,
     conversationIdOrigin,
     identityPrivateKey,
+    description,
   } = formatted;
 
   const maxLength = 300;
@@ -503,7 +504,8 @@ function saveConversation(data: ConversationAttributes, instance?: BetterSqlite3
   avatarInProfile,
   displayNameInProfile,
   conversationIdOrigin,
-  identityPrivateKey
+  identityPrivateKey,
+  description
 	) values (
 	    $id,
 	    $active_at,
@@ -536,7 +538,8 @@ function saveConversation(data: ConversationAttributes, instance?: BetterSqlite3
       $avatarInProfile,
       $displayNameInProfile,
       $conversationIdOrigin,
-      $identityPrivateKey
+      $identityPrivateKey,
+      $description
       )`
     )
     .run({
@@ -575,6 +578,7 @@ function saveConversation(data: ConversationAttributes, instance?: BetterSqlite3
       displayNameInProfile,
       conversationIdOrigin,
       identityPrivateKey,
+      description
     });
 }
 

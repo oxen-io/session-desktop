@@ -37,7 +37,6 @@ const StyledRoundedPanelButtonGroup = styled.div`
   background: var(--right-panel-item-background-color);
   border-radius: 16px;
   padding: 4px var(--margins-lg);
-  margin: 0 var(--margins-lg);
   width: -webkit-fill-available;
   flex-shrink: 0;
 `;
@@ -52,6 +51,11 @@ type PanelButtonGroupProps = {
   children: ReactNode;
   style?: CSSProperties;
 };
+
+export const StyledPanelGroupTitle = styled.div`
+  color: var(--text-secondary-color);
+  align-self: flex-start;
+`;
 
 export const PanelButtonGroup = (props: PanelButtonGroupProps) => {
   const { children, style } = props;

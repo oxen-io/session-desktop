@@ -2,13 +2,18 @@ import React from 'react';
 
 import { ToastUtils, UserUtils } from '../../session/utils';
 
-import _ from 'lodash';
+import _, { noop } from 'lodash';
 import { SpacerLG } from '../basic/Text';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { MemberListItem } from '../MemberListItem';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { useDispatch } from 'react-redux';
-import { useConversationPropsById, useWeAreAdmin } from '../../hooks/useParamSelector';
+import {
+  useConversationDescription,
+  useConversationPropsById,
+  useConversationUsername,
+  useWeAreAdmin,
+} from '../../hooks/useParamSelector';
 // tslint:disable-next-line: no-submodule-imports
 import useKey from 'react-use/lib/useKey';
 import { useSet } from '../../hooks/useSet';
@@ -16,6 +21,10 @@ import { getConversationController } from '../../session/conversations';
 import { initiateClosedGroupUpdate } from '../../session/group/closed-group';
 import styled from 'styled-components';
 import { updateClosedGroupModal } from '../../state/ducks/modalDialog';
+import { PanelButtonGroup, StyledPanelGroupTitle } from '../buttons/PanelButton';
+import { Avatar, AvatarSize } from '../avatar/Avatar';
+import { PanelIconButton } from '../buttons';
+import { SessionIconButton } from '../icon';
 
 type Props = {
   conversationId: string;
@@ -126,6 +135,47 @@ async function onSubmit(convoId: string, membersAfterUpdate: Array<string>) {
   );
 }
 
+const GroupInfosContainer = styled.div`
+  max-width: 300px;
+`;
+const GroupNameContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-primary-color);
+  justify-content: center;
+  margin-bottom: var(--margins-md);
+  font-size: 26px;
+`;
+const GroupName = styled.div``;
+const GroupDescription = styled.div`
+  color: var(--text-secondary-color);
+`;
+
+const GroupNameAndDescription = ({ conversationId }: { conversationId: string }) => {
+  const groupName = useConversationUsername(conversationId);
+  const groupDescription =
+    useConversationDescription(conversationId) ||
+    'very logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn descriptionvery logn description';
+  const hasDescription = !!groupDescription;
+
+  return (
+    <GroupInfosContainer>
+      <SpacerLG />
+      <GroupNameContainer>
+        <SessionIconButton
+          iconType="pencil"
+          iconSize="small"
+          onClick={noop}
+          dataTestId="edit-group-name-or-description"
+        />
+        <GroupName>{groupName}</GroupName>
+      </GroupNameContainer>
+      {hasDescription && <GroupDescription>{groupDescription}</GroupDescription>}
+    </GroupInfosContainer>
+  );
+};
+
 export const UpdateClosedGroupDialog = (props: Props) => {
   const { conversationId } = props;
   const convoProps = useConversationPropsById(conversationId);
@@ -142,6 +192,9 @@ export const UpdateClosedGroupDialog = (props: Props) => {
   }
 
   const weAreAdmin = convoProps.weAreAdmin || false;
+  if (!weAreAdmin) {
+    throw new Error('UpdateClosedGroupDialog weAreAdmin is false');
+  }
 
   const closeDialog = () => {
     dispatch(updateClosedGroupModal(null));
@@ -188,10 +241,23 @@ export const UpdateClosedGroupDialog = (props: Props) => {
   const showNoMembersMessage = existingMembers.length === 0;
   const okText = window.i18n('ok');
   const cancelText = window.i18n('cancel');
-  const titleText = window.i18n('updateGroupDialogTitle', [convoProps.displayNameInProfile || '']);
+  const titleText = window.i18n('updateGroupDialogTitle');
 
   return (
     <SessionWrapperModal title={titleText} onClose={closeDialog}>
+      <Avatar pubkey={conversationId} dataTestId="avatar-edit-group-dialog" size={AvatarSize.XL} />
+      <GroupNameAndDescription conversationId={conversationId} />
+      <SpacerLG />
+      <PanelButtonGroup>
+        <PanelIconButton
+          iconType="addUser"
+          text={window.i18n('inviteContacts')}
+          disableBg={true}
+          onClick={noop}
+        />
+      </PanelButtonGroup>
+      <SpacerLG />
+      <StyledPanelGroupTitle>{window.i18n('groupMembers')}</StyledPanelGroupTitle>
       <StyledClassicMemberList className="group-member-list__selection">
         <ClassicMemberList
           convoId={conversationId}
@@ -201,9 +267,7 @@ export const UpdateClosedGroupDialog = (props: Props) => {
         />
       </StyledClassicMemberList>
       {showNoMembersMessage && <p>{window.i18n('noMembersInThisGroup')}</p>}
-
       <SpacerLG />
-
       <div className="session-modal__button-group">
         {weAreAdmin && (
           <SessionButton text={okText} onClick={onClickOK} buttonType={SessionButtonType.Simple} />

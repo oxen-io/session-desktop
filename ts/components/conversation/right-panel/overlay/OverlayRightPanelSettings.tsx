@@ -36,6 +36,7 @@ import {
 } from '../../../menu/Menu';
 import styled from 'styled-components';
 import {
+  promoteAdminToClosedGroup,
   showReadOnlyGroupMembersModal,
   updateClosedGroupModal,
   updateConfirmModal,
@@ -58,6 +59,7 @@ import {
   useSelectedWeAreAdmin,
 } from '../../../../state/selectors/selectedConversation';
 import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { StyledPanelGroupTitle } from '../../../buttons/PanelButton';
 
 type ShowItemProps = { show: boolean };
 
@@ -221,6 +223,7 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
   const dispatch = useDispatch();
   const selectedConvoId = useSelectedConversationKey();
   const isClosedGroupV3 = useSelectedIsClosedGroup();
+  console.warn('promote admin todo ');
 
   /**
    * closed groups name update is made from the Edit Group menu, not from here anymore
@@ -234,7 +237,7 @@ const PromoteAdminClosedGroupItem = (props: ShowItemProps) => {
     <PanelIconButton
       onClick={async () => {
         await createAllConvosForClosedGroupMembers(selectedConvoId);
-        dispatch(updateClosedGroupModal({ conversationId: selectedConvoId }));
+        dispatch(promoteAdminToClosedGroup({ conversationId: selectedConvoId }));
       }}
       text={window.i18n('addModerators')}
       disableBg={true}
@@ -592,13 +595,6 @@ const AutoDownloadMediaItem = () => {
   );
 };
 
-const StyledTitleGroup = styled.div`
-  color: var(--text-secondary-color);
-  align-self: flex-start;
-  margin-inline-start: calc(var(--margins-lg) * 2);
-  margin-block-end: var(--margins-xs);
-`;
-
 const showBanUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
   return !isKickedFromGroup && weAreAdmin && isPublic;
 };
@@ -691,7 +687,7 @@ export const OverlayRightPanelSettings = () => {
       <SpacerLG />
       {showAdminSettings && (
         <>
-          <StyledTitleGroup>{window.i18n('adminSettings')}</StyledTitleGroup>
+          <StyledPanelGroupTitle>{window.i18n('adminSettings')}</StyledPanelGroupTitle>
           <PanelButtonGroup>
             {isClosedGroup && (
               <>

@@ -93,6 +93,7 @@ const Section = (props: { type: SectionType }) => {
         onAvatarClick={handleClick}
         pubkey={ourNumber}
         dataTestId="leftpane-primary-avatar"
+
       />
     );
   }

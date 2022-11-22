@@ -42,6 +42,13 @@ export const UserItem = () => {
 
   return (
     <div className="module-conversation__user">
+      {(isOpenGroup || isClosedGroup) && (
+        <SessionIcon
+          iconSize={'medium'}
+          iconType={isOpenGroup ? 'communities' : 'users'}
+          iconPadding="0 var(--margins-xs) 0 0"
+        />
+      )}
       <ContactName
         pubkey={displayedPubkey}
         name={username}
@@ -50,13 +57,6 @@ export const UserItem = () => {
         boldProfileName={true}
         shouldShowPubkey={shouldShowPubkey}
       />
-      {(isOpenGroup || isClosedGroup) && (
-        <SessionIcon
-          iconSize={'medium'}
-          iconType={isOpenGroup ? 'communities' : 'users'}
-          iconPadding="0 0 0 var(--margins-xs)"
-        />
-      )}
     </div>
   );
 };

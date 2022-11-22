@@ -1,6 +1,7 @@
 import { pick } from 'lodash';
 import { useSelector } from 'react-redux';
 import { ConversationModel } from '../models/conversation';
+import { ConversationTypeEnum } from '../models/conversationAttributes';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { StateType } from '../state/reducer';
@@ -45,6 +46,15 @@ export function useConversationRealName(convoId?: string) {
 }
 
 /**
+ * Returns the current description set for this group.
+ * Returns undefined if this is not a valid group (open or closed)
+ */
+export function useConversationDescription(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return convoProps?.isGroup ? convoProps?.description : undefined;
+}
+
+/**
  * Returns either the nickname, the profileName, in '"' or the full pubkeys given
  */
 export function useConversationsUsernameWithQuoteOrFullPubkey(pubkeys: Array<string>) {
@@ -71,6 +81,11 @@ export function useIsMe(pubkey?: string) {
 export function useIsClosedGroup(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return (convoProps && convoProps.isGroup && !convoProps.isPublic) || false;
+}
+
+export function useIsClosedGroupV3(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return convoProps?.type === ConversationTypeEnum.CLOSED_GROUP_V3 || false;
 }
 
 export function useIsOpenOrClosedGroup(convoId?: string) {

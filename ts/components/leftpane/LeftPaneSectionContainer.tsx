@@ -13,6 +13,7 @@ export const LeftPaneSectionContainer = styled.div`
 
   .module-avatar {
     height: 80px;
+    padding: 26px 0 26px;
     display: flex;
     align-items: center;
   }

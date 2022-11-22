@@ -38,6 +38,8 @@ import { ReactClearAllModal } from './ReactClearAllModal';
 import { UpdatePublicGroupNameDialog } from './UpdateGroupNameDialog';
 import { ReadOnlyGroupMembersDialog } from './ReadOnlyGroupMembersDialog';
 import { UpdateClosedGroupDialog } from './UpdateClosedGroupDialog';
+import { PromoteAdminClosedGroupDialog } from './PromoteAdminClosedGroupDialog';
+import { StateType } from '../../state/reducer';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
@@ -46,6 +48,9 @@ export const ModalContainer = () => {
   const removeModeratorsModalState = useSelector(getRemoveModeratorsModal);
   const readOnlyGroupMembersState = useSelector(getReadOnlyGroupMembersModal);
   const updateClosedGroupState = useSelector(getUpdateClosedGroupModal);
+  const promoteAdminClosedGroupState = useSelector(
+    (state: StateType) => state.modals.promoteAdminClosedGroupModal
+  );
   const updatePublicGroupNameModalState = useSelector(getUpdatePublicGroupNameModal);
   const userDetailsModalState = useSelector(getUserDetailsModal);
   const changeNicknameModal = useSelector(getChangeNickNameDialog);
@@ -67,6 +72,9 @@ export const ModalContainer = () => {
       {removeModeratorsModalState && <RemoveModeratorsDialog {...removeModeratorsModalState} />}
       {readOnlyGroupMembersState && <ReadOnlyGroupMembersDialog {...readOnlyGroupMembersState} />}
       {updateClosedGroupState && <UpdateClosedGroupDialog {...updateClosedGroupState} />}
+      {promoteAdminClosedGroupState && (
+        <PromoteAdminClosedGroupDialog {...promoteAdminClosedGroupState} />
+      )}
       {updatePublicGroupNameModalState && (
         <UpdatePublicGroupNameDialog {...updatePublicGroupNameModalState} />
       )}
