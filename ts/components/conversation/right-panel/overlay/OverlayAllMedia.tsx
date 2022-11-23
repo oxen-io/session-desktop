@@ -3,9 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useInterval } from 'react-use';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
+import { deleteAllMediaByConvoIdWithConfirmation } from '../../../../interactions/conversationInteractions';
 import { Constants } from '../../../../session';
 import { useRightOverlayMode } from '../../../../state/selectors/section';
-import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
+import {
+  useSelectedConversationKey,
+  useSelectedIsClosedGroupV3,
+} from '../../../../state/selectors/selectedConversation';
 import { AttachmentTypeWithPath } from '../../../../types/Attachment';
 import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import { Flex } from '../../../basic/Flex';
@@ -17,21 +21,14 @@ import { RightOverlayHeader } from './RightOverlayHeader';
 
 const StyledContainer = styled(Flex)`
   width: 100%;
-
-  .session-button {
-    font-weight: 500;
-    min-width: 90px;
-    width: fit-content;
-    margin: 35px auto 0;
-  }
 `;
 
 export const OverlayAllMedia = () => {
   const [documents, setDocuments] = useState<Array<MediaItemType>>([]);
   const [media, setMedia] = useState<Array<MediaItemType>>([]);
   const rightOverlay = useRightOverlayMode();
-
   const selectedConversationKey = useSelectedConversationKey();
+  const canClearAll = useSelectedIsClosedGroupV3();
 
   useEffect(() => {
     let isRunning = true;
@@ -66,13 +63,23 @@ export const OverlayAllMedia = () => {
     }
   }, 10000);
 
-  if (!rightOverlay || rightOverlay.type !== 'show_media') {
+  if (!rightOverlay || rightOverlay.type !== 'show_media' || !selectedConversationKey) {
     return null;
   }
+
+  const onButtonClicked = () => {
+    deleteAllMediaByConvoIdWithConfirmation(selectedConversationKey);
+  };
+
   return (
     <StyledScrollContainer>
       <StyledContainer container={true} flexDirection={'column'} alignItems={'center'}>
-        <RightOverlayHeader title={window.i18n('allMedia')} hideBackButton={false} />
+        <RightOverlayHeader
+          title={window.i18n('allMedia')}
+          hideBackButton={false}
+          rightButtonText={canClearAll ? window.i18n('clearAll') : undefined}
+          onButtonClicked={canClearAll ? onButtonClicked : undefined}
+        />
         <MediaGallery documents={documents} media={media} />
         <SpacerLG />
       </StyledContainer>

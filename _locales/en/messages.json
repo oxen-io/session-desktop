@@ -117,6 +117,8 @@
   "deleteMessageQuestion": "Delete this message?",
   "clearMessages": "Clear Messages",
   "clearAllMessages": "Clear All Messages",
+  "clearAllMediaTitle": "Clear All Media",
+  "clearAllMediaDescription": "Are you sure you want to clear all media and files? This will also delete all messages with attachments.",
   "deleted": "$count$ deleted",
   "messageDeletedPlaceholder": "This message has been deleted",
   "from": "From:",

@@ -347,6 +347,40 @@ export function useDeleteAllMessagesByConvoIdWithConfirmation(conversationId?: s
   }, [isV3ClosedGroup, weAreAdmin, conversationId]);
 }
 
+/**
+ * Delete all the media in this conversation for all the members. This can only be done if this is a closed group v3 and we are an admin.
+ */
+export function deleteAllMediaByConvoIdWithConfirmation(conversationId: string) {
+  const convo = getConversationController().get(conversationId); // only if this is a v3 closed group and we are an admin, we can offer the delete messages for everyone option
+
+  if (!convo || !convo.isAdmin(UserUtils.getOurPubKeyStrFromCache()) || !convo.isClosedGroupV3()) {
+    throw new Error('deleteAllMedia only allowed if we are the admin and a group v3');
+  }
+
+  const onClickClose = () => {
+    window.inboxStore?.dispatch(updateConfirmModal(null));
+  };
+
+  const onClickOk = async () => {
+    if (conversationId) {
+      await deleteAllMessagesByConvoIdNoConfirmation(conversationId);
+      onClickClose();
+    }
+  };
+
+  window.inboxStore?.dispatch(
+    updateConfirmModal({
+      title: window.i18n('clearAllMediaTitle'),
+      message: window.i18n('clearAllMediaDescription'),
+      onClickOk,
+      okTheme: SessionButtonColor.Danger,
+      onClickClose,
+      okText: window.i18n('clear'),
+      cancelText: window.i18n('cancel'),
+    })
+  );
+}
+
 export async function setDisappearingMessagesByConvoId(
   conversationId: string,
   seconds: number | undefined

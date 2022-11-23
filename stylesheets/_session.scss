@@ -325,6 +325,7 @@ label {
 .session-modal__body {
   display: flex;
   flex-direction: column;
+  max-width: 500px;
 }
 
 .session-confirm {

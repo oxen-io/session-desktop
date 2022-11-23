@@ -78,6 +78,7 @@ import {
   ConversationTypeEnum,
   fillConvoAttributesWithDefaults,
   isClosedGroupLegacyOrV3,
+  isClosedGroupV3Only,
   isDirectConversation,
   isOpenGroup,
 } from './conversationAttributes';
@@ -212,6 +213,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
   public isClosedGroup(): boolean {
     return isClosedGroupLegacyOrV3(this.get('type'));
+  }
+  public isClosedGroupV3(): boolean {
+    return isClosedGroupV3Only(this.get('type'));
   }
   public isPrivate(): boolean {
     return isDirectConversation(this.get('type'));
