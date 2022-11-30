@@ -2,7 +2,13 @@ import path from 'path';
 import fs from 'fs';
 import rimraf from 'rimraf';
 import * as BetterSqlite3 from 'better-sqlite3';
+import * as SessionUtilWrapper from 'session_util_wrapper';
 import { app, clipboard, dialog, Notification } from 'electron';
+
+const objectCreated = new SessionUtilWrapper.UserConfigWrapper();
+const hello = objectCreated.getValue();
+
+console.error(`hello: "${hello}"`);
 
 import {
   chunk,
