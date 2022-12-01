@@ -11,7 +11,7 @@ const StyledCountContainer = styled.div<{ shouldRender: boolean }>`
   line-height: 1.2;
   top: 27px;
   left: 28px;
-  padding: 1px 4px;
+  padding: 1px 1px;
   opacity: 1;
   display: flex;
   align-items: center;
@@ -33,19 +33,8 @@ const StyledCount = styled.div`
 
 export const SessionNotificationCount = (props: Props) => {
   const { count } = props;
-  const overflow = Boolean(count && count > 99);
   const shouldRender = Boolean(count && count > 0);
 
-  if (overflow) {
-    return (
-      <StyledCountContainer shouldRender={shouldRender}>
-        <StyledCount>
-          {99}
-          <span>+</span>
-        </StyledCount>
-      </StyledCountContainer>
-    );
-  }
   return (
     <StyledCountContainer shouldRender={shouldRender}>
       <StyledCount>{count}</StyledCount>
