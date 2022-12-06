@@ -144,6 +144,7 @@ export const Data = {
   getMessageById,
   getMessageBySenderAndSentAt,
   getMessageByServerId,
+  getMessageByConversationIdAndServerId,
   filterAlreadyFetchedOpengroupMessage,
   getMessageBySenderAndTimestamp,
   getUnreadByConversation,
@@ -445,11 +446,33 @@ async function getMessageBySenderAndSentAt({
   return new MessageModel(messages[0]);
 }
 
+// FIXME: This function should really be fully replaced by the one below it,
+// getMessageByConversationIdAndServerId().
+//
+// Obtaining the message by server id is not guaranteed to be unique, which
+// may lead to some obscure bugs, such as messages being displayed without
+// their associated emoji reactions. See #2544 and #2617.
 async function getMessageByServerId(
   serverId: number,
   skipTimerInit: boolean = false
 ): Promise<MessageModel | null> {
   const message = await channels.getMessageByServerId(serverId);
+  if (!message) {
+    return null;
+  }
+  if (skipTimerInit) {
+    message.skipTimerInit = skipTimerInit;
+  }
+
+  return new MessageModel(message);
+}
+
+async function getMessageByConversationIdAndServerId(
+  conversationId: string,
+  serverId: number,
+  skipTimerInit: boolean = false
+): Promise<MessageModel | null> {
+  const message = await channels.getMessageByConversationIdAndServerId(conversationId, serverId);
   if (!message) {
     return null;
   }

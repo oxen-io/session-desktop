@@ -143,6 +143,6 @@ export async function processMessagesUsingCache(
   }
 
   message.reactions = updatedReactions;
-  await Reactions.handleOpenGroupMessageReactions(message.reactions, message.id);
+  await Reactions.handleOpenGroupMessageReactions(message.reactions, server, room, message.id);
   return message;
 }

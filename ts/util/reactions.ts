@@ -10,6 +10,7 @@ import { ToastUtils, UserUtils } from '../session/utils';
 
 import { Action, OpenGroupReactionList, ReactionList, RecentReactions } from '../types/Reaction';
 import { getRecentReactions, saveRecentReations } from '../util/storage';
+import { getOpenGroupV2ConversationId} from '../session/apis/open_group_api/utils/OpenGroupUtils';
 
 const SOGSReactorsFetchCount = 5;
 const rateCountLimit = 20;
@@ -268,11 +269,14 @@ const handleClearReaction = async (serverId: number, emoji: string) => {
  */
 const handleOpenGroupMessageReactions = async (
   reactions: OpenGroupReactionList,
+  server: string,
+  room: string,
   serverId: number
 ) => {
-  const originalMessage = await Data.getMessageByServerId(serverId);
+  const conversationId = getOpenGroupV2ConversationId(server, room);
+  const originalMessage = await Data.getMessageByConversationIdAndServerId(conversationId, serverId);
   if (!originalMessage) {
-    window?.log?.warn(`Cannot find the original reacted message ${serverId}.`);
+    window?.log?.warn(`Cannot find the original reacted message ${serverId} in convo ${conversationId}.`);
     return;
   }
 
