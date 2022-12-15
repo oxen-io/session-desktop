@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 type Props = {
+  chats?: number;
   count?: number;
 };
 
@@ -11,7 +12,7 @@ const StyledCountContainer = styled.div<{ shouldRender: boolean }>`
   line-height: 1.2;
   top: 27px;
   left: 28px;
-  padding: 1px 1px;
+  padding: 3px 3px;
   opacity: 1;
   display: flex;
   align-items: center;
@@ -32,12 +33,12 @@ const StyledCount = styled.div`
 `;
 
 export const SessionNotificationCount = (props: Props) => {
-  const { count } = props;
+  const { count, chats } = props;
   const shouldRender = Boolean(count && count > 0);
 
   return (
     <StyledCountContainer shouldRender={shouldRender}>
-      <StyledCount>{count}</StyledCount>
+      <StyledCount>{chats} /<br/>{count}</StyledCount>
     </StyledCountContainer>
   );
 };

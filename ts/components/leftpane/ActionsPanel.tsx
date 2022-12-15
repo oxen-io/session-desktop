@@ -16,6 +16,7 @@ import useTimeoutFn from 'react-use/lib/useTimeoutFn';
 import { getOurNumber } from '../../state/selectors/user';
 import {
   getOurPrimaryConversation,
+  getUnreadChatCount,
   getUnreadMessageCount,
 } from '../../state/selectors/conversations';
 import { getFocusedSection } from '../../state/selectors/section';
@@ -50,6 +51,7 @@ import { isDarkTheme } from '../../state/selectors/theme';
 
 const Section = (props: { type: SectionType }) => {
   const ourNumber = useSelector(getOurNumber);
+  const unreadChatCount = useSelector(getUnreadChatCount);
   const unreadMessageCount = useSelector(getUnreadMessageCount);
   const dispatch = useDispatch();
   const { type } = props;
@@ -97,6 +99,7 @@ const Section = (props: { type: SectionType }) => {
     );
   }
 
+  const unreadChatsToShow = type === SectionType.Message ? unreadChatCount : undefined;
   const unreadToShow = type === SectionType.Message ? unreadMessageCount : undefined;
 
   switch (type) {
@@ -106,6 +109,7 @@ const Section = (props: { type: SectionType }) => {
           iconSize="medium"
           dataTestId="message-section"
           iconType={'chatBubble'}
+          chatCount={unreadChatsToShow}
           notificationCount={unreadToShow}
           onClick={handleClick}
           isSelected={isSelected}

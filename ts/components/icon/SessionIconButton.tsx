@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 interface SProps extends SessionIconProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  chatCount?: number;
   notificationCount?: number;
   isSelected?: boolean;
   isHidden?: boolean;
@@ -43,6 +44,7 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
     iconColor,
     iconRotation,
     isSelected,
+    chatCount,
     notificationCount,
     glowDuration,
     glowStartDelay,
@@ -87,7 +89,7 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
         borderRadius={borderRadius}
         iconPadding={iconPadding}
       />
-      {Boolean(notificationCount) && <SessionNotificationCount count={notificationCount} />}
+      {Boolean(notificationCount) && <SessionNotificationCount chats={chatCount} count={notificationCount} />}
     </StyledSessionIconButton>
   );
 });

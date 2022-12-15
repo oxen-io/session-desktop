@@ -339,11 +339,13 @@ export const _getLeftPaneLists = (
   conversations: Array<ReduxConversationType>;
   contacts: Array<ReduxConversationType>;
   unreadCount: number;
+  unreadChats: number;
 } => {
   const conversations: Array<ReduxConversationType> = [];
   const directConversations: Array<ReduxConversationType> = [];
 
   let unreadCount = 0;
+  let unreadChats = 0;
   for (const conversation of sortedConversations) {
     if (
       conversation.activeAt !== undefined &&
@@ -369,6 +371,7 @@ export const _getLeftPaneLists = (
       conversation.currentNotificationSetting !== 'disabled'
     ) {
       unreadCount += conversation.unreadCount;
+      unreadChats += 1;
     }
 
     conversations.push(conversation);
@@ -378,6 +381,7 @@ export const _getLeftPaneLists = (
     conversations,
     contacts: directConversations,
     unreadCount,
+    unreadChats,
   };
 };
 
@@ -504,6 +508,7 @@ export const getDirectContacts = createSelector(
     conversations: Array<ReduxConversationType>;
     contacts: Array<ReduxConversationType>;
     unreadCount: number;
+    unreadChats: number;
   }) => state.contacts
 );
 
@@ -541,6 +546,10 @@ export const getDirectContactsByName = createSelector(
     return [...extractedContactsWithDisplayName, ...extractedContactsNoDisplayName];
   }
 );
+
+export const getUnreadChatCount = createSelector(getLeftPaneLists, (state): number => {
+  return state.unreadChats;
+});
 
 export const getUnreadMessageCount = createSelector(getLeftPaneLists, (state): number => {
   return state.unreadCount;
