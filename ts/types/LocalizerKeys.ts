@@ -93,6 +93,7 @@ export type LocalizerKeys =
   | 'enterSessionIDOfRecipient'
   | 'join'
   | 'dialogClearAllDataDeletionFailedMultiple'
+  | 'removeAll'
   | 'clearAllReactions'
   | 'appMenuQuit'
   | 'windowMenuZoom'
