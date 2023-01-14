@@ -577,12 +577,11 @@ export const getCurrentNotificationSettingText = createSelector(getSelectedConve
   switch (state.currentNotificationSetting) {
     case 'all':
       return window.i18n('notificationForConvo_all');
-    case 'mentions_only':
-      return window.i18n('notificationForConvo_mentions_only');
     case 'disabled':
       return window.i18n('notificationForConvo_disabled');
+    case 'mentions_only':
     default:
-      return window.i18n('notificationForConvo_all');
+      return window.i18n('notificationForConvo_mentions_only');
   }
 });
 

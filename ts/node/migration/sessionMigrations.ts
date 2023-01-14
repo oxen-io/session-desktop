@@ -729,7 +729,7 @@ function updateToSessionSchemaVersion24(currentVersion: number, db: BetterSqlite
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN avatarHash TEXT; -- only used for opengroup avatar.
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN nickname TEXT;
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN profileKey TEXT;
-         ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN triggerNotificationsFor TEXT DEFAULT "all";
+         ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN triggerNotificationsFor TEXT DEFAULT "mentions_only";
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN isTrustedForAttachmentDownload INTEGER DEFAULT "FALSE";
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN isPinned INTEGER DEFAULT "FALSE";
          ALTER TABLE ${CONVERSATIONS_TABLE} ADD COLUMN isApproved INTEGER DEFAULT "FALSE";

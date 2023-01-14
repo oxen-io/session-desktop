@@ -93,7 +93,7 @@ export function useHasNickname(convoId?: string) {
 
 export function useNotificationSetting(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
-  return convoProps?.currentNotificationSetting || 'all';
+  return convoProps?.currentNotificationSetting || 'mentions_only';
 }
 export function useIsPublic(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
