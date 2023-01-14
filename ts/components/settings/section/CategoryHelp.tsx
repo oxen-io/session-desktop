@@ -19,6 +19,10 @@ export const SettingsCategoryHelp = (props: { hasPassword: boolean | null }) => 
           description={window.i18n('shareBugDetails')}
         />
         <SessionSettingsTitleWithLink
+          title={window.i18n('openGroupsTitle')}
+          onClick={() => void shell.openExternal('https://sessioncommunities.online')}
+        />
+        <SessionSettingsTitleWithLink
           title={window.i18n('surveyTitle')}
           onClick={() => void shell.openExternal('https://getsession.org/survey')}
         />
