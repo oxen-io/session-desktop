@@ -499,4 +499,5 @@ export type LocalizerKeys =
   | 'displayNameTooLong'
   | 'joinedTheGroup'
   | 'editGroupName'
-  | 'reportIssue';
+  | 'reportIssue'
+  | 'launchingCommunityBrowser';

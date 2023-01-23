@@ -40,8 +40,8 @@ import { forceRefreshRandomSnodePool } from '../../session/apis/snode_api/snodeP
 import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { SessionIconButton } from '../icon';
 import { LeftPaneSectionContainer } from './LeftPaneSectionContainer';
-import { ipcRenderer } from 'electron';
-import { UserUtils } from '../../session/utils';
+import { ipcRenderer, shell } from 'electron';
+import { ToastUtils, UserUtils } from '../../session/utils';
 
 import { getLatestReleaseFromFileServer } from '../../session/apis/file_server_api/FileServerApi';
 import { switchThemeTo } from '../../themes/switchTheme';
@@ -118,6 +118,20 @@ const Section = (props: { type: SectionType }) => {
           dataTestId="settings-section"
           iconType={'gear'}
           onClick={handleClick}
+          isSelected={isSelected}
+        />
+      );
+    case SectionType.Communities:
+      return (
+        <SessionIconButton
+          iconSize="medium"
+          dataTestId="communities-section"
+          iconType={'communities'}
+          onClick={() => {
+	    void shell.openExternal('https://sessioncommunities.online');
+	    ToastUtils.pushToastSuccess('launch', window.i18n('launchingCommunityBrowser'))
+	    }
+	  }
           isSelected={isSelected}
         />
       );
@@ -288,6 +302,7 @@ export const ActionsPanel = () => {
         <Section type={SectionType.Profile} />
         <Section type={SectionType.Message} />
         <Section type={SectionType.Settings} />
+        <Section type={SectionType.Communities} />
 
         <Section type={SectionType.PathIndicator} />
         <Section type={SectionType.ColorMode} />

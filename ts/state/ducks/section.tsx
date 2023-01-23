@@ -10,6 +10,7 @@ export enum SectionType {
   Profile,
   Message,
   Settings,
+  Communities,
   ColorMode,
   PathIndicator,
 }

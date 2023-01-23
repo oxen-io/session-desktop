@@ -499,5 +499,6 @@
   "reactionPopupThree": "$name$, $name2$ & $name3$",
   "reactionPopupMany": "$name$, $name2$, $name3$ &",
   "reactionListCountSingular": "And $otherSingular$ has reacted <span>$emoji$</span> to this message",
-  "reactionListCountPlural": "And $otherPlural$ have reacted <span>$emoji$</span> to this message"
+  "reactionListCountPlural": "And $otherPlural$ have reacted <span>$emoji$</span> to this message",
+  "launchingCommunityBrowser": "Launching communities in browser..."
 }
