@@ -25,6 +25,10 @@ export const sogsV3BanUser = async (
       type: 'deleteAllPosts',
       deleteAllPosts: { sessionId: userToBan.key, roomId: roomInfos.roomId },
     });
+    sequence.push({
+      type: 'deleteAllReactions',
+      deleteAllReactions: { sessionId: userToBan.key, roomId: roomInfos.roomId },
+    });
   }
 
   const batchSendResponse = await sogsBatchSend(
@@ -82,6 +86,10 @@ export const sogsV3ServerBanUser = async (
     sequence.push({
       type: 'deleteAllUserPosts',
       deleteAllUserPosts: { sessionId: userToBan.key },
+    });
+    sequence.push({
+      type: 'deleteAllUserReactions',
+      deleteAllUserReactions: { sessionId: userToBan.key },
     });
   }
 
