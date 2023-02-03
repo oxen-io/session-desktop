@@ -1,4 +1,4 @@
-import * as BetterSqlite3 from 'better-sqlite3';
+import * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { isNumber } from 'lodash';
 import path from 'path';
 

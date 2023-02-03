@@ -1622,6 +1622,13 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
+"@signalapp/better-sqlite3@https://github.com/oxen-io/session-better-sqlite3#9a92ca84ca7b96e4ebc83086dd2d92794b589f8a":
+  version "8.4.1"
+  resolved "https://github.com/oxen-io/session-better-sqlite3#9a92ca84ca7b96e4ebc83086dd2d92794b589f8a"
+  dependencies:
+    bindings "^1.5.0"
+    tar "^6.1.0"
+
 "@sindresorhus/is@^4.0.0":
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-4.6.0.tgz#3c7c9c46e678feefe7a2e5bb609d3dbd665ffb3f"
@@ -1694,11 +1701,6 @@
   dependencies:
     "@types/jquery" "*"
     "@types/underscore" "*"
-
-"@types/better-sqlite3@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@types/better-sqlite3/-/better-sqlite3-7.4.0.tgz#2b88d8474fc3f755617c0a5a8643388252c10aa1"
-  integrity sha512-tmSORlztb2cdWZDy4V81mRDgL+q7bd+ext4pI+Wj8EtJ5EHIZ6v7yiWbJ6A5eKVtoz77EsBEm7amwAzfqR/kAw==
 
 "@types/blueimp-load-image@5.14.4":
   version "5.14.4"
@@ -2632,13 +2634,6 @@ base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
-
-"better-sqlite3@https://github.com/oxen-io/session-better-sqlite3#af47530acea25800d22b5e1ae834b709d2bfca40":
-  version "7.5.0"
-  resolved "https://github.com/oxen-io/session-better-sqlite3#af47530acea25800d22b5e1ae834b709d2bfca40"
-  dependencies:
-    bindings "^1.5.0"
-    tar "^6.1.0"
 
 big.js@^5.2.2:
   version "5.2.2"
@@ -6780,6 +6775,11 @@ minipass@^3.0.0, minipass@^3.1.1, minipass@^3.1.6:
   dependencies:
     yallist "^4.0.0"
 
+minipass@^4.0.0:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.0.1.tgz#2b9408c6e81bb8b338d600fb3685e375a370a057"
+  integrity sha512-V9esFpNbK0arbN3fm2sxDKqMYgIp7XtVdE4Esj+PE4Qaaxdg1wIw48ITQIOn1sc8xXSmUviVL3cyjMqPlrVkiA==
+
 minizlib@^2.1.1, minizlib@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-2.1.2.tgz#e90d3466ba209b932451508a11ce3d3632145931"
@@ -9016,7 +9016,19 @@ tapable@^2.2.0:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
 
-tar@^6.1.0, tar@^6.1.11, tar@^6.1.2:
+tar@^6.1.0:
+  version "6.1.13"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.13.tgz#46e22529000f612180601a6fe0680e7da508847b"
+  integrity sha512-jdIBIN6LTIe2jqzay/2vtYLlBHa3JF42ot3h1dW8Q0PaAG4v8rm0cvpVePtau5C6OKXGGcgO9q2AMNSWxiLqKw==
+  dependencies:
+    chownr "^2.0.0"
+    fs-minipass "^2.0.0"
+    minipass "^4.0.0"
+    minizlib "^2.1.1"
+    mkdirp "^1.0.3"
+    yallist "^4.0.0"
+
+tar@^6.1.11, tar@^6.1.2:
   version "6.1.11"
   resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.11.tgz#6760a38f003afa1b2ffd0ffe9e9abbd0eab3d621"
   integrity sha512-an/KZQzQUkZCkuoAA64hM92X0Urb6VpRhAFllDzz44U2mcD5scmT3zBc4VgVpkugF580+DQn8eAFSyoQt0tznA==
