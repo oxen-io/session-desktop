@@ -23,6 +23,7 @@ const openDbOptions = {
   nativeBinding: path.join(
     getAppRootPath(),
     'node_modules',
+    '@signalapp',
     'better-sqlite3',
     'build',
     'Release',
@@ -342,8 +343,6 @@ function updateToSchemaVersion7(currentVersion: number, db: BetterSqlite3.Databa
         CREATE INDEX sessions_number ON sessions (
           number
         ) WHERE number IS NOT NULL;
-        INSERT INTO sessions(id, number, json)
-      SELECT "+" || id, number, json FROM sessions_old;
         DROP TABLE sessions_old;
       `);
 
