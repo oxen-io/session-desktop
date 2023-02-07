@@ -16,19 +16,19 @@ if (electronIsDev) {
 process.env.NODE_ENV = environment;
 process.env.NODE_CONFIG_DIR = path.join(__dirname, '..', '..', 'config');
 
-if (environment === 'production') {
-  // harden production config against the local env
-  process.env.NODE_CONFIG = '';
-  process.env.NODE_CONFIG_STRICT_MODE = `${!electronIsDev}`;
-  process.env.HOSTNAME = '';
-  process.env.ALLOW_CONFIG_MUTATIONS = '';
-  process.env.SUPPRESS_NO_CONFIG_WARNING = '';
+// if (environment === 'production') {
+//   // harden production config against the local env
+//   process.env.NODE_CONFIG = '';
+//   process.env.NODE_CONFIG_STRICT_MODE = `${!electronIsDev}`;
+//   process.env.HOSTNAME = '';
+//   process.env.ALLOW_CONFIG_MUTATIONS = '';
+//   process.env.SUPPRESS_NO_CONFIG_WARNING = '';
 
-  // We could be running againt production but still be in dev mode, we need to handle that
-  if (!electronIsDev) {
-    process.env.NODE_APP_INSTANCE = '';
-  }
-}
+//   // We could be running againt production but still be in dev mode, we need to handle that
+//   if (!electronIsDev) {
+//     process.env.NODE_APP_INSTANCE = '';
+//   }
+// }
 
 // We load config after we've made our modifications to NODE_ENV
 //tslint-disable no-require-imports no-var-requires
