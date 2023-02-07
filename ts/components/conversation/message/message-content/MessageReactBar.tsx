@@ -17,12 +17,13 @@ const StyledMessageReactBar = styled.div`
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
 
   position: absolute;
-  top: -56px;
+  top: -128px;
   padding: 4px 8px;
   white-space: nowrap;
-  width: 302px;
+  width: 378px;
 
   display: flex;
+  flex-flow: wrap;
   align-items: center;
 
   .session-icon-button {

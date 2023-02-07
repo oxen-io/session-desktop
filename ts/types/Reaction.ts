@@ -1,6 +1,6 @@
 import { EmojiSet, PartialI18n } from 'emoji-mart';
 
-export const reactionLimit: number = 6;
+export const reactionLimit: number = 25;
 
 export class RecentReactions {
   public items: Array<string> = [];
