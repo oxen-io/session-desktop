@@ -29,7 +29,7 @@ const StyledImageGrid = styled.div<{ flexDirection: 'row' | 'column' }>`
 // tslint:disable: cyclomatic-complexity max-func-body-length use-simple-attributes
 
 const Row = (
-  props: Props & { renderedSize: number; startIndex: number; totalAttachmentsCount: number }
+  props: Props & { renderedSize: number; startIndex: number; totalAttachmentsCount: number; overlaySet?: boolean; }
 ) => {
   const {
     attachments,
@@ -38,15 +38,16 @@ const Row = (
     startIndex,
     onClickAttachment,
     totalAttachmentsCount,
+    overlaySet
   } = props;
   const isMessageVisible = useContext(IsMessageVisibleContext);
-  const moreMessagesOverlay = totalAttachmentsCount > 3;
-  const moreMessagesOverlayText = moreMessagesOverlay ? `+${totalAttachmentsCount - 3}` : undefined;
+  const moreMessagesOverlay = totalAttachmentsCount > 5;
+  const moreMessagesOverlayText = moreMessagesOverlay ? `+${totalAttachmentsCount - 5}` : undefined;
 
   return (
     <>
       {attachments.map((attachment, index) => {
-        const showOverlay = index === 1 && moreMessagesOverlay;
+        const showOverlay = index === 1 && moreMessagesOverlay && overlaySet;
         return (
           <Image
             alt={getAlt(attachment)}
@@ -91,12 +92,13 @@ export const ImageGrid = (props: Props) => {
     );
   }
 
-  if (attachments.length === 2) {
-    // when we got 2 attachments we render them side by side with the full size of THUMBNAIL_SIDE
+  if (attachments.length <= 3) {
+    // For 2 or 3 attachments, we render them side by side with the full size of
+    // THUMBNAIL_SIDE.
     return (
       <StyledImageGrid flexDirection={'row'}>
         <Row
-          attachments={attachments.slice(0, 2)}
+          attachments={attachments.slice(0, 3)}
           onError={onError}
           onClickAttachment={onClickAttachment}
           renderedSize={THUMBNAIL_SIDE}
@@ -109,11 +111,12 @@ export const ImageGrid = (props: Props) => {
 
   const columnImageSide = THUMBNAIL_SIDE / 2 - 5;
 
-  // we know only support having 3 attachments displayed at most, the rest are on the overlay
+  // For 4 or 5 attachments, we render the final 2 in a column after the 3rd.
+  // If we have more than 5, the 5th one becomes the overlay.
   return (
     <StyledImageGrid flexDirection={'row'}>
       <Row
-        attachments={attachments.slice(0, 1)}
+        attachments={attachments.slice(0, 3)}
         onError={onError}
         onClickAttachment={onClickAttachment}
         renderedSize={THUMBNAIL_SIDE}
@@ -123,14 +126,15 @@ export const ImageGrid = (props: Props) => {
 
       <StyledImageGrid flexDirection={'column'}>
         <Row
-          attachments={attachments.slice(1, 3)}
+          attachments={attachments.slice(3, 5)}
           onError={onError}
           onClickAttachment={onClickAttachment}
           renderedSize={columnImageSide}
-          startIndex={1}
+          startIndex={3}
           totalAttachmentsCount={attachments.length}
+          overlaySet={true}
         />
       </StyledImageGrid>
     </StyledImageGrid>
   );
-};
+}
