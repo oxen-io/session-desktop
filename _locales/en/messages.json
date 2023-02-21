@@ -42,6 +42,7 @@
   "debugLogExplanation": "This log will be saved to your desktop.",
   "reportIssue": "Report a Bug",
   "markAllAsRead": "Mark All as Read",
+  "allMarkedAsRead": "All conversations marked read.",
   "incomingError": "Error handling incoming message",
   "media": "Media",
   "mediaEmptyState": "No media",

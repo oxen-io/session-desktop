@@ -78,6 +78,15 @@ const Section = (props: { type: SectionType }) => {
     } else if (type === SectionType.PathIndicator) {
       // Show Path Indicator Modal
       dispatch(onionPathModal({}));
+    } else if (type === SectionType.MarkAllAsRead) {
+      const controller = getConversationController();
+      const convos = controller.getConversations().filter(conversation => {
+        return conversation.isApproved();
+      });
+      for (const convo of convos) {
+        await controller.get(convo.id).markAllAsRead();
+      }
+      ToastUtils.pushToastSuccess('allMarkedRead', window.i18n('allMarkedAsRead'));
     } else {
       // message section
       dispatch(clearSearch());
@@ -107,6 +116,17 @@ const Section = (props: { type: SectionType }) => {
           dataTestId="message-section"
           iconType={'chatBubble'}
           notificationCount={unreadToShow}
+          onClick={handleClick}
+          isSelected={isSelected}
+        />
+      );
+    case SectionType.MarkAllAsRead:
+      return (
+        <SessionIconButton
+          title={window.i18n('markAllAsRead')}
+          iconSize="medium"
+          dataTestId="markallasread-section"
+          iconType={'check'}
           onClick={handleClick}
           isSelected={isSelected}
         />
@@ -287,6 +307,7 @@ export const ActionsPanel = () => {
       <LeftPaneSectionContainer data-testid="leftpane-section-container">
         <Section type={SectionType.Profile} />
         <Section type={SectionType.Message} />
+        <Section type={SectionType.MarkAllAsRead} />
         <Section type={SectionType.Settings} />
 
         <Section type={SectionType.PathIndicator} />

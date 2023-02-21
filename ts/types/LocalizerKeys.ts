@@ -383,6 +383,7 @@ export type LocalizerKeys =
   | 'cannotRemoveCreatorFromGroup'
   | 'editMenuCut'
   | 'markAllAsRead'
+  | 'allMarkedAsRead'
   | 'failedResolveOns'
   | 'showDebugLog'
   | 'declineRequestMessage'
