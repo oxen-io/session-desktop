@@ -1,1 +1,4 @@
 * text=false
+
+# make git fix the line endings for the patches because they cannot be applied as is on windows
+patches/* text eol=lf
