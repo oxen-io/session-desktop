@@ -26,7 +26,10 @@ import { cleanUpOldDecryptedMedias } from '../../session/crypto/DecryptedAttachm
 
 import { DURATION } from '../../session/constants';
 
-import { editProfileModal, onionPathModal } from '../../state/ducks/modalDialog';
+import { editProfileModal,
+	 markAllAsReadModal,
+	 onionPathModal
+} from '../../state/ducks/modalDialog';
 import { uploadOurAvatar } from '../../interactions/conversationInteractions';
 import { debounce, isEmpty, isString } from 'lodash';
 
@@ -79,14 +82,7 @@ const Section = (props: { type: SectionType }) => {
       // Show Path Indicator Modal
       dispatch(onionPathModal({}));
     } else if (type === SectionType.MarkAllAsRead) {
-      const controller = getConversationController();
-      const convos = controller.getConversations().filter(conversation => {
-        return conversation.isApproved();
-      });
-      for (const convo of convos) {
-        await controller.get(convo.id).markAllAsRead();
-      }
-      ToastUtils.pushToastSuccess('allMarkedRead', window.i18n('allMarkedAsRead'));
+      dispatch(markAllAsReadModal({}));
     } else {
       // message section
       dispatch(clearSearch());
