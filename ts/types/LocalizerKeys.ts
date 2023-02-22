@@ -42,6 +42,7 @@ export type LocalizerKeys =
   | 'debugLogExplanation'
   | 'reportIssue'
   | 'markAllAsRead'
+  | 'allMarkedAsRead'
   | 'incomingError'
   | 'media'
   | 'mediaEmptyState'

@@ -10,6 +10,7 @@ import {
   DeleteAccountModalState,
   EditProfileModalState,
   InviteContactModalState,
+  MarkAllAsReadModalState,
   ModalState,
   OnionPathModalState,
   ReactModalsState,
@@ -109,3 +110,7 @@ export const getReactClearAllDialog = createSelector(
   getModal,
   (state: ModalState): ReactModalsState => state.reactClearAllModalState
 );
+
+export const getMarkAllAsReadDialog = createSelector(
+  getModal,
+  (state: ModalState): MarkAllAsReadModalState => state.markAllAsReadModal);

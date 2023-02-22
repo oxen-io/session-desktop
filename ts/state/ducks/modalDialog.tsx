@@ -20,6 +20,7 @@ export type EditProfileModalState = {} | null;
 export type OnionPathModalState = EditProfileModalState;
 export type RecoveryPhraseModalState = EditProfileModalState;
 export type DeleteAccountModalState = EditProfileModalState;
+export type MarkAllAsReadModalState = EditProfileModalState;
 
 export type SessionPasswordModalState = { passwordAction: PasswordAction; onOk: () => void } | null;
 
@@ -50,6 +51,7 @@ export type ModalState = {
   adminLeaveClosedGroup: AdminLeaveClosedGroupModalState;
   sessionPasswordModal: SessionPasswordModalState;
   deleteAccountModal: DeleteAccountModalState;
+  markAllAsReadModal: MarkAllAsReadModalState;
   reactListModalState: ReactModalsState;
   reactClearAllModalState: ReactModalsState;
 };
@@ -70,6 +72,7 @@ export const initialModalState: ModalState = {
   adminLeaveClosedGroup: null,
   sessionPasswordModal: null,
   deleteAccountModal: null,
+  markAllAsReadModal: null,
   reactListModalState: null,
   reactClearAllModalState: null,
 };
@@ -123,6 +126,9 @@ const ModalSlice = createSlice({
     updateDeleteAccountModal(state, action: PayloadAction<DeleteAccountModalState>) {
       return { ...state, deleteAccountModal: action.payload };
     },
+    markAllAsReadModal(state, action: PayloadAction<MarkAllAsReadModalState>) {
+      return { ...state, markAllAsReadModal: action.payload };
+    },
     updateReactListModal(state, action: PayloadAction<ReactModalsState>) {
       return { ...state, reactListModalState: action.payload };
     },
@@ -147,6 +153,7 @@ export const {
   recoveryPhraseModal,
   adminLeaveClosedGroup,
   sessionPassword,
+  markAllAsReadModal,
   updateDeleteAccountModal,
   updateBanOrUnbanUserModal,
   updateReactListModal,
