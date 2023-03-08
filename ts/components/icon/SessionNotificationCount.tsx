@@ -10,7 +10,7 @@ const StyledCountContainer = styled.div<{ shouldRender: boolean, unreadCount?: n
   position: absolute;
   font-size: 18px;
   line-height: 1.2;
-  top: ${props => (props.unreadCount ? '29' : '27')}px;
+  top: ${props => (props.unreadCount ? '-6' : '27')}px;
   left: ${props => (props.unreadCount
     ? (15 - props.unreadCount.toString().length * 2).toString()
     : '28'
