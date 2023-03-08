@@ -14,6 +14,7 @@ export type SessionIconProps = {
   glowStartDelay?: number;
   noScale?: boolean;
   backgroundColor?: string;
+  unreadCount?: number;
 };
 
 const getIconDimensionFromIconSize = (iconSize: SessionIconSize | number) => {

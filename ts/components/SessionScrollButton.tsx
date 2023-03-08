@@ -17,7 +17,7 @@ const SessionScrollButtonDiv = styled.div`
   }
 `;
 
-export const SessionScrollButton = (props: { onClickScrollBottom: () => void }) => {
+export const SessionScrollButton = (props: { onClickScrollBottom: () => void, unreadCount: number }) => {
   const show = useSelector(getShowScrollButton);
 
   return (
@@ -28,6 +28,7 @@ export const SessionScrollButton = (props: { onClickScrollBottom: () => void }) 
         isHidden={!show}
         onClick={props.onClickScrollBottom}
         dataTestId="scroll-to-bottom-button"
+        unreadCount={props.unreadCount}
       />
     </SessionScrollButtonDiv>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { SessionIcon, SessionIconProps } from '../icon';
 import _ from 'lodash';
-import { SessionNotificationCount } from './SessionNotificationCount';
+import { SessionNotificationCount, SessionUnreadCount } from './SessionNotificationCount';
 import styled from 'styled-components';
 
 interface SProps extends SessionIconProps {
@@ -57,6 +57,7 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
     id,
     dataTestId,
     style,
+    unreadCount
   } = props;
   const clickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     if (props.onClick) {
@@ -90,6 +91,7 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
         iconPadding={iconPadding}
       />
       {Boolean(notificationCount) && <SessionNotificationCount chats={chatCount} count={notificationCount} />}
+      {Boolean(unreadCount) && <SessionUnreadCount count={unreadCount} />}
     </StyledSessionIconButton>
   );
 });
