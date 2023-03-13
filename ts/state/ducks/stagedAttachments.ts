@@ -37,12 +37,8 @@ const stagedAttachmentsSlice = createSlice({
       }
 
       const allAttachments = _.concat(currentStagedAttachments, newAttachments);
-      const pastedAttachments = allAttachments.filter(m => m.fileName === 'image.png');
-      const allAttachmentsExceptPasted = allAttachments.filter(m => m.fileName !== 'image.png');
-      const uniqAttachments = _.uniqBy(allAttachmentsExceptPasted, m => m.fileName);
-      const finalAttachments =  _.concat(uniqAttachments, pastedAttachments);
 
-      state.stagedAttachments[conversationKey] = finalAttachments;
+      state.stagedAttachments[conversationKey] = allAttachments;
       return state;
     },
     removeAllStagedAttachmentsInConversation(
