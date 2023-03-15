@@ -58,10 +58,13 @@ export const Timestamp = (props: Props) => {
       // Today: Use the time only.
       dateString = momentValue.format('LT');
     } else if (now.diff(momentValue, 'days') < 6) {
-      // Less than a week old: Use the day only.
-      dateString = momentValue.format('ddd');
+      // Less than a week old: Use the day and time.
+      dateString = momentValue.format('ddd LT');
+    } else if (momentValue.isSame(now, 'year')) {
+      // This year: Use the month, day of month and time.
+      dateString = momentValue.format('MMM D LT');
     } else {
-      // More than a week old: Use the full date.
+      // Last year or older: Use the full date.
       dateString = momentValue.format('L');
     }
   } else {
