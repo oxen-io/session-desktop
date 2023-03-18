@@ -26,7 +26,10 @@ import { cleanUpOldDecryptedMedias } from '../../session/crypto/DecryptedAttachm
 
 import { DURATION } from '../../session/constants';
 
-import { editProfileModal, onionPathModal } from '../../state/ducks/modalDialog';
+import { editProfileModal,
+	 markAllAsReadModal,
+	 onionPathModal
+} from '../../state/ducks/modalDialog';
 import { uploadOurAvatar } from '../../interactions/conversationInteractions';
 import { debounce, isEmpty, isString } from 'lodash';
 
@@ -78,6 +81,8 @@ const Section = (props: { type: SectionType }) => {
     } else if (type === SectionType.PathIndicator) {
       // Show Path Indicator Modal
       dispatch(onionPathModal({}));
+    } else if (type === SectionType.MarkAllAsRead) {
+      dispatch(markAllAsReadModal({}));
     } else {
       // message section
       dispatch(clearSearch());
@@ -107,6 +112,17 @@ const Section = (props: { type: SectionType }) => {
           dataTestId="message-section"
           iconType={'chatBubble'}
           notificationCount={unreadToShow}
+          onClick={handleClick}
+          isSelected={isSelected}
+        />
+      );
+    case SectionType.MarkAllAsRead:
+      return (
+        <SessionIconButton
+          title={window.i18n('markAllAsRead')}
+          iconSize="medium"
+          dataTestId="markallasread-section"
+          iconType={'check'}
           onClick={handleClick}
           isSelected={isSelected}
         />
@@ -287,6 +303,7 @@ export const ActionsPanel = () => {
       <LeftPaneSectionContainer data-testid="leftpane-section-container">
         <Section type={SectionType.Profile} />
         <Section type={SectionType.Message} />
+        <Section type={SectionType.MarkAllAsRead} />
         <Section type={SectionType.Settings} />
 
         <Section type={SectionType.PathIndicator} />
