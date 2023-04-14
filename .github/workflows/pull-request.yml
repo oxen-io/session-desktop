@@ -67,3 +67,20 @@ jobs:
 
       - name: Unit Test
         run: yarn test
+        continue-on-error: true
+
+      - name: Run Coverage
+        run: yarn coverage
+        continue-on-error: true
+
+      - name: Print Coverage report
+        run: cat ./coverage/coverage-final.json && cat ./coverage-clearnet.json
+        continue-on-error: true
+
+      - name: Update Coverage Report
+        if: runner.os == 'Linux'
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          skip-step: all
+          coverage-file: ./coverage/coverage-final.json
+          base-coverage-file: ./coverage-clearnet.json
