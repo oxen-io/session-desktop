@@ -39,6 +39,7 @@ const NotificationSettingIcon = (props: { isMessagesSection: boolean }) => {
         />
       );
     case 'mentions_only':
+    default:
       return (
         <SessionIcon
           iconType="bell"
@@ -46,8 +47,6 @@ const NotificationSettingIcon = (props: { isMessagesSection: boolean }) => {
           iconSize="small"
         />
       );
-    default:
-      return null;
   }
 };
 

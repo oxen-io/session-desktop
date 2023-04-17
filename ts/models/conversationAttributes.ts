@@ -90,7 +90,7 @@ export const fillConvoAttributesWithDefaults = (
     lastMessageStatus: undefined,
     lastMessage: null,
 
-    triggerNotificationsFor: 'all', // if the settings is not set in the db, this is the default
+    triggerNotificationsFor: 'mentions_only', // if the settings is not set in the db, this is the default
 
     isTrustedForAttachmentDownload: false, // we don't trust a contact until we say so
     isPinned: false,

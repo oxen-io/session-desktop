@@ -145,7 +145,7 @@ export function formatRowOfConversation(row?: Record<string, any>): Conversation
   }
 
   if (!convo.triggerNotificationsFor) {
-    convo.triggerNotificationsFor = 'all';
+    convo.triggerNotificationsFor = 'mentions_only';
   }
 
   if (!convo.unreadCount) {
