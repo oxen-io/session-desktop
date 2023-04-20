@@ -267,7 +267,7 @@
   "showRecoveryPhrase": "Frase de recuperación",
   "yourSessionID": "Tu ID de Session",
   "setAccountPasswordTitle": "Establecer contraseña de la cuenta",
-  "setAccountPasswordDescription": "Se requiere contraseña para desbloquar Session.",
+  "setAccountPasswordDescription": "Se requiere contraseña para desbloquear Session.",
   "changeAccountPasswordTitle": "Cambiar la Contraseña de la Cuenta",
   "changeAccountPasswordDescription": "Change the password required to unlock Session.",
   "removeAccountPasswordTitle": "Borrar contraseña",
