@@ -480,13 +480,13 @@
   "clearAllReactions": "Are you sure you want to clear all $emoji$ ?",
   "expandedReactionsText": "Mostrar menos",
   "reactionNotification": "Reacts to a message with $emoji$",
-  "otherSingular": "$number$ other",
-  "otherPlural": "$number$ others",
-  "reactionPopup": "reacted with",
+  "otherSingular": "$number$ otro",
+  "otherPlural": "$number$ otros",
+  "reactionPopup": "reaccionó con",
   "reactionPopupOne": "$name$",
   "reactionPopupTwo": "$name$ & $name2$",
   "reactionPopupThree": "$name$, $name2$ & $name3$",
   "reactionPopupMany": "$name$, $name2$, $name3$ &",
-  "reactionListCountSingular": "And $otherSingular$ has reacted <span>$emoji$</span> to this message",
-  "reactionListCountPlural": "And $otherPlural$ have reacted <span>$emoji$</span> to this message"
+  "reactionListCountSingular": "Y $otherSingular$ ha reaccionado <span>$emoji$</span> a este mensaje",
+  "reactionListCountPlural": "Y $otherPlural$ han reaccionado <span>$emoji$</span> a este mensaje"
 }
