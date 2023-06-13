@@ -23,6 +23,7 @@ import {
   updateGroupNameModal,
   updateInviteContactModal,
   updateRemoveModeratorsModal,
+  updateServerBanOrUnbanUserModal
 } from '../state/ducks/modalDialog';
 import { Data, hasLinkPreviewPopupBeenDisplayed, lastAvatarUploadTimestamp } from '../data/data';
 import { quoteMessage, resetConversationExternal } from '../state/ducks/conversations';
@@ -272,6 +273,18 @@ export function showBanUserByConvoId(conversationId: string, pubkey?: string) {
 export function showUnbanUserByConvoId(conversationId: string, pubkey?: string) {
   window.inboxStore?.dispatch(
     updateBanOrUnbanUserModal({ banType: 'unban', conversationId, pubkey })
+  );
+}
+
+export function showServerBanUserByConvoId(conversationId: string, pubkey?: string) {
+  window.inboxStore?.dispatch(
+    updateServerBanOrUnbanUserModal({ banType: 'ban', conversationId, pubkey })
+  );
+}
+
+export function showServerUnbanUserByConvoId(conversationId: string, pubkey?: string) {
+  window.inboxStore?.dispatch(
+    updateServerBanOrUnbanUserModal({ banType: 'unban', conversationId, pubkey })
   );
 }
 

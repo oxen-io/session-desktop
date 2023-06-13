@@ -12,7 +12,11 @@ import { getConversationController } from '../session/conversations';
 import { PubKey } from '../session/types';
 import { ToastUtils } from '../session/utils';
 
-import { updateBanOrUnbanUserModal, updateConfirmModal } from '../state/ducks/modalDialog';
+import {
+  updateBanOrUnbanUserModal,
+  updateConfirmModal,
+  updateServerBanOrUnbanUserModal
+} from '../state/ducks/modalDialog';
 
 export function banUser(userToBan: string, conversationId: string) {
   let pubKeyToBan: PubKey;
@@ -56,6 +60,47 @@ export function unbanUser(userToUnBan: string, conversationId: string) {
   }
   window.inboxStore?.dispatch(
     updateBanOrUnbanUserModal({ banType: 'unban', conversationId, pubkey: pubKeyToUnban.key })
+  );
+}
+
+export function serverBanUser(userToBan: string, conversationId: string) {
+  let pubKeyToBan: PubKey;
+  try {
+    pubKeyToBan = PubKey.cast(userToBan);
+  } catch (e) {
+    window?.log?.warn(e);
+    ToastUtils.pushUserBanFailure();
+    return;
+  }
+  if (!isOpenGroupV2(conversationId)) {
+    window.log.warn(`Conversation ${conversationId} is not an open group`);
+    ToastUtils.pushUserBanFailure();
+
+    return;
+  }
+
+  window.inboxStore?.dispatch(
+    updateServerBanOrUnbanUserModal({ banType: 'ban', conversationId, pubkey: pubKeyToBan.key })
+  );
+}
+
+export function serverUnbanUser(userToUnBan: string, conversationId: string) {
+  let pubKeyToUnban: PubKey;
+  try {
+    pubKeyToUnban = PubKey.cast(userToUnBan);
+  } catch (e) {
+    window?.log?.warn(e);
+    ToastUtils.pushUserBanFailure();
+    return;
+  }
+  if (!isOpenGroupV2(conversationId)) {
+    window.log.warn(`Conversation ${conversationId} is not an open group`);
+    ToastUtils.pushUserUnbanFailure();
+
+    return;
+  }
+  window.inboxStore?.dispatch(
+    updateServerBanOrUnbanUserModal({ banType: 'unban', conversationId, pubkey: pubKeyToUnban.key })
   );
 }
 

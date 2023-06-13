@@ -117,12 +117,20 @@ export function pushUserBanFailure() {
   pushToastError('userBanFailed', window.i18n('userBanFailed'));
 }
 
+export function pushGlobalUserBanFailure() {
+  pushToastError('globalUserBanFailed', window.i18n('globalUserBanFailed'));
+}
+
 export function pushUserUnbanSuccess() {
   pushToastSuccess('userUnbanned', window.i18n('userUnbanned'));
 }
 
 export function pushUserUnbanFailure() {
   pushToastError('userUnbanFailed', window.i18n('userUnbanFailed'));
+}
+
+export function pushGlobalUserUnbanFailure() {
+  pushToastError('globalUserUnbanFailed', window.i18n('globalUserUnbanFailed'));
 }
 
 export function pushMessageDeleteForbidden() {

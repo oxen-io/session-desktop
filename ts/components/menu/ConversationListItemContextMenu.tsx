@@ -17,6 +17,8 @@ import {
   MarkAllReadMenuItem,
   NotificationForConvoMenuItem,
   PinConversationMenuItem,
+  ServerBanMenuItem,
+  ServerUnbanMenuItem,
   ShowUserDetailsMenuItem,
   UnbanMenuItem,
 } from './Menu';
@@ -44,6 +46,8 @@ const ConversationListItemContextMenu = (props: PropsContextConversationItem) =>
         <DeleteMessagesMenuItem />
         <BanMenuItem />
         <UnbanMenuItem />
+        <ServerBanMenuItem />
+        <ServerUnbanMenuItem />
         <InviteContactMenuItem />
         <DeleteContactMenuItem />
         <LeaveGroupMenuItem />

@@ -15,6 +15,7 @@ import {
   ReactModalsState,
   RecoveryPhraseModalState,
   RemoveModeratorsModalState,
+  ServerBanOrUnbanUserModalState,
   SessionPasswordModalState,
   UpdateGroupMembersModalState,
   UpdateGroupNameModalState,
@@ -48,6 +49,11 @@ export const getRemoveModeratorsModal = createSelector(
 export const getBanOrUnbanUserModalState = createSelector(
   getModal,
   (state: ModalState): BanOrUnbanUserModalState => state.banOrUnbanUserModal
+);
+
+export const getServerBanOrUnbanUserModalState = createSelector(
+  getModal,
+  (state: ModalState): ServerBanOrUnbanUserModalState => state.serverBanOrUnbanUserModal
 );
 
 export const getUpdateGroupNameModal = createSelector(

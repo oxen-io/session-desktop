@@ -210,6 +210,14 @@ export const MessageContextMenu = (props: Props) => {
     MessageInteraction.unbanUser(sender, convoId);
   }, [sender, convoId]);
 
+  const onServerBan = useCallback(() => {
+    MessageInteraction.serverBanUser(sender, convoId);
+  }, [sender, convoId]);
+
+  const onServerUnban = useCallback(() => {
+    MessageInteraction.serverUnbanUser(sender, convoId);
+  }, [sender, convoId]);
+
   const onSelect = useCallback(() => {
     dispatch(toggleSelectedMessageId(messageId));
   }, [messageId]);
@@ -333,6 +341,10 @@ export const MessageContextMenu = (props: Props) => {
           {weAreAdmin && isPublic ? <Item onClick={onBan}>{window.i18n('banUser')}</Item> : null}
           {weAreAdmin && isPublic ? (
             <Item onClick={onUnban}>{window.i18n('unbanUser')}</Item>
+          ) : null}
+          {weAreAdmin && isPublic ? <Item onClick={onServerBan}>{window.i18n('serverBanUser')}</Item> : null}
+          {weAreAdmin && isPublic ? (
+            <Item onClick={onServerUnban}>{window.i18n('serverUnbanUser')}</Item>
           ) : null}
           {weAreAdmin && isPublic && !isSenderAdmin ? (
             <Item onClick={addModerator}>{window.i18n('addAsModerator')}</Item>

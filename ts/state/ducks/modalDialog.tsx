@@ -10,6 +10,11 @@ export type BanOrUnbanUserModalState = {
   banType: BanType;
   pubkey?: string;
 } | null;
+export type ServerBanOrUnbanUserModalState = {
+  conversationId: string;
+  banType: BanType;
+  pubkey?: string;
+} | null;
 export type AddModeratorsModalState = InviteContactModalState;
 export type RemoveModeratorsModalState = InviteContactModalState;
 export type UpdateGroupMembersModalState = InviteContactModalState;
@@ -38,6 +43,7 @@ export type ModalState = {
   confirmModal: ConfirmModalState;
   inviteContactModal: InviteContactModalState;
   banOrUnbanUserModal: BanOrUnbanUserModalState;
+  serverBanOrUnbanUserModal: ServerBanOrUnbanUserModalState;
   removeModeratorsModal: RemoveModeratorsModalState;
   addModeratorsModal: AddModeratorsModalState;
   groupNameModal: UpdateGroupNameModalState;
@@ -60,6 +66,7 @@ export const initialModalState: ModalState = {
   addModeratorsModal: null,
   removeModeratorsModal: null,
   banOrUnbanUserModal: null,
+  serverBanOrUnbanUserModal: null,
   groupNameModal: null,
   groupMembersModal: null,
   userDetailsModal: null,
@@ -86,6 +93,9 @@ const ModalSlice = createSlice({
     },
     updateBanOrUnbanUserModal(state, action: PayloadAction<BanOrUnbanUserModalState | null>) {
       return { ...state, banOrUnbanUserModal: action.payload };
+    },
+    updateServerBanOrUnbanUserModal(state, action: PayloadAction<ServerBanOrUnbanUserModalState | null>) {
+      return { ...state, serverBanOrUnbanUserModal: action.payload };
     },
     updateAddModeratorsModal(state, action: PayloadAction<AddModeratorsModalState | null>) {
       return { ...state, addModeratorsModal: action.payload };
@@ -149,6 +159,7 @@ export const {
   sessionPassword,
   updateDeleteAccountModal,
   updateBanOrUnbanUserModal,
+  updateServerBanOrUnbanUserModal,
   updateReactListModal,
   updateReactClearAllModal,
 } = actions;

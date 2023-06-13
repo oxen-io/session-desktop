@@ -33,6 +33,8 @@ import {
   showInviteContactByConvoId,
   showLeaveGroupByConvoId,
   showRemoveModeratorsByConvoId,
+  showServerBanUserByConvoId,
+  showServerUnbanUserByConvoId,
   showUnbanUserByConvoId,
   showUpdateGroupNameByConvoId,
   unblockConvoById,
@@ -114,6 +116,14 @@ const showUnbanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup
 
 const showBanUser = (weAreAdmin: boolean, isPublic: boolean, isKickedFromGroup: boolean) => {
   return !isKickedFromGroup && weAreAdmin && isPublic;
+};
+
+const showServerUnbanUser = (weAreAdmin: boolean, isPublic: boolean) => {
+  return weAreAdmin && isPublic;
+};
+
+const showServerBanUser = (weAreAdmin: boolean, isPublic: boolean) => {
+  return weAreAdmin && isPublic;
 };
 
 function showAddModerators(
@@ -381,6 +391,44 @@ export const BanMenuItem = (): JSX.Element | null => {
         }}
       >
         {window.i18n('banUser')}
+      </Item>
+    );
+  }
+  return null;
+};
+
+export const ServerUnbanMenuItem = (): JSX.Element | null => {
+  const convoId = useContext(ContextConversationId);
+  const isPublic = useIsPublic(convoId);
+  const weAreAdmin = useWeAreAdmin(convoId);
+
+  if (showServerUnbanUser(weAreAdmin, isPublic)) {
+    return (
+      <Item
+        onClick={() => {
+          showServerUnbanUserByConvoId(convoId);
+        }}
+      >
+        {window.i18n('serverUnbanUser')}
+      </Item>
+    );
+  }
+  return null;
+};
+
+export const ServerBanMenuItem = (): JSX.Element | null => {
+  const convoId = useContext(ContextConversationId);
+  const isPublic = useIsPublic(convoId);
+  const weAreAdmin = useWeAreAdmin(convoId);
+
+  if (showServerBanUser(weAreAdmin, isPublic)) {
+    return (
+      <Item
+        onClick={() => {
+          showServerBanUserByConvoId(convoId);
+        }}
+      >
+        {window.i18n('serverBanUser')}
       </Item>
     );
   }
