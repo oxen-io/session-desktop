@@ -47,7 +47,6 @@ export enum SessionSettingCategory {
   Appearance = 'appearance',
   Permissions = 'permissions',
   Help = 'help',
-  RecoveryPhrase = 'recoveryPhrase',
   ClearData = 'ClearData',
 }
 
@@ -136,7 +135,6 @@ const SettingInCategory = (props: {
     // these three down there have no options, they are just a button
     case SessionSettingCategory.ClearData:
     case SessionSettingCategory.MessageRequests:
-    case SessionSettingCategory.RecoveryPhrase:
     default:
       return null;
   }
