@@ -113,4 +113,5 @@ export const getReactClearAllDialog = createSelector(
 
 export const getMarkAllAsReadDialog = createSelector(
   getModal,
-  (state: ModalState): MarkAllAsReadModalState => state.markAllAsReadModal);
+  (state: ModalState): MarkAllAsReadModalState => state.markAllAsReadModal
+);

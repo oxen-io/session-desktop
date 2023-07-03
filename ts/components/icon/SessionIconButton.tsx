@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import { SessionIcon, SessionIconProps } from '../icon';
 import _ from 'lodash';
@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 interface SProps extends SessionIconProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onContextMenuClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   notificationCount?: number;
   isSelected?: boolean;
   isHidden?: boolean;
@@ -55,13 +56,28 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
     id,
     dataTestId,
     style,
+    onClick,
+    onContextMenuClick,
   } = props;
-  const clickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (props.onClick) {
-      e.stopPropagation();
-      props.onClick(e);
-    }
-  };
+  const clickHandler = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (onClick) {
+        e.stopPropagation();
+        onClick(e);
+      }
+    },
+    [onClick]
+  );
+
+  const onContextMenuClickHandler = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (onContextMenuClick) {
+        e.stopPropagation();
+        onContextMenuClick(e);
+      }
+    },
+    [onContextMenuClick]
+  );
 
   return (
     <StyledSessionIconButton
@@ -72,6 +88,7 @@ const SessionIconButtonInner = React.forwardRef<HTMLDivElement, SProps>((props, 
       ref={ref}
       id={id}
       onClick={clickHandler}
+      onContextMenu={onContextMenuClickHandler}
       style={{ ...style, display: isHidden ? 'none' : 'flex', margin: margin ? margin : '' }}
       data-testid={dataTestId}
     >

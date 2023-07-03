@@ -184,12 +184,11 @@ export const ModalStatusLight = (props: StatusLightType) => {
  * A status light specifically for the action panel. Color is based on aggregate node states instead of individual onion node state
  */
 export const ActionPanelOnionStatusLight = (props: {
-  isSelected: boolean;
   handleClick: () => void;
   dataTestId?: string;
   id: string;
 }) => {
-  const { isSelected, handleClick, dataTestId, id } = props;
+  const { handleClick, dataTestId, id } = props;
 
   const onionPathsCount = useSelector(getOnionPathsCount);
   const firstPathLength = useSelector(getFirstOnionPathLength);
@@ -217,7 +216,6 @@ export const ActionPanelOnionStatusLight = (props: {
       glowDuration={10}
       glowStartDelay={0}
       noScale={true}
-      isSelected={isSelected}
       dataTestId={dataTestId}
       id={id}
     />

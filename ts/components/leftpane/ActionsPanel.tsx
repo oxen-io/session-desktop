@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getConversationController } from '../../session/conversations';
 import { syncConfigurationIfNeeded } from '../../session/utils/sync/syncUtils';
 
@@ -24,7 +24,11 @@ import { DURATION } from '../../session/constants';
 
 import { debounce, isEmpty, isString } from 'lodash';
 import { uploadOurAvatar } from '../../interactions/conversationInteractions';
-import { editProfileModal, onionPathModal } from '../../state/ducks/modalDialog';
+import {
+  editProfileModal,
+  markAllAsReadModal,
+  onionPathModal,
+} from '../../state/ducks/modalDialog';
 
 // tslint:disable-next-line: no-import-side-effect no-submodule-imports
 
@@ -47,101 +51,118 @@ import {
 import { isDarkTheme } from '../../state/selectors/theme';
 import { ThemeStateType } from '../../themes/constants/colors';
 import { switchThemeTo } from '../../themes/switchTheme';
+import { animation, contextMenu, Item, Menu } from 'react-contexify';
+import { SessionContextMenuContainer } from '../SessionContextMenuContainer';
 
-const Section = (props: { type: SectionType }) => {
-  const ourNumber = useSelector(getOurNumber);
-  const globalUnreadMessageCount = useSelector(getGlobalUnreadMessageCount);
+type SharedSectionProps = { isSelected: boolean };
+
+const useSelectSection = ({ type }: { type: SectionType }) => {
   const dispatch = useDispatch();
-  const { type } = props;
 
-  const isDarkMode = useSelector(isDarkTheme);
-  const focusedSection = useSelector(getFocusedSection);
-  const isSelected = focusedSection === props.type;
+  return () => {
+    dispatch(clearSearch());
+    dispatch(showLeftPaneSection(type));
+    dispatch(resetOverlayMode());
+  };
+};
 
-  const handleClick = async () => {
-    /* tslint:disable:no-void-expression */
-    if (type === SectionType.Profile) {
-      dispatch(editProfileModal({}));
-    } else if (type === SectionType.ColorMode) {
-      const currentTheme = String(window.Events.getThemeSetting());
-      const newTheme = (isDarkMode
-        ? currentTheme.replace('dark', 'light')
-        : currentTheme.replace('light', 'dark')) as ThemeStateType;
+const contextMenuMessageSectionId = 'contextmenu-message-section';
 
-      // We want to persist the primary color when using the color mode button
-      await switchThemeTo({
-        theme: newTheme,
-        mainWindow: true,
-        usePrimaryColor: true,
-        dispatch,
-      });
-    } else if (type === SectionType.PathIndicator) {
-      // Show Path Indicator Modal
-      dispatch(onionPathModal({}));
-    } else {
-      // message section
-      dispatch(clearSearch());
-      dispatch(showLeftPaneSection(type));
-      dispatch(resetOverlayMode());
-    }
+const MessageSection = ({ isSelected }: SharedSectionProps) => {
+  const globalUnreadMessageCount = useSelector(getGlobalUnreadMessageCount);
+  const selectSection = useSelectSection({ type: SectionType.Message });
+
+  const onRightClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    contextMenu.show({
+      id: contextMenuMessageSectionId,
+      event: e,
+    });
   };
 
-  if (type === SectionType.Profile) {
-    return (
-      <Avatar
-        size={AvatarSize.XS}
-        onAvatarClick={handleClick}
-        pubkey={ourNumber}
-        dataTestId="leftpane-primary-avatar"
-      />
-    );
-  }
+  return (
+    <SessionIconButton
+      iconSize="medium"
+      dataTestId="message-section"
+      iconType={'chatBubble'}
+      notificationCount={globalUnreadMessageCount}
+      onClick={selectSection}
+      onContextMenuClick={onRightClick}
+      isSelected={isSelected}
+    />
+  );
+};
 
-  const unreadToShow = type === SectionType.Message ? globalUnreadMessageCount : undefined;
+const PathIndicatorSection = () => {
+  const dispatch = useDispatch();
+  return (
+    <ActionPanelOnionStatusLight
+      dataTestId="onion-status-section"
+      handleClick={() => {
+        // Show Path Indicator Modal
+        dispatch(onionPathModal({}));
+      }}
+      id={'onion-path-indicator-led-id'}
+    />
+  );
+};
 
-  switch (type) {
-    case SectionType.Message:
-      return (
-        <SessionIconButton
-          iconSize="medium"
-          dataTestId="message-section"
-          iconType={'chatBubble'}
-          notificationCount={unreadToShow}
-          onClick={handleClick}
-          isSelected={isSelected}
-        />
-      );
-    case SectionType.Settings:
-      return (
-        <SessionIconButton
-          iconSize="medium"
-          dataTestId="settings-section"
-          iconType={'gear'}
-          onClick={handleClick}
-          isSelected={isSelected}
-        />
-      );
-    case SectionType.PathIndicator:
-      return (
-        <ActionPanelOnionStatusLight
-          dataTestId="onion-status-section"
-          handleClick={handleClick}
-          isSelected={isSelected}
-          id={'onion-path-indicator-led-id'}
-        />
-      );
-    case SectionType.ColorMode:
-    default:
-      return (
-        <SessionIconButton
-          iconSize="medium"
-          iconType={isDarkMode ? 'moon' : 'sun'}
-          dataTestId="theme-section"
-          onClick={handleClick}
-          isSelected={isSelected}
-        />
-      );
-  }
+const SettingsSection = ({ isSelected }: SharedSectionProps) => {
+  const selectSection = useSelectSection({ type: SectionType.Settings });
+  return (
+    <SessionIconButton
+      iconSize="medium"
+      dataTestId="settings-section"
+      iconType={'gear'}
+      onClick={selectSection}
+      isSelected={isSelected}
+    />
+  );
+};
+
+const ThemeSwitcher = () => {
+  const isDarkMode = useSelector(isDarkTheme);
+  const dispatch = useDispatch();
+
+  const switchTheme = useCallback(async () => {
+    const currentTheme = String(window.Events.getThemeSetting());
+    const newTheme = (isDarkMode
+      ? currentTheme.replace('dark', 'light')
+      : currentTheme.replace('light', 'dark')) as ThemeStateType;
+
+    // We want to persist the primary color when using the color mode button
+    await switchThemeTo({
+      theme: newTheme,
+      mainWindow: true,
+      usePrimaryColor: true,
+      dispatch,
+    });
+  }, [isDarkMode, dispatch]);
+
+  return (
+    <SessionIconButton
+      iconSize="medium"
+      iconType={isDarkMode ? 'moon' : 'sun'}
+      dataTestId="theme-section"
+      onClick={switchTheme}
+      isSelected={false}
+    />
+  );
+};
+
+const ProfileSection = () => {
+  const ourNumber = useSelector(getOurNumber);
+  const dispatch = useDispatch();
+
+  return (
+    <Avatar
+      size={AvatarSize.XS}
+      onAvatarClick={() => {
+        dispatch(editProfileModal({}));
+      }}
+      pubkey={ourNumber}
+      dataTestId="leftpane-primary-avatar"
+    />
+  );
 };
 
 const cleanUpMediasInterval = DURATION.MINUTES * 60;
@@ -241,6 +262,8 @@ async function fetchReleaseFromFSAndUpdateMain() {
 export const ActionsPanel = () => {
   const [startCleanUpMedia, setStartCleanUpMedia] = useState(false);
   const ourPrimaryConversation = useSelector(getOurPrimaryConversation);
+  const focusedSection = useSelector(getFocusedSection);
+  const dispatch = useDispatch();
 
   // this maxi useEffect is called only once: when the component is mounted.
   // For the action panel, it means this is called only one per app start/with a user loggedin
@@ -251,9 +274,13 @@ export const ActionsPanel = () => {
   // wait for cleanUpMediasInterval and then start cleaning up medias
   // this would be way easier to just be able to not trigger a call with the setInterval
   useEffect(() => {
-    const timeout = setTimeout(() => setStartCleanUpMedia(true), cleanUpMediasInterval);
+    const timeout = setTimeout(() => {
+      setStartCleanUpMedia(true);
+    }, cleanUpMediasInterval);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   useInterval(cleanUpOldDecryptedMedias, startCleanUpMedia ? cleanUpMediasInterval : null);
@@ -287,14 +314,43 @@ export const ActionsPanel = () => {
     void triggerAvatarReUploadIfNeeded();
   }, DURATION.DAYS * 1);
 
+  const onContextMenuShown = () => {
+    window.contextMenuShown = true;
+  };
+
+  const onContextMenuHidden = useCallback(() => {
+    // This function will called before the click event
+    // on the message would trigger (and I was unable to
+    // prevent propagation in this case), so use a short timeout
+    setTimeout(() => {
+      window.contextMenuShown = false;
+    }, 100);
+  }, []);
+
   return (
     <>
       <LeftPaneSectionContainer data-testid="leftpane-section-container">
-        <Section type={SectionType.Profile} />
-        <Section type={SectionType.Message} />
-        <Section type={SectionType.Settings} />
-        <Section type={SectionType.PathIndicator} />
-        <Section type={SectionType.ColorMode} />
+        <ProfileSection />
+        <MessageSection isSelected={focusedSection === SectionType.Message} />
+        <SettingsSection isSelected={focusedSection === SectionType.Settings} />
+        <PathIndicatorSection />
+        <ThemeSwitcher />
+        <SessionContextMenuContainer>
+          <Menu
+            id={contextMenuMessageSectionId}
+            onShown={onContextMenuShown}
+            onHidden={onContextMenuHidden}
+            animation={animation.fade}
+          >
+            <Item
+              onClick={() => {
+                dispatch(markAllAsReadModal({}));
+              }}
+            >
+              Mark all conversation as read
+            </Item>
+          </Menu>
+        </SessionContextMenuContainer>
       </LeftPaneSectionContainer>
     </>
   );
