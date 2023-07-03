@@ -4,6 +4,7 @@ import moment from 'moment';
 // tslint:disable-next-line: no-submodule-imports
 import useInterval from 'react-use/lib/useInterval';
 import styled from 'styled-components';
+import { sync as osLocaleSync } from 'os-locale';
 
 type Props = {
   timestamp?: number;
@@ -18,7 +19,6 @@ const TimestampContainerNotListItem = styled.div`
   font-size: var(--font-size-xs);
   line-height: 16px;
   letter-spacing: 0.3px;
-  text-transform: uppercase;
   user-select: none;
 `;
 
@@ -48,13 +48,28 @@ export const Timestamp = (props: Props) => {
 
   const momentValue = moment(timestamp);
   let dateString: string = '';
+  // Set the locale for the timestamps.
+  moment.locale(osLocaleSync().replace(/_/g, '-'));
+
   if (momentFromNow) {
-    dateString = momentValue.fromNow();
+    const now = moment();
+
+    if (momentValue.isSame(now, 'day')) {
+      // Today: Use the time only.
+      dateString = momentValue.format('LT');
+    } else if (now.diff(momentValue, 'days') < 6) {
+      // Less than a week old: Use the day and time.
+      dateString = momentValue.format('ddd LT');
+    } else if (momentValue.isSame(now, 'year')) {
+      // This year: Use the month, day of month and time.
+      dateString = momentValue.format('MMM D LT');
+    } else {
+      // Last year or older: Use the full date.
+      dateString = momentValue.format('L');
+    }
   } else {
     dateString = momentValue.format('lll');
   }
-
-  dateString = dateString.replace('minutes', 'mins').replace('minute', 'min');
 
   const title = moment(timestamp).format('llll');
   if (props.isConversationListItem) {
