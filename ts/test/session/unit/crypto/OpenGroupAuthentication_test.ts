@@ -397,7 +397,7 @@ describe('OpenGroupAuthentication', () => {
     });
 
     it.skip('Should bencode GET request without body successfully', () => {
-      // TODO: change ot accept request info and expect uint8 array output
+      // TODO: change to accept request info and expect uint8 array output
       // const bencoded = encodeV4Request(getDataToEncode);
       // expect(bencoded).to.be.equal('l45:{"method":"GET","endpoint":"/room/test-room"}e');
     });

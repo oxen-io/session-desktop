@@ -223,7 +223,7 @@ export const fillMessageAttributesWithDefaults = (
     id: uuidv4(),
     unread: 0, // if nothing is set, this message is considered read
   });
-  // this is just to cleanup a bit the db. delivered and delivered_to were removed, so everytime we load a message
+  // this is just to cleanup a bit the db. delivered and delivered_to were removed, so every time we load a message
   // we make sure to clean those fields in the json.
   // the next commit() will write that to the disk
   if (defaulted.delivered) {

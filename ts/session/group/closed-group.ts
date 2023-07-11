@@ -494,7 +494,7 @@ async function generateAndSendNewEncryptionKeyPair(
 
     await addKeyPairToCacheAndDBIfNeeded(toHex(groupId), newKeyPair.toHexKeyPair());
   };
-  // this is to be sent to the group pubkey adress
+  // this is to be sent to the group pubkey address
   await getMessageQueue().sendToGroup(keypairsMessage, messageSentCallback);
 }
 

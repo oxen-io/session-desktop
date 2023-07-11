@@ -290,7 +290,7 @@ export class MessageQueue {
     const currentDevice = UserUtils.getOurPubKeyFromCache();
     let isSyncMessage = false;
     if (currentDevice && destinationPk.isEqual(currentDevice)) {
-      // We allow a message for ourselve only if it's a ConfigurationMessage, a ClosedGroupNewMessage,
+      // We allow a message for ourselves only if it's a ConfigurationMessage, a ClosedGroupNewMessage,
       // or a message with a syncTarget set.
 
       if (
