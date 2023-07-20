@@ -798,7 +798,7 @@ async function showMainWindow(sqlKey: string, passwordAttempt = false) {
     passwordAttempt,
   });
   appStartInitialSpellcheckSetting = await getSpellCheckSetting();
-  sqlChannels.initializeSqlChannel();
+  await sqlChannels.initializeSqlChannel();
 
   await initAttachmentsChannel({
     userDataPath,

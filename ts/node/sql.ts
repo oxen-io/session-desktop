@@ -66,8 +66,9 @@ import {
 import {
   assertGlobalInstance,
   assertGlobalInstanceOrInstance,
-  closeDbInstance,
-  initDbInstanceWith,
+  assertGlobalKyselyInstance,
+  closeDbInstanceWithKysely,
+  initDbInstanceWithKysely,
   isInstanceInitialized,
 } from './sqlInstance';
 import { configDumpData } from './sql_calls/config_dump';
@@ -182,7 +183,7 @@ async function initializeSql({
     }
 
     // At this point we can allow general access to the database
-    initDbInstanceWith(db);
+    initDbInstanceWithKysely(db);
 
     console.info('total message count before cleaning: ', getMessageCount());
     console.info('total conversation count before cleaning: ', getConversationCount());
@@ -212,7 +213,7 @@ async function initializeSql({
     if (button.response === 0) {
       clipboard.writeText(`Database startup error:\n\n${redactAll(error.stack)}`);
     } else {
-      closeDbInstance();
+      closeDbInstanceWithKysely();
       showFailedToStart();
     }
 
@@ -613,14 +614,16 @@ function getConversationById(id: string, instance?: BetterSqlite3.Database) {
   return formatRowOfConversation(row, 'getConversationById', unreadCount, mentionedUsStillUnread);
 }
 
-function getAllConversations() {
-  const rows = assertGlobalInstance()
-    .prepare(`SELECT * FROM ${CONVERSATIONS_TABLE} ORDER BY id ASC;`)
-    .all();
+async function getAllConversations() {
+  const rows = await assertGlobalKyselyInstance()
+    .selectFrom('conversations')
+    .selectAll()
+    .orderBy('id', 'asc')
+    .execute();
 
   return (rows || []).map(m => {
-    const unreadCount = getUnreadCountByConversation(m.id) || 0;
-    const mentionedUsStillUnread = !!getFirstUnreadMessageWithMention(m.id);
+    const unreadCount = m.id ? getUnreadCountByConversation(m.id) : 0;
+    const mentionedUsStillUnread = m.id ? !!getFirstUnreadMessageWithMention(m.id) : false;
     return formatRowOfConversation(m, 'getAllConversations', unreadCount, mentionedUsStillUnread);
   });
 }
@@ -2326,7 +2329,7 @@ function cleanUpOldOpengroupsOnStart() {
 export type SqlNodeType = typeof sqlNode;
 
 export function close() {
-  closeDbInstance();
+  closeDbInstanceWithKysely();
 }
 
 export const sqlNode = {

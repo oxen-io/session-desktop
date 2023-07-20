@@ -11,6 +11,7 @@ release/
 /dev-app-update.yml
 *.sublime*
 sql/
+.env
 
 # React / TypeScript
 ts/**/*.js
