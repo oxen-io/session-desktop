@@ -20,7 +20,7 @@ mnemonic_languages/**
 playwright.config.js
 .vscode/
 
-# Managed by package manager (`yarn`/`npm`):
+# Managed by package manager (yarn/npm/pnpm):
 /package.json
 
 # Coverage
