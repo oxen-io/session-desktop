@@ -10,6 +10,7 @@ on:
     branches:
       - clearnet
       - unstable
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -30,48 +31,12 @@ jobs:
       - name: Checkout git repo
         uses: actions/checkout@v3
 
-      # we stay on v2 even if there is a v3 because the v3 logic is less flexible for our usecase
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Cache Desktop node_modules
-        id: cache-desktop-modules
-        uses: actions/cache@v3
-        if: runner.os != 'Windows'
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package.json', 'pnpm-lock.yaml', 'patches/**') }}
-
-      # Not having this will break the windows build because the PATH won't be set by msbuild.
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.3.1
-        if: runner.os == 'Windows'
-
-      - name: Install pnpm
-        run: |
-          npm install --global pnpm
-
-      - name: Setup node for windows
-        if: runner.os == 'Windows'
-        run: |
-          npm install --global node-gyp@latest
-
-      - name: Install Desktop node_modules
-        if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate and concat files
-        run: pnpm build-everything
+      - uses: ./actions/setup_and_build
 
       - name: Lint Files
         # no need to lint files on all platforms. Just do it once on the quicker one
         if: runner.os == 'Linux'
         run: pnpm lint-full
-
-      - name: Unit Test
-        run: pnpm test
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'

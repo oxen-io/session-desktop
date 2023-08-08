@@ -1,0 +1,47 @@
+name: 'Setup and build'
+description: 'Setup and build Session Desktop'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+
+    - uses: pnpm/action-setup@v2
+      name: Install pnpm
+      with:
+        version: 8
+        run_install: false
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('package.json', 'pnpm-lock.yaml', 'patches/**') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    # Not having this will break the windows build because the PATH won't be set by msbuild.
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.3.1
+      if: runner.os == 'Windows'
+
+    - name: Setup node for windows
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        pnpm install --global node-gyp@latest
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Generate and concat files
+      shell: bash
+      run: pnpm build-everything
