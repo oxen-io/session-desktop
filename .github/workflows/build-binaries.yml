@@ -42,32 +42,36 @@ jobs:
         if: runner.os != 'Windows'
         with:
           path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package.json', 'yarn.lock', 'patches/**') }}
+          key: ${{ runner.os }}-${{ hashFiles('package.json', 'pnpm-lock.yaml', 'patches/**') }}
 
       # Not having this will break the windows build because the PATH won't be set by msbuild.
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.3.1
         if: runner.os == 'Windows'
 
+      - name: Install pnpm
+        run: |
+          npm install --global pnpm
+
       - name: Setup node for windows
         if: runner.os == 'Windows'
         run: |
-          npm install --global yarn node-gyp@latest
+          npm install --global node-gyp@latest
 
       - name: Install Desktop node_modules
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile --network-timeout 600000 --force
+        run: pnpm install --frozen-lockfile
 
       - name: Generate and concat files
-        run: yarn build-everything
+        run: pnpm build-everything
 
       - name: Lint Files
         # no need to lint files on all platforms. Just do it once on the quicker one
         if: runner.os == 'Linux'
-        run: yarn lint-full
+        run: pnpm lint-full
 
       - name: Unit Test
-        run: yarn test
+        run: pnpm test
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'
@@ -77,7 +81,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           source ./build/setup-mac-certificate.sh
-          $(yarn bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          $(pnpm bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
         env:
           MAC_CERTIFICATE: ${{ secrets.MAC_CERTIFICATE }}
           MAC_CERTIFICATE_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
@@ -89,7 +93,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y rpm
-          yarn build-release
+          pnpm build-release
 
       - name: Remove unpacked files
         run: |

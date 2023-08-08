@@ -3,7 +3,7 @@ import { newUser } from './setup/new_user';
 import {
   clickOnMatchingText,
   clickOnTestIdWithText,
-  waitForTestIdWithText
+  waitForTestIdWithText,
 } from './utilities/utils';
 import { sessionTestOneWindow } from './setup/sessionTest';
 
