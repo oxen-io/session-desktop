@@ -480,7 +480,7 @@ function saveConversation(data: ConversationAttributes): SaveConversationReturn 
       expirationType,
       expireTimer,
       lastDisappearingMessageChangeTimestamp,
-      hasOutdatedClient: hasOutdatedClient,
+      hasOutdatedClient,
       lastMessageStatus,
       lastMessage: shortenedLastMessage,
 
