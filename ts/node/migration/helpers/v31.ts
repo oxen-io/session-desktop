@@ -1,28 +1,82 @@
 /* eslint-disable no-unused-expressions */
 import * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import {
+  ContactInfoSet,
   ContactsConfigWrapperNode,
   ConvoInfoVolatileWrapperNode,
+  LegacyGroupInfo,
+  LegacyGroupMemberInfo,
   UserGroupsWrapperNode,
 } from 'libsession_util_nodejs';
-import { isNumber, isEmpty, isFinite } from 'lodash';
+import { isNumber, isEmpty, isFinite, isEqual } from 'lodash';
+import { from_hex } from 'libsodium-wrappers-sumo';
 import {
   CONVERSATION_PRIORITIES,
   ConversationAttributes,
 } from '../../../models/conversationAttributes';
 import { HexKeyPair } from '../../../receiver/keypairs';
 import {
-  getContactInfoFromDBValues,
-  getCommunityInfoFromDBValues,
-  getLegacyGroupInfoFromDBValues,
   CONFIG_DUMP_TABLE,
   ConfigDumpRow,
+  maybeArrayJSONtoArray,
 } from '../../../types/sqlSharedTypes';
 import { MESSAGES_TABLE, toSqliteBoolean } from '../../database_utility';
 import { sqlNode } from '../../sql';
 import { hasDebugEnvVariable, verify } from '../utils';
+import { fromHexToArray } from '../../../session/utils/String';
 
 const targetVersion = 31;
+
+/**
+ * This function returns a contactInfo for the wrapper to understand from the DB values.
+ * Created in this file so we can reuse it during the migration (node side), and from the renderer side
+ */
+function getContactInfoFromDBValues({
+  id,
+  dbApproved,
+  dbApprovedMe,
+  dbBlocked,
+  dbName,
+  dbNickname,
+  priority,
+  dbProfileUrl,
+  dbProfileKey,
+  dbCreatedAtSeconds,
+}: {
+  id: string;
+  dbApproved: boolean;
+  dbApprovedMe: boolean;
+  dbBlocked: boolean;
+  dbNickname: string | undefined;
+  dbName: string | undefined;
+  priority: number;
+  dbProfileUrl: string | undefined;
+  dbProfileKey: string | undefined;
+  dbCreatedAtSeconds: number;
+}): ContactInfoSet {
+  const wrapperContact: ContactInfoSet = {
+    id,
+    approved: !!dbApproved,
+    approvedMe: !!dbApprovedMe,
+    blocked: !!dbBlocked,
+    priority,
+    nickname: dbNickname,
+    name: dbName,
+    createdAtSeconds: dbCreatedAtSeconds,
+  };
+
+  if (
+    wrapperContact.profilePicture?.url !== dbProfileUrl ||
+    !isEqual(wrapperContact.profilePicture?.key, dbProfileKey)
+  ) {
+    wrapperContact.profilePicture = {
+      url: dbProfileUrl || null,
+      key: dbProfileKey && !isEmpty(dbProfileKey) ? fromHexToArray(dbProfileKey) : null,
+    };
+  }
+
+  return wrapperContact;
+}
 
 function insertContactIntoContactWrapper(
   contact: any,
@@ -113,6 +167,25 @@ function insertContactIntoContactWrapper(
   }
 }
 
+/**
+ * This function returns a CommunityInfo for the wrapper to understand from the DB values.
+ * It is created in this file so we can reuse it during the migration (node side), and from the renderer side
+ */
+function getCommunityInfoFromDBValues({
+  priority,
+  fullUrl,
+}: {
+  priority: number;
+  fullUrl: string;
+}) {
+  const community = {
+    fullUrl,
+    priority: priority || 0,
+  };
+
+  return community;
+}
+
 function insertCommunityIntoWrapper(
   community: { id: string; priority: number },
   userGroupConfigWrapper: UserGroupsWrapperNode,
@@ -185,6 +258,46 @@ function insertCommunityIntoWrapper(
       `userGroupConfigWrapper.set during migration failed with ${e.message} for fullUrl: "${wrapperComm.fullUrl}". Skipping community entirely`
     );
   }
+}
+
+function getLegacyGroupInfoFromDBValues({
+  id,
+  priority,
+  members: maybeMembers,
+  displayNameInProfile,
+  encPubkeyHex,
+  encSeckeyHex,
+  groupAdmins: maybeAdmins,
+  lastJoinedTimestamp,
+}: Pick<
+  ConversationAttributes,
+  'id' | 'priority' | 'displayNameInProfile' | 'lastJoinedTimestamp'
+> & {
+  encPubkeyHex: string;
+  encSeckeyHex: string;
+  members: string | Array<string>;
+  groupAdmins: string | Array<string>;
+}) {
+  const admins: Array<string> = maybeArrayJSONtoArray(maybeAdmins);
+  const members: Array<string> = maybeArrayJSONtoArray(maybeMembers);
+
+  const wrappedMembers: Array<LegacyGroupMemberInfo> = (members || []).map(m => {
+    return {
+      isAdmin: admins.includes(m),
+      pubkeyHex: m,
+    };
+  });
+  const legacyGroup: LegacyGroupInfo = {
+    pubkeyHex: id,
+    name: displayNameInProfile || '',
+    priority: priority || 0,
+    members: wrappedMembers,
+    encPubkey: !isEmpty(encPubkeyHex) ? from_hex(encPubkeyHex) : new Uint8Array(),
+    encSeckey: !isEmpty(encSeckeyHex) ? from_hex(encSeckeyHex) : new Uint8Array(),
+    joinedAtSeconds: Math.floor(lastJoinedTimestamp / 1000),
+  };
+
+  return legacyGroup;
 }
 
 function insertLegacyGroupIntoWrapper(
