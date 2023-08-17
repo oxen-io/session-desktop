@@ -22,7 +22,7 @@ import {
 } from '../../../types/sqlSharedTypes';
 import { MESSAGES_TABLE, toSqliteBoolean } from '../../database_utility';
 import { sqlNode } from '../../sql';
-import { hasDebugEnvVariable, verify } from '../utils';
+import { checkTargetMigration, hasDebugEnvVariable } from '../utils';
 import { fromHexToArray } from '../../../session/utils/String';
 
 const targetVersion = 31;
@@ -86,7 +86,7 @@ function insertContactIntoContactWrapper(
   db: BetterSqlite3.Database,
   version: number
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   if (contactsConfigWrapper !== null) {
     const dbApproved = !!contact.isApproved || false;
@@ -193,7 +193,7 @@ function insertCommunityIntoWrapper(
   db: BetterSqlite3.Database,
   version: number
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
   const priority = community.priority;
   const convoId = community.id; // the id of a conversation has the prefix, the serverUrl and the roomToken already present, but not the pubkey
 
@@ -310,7 +310,7 @@ function insertLegacyGroupIntoWrapper(
   db: BetterSqlite3.Database,
   version: number
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   const {
     priority,
@@ -374,7 +374,7 @@ function fetchConfigDumps(
   userPubkeyhex: string,
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig'
 ): Array<ConfigDumpRow> | null {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   const configWrapperDumps = db
     .prepare(
@@ -396,7 +396,7 @@ function writeConfigDumps(
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig',
   dump: Uint8Array
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   db.prepare(
     `INSERT OR REPLACE INTO ${CONFIG_DUMP_TABLE} (

@@ -11,7 +11,7 @@ import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes'
 import { MESSAGES_TABLE, toSqliteBoolean } from '../../database_utility';
 import { DisappearingMessageMode } from '../../../util/expiringMessages';
 import { fromHexToArray } from '../../../session/utils/String';
-import { hasDebugEnvVariable, verify } from '../utils';
+import { checkTargetMigration, hasDebugEnvVariable } from '../utils';
 import { CONFIG_DUMP_TABLE, ConfigDumpRow } from '../../../types/sqlSharedTypes';
 
 const targetVersion = 34;
@@ -22,7 +22,7 @@ function fetchConfigDumps(
   userPubkeyhex: string,
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig'
 ): ConfigDumpRow | null {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   const configWrapperDumps = db
     .prepare(
@@ -45,7 +45,7 @@ function writeConfigDumps(
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig',
   dump: Uint8Array
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   db.prepare(
     `INSERT OR REPLACE INTO ${CONFIG_DUMP_TABLE} (
@@ -130,7 +130,7 @@ function insertContactIntoContactWrapper(
   db: BetterSqlite3.Database,
   version: number
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   if (contactsConfigWrapper !== null) {
     const dbApproved = !!contact.isApproved || false;

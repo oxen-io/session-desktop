@@ -1,6 +1,6 @@
 import * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { ConfigDumpRow, CONFIG_DUMP_TABLE } from '../../../types/sqlSharedTypes';
-import { verify } from '../utils';
+import { checkTargetMigration } from '../utils';
 
 const targetVersion = 33;
 
@@ -10,7 +10,7 @@ function fetchConfigDumps(
   userPubkeyhex: string,
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig'
 ): ConfigDumpRow | null {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   const configWrapperDumps = db
     .prepare(
@@ -33,7 +33,7 @@ function writeConfigDumps(
   variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig',
   dump: Uint8Array
 ) {
-  verify(version, targetVersion);
+  checkTargetMigration(version, targetVersion);
 
   db.prepare(
     `INSERT OR REPLACE INTO ${CONFIG_DUMP_TABLE} (

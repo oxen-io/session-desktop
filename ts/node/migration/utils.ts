@@ -15,9 +15,9 @@ export const hasDebugEnvVariable = Boolean(process.env.SESSION_DEBUG);
  * @param version
  * @param targetVersion
  */
-export function verify(version: number, targetVersion: number) {
+export function checkTargetMigration(version: number, targetVersion: number) {
   if (version !== targetVersion) {
-    throw new Error(`Migration version mismatch. Expected: ${targetVersion}, Found: ${version}`);
+    throw new Error(`Migration target mismatch. Expected: ${targetVersion}, Found: ${version}`);
   }
 }
 
