@@ -5,8 +5,7 @@ import {
   ConvoInfoVolatileWrapperNode,
   UserGroupsWrapperNode,
 } from 'libsession_util_nodejs';
-import { isNumber, isEmpty, isFinite, isArray } from 'lodash';
-import { hasDebugEnvVariable } from './debug';
+import { isNumber, isEmpty, isFinite } from 'lodash';
 import {
   CONVERSATION_PRIORITIES,
   ConversationAttributes,
@@ -16,44 +15,14 @@ import {
   getContactInfoFromDBValues,
   getCommunityInfoFromDBValues,
   getLegacyGroupInfoFromDBValues,
+  CONFIG_DUMP_TABLE,
+  ConfigDumpRow,
 } from '../../../types/sqlSharedTypes';
 import { MESSAGES_TABLE, toSqliteBoolean } from '../../database_utility';
-import { getIdentityKeys, sqlNode } from '../../sql';
-import { verify } from './verify';
+import { sqlNode } from '../../sql';
+import { hasDebugEnvVariable, verify } from '../utils';
 
 const targetVersion = 31;
-
-/**
- * Get's the user's private and public keys from the database
- * @param db the database
- * @returns the keys { privateEd25519: string, publicEd25519: string }
- */
-function getOurAccountKeys(db: BetterSqlite3.Database, version: number) {
-  verify(version, targetVersion);
-
-  const keys = getIdentityKeys(db);
-  return keys;
-}
-
-function getBlockedNumbersDuringMigration(db: BetterSqlite3.Database, version: number) {
-  try {
-    verify(version, targetVersion);
-
-    const blockedItem = sqlNode.getItemById('blocked', db);
-    if (!blockedItem) {
-      return [];
-    }
-    const foundBlocked = blockedItem?.value;
-    hasDebugEnvVariable && console.info('foundBlockedNumbers during migration', foundBlocked);
-    if (isArray(foundBlocked)) {
-      return foundBlocked;
-    }
-    return [];
-  } catch (e) {
-    console.info('failed to read blocked numbers. Considering no blocked numbers', e.stack);
-    return [];
-  }
-}
 
 function insertContactIntoContactWrapper(
   contact: any,
@@ -221,7 +190,7 @@ function insertCommunityIntoWrapper(
 function insertLegacyGroupIntoWrapper(
   legacyGroup: Pick<
     ConversationAttributes,
-    'id' | 'priority' | 'displayNameInProfile' | 'lastJoinedTimestamp' | 'expireTimer'
+    'id' | 'priority' | 'displayNameInProfile' | 'lastJoinedTimestamp'
   > & { members: string; groupAdmins: string }, // members and groupAdmins are still stringified here
   userGroupConfigWrapper: UserGroupsWrapperNode,
   volatileInfoConfigWrapper: ConvoInfoVolatileWrapperNode,
@@ -233,7 +202,6 @@ function insertLegacyGroupIntoWrapper(
   const {
     priority,
     id,
-    // expireTimer,
     groupAdmins,
     members,
     displayNameInProfile,
@@ -248,7 +216,6 @@ function insertLegacyGroupIntoWrapper(
   const wrapperLegacyGroup = getLegacyGroupInfoFromDBValues({
     id,
     priority,
-    // expireTimer, // FIXME WILL add expirationMode here
     groupAdmins,
     members,
     displayNameInProfile,
@@ -288,10 +255,57 @@ function insertLegacyGroupIntoWrapper(
   }
 }
 
+function fetchConfigDumps(
+  db: BetterSqlite3.Database,
+  version: number,
+  userPubkeyhex: string,
+  variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig'
+): Array<ConfigDumpRow> | null {
+  verify(version, targetVersion);
+
+  const configWrapperDumps = db
+    .prepare(
+      `SELECT * FROM ${CONFIG_DUMP_TABLE} WHERE variant = $variant AND publicKey = $publicKey;`
+    )
+    .all({ variant, publicKey: userPubkeyhex }) as Array<ConfigDumpRow>;
+
+  if (!configWrapperDumps || !configWrapperDumps.length) {
+    return null;
+  }
+
+  return configWrapperDumps;
+}
+
+function writeConfigDumps(
+  db: BetterSqlite3.Database,
+  version: number,
+  userPubkeyhex: string,
+  variant: 'UserConfig' | 'ContactsConfig' | 'UserGroupsConfig' | 'ConvoInfoVolatileConfig',
+  dump: Uint8Array
+) {
+  verify(version, targetVersion);
+
+  db.prepare(
+    `INSERT OR REPLACE INTO ${CONFIG_DUMP_TABLE} (
+            publicKey,
+            variant,
+            data
+        ) values (
+          $publicKey,
+          $variant,
+          $data
+        );`
+  ).run({
+    publicKey: userPubkeyhex,
+    variant,
+    data: dump,
+  });
+}
+
 export const V31 = {
-  getOurAccountKeys,
-  getBlockedNumbersDuringMigration,
   insertContactIntoContactWrapper,
   insertCommunityIntoWrapper,
   insertLegacyGroupIntoWrapper,
+  fetchConfigDumps,
+  writeConfigDumps,
 };
