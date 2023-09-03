@@ -114,7 +114,13 @@ const SaveAttachment = ({ messageId }: MessageId) => {
     (e: any) => {
       // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment
       // and the context menu save attachment item to save the right attachment I did not find a better way for now.
-      let targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
+      let triggerEvent = e.triggerEvent;
+      let targetAttachmentIndex;
+      if (typeof triggerEvent === 'undefined') {
+          targetAttachmentIndex = 0;
+      } else {
+      	  targetAttachmentIndex = e.triggerEvent.path[1].getAttribute('data-attachmentindex');
+      }
       e.event.stopPropagation();
       if (!attachments?.length || !convoId || !sender) {
         return;
