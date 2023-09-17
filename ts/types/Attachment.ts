@@ -309,18 +309,18 @@ export const saveQuietly = async ({
   const filename = getSuggestedFilename({ attachment, timestamp, index });
   const response = await fetch(attachment.url);
   if (response.status !== 200) {
-     alert("Error downloading, response "+response.status);
-     return;
+    alert('Error downloading, response ' + response.status);
+    return;
   }
   const blob = await response.blob();
-  const file = await dir.getFileHandle(filename, {create: true});
+  const file = await dir.getFileHandle(filename, { create: true });
   const writable = await file.createWritable();
   await writable.write(blob);
   await writable.close();
   if (isObjectURLRequired) {
     URL.revokeObjectURL(attachment.url);
   }
-}
+};
 
 export const save = ({
   attachment,

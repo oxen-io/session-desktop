@@ -43,7 +43,10 @@ import {
   useSelectedWeAreAdmin,
   useSelectedWeAreModerator,
 } from '../../../../state/selectors/selectedConversation';
-import { saveAttachmentToDisk, saveAttachmentToDiskQuietly } from '../../../../util/attachmentsUtil';
+import {
+  saveAttachmentToDisk,
+  saveAttachmentToDiskQuietly,
+} from '../../../../util/attachmentsUtil';
 import { Reactions } from '../../../../util/reactions';
 import { SessionContextMenuContainer } from '../../../SessionContextMenuContainer';
 import { SessionEmojiPanel, StyledEmojiPanel } from '../../SessionEmojiPanel';
@@ -284,19 +287,18 @@ export const MessageContextMenu = (props: Props) => {
       return;
     }
     const messageTimestamp = timestamp || serverTimestamp || 0;
-    const dir = await window.showDirectoryPicker({id: 1, mode: "readwrite"})
-    const perm = await dir.queryPermission({mode: "readwrite"});
+    const dir = await window.showDirectoryPicker({ id: 1, mode: 'readwrite' });
     for (let i = 0; i < attachments?.length; i++) {
-        void saveAttachmentToDiskQuietly({
-          attachment: attachments[i],
-          messageTimestamp,
-          messageSender: sender,
-          conversationId: convoId,
-          index: i,
-          dir,
-        });
+      void saveAttachmentToDiskQuietly({
+        attachment: attachments[i],
+        messageTimestamp,
+        messageSender: sender,
+        conversationId: convoId,
+        index: i,
+        dir,
+      });
     }
-  }
+  };
 
   const saveAttachment = (e: ItemParams) => {
     // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment

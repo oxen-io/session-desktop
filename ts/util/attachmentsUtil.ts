@@ -406,8 +406,7 @@ export const saveAttachmentToDiskQuietly = async ({
     dir,
   });
   await sendDataExtractionNotification(conversationId, messageSender, messageTimestamp);
-}
-
+};
 
 export const saveAttachmentToDisk = async ({
   attachment,
