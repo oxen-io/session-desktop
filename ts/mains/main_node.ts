@@ -43,6 +43,7 @@ const appUserModelId = 'com.loki-project.messenger-desktop';
 console.log('Set Windows Application User Model ID (AUMID)', {
   appUserModelId,
 });
+app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 app.setAppUserModelId(appUserModelId);
 
 // Keep a global reference of the window object, if you don't, the window will

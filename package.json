@@ -82,6 +82,7 @@
     "bunyan": "^1.8.15",
     "bytebuffer": "^5.0.1",
     "classnames": "2.2.5",
+    "cmake-js": "^7.2.1",
     "config": "1.28.1",
     "country-code-lookup": "^0.0.19",
     "curve25519-js": "https://github.com/oxen-io/curve25519-js",
@@ -167,6 +168,7 @@
     "@types/sinon": "9.0.4",
     "@types/styled-components": "^5.1.4",
     "@types/uuid": "8.3.4",
+    "@types/wicg-file-system-access": "^2020.9.6",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "chai": "^4.3.4",
@@ -202,7 +204,7 @@
     "sass-loader": "^13.2.2",
     "sinon": "9.0.2",
     "ts-loader": "^9.4.2",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.0-dev.20230916",
     "webpack": "^5.76.3",
     "webpack-cli": "^5.1.4"
   },
@@ -221,10 +223,7 @@
     "mac": {
       "category": "public.app-category.social-networking",
       "icon": "build/icon-mac.icns",
-      "target": [
-        "dmg",
-        "zip"
-      ],
+      "target": [ "dmg", "zip" ],
       "bundleVersion": "1",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -243,9 +242,7 @@
       "publisherName": "Oxen Labs",
       "verifyUpdateCodeSignature": false,
       "icon": "build/icon.ico",
-      "target": [
-        "nsis"
-      ]
+      "target": [ "nsis" ]
     },
     "nsis": {
       "deleteAppDataOnUninstall": true,
