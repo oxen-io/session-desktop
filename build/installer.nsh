@@ -10,7 +10,7 @@ Function .onInit
   goto noAbort
 
 abortInstall:
-  MessageBox MB_OK|MB_ICONERROR "This application requires Windows 10 or higher."
+  MessageBox MB_ICONERROR|MB_OK "This application requires Windows 10 or higher."
   Abort
 
 noAbort:
