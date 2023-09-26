@@ -4,9 +4,7 @@ import { useDispatch } from 'react-redux';
 import useMount from 'react-use/lib/useMount';
 import styled from 'styled-components';
 
-import { Data } from '../../data/data';
 import { ToastUtils } from '../../session/utils';
-import { matchesHash } from '../../util/passwordUtils';
 
 import { mnDecode } from '../../session/crypto/mnemonic';
 import { recoveryPhraseModal } from '../../state/ducks/modalDialog';
@@ -15,79 +13,8 @@ import { SpacerSM } from '../basic/Text';
 import { saveQRCode } from '../../util/saveQRCode';
 import { getCurrentRecoveryPhrase } from '../../util/storage';
 import { SessionWrapperModal } from '../SessionWrapperModal';
-import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-
-interface PasswordProps {
-  setPasswordValid: (val: boolean) => any;
-  passwordHash: string;
-}
-
-const Password = (props: PasswordProps) => {
-  const { setPasswordValid, passwordHash } = props;
-  const i18n = window.i18n;
-  const dispatch = useDispatch();
-
-  const onClose = () => dispatch(recoveryPhraseModal(null));
-
-  const confirmPassword = () => {
-    const passwordValue = (document.getElementById('seed-input-password') as any)?.value;
-    const isPasswordValid = matchesHash(passwordValue as string, passwordHash);
-
-    if (!passwordValue) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('noGivenPassword'));
-
-      return false;
-    }
-
-    if (passwordHash && !isPasswordValid) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('invalidPassword'));
-      return false;
-    }
-
-    setPasswordValid(true);
-
-    window.removeEventListener('keyup', onEnter);
-    return true;
-  };
-
-  const onEnter = (event: any) => {
-    if (event.key === 'Enter') {
-      confirmPassword();
-    }
-  };
-
-  return (
-    <>
-      <div className="session-modal__input-group">
-        <input
-          type="password"
-          id="seed-input-password"
-          placeholder={i18n('enterPassword')}
-          onKeyUp={onEnter}
-        />
-      </div>
-
-      <SpacerSM />
-
-      <div
-        className="session-modal__button-group"
-        style={{ justifyContent: 'center', width: '100%' }}
-      >
-        <SessionButton
-          text={i18n('done')}
-          buttonType={SessionButtonType.Simple}
-          onClick={confirmPassword}
-        />
-        <SessionButton
-          text={i18n('cancel')}
-          buttonType={SessionButtonType.Simple}
-          buttonColor={SessionButtonColor.Danger}
-          onClick={onClose}
-        />
-      </div>
-    </>
-  );
-};
+import { SessionButton, SessionButtonType } from '../basic/SessionButton';
+import { Password, loadPassword, newVerificationState } from './SessionPasswordVerification';
 
 interface SeedProps {
   recoveryPhrase: string;
@@ -188,25 +115,13 @@ interface ModalInnerProps {
 
 const SessionSeedModalInner = (props: ModalInnerProps) => {
   const { onClickOk } = props;
-  const [loadingPassword, setLoadingPassword] = useState(true);
+  const [verificationState, setVerificationState] = useState(newVerificationState());
   const [loadingSeed, setLoadingSeed] = useState(true);
   const [recoveryPhrase, setRecoveryPhrase] = useState('');
-  const [hasPassword, setHasPassword] = useState<null | boolean>(null);
-  const [passwordValid, setPasswordValid] = useState(false);
-  const [passwordHash, setPasswordHash] = useState('');
   const dispatch = useDispatch();
+  const { loadingPassword, passwordValid, hasPassword } = verificationState;
 
   useMount(() => {
-    async function checkHasPassword() {
-      if (!loadingPassword) {
-        return;
-      }
-
-      const hash = await Data.getPasswordHash();
-      setHasPassword(!!hash);
-      setPasswordHash(hash || '');
-      setLoadingPassword(false);
-    }
     async function getRecoveryPhrase() {
       if (recoveryPhrase) {
         return false;
@@ -219,7 +134,7 @@ const SessionSeedModalInner = (props: ModalInnerProps) => {
     }
 
     setTimeout(() => (document.getElementById('seed-input-password') as any)?.focus(), 100);
-    void checkHasPassword();
+    void loadPassword(verificationState, setVerificationState);
     void getRecoveryPhrase();
   });
 
@@ -227,7 +142,7 @@ const SessionSeedModalInner = (props: ModalInnerProps) => {
 
   return (
     <>
-      {!loadingSeed && (
+      {!loadingSeed && !loadingPassword && (
         <SessionWrapperModal
           title={window.i18n('showRecoveryPhrase')}
           onClose={onClose}
@@ -237,7 +152,11 @@ const SessionSeedModalInner = (props: ModalInnerProps) => {
             <SpacerSM />
 
             {hasPassword && !passwordValid ? (
-              <Password passwordHash={passwordHash} setPasswordValid={setPasswordValid} />
+              <Password
+                verificationState={verificationState}
+                setVerificationState={setVerificationState}
+                onClose={onClose}
+              />
             ) : (
               <Seed recoveryPhrase={recoveryPhrase} onClickCopy={onClickOk} />
             )}
