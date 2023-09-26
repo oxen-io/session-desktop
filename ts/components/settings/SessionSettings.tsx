@@ -167,7 +167,7 @@ export class SessionSettingsView extends React.Component<SettingsViewProps, Stat
 
     this.state = {
       hasPassword: null,
-      shouldLockSettings: true,
+      shouldLockSettings: false,
     };
 
     this.settingsViewRef = React.createRef();
@@ -231,7 +231,7 @@ export class SessionSettingsView extends React.Component<SettingsViewProps, Stat
     if (action === 'set' || action === 'change') {
       this.setState({
         hasPassword: true,
-        shouldLockSettings: true,
+        shouldLockSettings: false,
       });
       window.inboxStore?.dispatch(showLeftPaneSection(SectionType.Message));
     }
