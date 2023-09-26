@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useMount } from 'react-use';
 import { ed25519Str } from '../../session/onions/onionPath';
 import { SnodeAPI } from '../../session/apis/snode_api/SNodeAPI';
 import { forceSyncConfigurationNowIfNeeded } from '../../session/utils/sync/syncUtils';
@@ -12,6 +13,7 @@ import { SessionWrapperModal } from '../SessionWrapperModal';
 import { Data } from '../../data/data';
 import { deleteAllLogs } from '../../node/logs';
 import { SessionRadioGroup } from '../basic/SessionRadioGroup';
+import { Password, loadPassword, newVerificationState } from './SessionPasswordVerification';
 
 const deleteDbLocally = async () => {
   window?.log?.info('last message sent successfully. Deleting everything');
@@ -174,7 +176,9 @@ const DescriptionWhenAskingConfirmation = (props: { deleteMode: DeleteModes }) =
 export const DeleteAccountModal = () => {
   const [deleteMode, setDeleteMode] = useState<DeleteModes>(DEVICE_ONLY);
   const [askingConfirmation, setAskingConfirmation] = useState(false);
+  const [verificationState, setVerificationState] = useState(newVerificationState());
   const dispatch = useDispatch();
+  const { loadingPassword, passwordValid, hasPassword } = verificationState;
 
   /**
    * Performs specified on close action then removes the modal.
@@ -183,27 +187,45 @@ export const DeleteAccountModal = () => {
     dispatch(updateDeleteAccountModal(null));
   }, [dispatch]);
 
+  useMount(() => {
+    void loadPassword(verificationState, setVerificationState);
+  });
+
   return (
-    <SessionWrapperModal
-      title={window.i18n('clearAllData')}
-      onClose={onClickCancelHandler}
-      showExitIcon={true}
-    >
-      {askingConfirmation ? (
-        <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
-      ) : (
-        <DescriptionBeforeAskingConfirmation
-          deleteMode={deleteMode}
-          setDeleteMode={setDeleteMode}
-        />
+    <>
+      {!loadingPassword && (
+        <SessionWrapperModal
+          title={window.i18n('clearAllData')}
+          onClose={onClickCancelHandler}
+          showExitIcon={true}
+        >
+          {hasPassword && !passwordValid ? (
+            <Password
+              verificationState={verificationState}
+              setVerificationState={setVerificationState}
+              onClose={onClickCancelHandler}
+            />
+          ) : (
+            <>
+              {askingConfirmation ? (
+                <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
+              ) : (
+                <DescriptionBeforeAskingConfirmation
+                  deleteMode={deleteMode}
+                  setDeleteMode={setDeleteMode}
+                />
+              )}
+              <DeleteAccount
+                onClose={onClickCancelHandler}
+                deleteMode={deleteMode}
+                askingConfirmation={askingConfirmation}
+                setAskingConfirmation={setAskingConfirmation}
+              />
+            </>
+          )}
+        </SessionWrapperModal>
       )}
-      <DeleteAccount
-        onClose={onClickCancelHandler}
-        deleteMode={deleteMode}
-        askingConfirmation={askingConfirmation}
-        setAskingConfirmation={setAskingConfirmation}
-      />
-    </SessionWrapperModal>
+    </>
   );
 };
 
