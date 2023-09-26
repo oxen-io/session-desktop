@@ -172,11 +172,51 @@ const DescriptionWhenAskingConfirmation = (props: { deleteMode: DeleteModes }) =
 };
 
 export const DeleteAccountModal = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [askingConfirmation, setAskingConfirmation] = useState(false);
   const [deleteMode, setDeleteMode] = useState<DeleteModes>(DEVICE_ONLY);
-
+  const [askingConfirmation, setAskingConfirmation] = useState(false);
   const dispatch = useDispatch();
+
+  /**
+   * Performs specified on close action then removes the modal.
+   */
+  const onClickCancelHandler = useCallback(() => {
+    dispatch(updateDeleteAccountModal(null));
+  }, [dispatch]);
+
+  return (
+    <SessionWrapperModal
+      title={window.i18n('clearAllData')}
+      onClose={onClickCancelHandler}
+      showExitIcon={true}
+    >
+      {askingConfirmation ? (
+        <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
+      ) : (
+        <DescriptionBeforeAskingConfirmation
+          deleteMode={deleteMode}
+          setDeleteMode={setDeleteMode}
+        />
+      )}
+      <DeleteAccount
+        onClose={onClickCancelHandler}
+        deleteMode={deleteMode}
+        askingConfirmation={askingConfirmation}
+        setAskingConfirmation={setAskingConfirmation}
+      />
+    </SessionWrapperModal>
+  );
+};
+
+interface DeleteAccountProps {
+  deleteMode: DeleteModes;
+  onClose: () => any;
+  askingConfirmation: boolean;
+  setAskingConfirmation: (val: boolean) => any;
+}
+
+const DeleteAccount = (props: DeleteAccountProps) => {
+  const { deleteMode, onClose, askingConfirmation, setAskingConfirmation } = props;
+  const [isLoading, setIsLoading] = useState(false);
 
   const onDeleteEverythingLocallyOnly = async () => {
     if (!isLoading) {
@@ -206,59 +246,36 @@ export const DeleteAccountModal = () => {
     }
   };
 
-  /**
-   * Performs specified on close action then removes the modal.
-   */
-  const onClickCancelHandler = useCallback(() => {
-    dispatch(updateDeleteAccountModal(null));
-  }, [dispatch]);
-
   return (
-    <SessionWrapperModal
-      title={window.i18n('clearAllData')}
-      onClose={onClickCancelHandler}
-      showExitIcon={true}
-    >
-      {askingConfirmation ? (
-        <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
-      ) : (
-        <DescriptionBeforeAskingConfirmation
-          deleteMode={deleteMode}
-          setDeleteMode={setDeleteMode}
+    <div className="session-modal__centered">
+      <div className="session-modal__button-group">
+        <SessionButton
+          text={window.i18n('clear')}
+          buttonColor={SessionButtonColor.Danger}
+          buttonType={SessionButtonType.Simple}
+          onClick={() => {
+            if (!askingConfirmation) {
+              setAskingConfirmation(true);
+              return;
+            }
+            if (deleteMode === 'device_only') {
+              void onDeleteEverythingLocallyOnly();
+            } else if (deleteMode === 'device_and_network') {
+              void onDeleteEverythingAndNetworkData();
+            }
+          }}
+          disabled={isLoading}
         />
-      )}
-      <div className="session-modal__centered">
-        <div className="session-modal__button-group">
-          <SessionButton
-            text={window.i18n('clear')}
-            buttonColor={SessionButtonColor.Danger}
-            buttonType={SessionButtonType.Simple}
-            onClick={() => {
-              if (!askingConfirmation) {
-                setAskingConfirmation(true);
-                return;
-              }
-              if (deleteMode === 'device_only') {
-                void onDeleteEverythingLocallyOnly();
-              } else if (deleteMode === 'device_and_network') {
-                void onDeleteEverythingAndNetworkData();
-              }
-            }}
-            disabled={isLoading}
-          />
 
-          <SessionButton
-            text={window.i18n('cancel')}
-            buttonType={SessionButtonType.Simple}
-            onClick={() => {
-              dispatch(updateDeleteAccountModal(null));
-            }}
-            disabled={isLoading}
-          />
-        </div>
-        <SpacerLG />
-        <SessionSpinner loading={isLoading} />
+        <SessionButton
+          text={window.i18n('cancel')}
+          buttonType={SessionButtonType.Simple}
+          onClick={onClose}
+          disabled={isLoading}
+        />
       </div>
-    </SessionWrapperModal>
+      <SpacerLG />
+      <SessionSpinner loading={isLoading} />
+    </div>
   );
 };
