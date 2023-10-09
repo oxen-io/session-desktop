@@ -89,12 +89,19 @@ const StyledEmojiPanelContainer = styled.div<{ x: number; y: number }>`
 const DeleteForEveryone = ({ messageId }: { messageId: string }) => {
   const convoId = useSelectedConversationKey();
   const isDeletableForEveryone = useMessageIsDeletableForEveryone(messageId);
+  const status = useMessageStatus(messageId);
+  const direction = useMessageDirection(messageId);
+
   if (!convoId || !isDeletableForEveryone) {
     return null;
   }
   const onDeleteForEveryone = () => {
     void deleteMessagesByIdForEveryone([messageId], convoId);
   };
+
+  if (status === 'error' && direction === 'outgoing') {
+    return null;
+  }
 
   const unsendMessageText = window.i18n('deleteForEveryone');
 
@@ -183,6 +190,8 @@ export const MessageContextMenu = (props: Props) => {
 
   const isOutgoing = direction === 'outgoing';
   const isSent = status === 'sent' || status === 'read'; // a read message should be replyable
+  const isError = status === 'error';
+  const isDeletableForMe = (isDeletable && !isPublic) || (isOutgoing && isError);
 
   const emojiPanelRef = useRef<HTMLDivElement>(null);
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
@@ -366,9 +375,7 @@ export const MessageContextMenu = (props: Props) => {
           )}
           <RetryItem messageId={messageId} />
           {isDeletable ? <Item onClick={onSelect}>{selectMessageText}</Item> : null}
-          {isDeletable && !isPublic ? (
-            <Item onClick={onDelete}>{deleteMessageJustForMeText}</Item>
-          ) : null}
+          {isDeletableForMe ? <Item onClick={onDelete}>{deleteMessageJustForMeText}</Item> : null}
           <DeleteForEveryone messageId={messageId} />
           <AdminActionItems messageId={messageId} />
         </Menu>

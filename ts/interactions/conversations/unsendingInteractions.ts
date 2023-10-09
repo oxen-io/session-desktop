@@ -241,28 +241,37 @@ async function unsendMessageJustForThisUser(
 const doDeleteSelectedMessagesInSOGS = async (
   selectedMessages: Array<MessageModel>,
   conversation: ConversationModel,
-  isAllOurs: boolean
+  isAllOurs: boolean,
+  deleteForEveryone: boolean
 ) => {
   const ourDevicePubkey = UserUtils.getOurPubKeyStrFromCache();
   if (!ourDevicePubkey) {
     return;
   }
+
+  let toDeleteLocallyIds: Array<string> = [];
+
   // #region open group v2 deletion
-  // Get our Moderator status
-  const isAdmin = conversation.isAdmin(ourDevicePubkey);
-  const isModerator = conversation.isModerator(ourDevicePubkey);
+  if (deleteForEveryone) {
+    // Get our Moderator status
+    const isAdmin = conversation.isAdmin(ourDevicePubkey);
+    const isModerator = conversation.isModerator(ourDevicePubkey);
 
-  if (!isAllOurs && !(isAdmin || isModerator)) {
-    ToastUtils.pushMessageDeleteForbidden();
-    window.inboxStore?.dispatch(resetSelectedMessageIds());
-    return;
+    if (!isAllOurs && !(isAdmin || isModerator)) {
+      ToastUtils.pushMessageDeleteForbidden();
+      window.inboxStore?.dispatch(resetSelectedMessageIds());
+      return;
+    }
+
+    toDeleteLocallyIds = await deleteOpenGroupMessages(selectedMessages, conversation);
+    if (toDeleteLocallyIds.length === 0) {
+      // Message failed to delete from server, show error?
+      return;
+    }
+  } else {
+    toDeleteLocallyIds = selectedMessages.map(message => message.id as string);
   }
 
-  const toDeleteLocallyIds = await deleteOpenGroupMessages(selectedMessages, conversation);
-  if (toDeleteLocallyIds.length === 0) {
-    // Message failed to delete from server, show error?
-    return;
-  }
   await Promise.all(
     toDeleteLocallyIds.map(async id => {
       const msgToDeleteLocally = await Data.getMessageById(id);
@@ -304,7 +313,12 @@ const doDeleteSelectedMessages = async ({
 
   const isAllOurs = selectedMessages.every(message => ourDevicePubkey === message.getSource());
   if (conversation.isPublic()) {
-    await doDeleteSelectedMessagesInSOGS(selectedMessages, conversation, isAllOurs);
+    await doDeleteSelectedMessagesInSOGS(
+      selectedMessages,
+      conversation,
+      isAllOurs,
+      deleteForEveryone
+    );
     return;
   }
 
