@@ -1,11 +1,15 @@
-!macro preInit
-    ; Load the Windows version
-    System::Call 'kernel32::GetVersionExA(i r0) i .r1'
-    Pop $0 ; Major version will be popped into $0
+!include "WinVer.nsh"
 
-    ; Check if the version is less than 10
-    ${If} $0 < 10
-        MessageBox MB_OK|MB_ICONSTOP "This application requires Windows 10 or newer. Installation will now exit."
-        Abort
+!macro preInit
+
+    ; Print to console
+    DetailPrint "Running preInit macro..."
+
+    ; Check if the GetWindowsVersion macro from WinVer.nsh is available and working
+    ${If} ${AtMostWin10}
+        DetailPrint "Windows version is at most Windows 10"
+    ${Else}
+        DetailPrint "Windows version is newer than Windows 10"
     ${EndIf}
+
 !macroend
