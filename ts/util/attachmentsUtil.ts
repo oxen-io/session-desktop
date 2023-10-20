@@ -398,7 +398,7 @@ export const saveAttachmentToDiskQuietly = async ({
   dir: FileSystemDirectoryHandle;
 }) => {
   const decryptedUrl = await getDecryptedMediaUrl(attachment.url, attachment.contentType, false);
-  saveQuietly({
+  await saveQuietly({
     attachment: { ...attachment, url: decryptedUrl },
     getAbsolutePath: getAbsoluteAttachmentPath,
     timestamp: messageTimestamp,
