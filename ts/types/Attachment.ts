@@ -309,7 +309,6 @@ export const saveQuietly = async ({
   const filename = getSuggestedFilename({ attachment, timestamp, index });
   const response = await fetch(attachment.url);
   if (response.status !== 200) {
-    alert('Error downloading, response ' + response.status);
     return;
   }
   const blob = await response.blob();
