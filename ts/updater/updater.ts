@@ -51,16 +51,13 @@ export async function start(
   }, UPDATER_INTERVAL_MS); // trigger and try to update every 10 minutes to let the file gets downloaded if we are updating
   stopped = false;
 
-  global.setTimeout(
-    async () => {
-      try {
-        await checkForUpdates(getMainWindow, messages, logger);
-      } catch (error) {
-        logger.error('auto-update: error:', getPrintableError(error));
-      }
-    },
-    2 * 60 * 1000
-  ); // we do checks from the fileserver every 1 minute.
+  global.setTimeout(async () => {
+    try {
+      await checkForUpdates(getMainWindow, messages, logger);
+    } catch (error) {
+      logger.error('auto-update: error:', getPrintableError(error));
+    }
+  }, 2 * 60 * 1000); // we do checks from the fileserver every 2 minutes.
 }
 
 export function stop() {

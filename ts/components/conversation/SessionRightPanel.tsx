@@ -27,9 +27,9 @@ import {
   useSelectedIsBlocked,
   useSelectedIsGroup,
   useSelectedIsKickedFromGroup,
-  useSelectedIsLeft,
   useSelectedIsPublic,
   useSelectedSubscriberCount,
+  useSelectedWasLeft,
   useSelectedWeAreAdmin,
 } from '../../state/selectors/selectedConversation';
 import { getTimerOptions } from '../../state/selectors/timerOptions';
@@ -42,7 +42,9 @@ import { SpacerLG } from '../basic/Text';
 import { MediaItemType } from '../lightbox/LightboxGallery';
 import { MediaGallery } from './media-gallery/MediaGallery';
 
-async function getMediaGalleryProps(conversationId: string): Promise<{
+async function getMediaGalleryProps(
+  conversationId: string
+): Promise<{
   documents: Array<MediaItemType>;
   media: Array<MediaItemType>;
 }> {
@@ -118,7 +120,7 @@ const HeaderItem = () => {
   const dispatch = useDispatch();
   const isBlocked = useSelectedIsBlocked();
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
-  const left = useSelectedIsLeft();
+  const left = useSelectedWasLeft();
   const isGroup = useSelectedIsGroup();
 
   if (!selectedConvoKey) {
@@ -212,7 +214,7 @@ export const SessionRightPanelWithDetails = () => {
   const displayNameInProfile = useSelectedDisplayNameInProfile();
   const isBlocked = useSelectedIsBlocked();
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
-  const left = useSelectedIsLeft();
+  const left = useSelectedWasLeft();
   const isGroup = useSelectedIsGroup();
   const isPublic = useSelectedIsPublic();
   const weAreAdmin = useSelectedWeAreAdmin();

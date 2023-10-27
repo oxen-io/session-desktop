@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 
 import autoBind from 'auto-bind';
+import filesize from 'filesize';
 import {
   cloneDeep,
   debounce,
@@ -14,11 +15,11 @@ import {
   sortBy,
   uniq,
 } from 'lodash';
-import filesize from 'filesize';
 import { SignalService } from '../protobuf';
 import { getMessageQueue } from '../session';
 import { ConvoHub } from '../session/conversations';
 import { DataMessage } from '../session/messages/outgoing';
+import { ClosedGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
 import { PubKey } from '../session/types';
 import {
   uploadAttachmentsToFileServer,
@@ -26,7 +27,6 @@ import {
   uploadQuoteThumbnailsToFileServer,
   UserUtils,
 } from '../session/utils';
-import { ClosedGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
 import {
   DataExtractionNotificationMsg,
   fillMessageAttributesWithDefaults,
@@ -434,7 +434,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       return undefined;
     }
 
-    if (this.getConversation()?.isLeft()) {
+    if (this.getConversation()?.wasLeft()) {
       return 'sent';
     }
 
@@ -681,8 +681,9 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const quoteWithData = await loadQuoteData(this.get('quote'));
     const previewWithData = await loadPreviewData(this.get('preview'));
 
-    const { hasAttachments, hasVisualMediaAttachments, hasFileAttachments } =
-      getAttachmentMetadata(this);
+    const { hasAttachments, hasVisualMediaAttachments, hasFileAttachments } = getAttachmentMetadata(
+      this
+    );
     this.set({ hasAttachments, hasVisualMediaAttachments, hasFileAttachments });
     await this.commit();
 

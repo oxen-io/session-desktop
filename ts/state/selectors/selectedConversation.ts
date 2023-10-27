@@ -259,7 +259,7 @@ export function useSelectedIsKickedFromGroup() {
   );
 }
 
-export function useSelectedIsLeft() {
+export function useSelectedWasLeft() {
   return useSelector((state: StateType) => Boolean(getSelectedConversation(state)?.left) || false);
 }
 

@@ -118,7 +118,7 @@ async function pushChangesToGroupSwarmIfNeeded(groupPk: GroupPubkeyType): Promis
 
 class GroupSyncJob extends PersistedJob<GroupSyncPersistedData> {
   constructor({
-    identifier, // this has to be the pubkey to which we
+    identifier, // this has to be the groupPubkey
     nextAttemptTimestamp,
     maxAttempts,
     currentRetry,

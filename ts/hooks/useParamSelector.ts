@@ -141,7 +141,7 @@ export function useIsActive(convoId?: string) {
   return !!useActiveAt(convoId);
 }
 
-export function useIsLeft(convoId?: string) {
+export function useWasLeft(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.left);
 }
@@ -318,7 +318,9 @@ export function useIsTyping(conversationId?: string): boolean {
   return useConversationPropsById(conversationId)?.isTyping || false;
 }
 
-export function useQuoteAuthorName(authorId?: string): {
+export function useQuoteAuthorName(
+  authorId?: string
+): {
   authorName: string | undefined;
   isMe: boolean;
 } {

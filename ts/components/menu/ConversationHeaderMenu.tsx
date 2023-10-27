@@ -8,14 +8,14 @@ import {
   useSelectedIsActive,
   useSelectedIsBlocked,
   useSelectedIsKickedFromGroup,
-  useSelectedIsLeft,
   useSelectedIsPrivate,
   useSelectedIsPrivateFriend,
   useSelectedIsPublic,
+  useSelectedWasLeft,
 } from '../../state/selectors/selectedConversation';
 import { getTimerOptions } from '../../state/selectors/timerOptions';
-import { ContextConversationProvider } from '../leftpane/conversation-list-item/ConvoIdContext';
 import { SessionContextMenuContainer } from '../SessionContextMenuContainer';
+import { ContextConversationProvider } from '../leftpane/conversation-list-item/ConvoIdContext';
 import {
   AddModeratorsMenuItem,
   BanMenuItem,
@@ -98,7 +98,7 @@ const DisappearingMessageMenuItem = (): JSX.Element | null => {
   const isBlocked = useSelectedIsBlocked();
   const isActive = useSelectedIsActive();
   const isPublic = useSelectedIsPublic();
-  const isLeft = useSelectedIsLeft();
+  const wasLeft = useSelectedWasLeft();
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
   const timerOptions = useSelector(getTimerOptions).timerOptions;
   const isFriend = useSelectedIsPrivateFriend();
@@ -107,7 +107,7 @@ const DisappearingMessageMenuItem = (): JSX.Element | null => {
   if (
     !selectedConvoId ||
     isPublic ||
-    isLeft ||
+    wasLeft ||
     isKickedFromGroup ||
     isBlocked ||
     !isActive ||

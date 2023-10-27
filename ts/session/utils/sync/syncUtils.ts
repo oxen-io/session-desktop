@@ -137,7 +137,7 @@ const getActiveOpenGroupV2CompleteUrls = async (
 ): Promise<Array<string>> => {
   // Filter open groups v2
   const openGroupsV2ConvoIds = convos
-    .filter(c => !!c.getActiveAt() && c.isOpenGroupV2() && !c.isLeft())
+    .filter(c => !!c.getActiveAt() && c.isOpenGroupV2() && !c.wasLeft())
     .map(c => c.id) as Array<string>;
 
   const urls = await Promise.all(
@@ -163,7 +163,7 @@ const getValidClosedGroups = async (convos: Array<ConversationModel>) => {
       !!c.getActiveAt() &&
       c.isClosedGroup() &&
       c.getGroupMembers()?.includes(ourPubKey) &&
-      !c.isLeft() &&
+      !c.wasLeft() &&
       !c.isKickedFromGroup() &&
       !c.isBlocked() &&
       c.getRealSessionUsername()
@@ -187,9 +187,9 @@ const getValidClosedGroups = async (convos: Array<ConversationModel>) => {
     })
   );
 
-  const onlyValidClosedGroup = closedGroups.filter(
-    m => m !== null
-  ) as Array<ConfigurationMessageClosedGroup>;
+  const onlyValidClosedGroup = closedGroups.filter(m => m !== null) as Array<
+    ConfigurationMessageClosedGroup
+  >;
   return onlyValidClosedGroup;
 };
 
@@ -265,7 +265,9 @@ export const getCurrentConfigurationMessage = async (
   }
 
   const ourProfileKeyHex =
-    ConvoHub.use().get(UserUtils.getOurPubKeyStrFromCache())?.getProfileKey() || null;
+    ConvoHub.use()
+      .get(UserUtils.getOurPubKeyStrFromCache())
+      ?.getProfileKey() || null;
   const profileKey = ourProfileKeyHex ? fromHexToArray(ourProfileKeyHex) : undefined;
 
   const profilePicture = ourConvo?.getAvatarPointer() || undefined;

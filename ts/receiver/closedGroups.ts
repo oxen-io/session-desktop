@@ -22,10 +22,10 @@ import { perfEnd, perfStart } from '../session/utils/Performance';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { Storage } from '../util/storage';
 // eslint-disable-next-line import/no-unresolved, import/extensions
+import { ConfigWrapperUser } from '../webworker/workers/browser/libsession_worker_functions';
 import { getSettingsKeyFromLibsessionWrapper } from './configMessage';
 import { ECKeyPair, HexKeyPair } from './keypairs';
 import { queueAllCachedFromSource } from './receiver';
-import { ConfigWrapperUser } from '../webworker/workers/browser/libsession_worker_functions';
 
 export const distributingClosedGroupEncryptionKeyPairs = new Map<string, ECKeyPair>();
 
@@ -303,7 +303,7 @@ export async function handleNewClosedGroup(
 
   if (groupConvo) {
     // if we did not left this group, just add the keypair we got if not already there
-    if (!groupConvo.isKickedFromGroup() && !groupConvo.isLeft()) {
+    if (!groupConvo.isKickedFromGroup() && !groupConvo.wasLeft()) {
       const ecKeyPairAlreadyExistingConvo = new ECKeyPair(
         encryptionKeyPair!.publicKey,
         encryptionKeyPair!.privateKey

@@ -563,7 +563,7 @@ export class SwarmPolling {
 
     const closedGroupsOnly = convos.filter(
       (c: ConversationModel) =>
-        c.isClosedGroup() && !c.isBlocked() && !c.isKickedFromGroup() && !c.isLeft()
+        c.isClosedGroup() && !c.isBlocked() && !c.isKickedFromGroup() && !c.wasLeft()
     );
 
     closedGroupsOnly.forEach(c => {
@@ -678,8 +678,8 @@ export class SwarmPolling {
 function retrieveItemWithNamespace(results: Array<RetrieveRequestResult>) {
   return flatten(
     compact(
-      results.map(
-        result => result.messages.messages?.map(r => ({ ...r, namespace: result.namespace }))
+      results.map(result =>
+        result.messages.messages?.map(r => ({ ...r, namespace: result.namespace }))
       )
     )
   );
