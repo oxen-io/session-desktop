@@ -7,7 +7,7 @@ import { StagedAttachmentType } from '../components/conversation/composition/Com
 import { SignalService } from '../protobuf';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { sendDataExtractionNotification } from '../session/messages/outgoing/controlMessage/DataExtractionNotificationMessage';
-import { AttachmentType, save } from '../types/Attachment';
+import { AttachmentType, save, saveQuietly } from '../types/Attachment';
 import { IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG, IMAGE_TIFF, IMAGE_UNKNOWN } from '../types/MIME';
 import { getAbsoluteAttachmentPath, processNewAttachment } from '../types/MessageAttachment';
 import { THUMBNAIL_SIDE } from '../types/attachments/VisualAttachment';
@@ -381,6 +381,32 @@ export async function readAvatarAttachment(attachment: {
 
   return { attachment, data: dataReadFromBlob, size: dataReadFromBlob.byteLength };
 }
+
+export const saveAttachmentToDiskQuietly = async ({
+  attachment,
+  messageTimestamp,
+  messageSender,
+  conversationId,
+  index,
+  dir,
+}: {
+  attachment: AttachmentType;
+  messageTimestamp: number;
+  messageSender: string;
+  conversationId: string;
+  index: number;
+  dir: FileSystemDirectoryHandle;
+}) => {
+  const decryptedUrl = await getDecryptedMediaUrl(attachment.url, attachment.contentType, false);
+  await saveQuietly({
+    attachment: { ...attachment, url: decryptedUrl },
+    getAbsolutePath: getAbsoluteAttachmentPath,
+    timestamp: messageTimestamp,
+    index,
+    dir,
+  });
+  await sendDataExtractionNotification(conversationId, messageSender, messageTimestamp);
+};
 
 export const saveAttachmentToDisk = async ({
   attachment,

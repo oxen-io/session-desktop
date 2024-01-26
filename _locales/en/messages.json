@@ -79,6 +79,7 @@
   "typingAlt": "Typing animation for this conversation",
   "contactAvatarAlt": "Avatar for contact $name$",
   "downloadAttachment": "Download Attachment",
+  "downloadAllAttachments": "Download All Attachments",
   "replyToMessage": "Reply to message",
   "replyingToMessage": "Replying to:",
   "originalMessageNotFound": "Original message not found",

@@ -43,7 +43,10 @@ import {
   useSelectedWeAreAdmin,
   useSelectedWeAreModerator,
 } from '../../../../state/selectors/selectedConversation';
-import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
+import {
+  saveAttachmentToDisk,
+  saveAttachmentToDiskQuietly,
+} from '../../../../util/attachmentsUtil';
 import { Reactions } from '../../../../util/reactions';
 import { SessionContextMenuContainer } from '../../../SessionContextMenuContainer';
 import { SessionEmojiPanel, StyledEmojiPanel } from '../../SessionEmojiPanel';
@@ -278,6 +281,25 @@ export const MessageContextMenu = (props: Props) => {
     }
   };
 
+  const saveAllAttachments = async (e: ItemParams) => {
+    e.event.stopPropagation();
+    if (!attachments?.length || !convoId || !sender) {
+      return;
+    }
+    const messageTimestamp = timestamp || serverTimestamp || 0;
+    const dir = await window.showDirectoryPicker({ id: 1, mode: 'readwrite' });
+    for (let i = 0; i < attachments?.length; i++) {
+      void saveAttachmentToDiskQuietly({
+        attachment: attachments[i],
+        messageTimestamp,
+        messageSender: sender,
+        conversationId: convoId,
+        index: i,
+        dir,
+      });
+    }
+  };
+
   const saveAttachment = (e: ItemParams) => {
     // this is quite dirty but considering that we want the context menu of the message to show on click on the attachment
     // and the context menu save attachment item to save the right attachment I did not find a better way for now.
@@ -357,6 +379,9 @@ export const MessageContextMenu = (props: Props) => {
           )}
           {attachments?.length ? (
             <Item onClick={saveAttachment}>{window.i18n('downloadAttachment')}</Item>
+          ) : null}
+          {attachments?.length ? (
+            <Item onClick={saveAllAttachments}>{window.i18n('downloadAllAttachments')}</Item>
           ) : null}
           <Item onClick={copyText}>{window.i18n('copyMessage')}</Item>
           {(isSent || !isOutgoing) && (

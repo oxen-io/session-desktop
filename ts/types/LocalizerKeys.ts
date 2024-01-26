@@ -153,6 +153,7 @@ export type LocalizerKeys =
   | 'documentsEmptyState'
   | 'done'
   | 'downloadAttachment'
+  | 'downloadAllAttachments'
   | 'editGroup'
   | 'editGroupName'
   | 'editMenuCopy'

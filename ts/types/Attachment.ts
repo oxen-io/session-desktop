@@ -293,6 +293,34 @@ export const isVoiceMessage = (attachment: Attachment): boolean => {
   return false;
 };
 
+export const saveQuietly = async ({
+  attachment,
+  index,
+  timestamp,
+  dir,
+}: {
+  attachment: AttachmentType;
+  index?: number;
+  getAbsolutePath: (relativePath: string) => string;
+  timestamp?: number;
+  dir: FileSystemDirectoryHandle;
+}): Promise<void> => {
+  const isObjectURLRequired = isUndefined(attachment.fileName);
+  const filename = getSuggestedFilename({ attachment, timestamp, index });
+  const response = await fetch(attachment.url);
+  if (response.status !== 200) {
+    return;
+  }
+  const blob = await response.blob();
+  const file = await dir.getFileHandle(filename, { create: true });
+  const writable = await file.createWritable();
+  await writable.write(blob);
+  await writable.close();
+  if (isObjectURLRequired) {
+    URL.revokeObjectURL(attachment.url);
+  }
+};
+
 export const save = ({
   attachment,
   document,
