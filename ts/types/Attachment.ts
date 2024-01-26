@@ -329,7 +329,7 @@ export const save = ({
 }: {
   attachment: AttachmentType;
   document: Document;
-  index?: number;
+  index: number;
   getAbsolutePath: (relativePath: string) => string;
   timestamp?: number;
 }): void => {
