@@ -1,11 +1,10 @@
 import { app, clipboard, dialog } from 'electron';
 import { redactAll } from '../util/privacy'; // checked - only node
-import { LocaleMessagesType } from './locale'; // checked - only node
 import { ConsoleCustom } from './logging'; // checked - only node
 
 // We use hard-coded strings until we're able to update these strings from the locale.
-let quitText = 'Quit';
-let copyErrorAndQuitText = 'Copy error to clipboard';
+const quitText = 'Quit';
+const copyErrorAndQuitText = 'Copy error to clipboard';
 
 async function handleError(prefix: string, error: any) {
   if ((console as ConsoleCustom)._error) {
@@ -32,11 +31,6 @@ async function handleError(prefix: string, error: any) {
     dialog.showErrorBox(prefix, error.stack);
   }
 }
-
-export const updateLocale = (messages: LocaleMessagesType) => {
-  quitText = messages.quit;
-  copyErrorAndQuitText = messages.copyErrorAndQuit;
-};
 
 export const setupGlobalErrorHandler = () => {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises

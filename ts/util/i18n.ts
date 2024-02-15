@@ -1,6 +1,7 @@
 // this file is a weird one as it is used by both sides of electron at the same time
 
 import { LocaleMessagesType } from '../node/locale';
+import { LocalizerKeys } from '../types/LocalizerKeys';
 
 export const setupi18n = (locale: string, messages: LocaleMessagesType) => {
   if (!locale) {
@@ -10,7 +11,7 @@ export const setupi18n = (locale: string, messages: LocaleMessagesType) => {
     throw new Error('i18n: messages parameter is required');
   }
 
-  function getMessage(key: string, substitutions: Array<string>) {
+  function getMessage(key: LocalizerKeys, substitutions: Array<string>) {
     const message = messages[key];
     if (!message) {
       // eslint:disable: no-console
