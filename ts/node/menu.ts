@@ -2,6 +2,17 @@ import { isString } from 'lodash';
 import { LocaleMessagesType } from './locale';
 import { Noop } from '../types/Util';
 
+/**
+ * Adds the accelerator prefix to the label for the menu item
+ * @link https://www.electronjs.org/docs/latest/api/menu#static-methods
+ *
+ * @param label - The label for the menu item
+ * @returns The label with the accelerator prefix
+ */
+const withAcceleratorPrefix = (label:string) => {
+  return `&${label}`;
+}
+
 export const createTemplate = (
   options: {
     openReleaseNotes: () => void;
@@ -28,7 +39,7 @@ export const createTemplate = (
 
   const template = [
     {
-      label: messages.mainMenuFile,
+      label: withAcceleratorPrefix(messages.file),
       submenu: [
         {
           type: 'separator',
@@ -40,7 +51,7 @@ export const createTemplate = (
       ],
     },
     {
-      label: messages.mainMenuEdit,
+      label: withAcceleratorPrefix(messages.edit),
       submenu: [
         {
           role: 'undo',
@@ -76,7 +87,7 @@ export const createTemplate = (
       ],
     },
     {
-      label: messages.mainMenuView,
+      label: withAcceleratorPrefix(messages.view),
       submenu: [
         {
           role: 'resetzoom',
@@ -115,7 +126,7 @@ export const createTemplate = (
       ],
     },
     {
-      label: messages.mainMenuWindow,
+      label: withAcceleratorPrefix(messages.window),
       role: 'window',
       submenu: [
         {
@@ -125,7 +136,7 @@ export const createTemplate = (
       ],
     },
     {
-      label: messages.mainMenuHelp,
+      label: withAcceleratorPrefix(messages.sessionHelp),
       role: 'help',
       submenu: [
         {
