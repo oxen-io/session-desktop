@@ -1,6 +1,3 @@
 commit_message: '[CI SKIP]'
-files:
-  - source: _locales/en/messages.json
-    translation: _locales/%locale_with_underscore%/messages.json
 bundles:
   - 12
