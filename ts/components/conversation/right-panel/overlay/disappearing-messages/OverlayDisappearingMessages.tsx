@@ -12,7 +12,7 @@ import {
   useSelectedConversationDisappearingMode,
   useSelectedConversationKey,
   useSelectedExpireTimer,
-  useSelectedIsGroup,
+  useSelectedIsGroupOrCommunity,
   useSelectedWeAreAdmin,
 } from '../../../../../state/selectors/selectedConversation';
 import { ReleasedFeatures } from '../../../../../util/releaseFeature';
@@ -28,7 +28,7 @@ const ButtonSpacer = styled.div`
 `;
 
 const StyledButtonContainer = styled.div`
-  background: linear-gradient(0deg, black, transparent);
+  background: linear-gradient(0deg, var(--background-primary-color), transparent);
   position: absolute;
   width: 100%;
   bottom: 0px;
@@ -114,7 +114,7 @@ export const OverlayDisappearingMessages = () => {
   const disappearingModeOptions = useSelector(getSelectedConversationExpirationModes);
   const { singleMode, hasOnlyOneMode } = useSingleMode(disappearingModeOptions);
 
-  const isGroup = useSelectedIsGroup();
+  const isGroup = useSelectedIsGroupOrCommunity();
   const expirationMode = useSelectedConversationDisappearingMode();
   const expireTimer = useSelectedExpireTimer();
   const weAreAdmin = useSelectedWeAreAdmin();
