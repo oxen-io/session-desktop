@@ -1681,7 +1681,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
     const pubkey = this.id;
     if (UserUtils.isUsFromCache(pubkey)) {
-      return window.i18n('you');
+      return window.i18n('onionRoutingPathYou');
     }
 
     const profileName = this.get('displayNameInProfile');
@@ -1741,7 +1741,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       const isFirstMessageOfConvo =
         (await Data.getMessagesByConversation(this.id, { messageId: null })).messages.length === 1;
       if (hadNoRequestsPrior && isFirstMessageOfConvo) {
-        friendRequestText = window.i18n('youHaveANewFriendRequest');
+        friendRequestText = window.i18n('messageRequestsNew');
       } else {
         window?.log?.info(
           'notification cancelled for as pending requests already exist',
@@ -1825,9 +1825,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       conversationId,
       iconUrl,
       isExpiringMessage: false,
-      message: window.i18n('incomingCallFrom', [
-        this.getNicknameOrRealUsername() || window.i18n('anonymous'),
-      ]),
+      message: window.i18n('callsIncoming', {
+        name: this.getNicknameOrRealUsername() || window.i18n('anonymous'),
+      }),
       messageSentAt: now,
       title: this.getNicknameOrRealUsernameOrPlaceholder(),
     });

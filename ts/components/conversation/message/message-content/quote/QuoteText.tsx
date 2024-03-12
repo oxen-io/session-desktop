@@ -48,7 +48,7 @@ function getTypeLabel({
     return window.i18n('image');
   }
   if (MIME.isAudio(contentType) && isVoiceMessage) {
-    return window.i18n('voiceMessage');
+    return window.i18n('messageVoice');
   }
   if (MIME.isAudio(contentType)) {
     return window.i18n('audio');
@@ -75,7 +75,7 @@ export const QuoteText = (
   return (
     <StyledQuoteText isIncoming={isIncoming} dir="auto">
       <MessageBody
-        text={text || window.i18n('originalMessageNotFound')}
+        text={text ?? window.i18n('messageErrorOriginal')}
         disableLinks={true}
         disableJumbomoji={true}
         isGroup={isGroup}

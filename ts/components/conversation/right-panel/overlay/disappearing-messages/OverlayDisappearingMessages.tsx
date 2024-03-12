@@ -208,9 +208,9 @@ export const OverlayDisappearingMessages = () => {
           <>
             <SpacerLG />
             <StyledNonAdminDescription>
-              {window.i18n('settingAppliesToEveryone')}
+              {window.i18n('disappearingMessagesDescription')}
               <br />
-              {window.i18n('onlyGroupAdminsCanChange')}
+              {window.i18n('disappearingMessagesOnlyAdmins')}
             </StyledNonAdminDescription>
           </>
         )}

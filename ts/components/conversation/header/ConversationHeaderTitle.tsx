@@ -61,7 +61,7 @@ export const ConversationHeaderTitle = () => {
   const { i18n } = window;
 
   const notificationSubtitle = useMemo(
-    () => (notificationSetting ? i18n('notificationSubtitle', [notificationSetting]) : null),
+    () => (notificationSetting ? i18n('sessionNotifications') : null),
     [i18n, notificationSetting]
   );
 
@@ -77,7 +77,7 @@ export const ConversationHeaderTitle = () => {
 
     if (isGroup && memberCount > 0 && !isKickedFromGroup) {
       const count = String(memberCount);
-      return isPublic ? i18n('activeMembers', [count]) : i18n('members', [count]);
+      return i18n(isPublic ? 'activeMembers' : 'members', { count });
     }
 
     return null;

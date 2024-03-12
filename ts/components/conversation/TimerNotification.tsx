@@ -47,7 +47,10 @@ function useFollowSettingsButtonClick(
         : window.i18n('timerModeSent');
     const message = props.disabled
       ? window.i18n('followSettingDisabled')
-      : window.i18n('followSettingTimeAndType', [props.timespanText, mode]);
+      : window.i18n('followSettingTimeAndType', {
+          time: props.timespanText,
+          type: mode,
+        });
     const okText = props.disabled ? window.i18n('confirm') : window.i18n('set');
     dispatch(
       updateConfirmModal({
@@ -148,30 +151,43 @@ function useTextToRender(props: PropsForExpirationTimer) {
     : window.i18n('timerModeSent');
   switch (type) {
     case 'fromOther':
-      return disabled
-        ? window.i18n(
-            ownSideOnly ? 'theyDisabledTheirDisappearingMessages' : 'disabledDisappearingMessages',
-            [contact, timespanText]
-          )
-        : mode
-        ? window.i18n(ownSideOnly ? 'theySetTheirDisappearingMessages' : 'theyChangedTheTimer', [
-            contact,
-            timespanText,
-            mode,
-          ])
-        : window.i18n('theyChangedTheTimerLegacy', [contact, timespanText]);
+      if (disabled) {
+        return ownSideOnly
+          ? window.i18n('theyDisabledTheirDisappearingMessages', { name: contact })
+          : window.i18n('disappearingMessagesTurnedOff', { name: contact });
+      }
+
+      if (mode) {
+        return ownSideOnly
+          ? window.i18n('theySetTheirDisappearingMessages', {
+              name: contact,
+              time: timespanText,
+              type: mode,
+            })
+          : window.i18n('theyChangedTheTimer', {
+              name: contact,
+              time: timespanText,
+              // TODO: check this mode
+              mode: '',
+            });
+      }
+
+      return window.i18n('theyChangedTheTimerLegacy', { name: contact, time: timespanText });
+
     case 'fromMe':
     case 'fromSync':
-      return disabled
-        ? window.i18n(
-            ownSideOnly ? 'youDisabledYourDisappearingMessages' : 'youDisabledDisappearingMessages'
-          )
-        : mode
-        ? window.i18n(ownSideOnly ? 'youSetYourDisappearingMessages' : 'youChangedTheTimer', [
-            timespanText,
-            mode,
-          ])
-        : window.i18n('youChangedTheTimerLegacy', [timespanText]);
+      if (disabled) {
+        return ownSideOnly
+          ? window.i18n('youDisabledYourDisappearingMessages')
+          : window.i18n('disappearingMessagesTurnedOff', { name: contact });
+      }
+      if (mode) {
+        return ownSideOnly
+          ? window.i18n('youSetYourDisappearingMessages', { time: timespanText, type: mode })
+          : window.i18n('youChangedTheTimer', { time: timespanText, mode });
+      }
+      return window.i18n('youChangedTheTimerLegacy', { time: timespanText });
+
     default:
       assertUnreachable(type, `TimerNotification: Missing case error "${type}"`);
   }

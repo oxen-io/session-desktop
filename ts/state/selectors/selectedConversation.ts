@@ -26,14 +26,13 @@ const getCurrentNotificationSettingText = (state: StateType): string | undefined
   }
   const currentNotificationSetting = getSelectedConversation(state)?.currentNotificationSetting;
   switch (currentNotificationSetting) {
-    case 'all':
-      return window.i18n('notificationForConvo_all');
     case 'mentions_only':
-      return window.i18n('notificationForConvo_mentions_only');
-    case 'disabled':
-      return window.i18n('notificationForConvo_disabled');
-    default:
-      return window.i18n('notificationForConvo_all');
+      return window.i18n('notificationsMentionsOnly');
+      case 'disabled':
+        return window.i18n('notificationsMute');
+      case 'all':
+      default:
+      return window.i18n('notificationsAllMessages');
   }
 };
 
@@ -347,6 +346,7 @@ export function useSelectedShortenedPubkeyOrFallback() {
   if (isPrivate) {
     return window.i18n('anonymous');
   }
+  // TODO: String localization - remove
   return window.i18n('unknown');
 }
 

@@ -173,7 +173,7 @@ const HeaderItem = () => {
       {showMemberCount && (
         <Flex container={true} flexDirection={'column'}>
           <div role="button" className="subtle">
-            {window.i18n('members', [`${subscriberCount}`])}
+            {window.i18n('members', { count: `${subscriberCount}` })}
           </div>
           <SpacerMD />
         </Flex>
@@ -259,15 +259,15 @@ export const OverlayRightPanelSettings = () => {
   const commonNoShow = isKickedFromGroup || left || isBlocked || !isActive;
   const hasDisappearingMessages = !isPublic && !commonNoShow;
   const leaveGroupString = isPublic
-    ? window.i18n('leaveCommunity')
+    ? window.i18n('communityLeave')
     : lastMessage?.interactionType === ConversationInteractionType.Leave &&
       lastMessage?.interactionStatus === ConversationInteractionStatus.Error
-    ? window.i18n('deleteConversation')
+    ? window.i18n('conversationsDelete')
     : isKickedFromGroup
     ? window.i18n('youGotKickedFromGroup')
     : left
-    ? window.i18n('youLeftTheGroup')
-    : window.i18n('leaveGroup');
+    ? window.i18n('groupMemberYouLeft')
+    : window.i18n('groupLeave');
 
   const showUpdateGroupNameButton = isGroup && weAreAdmin && !commonNoShow; // legacy groups non-admin cannot change groupname anymore
   const showAddRemoveModeratorsButton = weAreAdmin && !commonNoShow && isPublic;
@@ -285,7 +285,7 @@ export const OverlayRightPanelSettings = () => {
           {showUpdateGroupNameButton && (
             <PanelIconButton
               iconType={'group'}
-              text={isPublic ? window.i18n('editGroup') : window.i18n('editGroupName')}
+              text={isPublic ? window.i18n('groupEdit') : window.i18n('editGroupName')}
               onClick={() => {
                 void showUpdateGroupNameByConvoId(selectedConvoKey);
               }}

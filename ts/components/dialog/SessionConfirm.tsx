@@ -217,11 +217,11 @@ export const showLinkVisitWarningDialog = (urlToOpen: string, dispatch: Dispatch
 
   dispatch(
     updateConfirmModal({
-      title: window.i18n('linkVisitWarningTitle'),
-      message: window.i18n('linkVisitWarningMessage', [urlToOpen]),
+      title: window.i18n('urlOpen'),
+      message: window.i18n('urlOpenDescription', { url: urlToOpen }),
       okText: window.i18n('open'),
       okTheme: SessionButtonColor.Primary,
-      cancelText: window.i18n('editMenuCopy'),
+      cancelText: window.i18n('copy'),
       showExitIcon: true,
       onClickOk,
       onClickClose: () => {

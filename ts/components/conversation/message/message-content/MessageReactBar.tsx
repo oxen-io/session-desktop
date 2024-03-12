@@ -102,22 +102,30 @@ function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'minute'))) {
-    return window.i18n('messageWillDisappear', [`${timeLeft.seconds()}s`]);
+    return window.i18n('messageWillDisappear', {
+      countAndUnit: `${timeLeft.seconds()}s`,
+    });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'hour'))) {
     const extraUnit = timeLeft.seconds() ? ` ${timeLeft.seconds()}s` : '';
-    return window.i18n('messageWillDisappear', [`${timeLeft.minutes()}m${extraUnit}`]);
+    return window.i18n('messageWillDisappear', {
+      countAndUnit: `${timeLeft.minutes()}m${extraUnit}`,
+    });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'day'))) {
     const extraUnit = timeLeft.minutes() ? ` ${timeLeft.minutes()}m` : '';
-    return window.i18n('messageWillDisappear', [`${timeLeft.hours()}h${extraUnit}`]);
+    return window.i18n('messageWillDisappear', {
+      countAndUnit: `${timeLeft.hours()}h${extraUnit}`,
+    });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(7, 'day'))) {
     const extraUnit = timeLeft.hours() ? ` ${timeLeft.hours()}h` : '';
-    return window.i18n('messageWillDisappear', [`${timeLeft.dayOfYear() - 1}d${extraUnit}`]);
+    return window.i18n('messageWillDisappear', {
+      countAndUnit: `${timeLeft.dayOfYear() - 1}d${extraUnit}`,
+    });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(31, 'day'))) {
@@ -125,7 +133,7 @@ function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
     const weeks = Math.floor(days / 7);
     const daysLeft = days % 7;
     const extraUnit = daysLeft ? ` ${daysLeft}d` : '';
-    return window.i18n('messageWillDisappear', [`${weeks}w${extraUnit}`]);
+    return window.i18n('messageWillDisappear', { countAndUnit: `${weeks}w${extraUnit}` });
   }
 
   return '...';
