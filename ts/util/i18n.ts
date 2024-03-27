@@ -1,42 +1,70 @@
 // this file is a weird one as it is used by both sides of electron at the same time
 
-import { LocaleMessagesType } from '../node/locale';
-import { LocalizerKeys } from '../types/LocalizerKeys';
+import { isUndefined } from 'lodash';
+import { GetMessageArgs, LocalizerDictionary, LocalizerToken } from '../types/Localizer';
 
-export const setupi18n = (locale: string, messages: LocaleMessagesType) => {
+/**
+ * Logs an i18n message to the console.
+ * @param message - The message to log.
+ *
+ * TODO - Replace this logging method when the new logger is created
+ */
+function i18nLog(message: string) {
+  // eslint:disable: no-console
+  // eslint-disable-next-line no-console
+  (window.log.error || console.log)(message);
+}
+
+/**
+ * Sets up the i18n function with the provided locale and messages.
+ *
+ * @param locale - The locale to use for translations.
+ * @param dictionary - A dictionary of localized messages.
+ *
+ * @returns A function that retrieves a localized message string, substituting variables where necessary.
+ */
+export const setupi18n = (locale: string, dictionary: LocalizerDictionary) => {
   if (!locale) {
     throw new Error('i18n: locale parameter is required');
   }
-  if (!messages) {
+  if (!dictionary) {
     throw new Error('i18n: messages parameter is required');
   }
 
-  function getMessage(key: LocalizerKeys, substitutions: Array<string>) {
-    const message = messages[key];
-    if (!message) {
-      // eslint:disable: no-console
-      // eslint-disable-next-line no-console
-      (window.log.error || console.log)(
-        `i18n: Attempted to get translation for nonexistent key '${key}'`
-      );
-      return '';
+  /**
+   * Retrieves a localized message string, substituting variables where necessary.
+   *
+   * @param token - The token identifying the message to retrieve.
+   * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+   *
+   * @returns The localized message string with substitutions applied.
+   *
+   * @example
+   * // The string greeting is 'Hello, {name}!' in the current locale
+   * window.i18n('greeting', { name: 'Alice' });
+   * // => 'Hello, Alice!'
+   */
+  function getMessage<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ): R {
+    const localizedString = dictionary[token];
+
+    if (!localizedString) {
+      i18nLog(`i18n: Attempted to get translation for nonexistent key '${token}'`);
+      return '' as R;
     }
 
-    if (Array.isArray(substitutions)) {
-      const replacedNameDollarSign = message.replaceAll('$', 'ￗ');
-
-      const substituted = substitutions.reduce(
-        (result, substitution) => result.replace(/ￗ.+?ￗ/, substitution),
-        replacedNameDollarSign
-      );
-
-      return substituted.replaceAll('ￗ', '$');
-    }
-    if (substitutions) {
-      return message.replace(/\$.+?\$/, substitutions);
+    /** If a localized string does not have any arguments to substitute it is retured with no changes */
+    if (!args) {
+      return localizedString as R;
     }
 
-    return message;
+    /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
+    return localizedString.replace(/\{(\w+)\}/g, (match, arg: keyof typeof args) => {
+      const substitution = args[arg];
+      /** If a substitution is undefined we return the variable match */
+      return isUndefined(substitution) ? match : substitution.toString();
+    }) as R;
   }
 
   getMessage.getLocale = () => locale;

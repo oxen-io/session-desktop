@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-unresolved
 import {} from 'styled-components/cssprop';
 
-import { LocalizerType } from './types/Util';
-
 import { ConversationCollection } from './models/conversation';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
+
+import type { GetMessageArgs, LocalizerDictionary, LocalizerToken } from './types/Localizer';
 
 export interface LibTextsecure {
   messaging: boolean;
@@ -24,8 +24,24 @@ declare global {
     clipboard: any;
     getSettingValue: (id: string, comparisonValue?: any) => any;
     setSettingValue: (id: string, value: any) => Promise<void>;
-
-    i18n: LocalizerType;
+    /**
+     * Retrieves a localized message string, substituting variables where necessary.
+     *
+     * @param token - The token identifying the message to retrieve.
+     * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+     *
+     * @returns The localized message string with substitutions applied.
+     *
+     * @link [i18n](./util/i18n.ts)
+     *
+     * @example
+     * // The string greeting is 'Hello, {name}!' in the current locale
+     * window.i18n('greeting', { name: 'Alice' });
+     * // => 'Hello, Alice!'
+     */
+    i18n: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+      ...[token, args]: GetMessageArgs<T>
+    ) => R;
     log: any;
     sessionFeatureFlags: {
       useOnionRequests: boolean;
