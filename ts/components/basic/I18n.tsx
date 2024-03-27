@@ -42,7 +42,7 @@ export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
 
   /** If the string contains a relevant formatting tag, render it as HTML */
   if (i18nString.match(formattingTagRegex)) {
-    return <SessionHtmlRenderer tag={props.as} html={i18nString} />;
+    return <SessionHtmlRenderer as={props.as} html={i18nString} />;
   }
 
   const Comp = props.as ?? React.Fragment;

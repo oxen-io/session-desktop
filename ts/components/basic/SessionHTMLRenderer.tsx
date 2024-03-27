@@ -1,20 +1,20 @@
-import React from 'react';
 import DOMPurify from 'dompurify';
+import React from 'react';
 
 type ReceivedProps = {
   html: string;
-  tag?: string;
+  as?: React.ElementType;
   key?: any;
   className?: string;
 };
 
-export const SessionHtmlRenderer = ({ tag = 'div', key, html, className }: ReceivedProps) => {
+export const SessionHtmlRenderer = ({ as = 'div', key, html, className }: ReceivedProps) => {
   const clean = DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
     FORBID_ATTR: ['script'],
   });
 
-  return React.createElement(tag, {
+  return React.createElement(as, {
     key,
     className,
 
