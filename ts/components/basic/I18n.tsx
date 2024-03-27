@@ -22,12 +22,14 @@ const formattingTagRegex = new RegExp(
  *
  * @param token - The token identifying the message to retrieve and an optional record of substitution variables and their replacement values.
  * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic parts.
+ * @param as - An optional HTML tag to render the component as. Defaults to a fragment, unless the string contains html tags. In that case, it will render as HTML in a div tag.
  *
  * @returns The localized message string with substitutions and formatting applied.
  *
  * @example
  * ```tsx
  * <I18n token="about" />
+ * <I18n token="about" as='h1' />
  * <I18n token="disappearingMessagesFollowSettingOn" args={{ time: 10, type: 'mode' }} />
  * ```
  */
@@ -40,8 +42,10 @@ export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
 
   /** If the string contains a relevant formatting tag, render it as HTML */
   if (i18nString.match(formattingTagRegex)) {
-    return <SessionHtmlRenderer html={i18nString} />;
+    return <SessionHtmlRenderer tag={props.as} html={i18nString} />;
   }
 
-  return <>{i18nString}</>;
+  const Comp = props.as ?? React.Fragment;
+
+  return <Comp>{i18nString}</Comp>;
 };

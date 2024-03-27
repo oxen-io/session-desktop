@@ -1,3 +1,4 @@
+import type { ElementType } from 'react';
 import type { Dictionary } from '../localization/locales';
 
 /** A localization dictionary key */
@@ -20,9 +21,14 @@ type DynamicArgs<LocalizedString extends string> =
 export type GetMessageArgs<T extends Token> =
   DynamicArgs<Dictionary[T]> extends never ? [T] : [T, ArgsRecord<T>];
 
+/** Basic props for all calls of the I18n component */
+type I18nBaseProps<T extends Token> = { token: T; as?: ElementType };
+
 /** The props for the localization component */
 export type I18nProps<T extends Token> =
-  DynamicArgs<Dictionary[T]> extends never ? { token: T } : { token: T; args: ArgsRecord<T> };
+  DynamicArgs<Dictionary[T]> extends never
+    ? I18nBaseProps<T>
+    : I18nBaseProps<T> & { args: ArgsRecord<T> };
 
 /** The dictionary of localized strings */
 export type LocalizerDictionary = Dictionary;
