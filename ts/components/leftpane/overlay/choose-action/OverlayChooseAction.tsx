@@ -93,7 +93,7 @@ export const OverlayChooseAction = () => {
         aria-label={window.i18n('createConversationNewContact')}
       >
         <IconOnActionRow iconType="chatBubble" />
-        <StyledChooseActionTitle>{window.i18n('newMessage')}</StyledChooseActionTitle>
+        <StyledChooseActionTitle>{window.i18n('messageNew')}</StyledChooseActionTitle>
       </StyledActionRow>
       <StyledActionRow
         onClick={openCreateGroup}
@@ -101,7 +101,7 @@ export const OverlayChooseAction = () => {
         aria-label={window.i18n('createConversationNewGroup')}
       >
         <IconOnActionRow iconType="group" />
-        <StyledChooseActionTitle>{window.i18n('createGroup')}</StyledChooseActionTitle>
+        <StyledChooseActionTitle>{window.i18n('groupCreate')}</StyledChooseActionTitle>
       </StyledActionRow>
       <StyledActionRow
         onClick={openJoinCommunity}
@@ -109,7 +109,7 @@ export const OverlayChooseAction = () => {
         aria-label={window.i18n('joinACommunity')}
       >
         <IconOnActionRow iconType="communities" />
-        <StyledChooseActionTitle>{window.i18n('joinOpenGroup')}</StyledChooseActionTitle>
+        <StyledChooseActionTitle>{window.i18n('communityJoin')}</StyledChooseActionTitle>
       </StyledActionRow>
       <ContactsListWithBreaks />
     </div>

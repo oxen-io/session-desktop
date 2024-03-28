@@ -43,7 +43,9 @@ const Sections = (props: Props & { selectedTab: TabType }) => {
 
   if (!mediaItems || mediaItems.length === 0) {
     const label =
-      type === 'media' ? window.i18n('mediaEmptyState') : window.i18n('documentsEmptyState');
+      type === 'media'
+        ? window.i18n('attachmentsMediaEmpty')
+        : window.i18n('attachmentsFilesEmpty');
 
     return <EmptyState data-testid="EmptyState" label={label} />;
   }
@@ -74,7 +76,7 @@ export const MediaGallery = (props: Props) => {
       <div className="module-media-gallery__tab-container">
         <Tab label={window.i18n('media')} isSelected={isMediaSelected} onSelect={setMediaTab} />
         <Tab
-          label={window.i18n('documents')}
+          label={window.i18n('files')}
           isSelected={isDocumentSelected}
           onSelect={setDocumentsTab}
         />

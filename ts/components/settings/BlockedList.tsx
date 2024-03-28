@@ -87,7 +87,7 @@ const BlockedEntries = (props: {
 };
 
 const NoBlockedContacts = () => {
-  return <div>{window.i18n('noBlockedContacts')}</div>;
+  return <div>{window.i18n('blockBlockedNone')}</div>;
 };
 
 export const BlockedContactsList = () => {
@@ -115,7 +115,12 @@ export const BlockedContactsList = () => {
     if (selectedIds.length) {
       await BlockedNumberController.unblockAll(selectedIds);
       emptySelected();
-      ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
+      ToastUtils.pushToastSuccess(
+        'unblocked',
+        window.i18n('blockUnblockedUser', {
+          name: selectedIds.join(', '),
+        })
+      );
       forceUpdate();
     }
   }
@@ -124,7 +129,7 @@ export const BlockedContactsList = () => {
     <BlockedContactsSection>
       <StyledBlockedSettingItem clickable={!noBlockedNumbers}>
         <BlockedContactListTitle onClick={toggleUnblockList}>
-          <SettingsTitleAndDescription title={window.i18n('blockedSettingsTitle')} />
+          <SettingsTitleAndDescription title={window.i18n('conversationsBlockedContacts')} />
           {noBlockedNumbers ? (
             <NoBlockedContacts />
           ) : (
@@ -132,7 +137,7 @@ export const BlockedContactsList = () => {
               {hasAtLeastOneSelected && expanded ? (
                 <SessionButton
                   buttonColor={SessionButtonColor.Danger}
-                  text={window.i18n('unblock')}
+                  text={window.i18n('blockUnblock')}
                   onClick={unBlockThoseUsers}
                   dataTestId="unblock-button-settings-screen"
                 />

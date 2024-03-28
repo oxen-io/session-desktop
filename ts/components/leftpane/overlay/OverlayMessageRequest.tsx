@@ -58,8 +58,8 @@ export const OverlayMessageRequest = () => {
    */
   function handleClearAllRequestsClick() {
     const { i18n } = window;
-    const title = i18n('clearAllConfirmationTitle');
-    const message = i18n('clearAllConfirmationBody');
+    const title = i18n('clearAll');
+    const message = i18n('messageRequestsClearAllExplanation');
     const onClose = dispatch(updateConfirmModal(null));
 
     dispatch(
@@ -110,7 +110,7 @@ export const OverlayMessageRequest = () => {
         <>
           <SpacerLG />
           <MessageRequestListPlaceholder>
-            {window.i18n('noMessageRequestsPending')}
+            {window.i18n('messageRequestsNonePending')}
           </MessageRequestListPlaceholder>
         </>
       )}

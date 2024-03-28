@@ -220,9 +220,8 @@ export function areAllAttachmentsVisual(attachments?: Array<AttachmentType>): bo
 }
 
 export function getAlt(attachment: AttachmentType): string {
-  return isVideoAttachment(attachment)
-    ? window.i18n('videoAttachmentAlt')
-    : window.i18n('imageAttachmentAlt');
+  // TODO: Rework when the alt text is available
+  return isVideoAttachment(attachment) ? '' : '';
 }
 
 // Migration-related attachment stuff

@@ -78,7 +78,7 @@ function getTypeLabel({
     return window.i18n('photo');
   }
   if (MIME.isAudio(contentType) && isVoiceMessage) {
-    return window.i18n('voiceMessage');
+    return window.i18n('messageVoice');
   }
   if (MIME.isAudio(contentType)) {
     return window.i18n('audio');
@@ -285,7 +285,7 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
       )}
     >
       {isFromMe ? (
-        window.i18n('you')
+        window.i18n('onionRoutingPathYou')
       ) : (
         <ContactName
           pubkey={PubKey.shorten(author)}
@@ -329,7 +329,7 @@ export const QuoteReferenceWarning = (
           isIncoming ? 'module-quote__reference-warning__text--incoming' : null
         )}
       >
-        {window.i18n('originalMessageNotFound')}
+        {window.i18n('messageErrorOriginal')}
       </div>
     </div>
   );

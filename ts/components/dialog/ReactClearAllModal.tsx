@@ -85,7 +85,7 @@ export const ReactClearAllModal = (props: Props): ReactElement => {
       onClose={handleClose}
     >
       <StyledReactClearAllContainer container={true} flexDirection={'column'} alignItems="center">
-        <p>{window.i18n('clearAllReactions', [reaction])}</p>
+        <p>{window.i18n('emojiReactsClearAll', { emoji: reaction })}</p>
         <StyledButtonContainer className="session-modal__button-group">
           <SessionButton
             text={window.i18n('clear')}

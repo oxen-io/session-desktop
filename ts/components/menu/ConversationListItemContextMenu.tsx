@@ -88,7 +88,9 @@ export const PinConversationMenuItem = (): JSX.Element | null => {
       void conversation?.togglePinned();
     };
 
-    const menuText = isPinned ? window.i18n('unpinConversation') : window.i18n('pinConversation');
+    const menuText = isPinned
+      ? window.i18n('pinUnpinConversation')
+      : window.i18n('pinConversation');
     return <Item onClick={togglePinConversation}>{menuText}</Item>;
   }
   return null;

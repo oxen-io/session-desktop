@@ -1,5 +1,5 @@
 import { isString } from 'lodash';
-import { LocaleMessagesType } from './locale';
+import type { LocalizerDictionary } from '../types/Localizer';
 import { Noop } from '../types/Util';
 
 /**
@@ -9,9 +9,9 @@ import { Noop } from '../types/Util';
  * @param label - The label for the menu item
  * @returns The label with the accelerator prefix
  */
-const withAcceleratorPrefix = (label:string) => {
+const withAcceleratorPrefix = (label: string) => {
   return `&${label}`;
-}
+};
 
 export const createTemplate = (
   options: {
@@ -22,20 +22,14 @@ export const createTemplate = (
     showDebugLog: () => void;
     showWindow: () => void;
   },
-  messages: LocaleMessagesType
+  messages: LocalizerDictionary
 ) => {
   if (!isString(options.platform)) {
     throw new TypeError('`options.platform` must be a string');
   }
 
-  const {
-    openReleaseNotes,
-    openSupportPage,
-    platform,
-    showAbout,
-    showDebugLog,
-    showWindow,
-  } = options;
+  const { openReleaseNotes, openSupportPage, platform, showAbout, showDebugLog, showWindow } =
+    options;
 
   const template = [
     {
@@ -46,7 +40,7 @@ export const createTemplate = (
         },
         {
           role: 'quit',
-          label: messages.appMenuQuit,
+          label: messages.quit,
         },
       ],
     },
@@ -55,26 +49,26 @@ export const createTemplate = (
       submenu: [
         {
           role: 'undo',
-          label: messages.editMenuUndo,
+          label: messages.undo,
         },
         {
           role: 'redo',
-          label: messages.editMenuRedo,
+          label: messages.redo,
         },
         {
           type: 'separator',
         },
         {
           role: 'cut',
-          label: messages.editMenuCut,
+          label: messages.cut,
         },
         {
           role: 'copy',
-          label: messages.editMenuCopy,
+          label: messages.copy,
         },
         {
           role: 'paste',
-          label: messages.editMenuPaste,
+          label: messages.paste,
         },
         {
           role: 'delete',
@@ -82,7 +76,7 @@ export const createTemplate = (
         },
         {
           role: 'selectall',
-          label: messages.editMenuSelectAll,
+          label: messages.selectAll,
         },
       ],
     },
@@ -91,23 +85,23 @@ export const createTemplate = (
       submenu: [
         {
           role: 'resetzoom',
-          label: messages.viewMenuResetZoom,
+          label: messages.actualSize,
         },
         {
           accelerator: platform === 'darwin' ? 'Command+=' : 'Control+Plus',
           role: 'zoomin',
-          label: messages.viewMenuZoomIn,
+          label: messages.appearanceZoomIn,
         },
         {
           role: 'zoomout',
-          label: messages.viewMenuZoomOut,
+          label: messages.appearanceZoomOut,
         },
         {
           type: 'separator',
         },
         {
           role: 'togglefullscreen',
-          label: messages.viewMenuToggleFullScreen,
+          label: messages.fullScreenToggle,
         },
         {
           type: 'separator',
@@ -121,7 +115,7 @@ export const createTemplate = (
         },
         {
           role: 'toggledevtools',
-          label: messages.viewMenuToggleDevTools,
+          label: messages.developerToolsToggle,
         },
       ],
     },
@@ -131,7 +125,7 @@ export const createTemplate = (
       submenu: [
         {
           role: 'minimize',
-          label: messages.windowMenuMinimize,
+          label: messages.minimize,
         },
       ],
     },
@@ -140,14 +134,14 @@ export const createTemplate = (
       role: 'help',
       submenu: [
         {
-          label: messages.goToReleaseNotes,
+          label: messages.updateReleaseNotes,
           click: openReleaseNotes,
         },
         {
           type: 'separator',
         },
         {
-          label: messages.goToSupportPage,
+          label: messages.supportGoTo,
           click: openSupportPage,
         },
         {
@@ -173,7 +167,7 @@ export const createTemplate = (
 
 function updateForMac(
   template: any,
-  messages: LocaleMessagesType,
+  messages: LocalizerDictionary,
   options: { showAbout: Noop; showWindow: Noop }
 ) {
   const { showAbout, showWindow } = options;
@@ -200,22 +194,22 @@ function updateForMac(
         type: 'separator',
       },
       {
-        label: messages.appMenuHide,
+        label: messages.hide,
         role: 'hide',
       },
       {
-        label: messages.appMenuHideOthers,
+        label: messages.hideOthers,
         role: 'hideothers',
       },
       {
-        label: messages.appMenuUnhide,
+        label: messages.showAll,
         role: 'unhide',
       },
       {
         type: 'separator',
       },
       {
-        label: messages.appMenuQuit,
+        label: messages.quit,
         role: 'quit',
       },
     ],
@@ -226,17 +220,17 @@ function updateForMac(
   // eslint-disable-next-line no-param-reassign
   template[windowMenuTemplateIndex].submenu = [
     {
-      label: messages.windowMenuClose,
+      label: messages.closeWindow,
       accelerator: 'CmdOrCtrl+W',
       role: 'close',
     },
     {
-      label: messages.windowMenuMinimize,
+      label: messages.minimize,
       accelerator: 'CmdOrCtrl+M',
       role: 'minimize',
     },
     {
-      label: messages.windowMenuZoom,
+      label: messages.appearanceZoom,
       role: 'zoom',
     },
     {

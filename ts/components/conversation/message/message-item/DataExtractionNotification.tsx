@@ -7,12 +7,10 @@ import { NotificationBubble } from './notification-bubble/NotificationBubble';
 export const DataExtractionNotification = (props: PropsForDataExtractionNotification) => {
   const { name, type, source, messageId } = props;
 
-  let contentText: string;
-  if (type === SignalService.DataExtractionNotification.Type.MEDIA_SAVED) {
-    contentText = window.i18n('savedTheFile', [name || source]);
-  } else {
-    contentText = window.i18n('tookAScreenshot', [name || source]);
-  }
+  const contentText =
+    type === SignalService.DataExtractionNotification.Type.MEDIA_SAVED
+      ? window.i18n('attachmentsMediaSaved', { name: name ?? source })
+      : window.i18n('screenshotTaken', { name: name ?? source });
 
   return (
     <ExpirableReadableMessage

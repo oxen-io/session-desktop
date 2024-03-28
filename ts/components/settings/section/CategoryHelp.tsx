@@ -14,24 +14,24 @@ export const SettingsCategoryHelp = (props: { hasPassword: boolean | null }) => 
           }}
           buttonShape={SessionButtonShape.Square}
           buttonType={SessionButtonType.Solid}
-          buttonText={window.i18n('showDebugLog')}
-          title={window.i18n('reportIssue')}
-          description={window.i18n('shareBugDetails')}
+          buttonText={window.i18n('helpReportABugExportLogs')}
+          title={window.i18n('helpReportABug')}
+          description={window.i18n('helpReportABugExportLogsSaveToDesktopDescription')}
         />
         <SessionSettingsTitleWithLink
-          title={window.i18n('surveyTitle')}
+          title={window.i18n('helpWedLoveYourFeedback')}
           onClick={() => void shell.openExternal('https://getsession.org/survey')}
         />
         <SessionSettingsTitleWithLink
-          title={window.i18n('helpUsTranslateSession')}
+          title={window.i18n('helpHelpUsTranslateSession')}
           onClick={() => void shell.openExternal('https://crowdin.com/project/session-desktop/')}
         />
         <SessionSettingsTitleWithLink
-          title={window.i18n('faq')}
+          title={window.i18n('helpFAQ')}
           onClick={() => void shell.openExternal('https://getsession.org/faq')}
         />
         <SessionSettingsTitleWithLink
-          title={window.i18n('support')}
+          title={window.i18n('helpSupport')}
           onClick={() => void shell.openExternal('https://sessionapp.zendesk.com/hc/en-us')}
         />
       </>

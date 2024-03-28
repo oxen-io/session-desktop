@@ -100,6 +100,7 @@ const ZombiesList = ({ convoId }: { convoId: string }) => {
       {weAreAdmin && (
         <Text
           padding="20px"
+          // TODO: String localization - remove
           text={window.i18n('removeResidueMembers')}
           subtle={true}
           maxWidth="400px"
@@ -228,7 +229,10 @@ export const UpdateGroupMembersDialog = (props: Props) => {
   const showNoMembersMessage = existingMembers.length === 0;
   const okText = window.i18n('ok');
   const cancelText = window.i18n('cancel');
-  const titleText = window.i18n('updateGroupDialogTitle', [convoProps.displayNameInProfile || '']);
+  // TODO: String localization - remove
+  const titleText = window.i18n('updateGroupDialogTitle', {
+    name: convoProps.displayNameInProfile ?? '',
+  });
 
   return (
     <SessionWrapperModal title={titleText} onClose={closeDialog}>
@@ -241,7 +245,7 @@ export const UpdateGroupMembersDialog = (props: Props) => {
         />
       </StyledClassicMemberList>
       <ZombiesList convoId={conversationId} />
-      {showNoMembersMessage && <p>{window.i18n('noMembersInThisGroup')}</p>}
+      {showNoMembersMessage && <p>{window.i18n('groupMembersNone')}</p>}
 
       <SpacerLG />
 

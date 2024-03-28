@@ -50,13 +50,13 @@ export const SessionNicknameDialog = (props: Props) => {
 
   return (
     <SessionWrapperModal
-      title={window.i18n('changeNickname')}
+      title={window.i18n('nicknameSet')}
       onClose={onClickClose}
       showExitIcon={false}
       showHeader={true}
     >
       <div className="session-modal__centered">
-        <span className="subtle">{window.i18n('changeNicknameMessage')}</span>
+        <span className="subtle">{window.i18n('nicknameEnter')}</span>
         <SpacerLG />
       </div>
 
@@ -64,7 +64,7 @@ export const SessionNicknameDialog = (props: Props) => {
         autoFocus={true}
         type="nickname"
         id="nickname-modal-input"
-        placeholder={window.i18n('nicknamePlaceholder')}
+        placeholder={window.i18n('nicknameSet')}
         onKeyUp={e => {
           void onNicknameInput(_.cloneDeep(e));
         }}

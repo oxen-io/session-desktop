@@ -16,7 +16,7 @@ export enum SignUpMode {
 }
 
 const CreateSessionIdButton = ({ createSessionID }: { createSessionID: any }) => {
-  return <SessionButton onClick={createSessionID} text={window.i18n('createSessionID')} />;
+  return <SessionButton onClick={createSessionID} text={window.i18n('onboardingAccountCreate')} />;
 };
 
 const ContinueSignUpButton = ({ continueSignUp }: { continueSignUp: any }) => {
@@ -54,10 +54,12 @@ const SignUpSessionIDShown = (props: { continueSignUp: Noop }) => {
         <GoBackMainMenuButton />
 
         <div className="session-registration__unique-session-id">
+          {/** TODO: String localization - remove */}
           {window.i18n('yourUniqueSessionID')}
         </div>
       </Flex>
       <SessionIdEditable editable={false} placeholder={undefined} dataTestId="session-id-signup" />
+      {/** TODO: String localization - remove */}
       <div className="session-description-long">{window.i18n('allUsersAreRandomly...')}</div>
       <ContinueSignUpButton continueSignUp={props.continueSignUp} />
       <TermsAndConditions />
@@ -121,6 +123,7 @@ export const SignUpTab = () => {
       <Flex flexDirection="row" container={true} alignItems="center">
         <GoBackMainMenuButton />
         <Flex className="session-registration__welcome-session" padding="20px">
+          {/** TODO: String localization - remove */}
           {window.i18n('welcomeToYourSession')}
         </Flex>
       </Flex>
@@ -136,6 +139,7 @@ export const SignUpTab = () => {
       />
       <SessionButton
         onClick={signUpWithDetails}
+        // TODO: String localization - remove
         text={window.i18n('getStarted')}
         disabled={!enableCompleteSignUp}
       />

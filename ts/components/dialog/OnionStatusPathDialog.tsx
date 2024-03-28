@@ -87,19 +87,17 @@ const OnionPathModalInner = () => {
 
   const nodes = [
     {
-      label: window.i18n('device'),
+      label: window.i18n('onionRoutingPathYou'),
     },
     ...onionPath,
     {
-      label: window.i18n('destination'),
+      label: window.i18n('onionRoutingPathDestination'),
     },
   ];
 
   return (
     <>
-      <StyledOnionDescription>
-        {window.i18n('onionPathIndicatorDescription')}
-      </StyledOnionDescription>
+      <StyledOnionDescription>{window.i18n('onionRoutingPathDescription')}</StyledOnionDescription>
       <StyledOnionNodeList>
         <Flex container={true}>
           <StyledLightsContainer>
@@ -123,7 +121,7 @@ const OnionPathModalInner = () => {
                 ? snode.label
                 : countryLookup.byIso(ip2country(snode.ip))?.country;
               if (!labelText) {
-                labelText = window.i18n('unknownCountry');
+                labelText = window.i18n('onionRoutingPathUnknownCountry');
               }
               return labelText ? (
                 <OnionCountryDisplay
@@ -233,7 +231,7 @@ export const OnionPathModal = () => {
   const dispatch = useDispatch();
   return (
     <SessionWrapperModal
-      title={window.i18n('onionPathIndicatorTitle')}
+      title={window.i18n('onionRoutingPath')}
       confirmText={window.i18n('learnMore')}
       cancelText={window.i18n('cancel')}
       onConfirm={onConfirm}

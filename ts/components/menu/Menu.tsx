@@ -54,7 +54,7 @@ import {
 } from '../../state/ducks/modalDialog';
 import { getIsMessageSection } from '../../state/selectors/section';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import { LocalizerToken } from '../../types/Localizer';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { useConvoIdFromContext } from '../leftpane/conversation-list-item/ConvoIdContext';
 
@@ -71,7 +71,7 @@ export const InviteContactMenuItem = (): JSX.Element | null => {
           showInviteContactByConvoId(convoId);
         }}
       >
-        {window.i18n('inviteContacts')}
+        {window.i18n('membersInvite')}
       </Item>
     );
   }
@@ -91,7 +91,7 @@ export const MarkConversationUnreadMenuItem = (): JSX.Element | null => {
       void conversation?.markAsUnread(true);
     };
 
-    return <Item onClick={markUnread}>{window.i18n('markUnread')}</Item>;
+    return <Item onClick={markUnread}>{window.i18n('messageMarkUnread')}</Item>;
   }
   return null;
 };
@@ -108,7 +108,7 @@ export const DeletePrivateContactMenuItem = () => {
   const isRequest = useIsIncomingRequest(convoId);
 
   if (isPrivate && !isRequest) {
-    const menuItemText = window.i18n('editMenuDeleteContact');
+    const menuItemText = window.i18n('contactDelete');
 
     const onClickClose = () => {
       dispatch(updateConfirmModal(null));
@@ -153,11 +153,11 @@ export const LeaveGroupOrCommunityMenuItem = () => {
         }}
       >
         {isPublic
-          ? window.i18n('leaveCommunity')
+          ? window.i18n('communityLeave')
           : lastMessage?.interactionType === ConversationInteractionType.Leave &&
             lastMessage?.interactionStatus === ConversationInteractionStatus.Error
-          ? window.i18n('deleteConversation')
-          : window.i18n('leaveGroup')}
+          ? window.i18n('conversationsDelete')
+          : window.i18n('groupLeave')}
       </Item>
     );
   }
@@ -186,7 +186,7 @@ export const ShowUserDetailsMenuItem = () => {
           );
         }}
       >
-        {window.i18n('showUserDetails')}
+        {window.i18n('contactUserDetails')}
       </Item>
     );
   }
@@ -207,7 +207,7 @@ export const UpdateGroupNameMenuItem = () => {
           void showUpdateGroupNameByConvoId(convoId);
         }}
       >
-        {window.i18n('editGroup')}
+        {window.i18n('groupEdit')}
       </Item>
     );
   }
@@ -267,7 +267,7 @@ export const UnbanMenuItem = (): JSX.Element | null => {
           showUnbanUserByConvoId(convoId);
         }}
       >
-        {window.i18n('unbanUser')}
+        {window.i18n('banUnbanUser')}
       </Item>
     );
   }
@@ -303,7 +303,7 @@ export const CopyMenuItem = (): JSX.Element | null => {
   // we want to show the copyId for open groups and private chats only
 
   if ((isPrivate && !isBlinded) || isPublic) {
-    const copyIdLabel = isPublic ? window.i18n('copyOpenGroupURL') : window.i18n('copySessionID');
+    const copyIdLabel = isPublic ? window.i18n('communityUrlCopy') : window.i18n('accountIDCopy');
     return (
       <Item
         onClick={() => {
@@ -324,7 +324,7 @@ export const MarkAllReadMenuItem = (): JSX.Element | null => {
     return (
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       <Item onClick={async () => markAllReadByConvoId(convoId)}>
-        {window.i18n('markAllAsRead')}
+        {window.i18n('messageMarkRead')}
       </Item>
     );
   }
@@ -339,7 +339,7 @@ export const BlockMenuItem = (): JSX.Element | null => {
   const isIncomingRequest = useIsIncomingRequest(convoId);
 
   if (!isMe && isPrivate && !isIncomingRequest && !PubKey.isBlinded(convoId)) {
-    const blockTitle = isBlocked ? window.i18n('unblock') : window.i18n('block');
+    const blockTitle = isBlocked ? window.i18n('blockUnblock') : window.i18n('block');
     const blockHandler = isBlocked
       ? async () => unblockConvoById(convoId)
       : async () => blockConvoById(convoId);
@@ -363,7 +363,7 @@ export const ClearNicknameMenuItem = (): JSX.Element | null => {
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <Item onClick={async () => clearNickNameByConvoId(convoId)}>
-      {window.i18n('clearNickname')}
+      {window.i18n('nicknameRemove')}
     </Item>
   );
 };
@@ -384,7 +384,7 @@ export const ChangeNicknameMenuItem = () => {
         dispatch(changeNickNameModal({ conversationId: convoId }));
       }}
     >
-      {window.i18n('changeNickname')}
+      {window.i18n('nicknameSet')}
     </Item>
   );
 };
@@ -418,7 +418,6 @@ export const DeleteMessagesMenuItem = () => {
  */
 export const DeletePrivateConversationMenuItem = () => {
   const convoId = useConvoIdFromContext();
-  const username = useConversationUsername(convoId) || convoId;
   const isRequest = useIsIncomingRequest(convoId);
   const isPrivate = useIsPrivate(convoId);
   const isMe = useIsMe(convoId);
@@ -430,10 +429,10 @@ export const DeletePrivateConversationMenuItem = () => {
   return (
     <Item
       onClick={() => {
-        showLeavePrivateConversationbyConvoId(convoId, username);
+        showLeavePrivateConversationbyConvoId(convoId);
       }}
     >
-      {isMe ? window.i18n('hideConversation') : window.i18n('deleteConversation')}
+      {isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete')}
     </Item>
   );
 };
@@ -542,19 +541,19 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
     isPrivate ? n !== 'mentions_only' : true
   ).map((n: ConversationNotificationSettingType) => {
     // do this separately so typescript's compiler likes it
-    const keyToUse: LocalizerKeys =
+    const keyToUse: LocalizerToken =
       n === 'all' || !n
-        ? 'notificationForConvo_all'
+        ? 'notificationsAllMessages'
         : n === 'disabled'
-        ? 'notificationForConvo_disabled'
-        : 'notificationForConvo_mentions_only';
+        ? 'notificationsMute'
+        : 'notificationsMentionsOnly';
     return { value: n, name: window.i18n(keyToUse) };
   });
 
   return (
     // Remove the && false to make context menu work with RTL support
     <Submenu
-      label={window.i18n('notificationForConvo') as any}
+      label={window.i18n('sessionNotifications') as any}
       // rtl={isRtlMode && false}
     >
       {(notificationForConvoOptions || []).map(item => {

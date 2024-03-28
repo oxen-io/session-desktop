@@ -75,7 +75,7 @@ const StyledCenteredLabel = styled.div`
 const RingingLabel = () => {
   const ongoingCallWithFocusedIsRinging = useSelector(getCallWithFocusedConvoIsOffering);
 
-  const modulatedStr = useModuloWithTripleDots(window.i18n('ringing'), 3, 1000);
+  const modulatedStr = useModuloWithTripleDots(window.i18n('callsRinging'), 3, 1000);
   if (!ongoingCallWithFocusedIsRinging) {
     return null;
   }
@@ -85,7 +85,7 @@ const RingingLabel = () => {
 const ConnectingLabel = () => {
   const ongoingCallWithFocusedIsConnecting = useSelector(getCallWithFocusedConvosIsConnecting);
 
-  const modulatedStr = useModuloWithTripleDots(window.i18n('establishingConnection'), 3, 1000);
+  const modulatedStr = useModuloWithTripleDots(window.i18n('callsConnecting'), 3, 1000);
 
   if (!ongoingCallWithFocusedIsConnecting) {
     return null;

@@ -117,15 +117,10 @@ async function sendToGroupMembers(
 
   if (allInvitesSent) {
     if (isRetry) {
-      const invitesTitle =
-        inviteResults.length > 1
-          ? window.i18n('closedGroupInviteSuccessTitlePlural')
-          : window.i18n('closedGroupInviteSuccessTitle');
-
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          title: invitesTitle,
-          message: window.i18n('closedGroupInviteSuccessMessage'),
+          title: window.i18n('groupInviteSuccessful'),
+          message: window.i18n('groupInviteSuccessful'),
           hideCancel: true,
           onClickClose: () => {
             window.inboxStore?.dispatch(updateConfirmModal(null));
@@ -147,7 +142,7 @@ async function sendToGroupMembers(
         inviteResults.length > 1
           ? window.i18n('closedGroupInviteFailMessagePlural')
           : window.i18n('closedGroupInviteFailMessage'),
-      okText: window.i18n('closedGroupInviteOkText'),
+      okText: window.i18n('resend'),
       onClickOk: async () => {
         const membersToResend: Array<string> = new Array<string>();
         inviteResults.forEach((result, index) => {

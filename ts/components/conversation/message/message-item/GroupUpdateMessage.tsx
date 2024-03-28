@@ -17,8 +17,9 @@ const ChangeItemJoined = (added: Array<string>): string => {
     throw new Error('Group update add is missing contacts');
   }
   const names = useConversationsUsernameWithQuoteOrFullPubkey(added);
-  const joinKey = added.length > 1 ? 'multipleJoinedTheGroup' : 'joinedTheGroup';
-  return window.i18n(joinKey, [names.join(', ')]);
+  return window.i18n('groupMemberNew', {
+    name: names.join(', '),
+  });
 };
 
 const ChangeItemKicked = (kicked: Array<string>): string => {
@@ -31,8 +32,8 @@ const ChangeItemKicked = (kicked: Array<string>): string => {
     return window.i18n('youGotKickedFromGroup');
   }
 
-  const kickedKey = kicked.length > 1 ? 'multipleKickedFromTheGroup' : 'kickedFromTheGroup';
-  return window.i18n(kickedKey, [names.join(', ')]);
+  const kickedKey = kicked.length > 1 ? 'multipleKickedFromTheGroup' : 'groupRemoved';
+  return window.i18n(kickedKey, { name: names.join(', ') });
 };
 
 const ChangeItemLeft = (left: Array<string>): string => {
@@ -43,18 +44,18 @@ const ChangeItemLeft = (left: Array<string>): string => {
   const names = useConversationsUsernameWithQuoteOrFullPubkey(left);
 
   if (arrayContainsUsOnly(left)) {
-    return window.i18n('youLeftTheGroup');
+    return window.i18n('groupMemberYouLeft');
   }
 
-  const leftKey = left.length > 1 ? 'multipleLeftTheGroup' : 'leftTheGroup';
-  return window.i18n(leftKey, [names.join(', ')]);
+  const leftKey = left.length > 1 ? 'multipleLeftTheGroup' : 'groupMemberLeft';
+  return window.i18n(leftKey, { name: names.join(', ') });
 };
 
 const ChangeItem = (change: PropsForGroupUpdateType): string => {
   const { type } = change;
   switch (type) {
     case 'name':
-      return window.i18n('titleIsNow', [change.newName || '']);
+      return window.i18n('groupNameNew', { groupname: change.newName });
     case 'add':
       return ChangeItemJoined(change.added);
 
@@ -65,7 +66,7 @@ const ChangeItem = (change: PropsForGroupUpdateType): string => {
       return ChangeItemKicked(change.kicked);
 
     case 'general':
-      return window.i18n('updatedTheGroup');
+      return window.i18n('groupUpdated');
     default:
       assertUnreachable(type, `ChangeItem: Missing case error "${type}"`);
       return '';

@@ -18,7 +18,7 @@ export const ZoomingSessionSlider = (props: { onSliderChange?: (value: number) =
   const currentValueFromSettings = window.getSettingValue('zoom-factor-setting') || 100;
 
   return (
-    <SessionSettingsItemWrapper title={window.i18n('zoomFactorSettingTitle')} inline={false}>
+    <SessionSettingsItemWrapper title={window.i18n('appearanceZoom')} inline={false}>
       <div className="slider-wrapper">
         <Slider
           dots={true}

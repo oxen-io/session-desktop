@@ -74,8 +74,10 @@ const BannerInner = () => {
 
   return (
     <StyledBannerInner>
+      {/** TODO: String localization - remove */}
       <p>{window.i18n('recoveryPhraseRevealMessage')}</p>
       <SessionButton
+        // TODO: String localization - remove
         text={window.i18n('recoveryPhraseRevealButtonText')}
         onClick={showRecoveryPhraseModal}
         dataTestId="reveal-recovery-phrase"
@@ -98,6 +100,7 @@ export const LeftPaneBanner = () => {
         <StyledProgressBarInner />
       </StyledProgressBarContainer>
       <StyledBannerTitle>
+        {/** TODO: String localization - remove */}
         {window.i18n('recoveryPhraseSecureTitle')} <span>90%</span>
       </StyledBannerTitle>
       <Flex flexDirection="column" justifyContent="space-between" padding={'var(--margins-sm)'}>
@@ -118,12 +121,12 @@ export const LeftPaneSectionHeader = () => {
 
   switch (focusedSection) {
     case SectionType.Settings:
-      label = window.i18n('settingsHeader');
+      label = window.i18n('sessionSettings');
       break;
     case SectionType.Message:
       label = isMessageRequestOverlayShown
-        ? window.i18n('messageRequests')
-        : window.i18n('messagesHeader');
+        ? window.i18n('sessionMessageRequests')
+        : window.i18n('messages');
       break;
     default:
   }

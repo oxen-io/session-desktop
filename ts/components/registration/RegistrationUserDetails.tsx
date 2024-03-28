@@ -12,9 +12,9 @@ const DisplayNameInput = (props: {
   return (
     <SessionInput
       autoFocus={props.stealAutoFocus || false}
-      label={window.i18n('displayName')}
+      label={window.i18n('displayNameEnter')}
       type="text"
-      placeholder={window.i18n('enterDisplayName')}
+      placeholder={window.i18n('displayNameEnter')}
       value={props.displayName}
       maxLength={MAX_USERNAME_BYTES}
       onValueChanged={props.onDisplayNameChanged}
@@ -32,11 +32,11 @@ const RecoveryPhraseInput = (props: {
 }) => {
   return (
     <SessionInput
-      label={window.i18n('recoveryPhrase')}
+      label={window.i18n('sessionRecoveryPassword')}
       type="password"
       value={props.recoveryPhrase}
       autoFocus={props.stealAutoFocus || false}
-      placeholder={window.i18n('enterRecoveryPhrase')}
+      placeholder={window.i18n('recoveryPasswordEnter')}
       enableShowHide={true}
       onValueChanged={props.onSeedChanged}
       onEnterPressed={props.handlePressEnter}

@@ -115,7 +115,7 @@ const ContactsTitle = () => {
   }
 
   return (
-    <StyledChooseActionTitle tabIndex={0}>{window.i18n('contactsHeader')}</StyledChooseActionTitle>
+    <StyledChooseActionTitle tabIndex={0}>{window.i18n('contactContacts')}</StyledChooseActionTitle>
   );
 };
 

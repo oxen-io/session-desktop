@@ -46,18 +46,18 @@ function useFollowSettingsButtonClick(
   const doIt = () => {
     const mode =
       props.expirationMode === 'deleteAfterRead'
-        ? window.i18n('timerModeRead')
-        : window.i18n('timerModeSent');
+        ? window.i18n('disappearingMessagesTypeRead')
+        : window.i18n('disappearingMessagesTypeSent');
     const message = props.disabled
-      ? window.i18n('followSettingDisabled')
+      ? window.i18n('disappearingMessagesFollowSettingOff')
       : window.i18n('followSettingTimeAndType', {
           time: props.timespanText,
           type: mode,
         });
-    const okText = props.disabled ? window.i18n('confirm') : window.i18n('set');
+    const okText = props.disabled ? window.i18n('yes') : window.i18n('set');
     dispatch(
       updateConfirmModal({
-        title: window.i18n('followSetting'),
+        title: window.i18n('disappearingMessagesFollowSetting'),
         message,
         okText,
         okTheme: SessionButtonColor.Danger,
@@ -131,7 +131,7 @@ const FollowSettingsButton = (props: PropsForExpirationTimer) => {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick={() => click.doIt()}
     >
-      {window.i18n('followSetting')}
+      {window.i18n('disappearingMessagesFollowSetting')}
     </FollowSettingButton>
   );
 };
@@ -150,22 +150,20 @@ function useTextToRender(props: PropsForExpirationTimer) {
   const mode = isLegacyDisappearingModeEnabled(expirationMode)
     ? null
     : expirationMode === 'deleteAfterRead'
-    ? window.i18n('timerModeRead')
-    : window.i18n('timerModeSent');
+      ? window.i18n('disappearingMessagesTypeRead')
+      : window.i18n('disappearingMessagesTypeSent');
   switch (type) {
     case 'fromOther':
       if (disabled) {
-        return ownSideOnly
-          ? window.i18n('theyDisabledTheirDisappearingMessages', { name: contact })
-          : window.i18n('disappearingMessagesTurnedOff', { name: contact });
+        return window.i18n('disappearingMessagesTurnedOff', { name: contact });
       }
 
       if (mode) {
         return ownSideOnly
-          ? window.i18n('theySetTheirDisappearingMessages', {
+          ? window.i18n('disappearingMessagesChanged', {
               name: contact,
               time: timespanText,
-              type: mode,
+              disappearingmessagestype: mode,
             })
           : window.i18n('theyChangedTheTimer', {
               name: contact,
@@ -186,7 +184,10 @@ function useTextToRender(props: PropsForExpirationTimer) {
       }
       if (mode) {
         return ownSideOnly
-          ? window.i18n('youSetYourDisappearingMessages', { time: timespanText, type: mode })
+          ? window.i18n('disappearingMessagesSetYou', {
+              time: timespanText,
+              disappearingmessagestype: mode,
+            })
           : window.i18n('youChangedTheTimer', { time: timespanText, mode });
       }
       return window.i18n('youChangedTheTimerLegacy', { time: timespanText });

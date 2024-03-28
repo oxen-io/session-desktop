@@ -9,11 +9,19 @@ import {
   _getConversationComparator,
   _getSortedConversations,
 } from '../../../../state/selectors/conversations';
+import type {
+  GetMessageArgs,
+  LocalizerDictionary,
+  LocalizerToken,
+} from '../../../../types/Localizer';
+
+const i18n = <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+  ...[token]: GetMessageArgs<T>
+) => token as any as R;
 
 describe('state/selectors/conversations', () => {
   describe('#getSortedConversationsList', () => {
     it('sorts conversations based on timestamp then by intl-friendly title', () => {
-      const i18n = (key: string) => key;
       const data: ConversationLookupType = {
         id1: {
           id: 'id1',
@@ -145,7 +153,6 @@ describe('state/selectors/conversations', () => {
 
   describe('#getSortedConversationsWithPinned', () => {
     it('sorts conversations based on pin, timestamp then by intl-friendly title', () => {
-      const i18n = (key: string) => key;
       const data: ConversationLookupType = {
         id1: {
           id: 'id1',

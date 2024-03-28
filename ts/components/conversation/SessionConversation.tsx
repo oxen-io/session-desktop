@@ -127,10 +127,8 @@ export class SessionConversation extends React.Component<Props, State> {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   public componentDidUpdate(prevProps: Props, _prevState: State) {
-    const {
-      selectedConversationKey: newConversationKey,
-      selectedConversation: newConversation,
-    } = this.props;
+    const { selectedConversationKey: newConversationKey, selectedConversation: newConversation } =
+      this.props;
     const { selectedConversationKey: oldConversationKey } = prevProps;
 
     // if the convo is valid, and it changed, register for drag events
@@ -211,8 +209,8 @@ export class SessionConversation extends React.Component<Props, State> {
     if (msg.body.replace(/\s/g, '').includes(recoveryPhrase.replace(/\s/g, ''))) {
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          title: window.i18n('sendRecoveryPhraseTitle'),
-          message: window.i18n('sendRecoveryPhraseMessage'),
+          title: window.i18n('warning'),
+          message: window.i18n('recoveryPasswordWarningSendDescription'),
           okTheme: SessionButtonColor.Danger,
           onClickOk: () => {
             void sendAndScroll();
@@ -255,7 +253,9 @@ export class SessionConversation extends React.Component<Props, State> {
     const bannerText =
       selectedConversation.hasOutdatedClient &&
       selectedConversation.hasOutdatedClient !== ourDisplayNameInProfile
-        ? window.i18n('disappearingMessagesModeOutdated', [selectedConversation.hasOutdatedClient])
+        ? window.i18n('disappearingMessagesLegacy', {
+            name: selectedConversation.hasOutdatedClient,
+          })
         : window.i18n('someOfYourDeviceUseOutdatedVersion');
 
     return (

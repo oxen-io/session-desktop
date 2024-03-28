@@ -6,7 +6,7 @@ import { ToastUtils } from '../../session/utils';
 import { Data } from '../../data/data';
 import { SpacerSM } from '../basic/Text';
 import { sessionPassword } from '../../state/ducks/modalDialog';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import { LocalizerToken } from '../../types/Localizer';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
@@ -60,32 +60,32 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     switch (passwordAction) {
       case 'change':
         placeholders = [
-          window.i18n('typeInOldPassword'),
-          window.i18n('enterNewPassword'),
-          window.i18n('confirmNewPassword'),
+          window.i18n('passwordEnterCurrent'),
+          window.i18n('passwordEnterNew'),
+          window.i18n('passwordConfirm'),
         ];
         break;
       case 'remove':
-        placeholders = [window.i18n('enterPassword')];
+        placeholders = [window.i18n('passwordCreate')];
         break;
       case 'enter':
-        placeholders = [window.i18n('enterPassword')];
+        placeholders = [window.i18n('passwordCreate')];
         break;
       default:
-        placeholders = [window.i18n('createPassword'), window.i18n('confirmPassword')];
+        placeholders = [window.i18n('createPassword'), window.i18n('passwordConfirm')];
     }
 
     const confirmButtonText =
       passwordAction === 'remove' ? window.i18n('remove') : window.i18n('done');
     // do this separately so typescript's compiler likes it
-    const localizedKeyAction: LocalizerKeys =
+    const localizedKeyAction: LocalizerToken =
       passwordAction === 'change'
-        ? 'changePassword'
+        ? 'passwordChange'
         : passwordAction === 'remove'
-        ? 'removePassword'
+        ? 'passwordRemove'
         : passwordAction === 'enter'
-        ? 'passwordViewTitle'
-        : 'setPassword';
+        ? 'passwordEnter'
+        : 'passwordSet';
 
     return (
       <SessionWrapperModal title={window.i18n(localizedKeyAction)} onClose={this.closeDialog}>
@@ -189,7 +189,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
 
     if (enteredPassword !== enteredPasswordConfirm) {
       this.setState({
-        error: window.i18n('setPasswordInvalid'),
+        error: window.i18n('passwordErrorMatch'),
       });
       this.showError();
       return;
@@ -197,8 +197,8 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     await window.setPassword(enteredPassword, null);
     ToastUtils.pushToastSuccess(
       'setPasswordSuccessToast',
-      window.i18n('setPasswordTitle'),
-      window.i18n('setPasswordToastDescription')
+      window.i18n('passwordSet'),
+      window.i18n('passwordSetDescription')
     );
 
     this.props.onOk();
@@ -219,7 +219,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     // Check the retyped password matches the new password
     if (newPassword !== newConfirmedPassword) {
       this.setState({
-        error: window.i18n('passwordsDoNotMatch'),
+        error: window.i18n('passwordErrorMatch'),
       });
       this.showError();
       return;
@@ -228,7 +228,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     const isValidWithStoredInDB = Boolean(await this.validatePasswordHash(oldPassword));
     if (!isValidWithStoredInDB) {
       this.setState({
-        error: window.i18n('changePasswordInvalid'),
+        error: window.i18n('passwordCurrentIncorrect'),
       });
       this.showError();
       return;
@@ -237,8 +237,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
 
     ToastUtils.pushToastSuccess(
       'setPasswordSuccessToast',
-      window.i18n('changePasswordTitle'),
-      window.i18n('changePasswordToastDescription')
+      window.i18n('passwordChangedDescription')
     );
 
     this.props.onOk();
@@ -250,7 +249,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     const isValidWithStoredInDB = Boolean(await this.validatePasswordHash(oldPassword));
     if (!isValidWithStoredInDB) {
       this.setState({
-        error: window.i18n('removePasswordInvalid'),
+        error: window.i18n('passwordIncorrect'),
       });
       this.showError();
       return;
@@ -259,8 +258,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
 
     ToastUtils.pushToastWarning(
       'setPasswordSuccessToast',
-      window.i18n('removePasswordTitle'),
-      window.i18n('removePasswordToastDescription')
+      window.i18n('passwordRemovedDescription')
     );
 
     this.props.onOk();
@@ -283,7 +281,7 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     const isValidWithStoredInDB = Boolean(await this.validatePasswordHash(enteredPassword));
     if (!isValidWithStoredInDB) {
       this.setState({
-        error: window.i18n('invalidPassword'),
+        error: window.i18n('passwordIncorrect'),
       });
       this.showError();
       return;

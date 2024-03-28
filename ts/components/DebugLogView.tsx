@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { switchThemeTo } from '../themes/switchTheme';
 import { SessionTheme } from '../themes/SessionTheme';
+import { switchThemeTo } from '../themes/switchTheme';
 import { fetch } from '../util/logging';
 import { SessionButton, SessionButtonType } from './basic/SessionButton';
 import { SessionIconButton } from './icon';
@@ -55,7 +55,7 @@ const DebugLogButtons = (props: { content: string }) => {
   return (
     <div className="buttons">
       <SessionButton
-        text={window.i18n('saveLogToDesktop')}
+        text={window.i18n('helpReportABugExportLogsSaveToDesktop')}
         buttonType={SessionButtonType.Simple}
         onClick={() => {
           if (props.content.length <= 20) {
@@ -70,7 +70,7 @@ const DebugLogButtons = (props: { content: string }) => {
 };
 
 const DebugLogViewAndSave = () => {
-  const [content, setContent] = useState(window.i18n('loading'));
+  const [content, setContent] = useState<string>(window.i18n('loading'));
 
   useEffect(() => {
     const operatingSystemInfo = `Operating System: ${(window as any).getOSRelease()}`;
@@ -116,8 +116,8 @@ export const DebugLogView = () => {
               window.closeDebugLog();
             }}
           />
-          <h1> {window.i18n('debugLog')} </h1>
-          <p> {window.i18n('debugLogExplanation')}</p>
+          <h1> {window.i18n('helpReportABugExportLogs')} </h1>
+          <p> {window.i18n('helpReportABugExportLogsSaveToDesktopDescription')}</p>
         </div>
         <DebugLogViewAndSave />
       </StyledContent>

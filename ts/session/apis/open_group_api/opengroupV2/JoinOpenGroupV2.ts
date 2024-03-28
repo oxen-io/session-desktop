@@ -95,7 +95,7 @@ async function joinOpenGroupV2(
 
     if (!conversation) {
       window?.log?.warn('Failed to join open group v2');
-      throw new Error(window.i18n('connectToServerFail'));
+      throw new Error(window.i18n('groupErrorJoin'));
     }
 
     // here we managed to connect to the group.
@@ -151,12 +151,12 @@ export async function joinOpenGroupV2WithUIEvents(
       await existingConvo.setIsApproved(true, false);
       await existingConvo.commit();
       if (showToasts) {
-        ToastUtils.pushToastError('publicChatExists', window.i18n('publicChatExists'));
+        ToastUtils.pushToastError('publicChatExists', window.i18n('communityJoinedAlready'));
       }
       return false;
     }
     if (showToasts) {
-      ToastUtils.pushToastInfo('connectingToServer', window.i18n('connectingToServer'));
+      ToastUtils.pushToastInfo('connectingToServer', window.i18n('callsConnecting'));
     }
 
     uiCallback?.({ loadingState: 'started', conversationKey: conversationID });
@@ -165,24 +165,21 @@ export async function joinOpenGroupV2WithUIEvents(
 
     if (convoCreated) {
       if (showToasts) {
-        ToastUtils.pushToastSuccess(
-          'connectToServerSuccess',
-          window.i18n('connectToServerSuccess')
-        );
+        ToastUtils.pushToastSuccess('connectToServerSuccess', window.i18n('communityJoined'));
       }
       uiCallback?.({ loadingState: 'finished', conversationKey: convoCreated?.id });
 
       return true;
     }
     if (showToasts) {
-      ToastUtils.pushToastError('connectToServerFail', window.i18n('connectToServerFail'));
+      ToastUtils.pushToastError('connectToServerFail', window.i18n('groupErrorJoin'));
     }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
   } catch (error) {
     window?.log?.warn('got error while joining open group:', error.message);
     if (showToasts) {
-      ToastUtils.pushToastError('connectToServerFail', window.i18n('connectToServerFail'));
+      ToastUtils.pushToastError('connectToServerFail', window.i18n('groupErrorJoin'));
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }

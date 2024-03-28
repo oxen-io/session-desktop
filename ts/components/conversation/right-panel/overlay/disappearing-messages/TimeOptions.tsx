@@ -21,7 +21,7 @@ export const TimeOptions = (props: TimerOptionsProps) => {
 
   return (
     <>
-      {!hasOnlyOneMode && <PanelLabel>{window.i18n('timer')}</PanelLabel>}
+      {!hasOnlyOneMode && <PanelLabel>{window.i18n('disappearingMessagesTimer')}</PanelLabel>}
       <PanelButtonGroup>
         {options.map(option => {
           return (

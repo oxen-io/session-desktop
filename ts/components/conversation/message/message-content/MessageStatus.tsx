@@ -242,7 +242,10 @@ const MessageStatusError = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
       isIncoming={false}
       isGroup={isGroup}
     >
-      <TextDetails text={window.i18n('failedToSendMessage')} textColor="var(--danger-color)" />
+      <TextDetails
+        text={window.i18n('messageStatusFailedToSend')}
+        textColor="var(--danger-color)"
+      />
       <IconDanger iconType="error" />
     </MessageStatusContainer>
   );

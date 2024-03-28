@@ -106,7 +106,7 @@ export const BanOrUnBanUserDialog = (props: {
   };
 
   const chatName = convo.getNicknameOrRealUsernameOrPlaceholder();
-  const title = `${isBan ? window.i18n('banUser') : window.i18n('unbanUser')}: ${chatName}`;
+  const title = `${isBan ? window.i18n('banUser') : window.i18n('banUnbanUser')}: ${chatName}`;
 
   const onPubkeyBoxChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputBoxValue(e.target.value?.trim() || '');
@@ -119,7 +119,7 @@ export const BanOrUnBanUserDialog = (props: {
     await banOrUnBanUser(true);
   };
 
-  const buttonText = isBan ? i18n('banUser') : i18n('unbanUser');
+  const buttonText = isBan ? i18n('banUser') : i18n('banUnbanUser');
 
   return (
     <SessionWrapperModal
@@ -134,7 +134,7 @@ export const BanOrUnBanUserDialog = (props: {
           ref={inputRef}
           type="text"
           darkMode={darkMode}
-          placeholder={i18n('enterSessionID')}
+          placeholder={i18n('accountIdEnter')}
           dir="auto"
           onChange={onPubkeyBoxChanges}
           disabled={inProgress || wasGivenAPubkey}
@@ -154,7 +154,7 @@ export const BanOrUnBanUserDialog = (props: {
                 buttonType={SessionButtonType.Simple}
                 buttonColor={SessionButtonColor.Danger}
                 onClick={startBanAndDeleteAllSequence}
-                text={i18n('banUserAndDeleteAll')}
+                text={i18n('banUser')}
                 disabled={inProgress}
               />
             </>

@@ -113,12 +113,14 @@ export const SettingsThemeSwitcher = () => {
 
   return (
     <StyledSwitcherContainer>
-      <StyledTitleSettingsItem>{window.i18n('themesSettingTitle')}</StyledTitleSettingsItem>
+      <StyledTitleSettingsItem>{window.i18n('appearanceThemes')}</StyledTitleSettingsItem>
       <ThemesContainer>
         <Themes />
       </ThemesContainer>
       <SpacerMD />
-      <StyledDescriptionSettingsItem>{window.i18n('primaryColor')}</StyledDescriptionSettingsItem>
+      <StyledDescriptionSettingsItem>
+        {window.i18n('appearancePrimaryColor')}
+      </StyledDescriptionSettingsItem>
       <SpacerMD />
       <ThemesContainer style={{ marginInlineStart: 'var(--margins-xs)' }}>
         {getPrimaryColors().map(item => {

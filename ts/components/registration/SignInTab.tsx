@@ -25,7 +25,7 @@ const LinkDeviceButton = (props: { onLinkDeviceButtonClicked: () => any }) => {
   return (
     <SessionButton
       onClick={props.onLinkDeviceButtonClicked}
-      text={window.i18n('linkDevice')}
+      text={window.i18n('onboardingAccountExists')}
       dataTestId="link-device"
     />
   );
@@ -35,7 +35,7 @@ const RestoreUsingRecoveryPhraseButton = (props: { onRecoveryButtonClicked: () =
   return (
     <SessionButton
       onClick={props.onRecoveryButtonClicked}
-      text={window.i18n('restoreUsingRecoveryPhrase')}
+      text={window.i18n('onboardingAccountExists')}
       dataTestId="restore-using-recovery"
     />
   );
@@ -48,7 +48,7 @@ const ContinueYourSessionButton = (props: {
   return (
     <SessionButton
       onClick={props.handleContinueYourSessionClick}
-      text={window.i18n('continueYourSession')}
+      text={window.i18n('onboardingAccountExists')}
       disabled={props.disabled}
       dataTestId="continue-session-button"
     />
@@ -97,7 +97,7 @@ export function sanitizeDisplayNameOrToast(
     const sanitizedName = sanitizeSessionUsername(displayName);
     const trimName = sanitizedName.trim();
     setDisplayName(sanitizedName);
-    setDisplayNameError(!trimName ? window.i18n('displayNameEmpty') : undefined);
+    setDisplayNameError(!trimName ? window.i18n('displayNameErrorDescription') : undefined);
   } catch (e) {
     setDisplayName(displayName);
     setDisplayNameError(window.i18n('displayNameTooLong'));
@@ -162,7 +162,7 @@ export const SignInTab = () => {
             }}
             onSeedChanged={(seed: string) => {
               setRecoveryPhrase(seed);
-              setRecoveryPhraseError(!seed ? window.i18n('recoveryPhraseEmpty') : undefined);
+              setRecoveryPhraseError(!seed ? window.i18n('recoveryPasswordEnter') : undefined);
             }}
             recoveryPhrase={recoveryPhrase}
             stealAutoFocus={true}

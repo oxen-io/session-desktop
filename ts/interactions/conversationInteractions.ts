@@ -91,7 +91,10 @@ export async function blockConvoById(conversationId: string) {
 
   await BlockedNumberController.block(conversation.id);
   await conversation.commit();
-  ToastUtils.pushToastSuccess('blocked', window.i18n('blocked'));
+  ToastUtils.pushToastSuccess(
+    'blocked',
+    window.i18n('blocked', { name: conversation.getNicknameOrRealUsernameOrPlaceholder() ?? '' })
+  );
 }
 
 export async function unblockConvoById(conversationId: string) {
@@ -101,14 +104,24 @@ export async function unblockConvoById(conversationId: string) {
     // we assume it's a block contact and not group.
     // this is to be able to unlock a contact we don't have a conversation with.
     await BlockedNumberController.unblockAll([conversationId]);
-    ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
+    ToastUtils.pushToastSuccess(
+      'unblocked',
+      window.i18n('blockUnblockedUser', {
+        name: conversationId,
+      })
+    );
     return;
   }
   if (!conversation.id || conversation.isPublic()) {
     return;
   }
   await BlockedNumberController.unblockAll([conversationId]);
-  ToastUtils.pushToastSuccess('unblocked', window.i18n('unblocked'));
+  ToastUtils.pushToastSuccess(
+    'unblocked',
+    window.i18n('blockUnblockedUser', {
+      name: conversation.getNicknameOrRealUsernameOrPlaceholder() ?? '',
+    })
+  );
   await conversation.commit();
 }
 
@@ -187,7 +200,7 @@ export const declineConversationWithConfirm = ({
     updateConfirmModal({
       okText: blockContact ? window.i18n('block') : window.i18n('decline'),
       cancelText: window.i18n('cancel'),
-      message: window.i18n('declineRequestMessage'),
+      message: window.i18n('messageRequestsDelete'),
       onClickOk: async () => {
         await declineConversationWithoutConfirm({
           conversationId,
@@ -232,10 +245,7 @@ export async function showUpdateGroupMembersByConvoId(conversationId: string) {
   window.inboxStore?.dispatch(updateGroupMembersModal({ conversationId }));
 }
 
-export function showLeavePrivateConversationbyConvoId(
-  conversationId: string,
-  name: string | undefined
-) {
+export function showLeavePrivateConversationbyConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
   const isMe = conversation.isMe();
 
@@ -274,10 +284,10 @@ export function showLeavePrivateConversationbyConvoId(
 
   window?.inboxStore?.dispatch(
     updateConfirmModal({
-      title: isMe ? window.i18n('hideConversation') : window.i18n('deleteConversation'),
+      title: isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete'),
       message: isMe
-        ? window.i18n('hideNoteToSelfConfirmation')
-        : window.i18n('deleteConversationConfirmation', name ? [name] : ['']),
+        ? window.i18n('noteToSelfHideDescription')
+        : window.i18n('deleteMessagesDescriptionEveryone'),
       onClickOk,
       okText: isMe ? window.i18n('hide') : window.i18n('delete'),
       okTheme: SessionButtonColor.Danger,
@@ -364,8 +374,8 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     // NOTE For legacy closed groups
     window?.inboxStore?.dispatch(
       updateConfirmModal({
-        title: window.i18n('leaveGroup'),
-        message: window.i18n('leaveGroupConrirmationOnlyAdminLegacy', name ? [name] : ['']),
+        title: window.i18n('groupLeave'),
+        message: window.i18n('groupLeaveDescriptionAdmin', { groupname: name ?? '' }),
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -382,8 +392,8 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     // };
     // window?.inboxStore?.dispatch(
     //   updateConfirmModal({
-    //     title: window.i18n('leaveGroup'),
-    //     message: window.i18n('leaveGroupConfirmationOnlyAdmin', name ? [name] : ['']),
+    //     title: window.i18n('groupLeave'),
+    //     message: window.i18n('leaveGroupConfirmationOnlyAdmin', {name: name ?? ''}),
     //     messageSub: window.i18n('leaveGroupConfirmationOnlyAdminWarning'),
     //     onClickOk: onClickOkLastAdmin,
     //     okText: window.i18n('addModerator'),
@@ -399,8 +409,8 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
   } else if (isPublic || (isClosedGroup && !isAdmin)) {
     window?.inboxStore?.dispatch(
       updateConfirmModal({
-        title: isPublic ? window.i18n('leaveCommunity') : window.i18n('leaveGroup'),
-        message: window.i18n('leaveGroupConfirmation', name ? [name] : ['']),
+        title: isPublic ? window.i18n('communityLeave') : window.i18n('groupLeave'),
+        message: window.i18n('groupLeaveDescription', { groupname: name ?? '' }),
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -718,8 +728,8 @@ export async function showLinkSharingConfirmationModalDialog(e: any) {
         updateConfirmModal({
           shouldShowConfirm:
             !window.getSettingValue(SettingsKey.settingsLinkPreview) && !alreadyDisplayedPopup,
-          title: window.i18n('linkPreviewsTitle'),
-          message: window.i18n('linkPreviewsConfirmMessage'),
+          title: window.i18n('linkPreviewsSend'),
+          message: window.i18n('linkPreviewsSendModalDescription'),
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {
             await window.setSettingValue(SettingsKey.settingsLinkPreview, true);

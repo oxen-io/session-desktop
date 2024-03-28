@@ -46,15 +46,15 @@ const getCategories = () => {
   return [
     {
       id: SessionSettingCategory.Privacy,
-      title: window.i18n('privacySettingsTitle'),
+      title: window.i18n('sessionPrivacy'),
     },
     {
       id: SessionSettingCategory.Notifications,
-      title: window.i18n('notificationsSettingsTitle'),
+      title: window.i18n('sessionNotifications'),
     },
     {
       id: SessionSettingCategory.Conversations,
-      title: window.i18n('conversationsSettingsTitle'),
+      title: window.i18n('sessionConversations'),
     },
     {
       id: SessionSettingCategory.MessageRequests,
@@ -62,23 +62,23 @@ const getCategories = () => {
     },
     {
       id: SessionSettingCategory.Appearance,
-      title: window.i18n('appearanceSettingsTitle'),
+      title: window.i18n('sessionAppearance'),
     },
     {
       id: SessionSettingCategory.Permissions,
-      title: window.i18n('permissionsSettingsTitle'),
+      title: window.i18n('sessionPermissions'),
     },
     {
       id: SessionSettingCategory.Help,
-      title: window.i18n('helpSettingsTitle'),
+      title: window.i18n('sessionHelp'),
     },
     {
       id: SessionSettingCategory.RecoveryPhrase,
-      title: window.i18n('recoveryPhrase'),
+      title: window.i18n('sessionRecoveryPassword'),
     },
     {
       id: SessionSettingCategory.ClearData,
-      title: window.i18n('clearDataSettingsTitle'),
+      title: window.i18n('sessionClearData'),
     },
   ];
 };

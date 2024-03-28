@@ -147,7 +147,7 @@ export const SessionJoinableRooms = (props: {
 
   return (
     <Flex container={true} flexGrow={1} flexDirection="column" width="93%">
-      <H3 text={window.i18n('orJoinOneOfThese')} />
+      <H3 text={window.i18n('communityJoinOfficial')} />
       <Flex container={true} flexGrow={0} flexWrap="wrap" justifyContent="center">
         {joinableRooms.inProgress ? (
           <SessionSpinner loading={true} />

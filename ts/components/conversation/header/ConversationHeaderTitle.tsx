@@ -51,9 +51,8 @@ export const ConversationHeaderTitle = () => {
     abbreviate: true,
   });
 
-  const [visibleSubtitle, setVisibleSubtitle] = useState<SubtitleStringsType>(
-    'disappearingMessages'
-  );
+  const [visibleSubtitle, setVisibleSubtitle] =
+    useState<SubtitleStringsType>('disappearingMessages');
 
   const [subtitleStrings, setSubtitleStrings] = useState<SubtitleStrings>({});
   const [subtitleArray, setSubtitleArray] = useState<Array<SubtitleStringsType>>([]);
@@ -77,7 +76,7 @@ export const ConversationHeaderTitle = () => {
 
     if (isGroup && memberCount > 0 && !isKickedFromGroup) {
       const count = String(memberCount);
-      return i18n(isPublic ? 'activeMembers' : 'members', { count });
+      return i18n(isPublic ? 'membersActive' : 'members', { count });
     }
 
     return null;

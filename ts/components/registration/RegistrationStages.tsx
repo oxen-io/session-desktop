@@ -36,7 +36,7 @@ const displayNameIsValid = (displayName: string): undefined | string => {
 
   if (!trimName) {
     window?.log?.warn('invalid trimmed name for registration');
-    ToastUtils.pushToastError('invalidDisplayName', window.i18n('displayNameEmpty'));
+    ToastUtils.pushToastError('invalidDisplayName', window.i18n('displayNameErrorDescription'));
     return undefined;
   }
   return trimName;

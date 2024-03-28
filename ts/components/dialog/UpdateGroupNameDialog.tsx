@@ -56,7 +56,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
     const { groupName, newAvatarObjecturl, oldAvatarPath } = this.state;
     const trimmedGroupName = groupName?.trim();
     if (!trimmedGroupName) {
-      this.onShowError(window.i18n('emptyGroupNameError'));
+      this.onShowError(window.i18n('groupNameEnterPlease'));
 
       return;
     }
@@ -82,9 +82,10 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
   public render() {
     const okText = window.i18n('ok');
     const cancelText = window.i18n('cancel');
-    const titleText = window.i18n('updateGroupDialogTitle', [
-      this.convo.getRealSessionUsername() || window.i18n('unknown'),
-    ]);
+    // TODO: String localization - remove
+    const titleText = window.i18n('updateGroupDialogTitle', {
+      name: this.convo.getRealSessionUsername() ?? window.i18n('unknown'),
+    });
 
     const errorMsg = this.state.errorMessage;
     const errorMessageClasses = classNames(
@@ -116,7 +117,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
             type="text"
             className="profile-name-input"
             value={this.state.groupName}
-            placeholder={window.i18n('groupNamePlaceholder')}
+            placeholder={window.i18n('groupName')}
             onChange={this.onGroupNameChanged}
             tabIndex={0}
             required={true}

@@ -68,7 +68,7 @@ export function useConversationsUsernameWithQuoteOrFullPubkey(pubkeys: Array<str
   return useSelector((state: StateType) => {
     return pubkeys.map(pubkey => {
       if (pubkey === UserUtils.getOurPubKeyStrFromCache() || pubkey.toLowerCase() === 'you') {
-        return window.i18n('you');
+        return window.i18n('onionRoutingPathYou');
       }
       const convo = state.conversations.conversationLookup[pubkey];
       const nameGot = convo?.displayNameInProfile;
@@ -359,7 +359,7 @@ export function useQuoteAuthorName(
 
   const isMe = Boolean(authorId && isUsAnySogsFromCache(authorId));
   const authorName = isMe
-    ? window.i18n('you')
+    ? window.i18n('onionRoutingPathYou')
     : convoProps?.nickname || convoProps?.isPrivate
     ? convoProps?.displayNameInProfile
     : undefined;
@@ -401,13 +401,13 @@ export function useDisappearingMessageSettingText({
   // TODO legacy messages support will be removed in a future release
   const expirationModeText =
     expirationMode === 'deleteAfterRead'
-      ? window.i18n('disappearingMessagesModeAfterRead')
+      ? window.i18n('disappearingMessagesDisappearAfterRead')
       : expirationMode === 'deleteAfterSend'
-      ? window.i18n('disappearingMessagesModeAfterSend')
+      ? window.i18n('disappearingMessagesDisappearAfterSend')
       : expirationMode === 'legacy'
       ? isMe || (isGroup && !isPublic)
-        ? window.i18n('disappearingMessagesModeAfterSend')
-        : window.i18n('disappearingMessagesModeAfterRead')
+      ? window.i18n('disappearingMessagesDisappearAfterSend')
+      : window.i18n('disappearingMessagesDisappearAfterRead')
       : null;
 
   const expireTimerText = isNumber(expireTimer)

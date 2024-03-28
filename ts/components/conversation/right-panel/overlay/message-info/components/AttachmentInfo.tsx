@@ -21,31 +21,31 @@ export const AttachmentInfo = (props: Props) => {
   return (
     <Flex container={true} flexDirection="column">
       <LabelWithInfo
-        label={`${window.i18n('fileId')}:`}
-        info={attachment?.id ? String(attachment.id) : window.i18n('notApplicable')}
+        label={`${window.i18n('attachmentsFileId')}`}
+        info={attachment?.id ? String(attachment.id) : window.i18n('attachmentsNa')}
       />
       <StyledLabelContainer container={true} flexDirection="row" flexWrap="wrap">
         <LabelWithInfo
           label={`${window.i18n('fileType')}:`}
           info={
-            attachment?.contentType ? String(attachment.contentType) : window.i18n('notApplicable')
+            attachment?.contentType ? String(attachment.contentType) : window.i18n('attachmentsNa')
           }
         />
         <LabelWithInfo
-          label={`${window.i18n('fileSize')}:`}
-          info={attachment?.fileSize ? String(attachment.fileSize) : window.i18n('notApplicable')}
+          label={`${window.i18n('attachmentsFileSize')}`}
+          info={attachment?.fileSize ? String(attachment.fileSize) : window.i18n('attachmentsNa')}
         />
         <LabelWithInfo
-          label={`${window.i18n('resolution')}:`}
+          label={window.i18n('attachmentsResolution')}
           info={
             attachment?.width && attachment.height
               ? `${attachment.width}x${attachment.height}`
-              : window.i18n('notApplicable')
+              : window.i18n('attachmentsNa')
           }
         />
         <LabelWithInfo
-          label={`${window.i18n('duration')}:`}
-          info={attachment?.duration ? attachment?.duration : window.i18n('notApplicable')}
+          label={`${window.i18n('attachmentsDuration')}:`}
+          info={attachment?.duration ? attachment?.duration : window.i18n('attachmentsNa')}
         />
       </StyledLabelContainer>
     </Flex>

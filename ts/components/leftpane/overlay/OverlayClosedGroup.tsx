@@ -48,7 +48,7 @@ const StyledGroupMemberList = styled.div`
 
 const NoContacts = () => {
   return (
-    <StyledMemberListNoContacts>{window.i18n('noContactsForGroup')}</StyledMemberListNoContacts>
+    <StyledMemberListNoContacts>{window.i18n('conversationsNone')}</StyledMemberListNoContacts>
   );
 };
 
@@ -61,12 +61,12 @@ async function createClosedGroupWithToasts(
 ): Promise<boolean> {
   // Validate groupName and groupMembers length
   if (groupName.length === 0) {
-    ToastUtils.pushToastError('invalidGroupName', window.i18n('invalidGroupNameTooShort'));
+    ToastUtils.pushToastError('invalidGroupName', window.i18n('groupNameEnterPlease'));
 
     return false;
   }
   if (groupName.length > VALIDATION.MAX_GROUP_NAME_LENGTH) {
-    ToastUtils.pushToastError('invalidGroupName', window.i18n('invalidGroupNameTooLong'));
+    ToastUtils.pushToastError('invalidGroupName', window.i18n('groupNameEnterShorter'));
     return false;
   }
 
@@ -74,11 +74,11 @@ async function createClosedGroupWithToasts(
   // the same is valid with groups count < 1
 
   if (groupMemberIds.length < 1) {
-    ToastUtils.pushToastError('pickClosedGroupMember', window.i18n('pickClosedGroupMember'));
+    ToastUtils.pushToastError('pickClosedGroupMember', window.i18n('groupCreateErrorNoMembers'));
     return false;
   }
   if (groupMemberIds.length >= VALIDATION.CLOSED_GROUP_SIZE_LIMIT) {
-    ToastUtils.pushToastError('closedGroupMaxSize', window.i18n('closedGroupMaxSize'));
+    ToastUtils.pushToastError('closedGroupMaxSize', window.i18n('groupAddMemberMaximum'));
     return false;
   }
 
@@ -120,10 +120,10 @@ export const OverlayClosedGroup = () => {
 
   useKey('Escape', closeOverlay);
 
-  const title = window.i18n('createGroup');
+  const title = window.i18n('groupCreate');
   const buttonText = window.i18n('create');
-  const subtitle = window.i18n('createClosedGroupNamePrompt');
-  const placeholder = window.i18n('createClosedGroupPlaceholder');
+  const subtitle = window.i18n('groupName');
+  const placeholder = window.i18n('groupNameEnter');
 
   const noContactsForClosedGroup = privateContactsPubkeys.length === 0;
 

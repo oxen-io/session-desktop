@@ -34,7 +34,7 @@ export const DisappearingModes = (props: DisappearingModesProps) => {
 
   return (
     <>
-      <PanelLabel>{window.i18n('disappearingMessagesModeLabel')}</PanelLabel>
+      <PanelLabel>{window.i18n('disappearingMessagesDeleteType')}</PanelLabel>
       <PanelButtonGroup>
         {Object.keys(options).map(_mode => {
           const mode = _mode as DisappearingMessageConversationModeType;
@@ -42,18 +42,18 @@ export const DisappearingModes = (props: DisappearingModesProps) => {
             mode === 'legacy'
               ? window.i18n('disappearingMessagesModeLegacy')
               : mode === 'deleteAfterRead'
-              ? window.i18n('disappearingMessagesModeAfterRead')
+              ? window.i18n('disappearingMessagesDisappearAfterRead')
               : mode === 'deleteAfterSend'
-              ? window.i18n('disappearingMessagesModeAfterSend')
-              : window.i18n('disappearingMessagesModeOff');
+              ? window.i18n('disappearingMessagesDisappearAfterSend')
+              : window.i18n('off');
 
           const subtitleI18n =
             mode === 'legacy'
               ? window.i18n('disappearingMessagesModeLegacySubtitle')
               : mode === 'deleteAfterRead'
-              ? window.i18n('disappearingMessagesModeAfterReadSubtitle')
+              ? window.i18n('disappearingMessagesDisappearAfterReadDescription')
               : mode === 'deleteAfterSend'
-              ? window.i18n('disappearingMessagesModeAfterSendSubtitle')
+              ? window.i18n('disappearingMessagesDisappearAfterSendDescription')
               : undefined;
 
           return (

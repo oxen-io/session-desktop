@@ -141,7 +141,7 @@ const ReactionSenders = (props: ReactionSendersProps) => {
               }}
             />
             {sender === me ? (
-              window.i18n('you')
+              window.i18n('onionRoutingPathYou')
             ) : (
               <ContactName
                 pubkey={sender}
@@ -181,14 +181,18 @@ const CountText = ({ count, emoji }: { count: number; emoji: string }) => {
       <SessionHtmlRenderer
         html={
           count > Reactions.SOGSReactorsFetchCount + 1
-            ? window.i18n('reactionListCountPlural', [
-                window.i18n('otherPlural', [String(count - Reactions.SOGSReactorsFetchCount)]),
+            ? window.i18n('reactionListCountPlural', {
+                otherPlural: window.i18n('otherPlural', {
+                  number: String(count - Reactions.SOGSReactorsFetchCount),
+                }),
                 emoji,
-              ])
-            : window.i18n('reactionListCountSingular', [
-                window.i18n('otherSingular', [String(count - Reactions.SOGSReactorsFetchCount)]),
+              })
+            : window.i18n('reactionListCountSingular', {
+                otherSingular: window.i18n('otherSingular', {
+                  number: String(count - Reactions.SOGSReactorsFetchCount),
+                }),
                 emoji,
-              ])
+              })
         }
       />
     </StyledCountText>

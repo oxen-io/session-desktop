@@ -123,7 +123,6 @@ const InviteContactsDialogInner = (props: Props) => {
     );
   }
 
-  const chatName = convoProps.displayNameInProfile || window.i18n('unknown');
   const isPublicConvo = convoProps.isPublic;
 
   const closeDialog = () => {
@@ -150,9 +149,7 @@ const InviteContactsDialogInner = (props: Props) => {
     return event.key === 'Esc' || event.key === 'Escape';
   }, closeDialog);
 
-  const unknown = window.i18n('unknown');
-
-  const titleText = `${window.i18n('addingContacts', [chatName || unknown])}`;
+  const titleText = `${window.i18n('membersInvite')}`;
   const cancelText = window.i18n('cancel');
   const okText = window.i18n('ok');
 
@@ -177,7 +174,7 @@ const InviteContactsDialogInner = (props: Props) => {
         ) : (
           <>
             <SpacerLG />
-            <p className="no-contacts">{window.i18n('noContactsToAdd')}</p>
+            <p className="no-contacts">{window.i18n('contactNone')}</p>
             <SpacerLG />
           </>
         )}

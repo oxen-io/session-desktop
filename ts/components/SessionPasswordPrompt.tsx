@@ -70,14 +70,14 @@ class SessionPasswordPromptInner extends React.PureComponent<unknown, State> {
     const isLoading = this.state.loading;
     const spinner = isLoading ? <SessionSpinner loading={true} /> : null;
     const featureElement = this.state.clearDataView ? (
-      <p>{window.i18n('deleteAccountFromLogin')}</p>
+      <p>{window.i18n('clearDeviceDescription')}</p>
     ) : (
       <div className="session-modal__input-group">
         <input
           type="password"
           id="password-prompt-input"
           defaultValue=""
-          placeholder={window.i18n('enterPassword')}
+          placeholder={window.i18n('passwordCreate')}
           onKeyUp={this.onKeyUp}
           ref={input => {
             this.inputRef = input;
@@ -88,9 +88,7 @@ class SessionPasswordPromptInner extends React.PureComponent<unknown, State> {
 
     return (
       <SessionWrapperModal
-        title={
-          this.state.clearDataView ? window.i18n('clearDevice') : window.i18n('passwordViewTitle')
-        }
+        title={this.state.clearDataView ? window.i18n('clearDevice') : window.i18n('passwordEnter')}
       >
         {spinner || featureElement}
         <TextPleaseWait isLoading={isLoading} />

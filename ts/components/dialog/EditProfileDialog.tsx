@@ -212,7 +212,7 @@ export const EditProfileDialog = (): ReactElement => {
     /* The <div> element has a child <input> element that allows keyboard interaction */
     <div className="edit-profile-dialog" data-testid="edit-profile-dialog" onKeyUp={handleOnKeyUp}>
       <SessionWrapperModal
-        title={window.i18n('editProfileModalTitle')}
+        title={window.i18n('profile')}
         onClose={closeDialog}
         headerIconButtons={backButton}
         showExitIcon={true}
@@ -254,7 +254,7 @@ export const EditProfileDialog = (): ReactElement => {
                 type="text"
                 className="profile-name-input"
                 value={profileName}
-                placeholder={window.i18n('displayName')}
+                placeholder={window.i18n('displayNameEnter')}
                 onChange={onNameEdited}
                 maxLength={MAX_USERNAME_BYTES}
                 tabIndex={0}
@@ -274,7 +274,7 @@ export const EditProfileDialog = (): ReactElement => {
 
           {mode === 'default' || mode === 'qr' ? (
             <SessionButton
-              text={window.i18n('editMenuCopy')}
+              text={window.i18n('copy')}
               buttonType={SessionButtonType.Simple}
               onClick={() => {
                 window.clipboard.writeText(ourId);

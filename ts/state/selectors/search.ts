@@ -73,11 +73,11 @@ export const getSearchResultsList = createSelector([getSearchResults], searchSta
   const { contactsAndGroups, messages } = searchState;
   const builtList: Array<SearchResultsMergedListItem> = [];
   if (contactsAndGroups.length) {
-    builtList.push(window.i18n('conversationsHeader', [`${contactsAndGroups.length}`]));
+    builtList.push(window.i18n('conversationsHeader', { count: contactsAndGroups.length }));
     builtList.push(...contactsAndGroups.map(m => ({ contactConvoId: m.id })));
   }
   if (messages.length) {
-    builtList.push(window.i18n('searchMessagesHeader', [`${messages.length}`]));
+    builtList.push(window.i18n('messages'));
     builtList.push(...messages);
   }
   return builtList;

@@ -64,7 +64,7 @@ export const InteractionItem = (props: InteractionItemProps) => {
       errorText = isCommunity
         ? window.i18n('leaveCommunityFailed')
         : isGroup
-        ? window.i18n('leaveGroupFailed')
+        ? window.i18n('groupErrorLeave')
         : window.i18n('deleteConversationFailed');
       text =
         interactionStatus === ConversationInteractionStatus.Error

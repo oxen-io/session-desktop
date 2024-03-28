@@ -283,7 +283,7 @@ export const OverlayMessageInfo = () => {
           <SpacerLG />
           <PanelButtonGroup style={{ margin: '0' }}>
             <PanelIconButton
-              text={window.i18n('replyToMessage')}
+              text={window.i18n('reply')}
               iconType="reply"
               onClick={() => {
                 // eslint-disable-next-line more/no-then

@@ -83,13 +83,13 @@ const VirtualizedList = () => {
 };
 
 export const SearchResults = () => {
-  const searchTerm = useSelector(getSearchTerm);
+  const query = useSelector(getSearchTerm);
   const hasSearchResults = useSelector(getHasSearchResults);
 
   return (
     <SearchResultsContainer>
       {!hasSearchResults ? (
-        <NoResults>{window.i18n('noSearchResults', [searchTerm])}</NoResults>
+        <NoResults>{window.i18n('searchMatchesNoneSpecific', { query })}</NoResults>
       ) : (
         <VirtualizedList />
       )}

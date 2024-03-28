@@ -45,11 +45,11 @@ export enum SessionSettingCategory {
   Privacy = 'privacy',
   Notifications = 'notifications',
   Conversations = 'conversations',
-  MessageRequests = 'messageRequests',
+  MessageRequests = 'sessionMessageRequests',
   Appearance = 'appearance',
   Permissions = 'permissions',
   Help = 'help',
-  RecoveryPhrase = 'recoveryPhrase',
+  RecoveryPhrase = 'sessionRecoveryPassword',
   ClearData = 'ClearData',
 }
 

@@ -68,7 +68,7 @@ async function unsendMessagesForEveryone(
   await deleteMessagesFromSwarmAndCompletelyLocally(conversation, msgsToDelete);
 
   window.inboxStore?.dispatch(resetSelectedMessageIds());
-  ToastUtils.pushDeleted(msgsToDelete.length);
+  ToastUtils.pushDeleted();
 }
 
 function getUnsendMessagesObjects(messages: Array<MessageModel>) {
@@ -235,7 +235,7 @@ async function unsendMessageJustForThisUser(
 
   // Update view and trigger update
   window.inboxStore?.dispatch(resetSelectedMessageIds());
-  ToastUtils.pushDeleted(msgsToDelete.length);
+  ToastUtils.pushDeleted();
 }
 
 const doDeleteSelectedMessagesInSOGS = async (
@@ -277,7 +277,7 @@ const doDeleteSelectedMessagesInSOGS = async (
     })
   );
   // successful deletion
-  ToastUtils.pushDeleted(toDeleteLocallyIds.length);
+  ToastUtils.pushDeleted();
   window.inboxStore?.dispatch(resetSelectedMessageIds());
   // #endregion
 };
@@ -326,7 +326,7 @@ const doDeleteSelectedMessages = async ({
 
     // Update view and trigger update
     window.inboxStore?.dispatch(resetSelectedMessageIds());
-    ToastUtils.pushDeleted(selectedMessages.length);
+    ToastUtils.pushDeleted();
     return;
   }
   // otherwise, delete that message locally, from our swarm and from our other devices
@@ -351,11 +351,9 @@ export async function deleteMessagesByIdForEveryone(
 
   window.inboxStore?.dispatch(
     updateConfirmModal({
-      title: window.i18n('deleteForEveryone'),
-      message: moreThanOne
-        ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
-        : window.i18n('deleteMessageQuestion'),
-      okText: window.i18n('deleteForEveryone'),
+      title: window.i18n('clearMessagesForEveryone'),
+      message: moreThanOne ? window.i18n('deleteMessages') : window.i18n('deleteMessage'),
+      okText: window.i18n('clearMessagesForEveryone'),
       okTheme: SessionButtonColor.Danger,
       onClickOk: async () => {
         await doDeleteSelectedMessages({ selectedMessages, conversation, deleteForEveryone: true });
@@ -378,20 +376,17 @@ export async function deleteMessagesById(messageIds: Array<string>, conversation
 
   const isMe = conversation.isMe();
 
-  const messageCount = selectedMessages.length;
   const moreThanOne = selectedMessages.length > 1;
   const closeDialog = () => window.inboxStore?.dispatch(updateConfirmModal(null));
 
   window.inboxStore?.dispatch(
     updateConfirmModal({
-      title: window.i18n('deleteJustForMe'),
-      message: moreThanOne
-        ? window.i18n('deleteMessagesQuestion', [messageCount.toString()])
-        : window.i18n('deleteMessageQuestion'),
+      title: window.i18n('clearMessagesForMe'),
+      message: moreThanOne ? window.i18n('deleteMessages') : window.i18n('deleteMessage'),
       radioOptions: !isMe
         ? [
-            { label: window.i18n('deleteJustForMe'), value: 'deleteJustForMe' },
-            { label: window.i18n('deleteForEveryone'), value: 'deleteForEveryone' },
+            { label: window.i18n('clearMessagesForMe'), value: 'clearMessagesForMe' },
+            { label: window.i18n('clearMessagesForEveryone'), value: 'clearMessagesForEveryone' },
           ]
         : undefined,
       okText: window.i18n('delete'),

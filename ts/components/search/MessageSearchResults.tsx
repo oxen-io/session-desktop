@@ -82,7 +82,11 @@ const FromName = (props: { source: string; conversationId: string }) => {
   }
 
   if (source === getOurPubKeyStrFromCache()) {
-    return <StyledMessageResultsHeaderName>{window.i18n('you')}</StyledMessageResultsHeaderName>;
+    return (
+      <StyledMessageResultsHeaderName>
+        {window.i18n('onionRoutingPathYou')}
+      </StyledMessageResultsHeaderName>
+    );
   }
 
   return (
@@ -129,7 +133,7 @@ const FromUserInGroup = (props: { authorPubkey: string; conversationId: string }
 
   if (authorPubkey === ourKey) {
     return (
-      <StyledConversationFromUserInGroup>{window.i18n('you')}: </StyledConversationFromUserInGroup>
+      <StyledConversationFromUserInGroup>{window.i18n('onionRoutingPathYou')}: </StyledConversationFromUserInGroup>
     );
   }
   return <StyledConversationFromUserInGroup>{authorConvoName}: </StyledConversationFromUserInGroup>;

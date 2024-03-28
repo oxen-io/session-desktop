@@ -23,10 +23,10 @@ export async function showDownloadUpdateDialog(
   const LATER_BUTTON = 1;
   const options = {
     type: 'info' as const,
-    buttons: [messages.autoUpdateDownloadButtonLabel, messages.autoUpdateLaterButtonLabel],
-    title: messages.autoUpdateNewVersionTitle,
-    message: messages.autoUpdateNewVersionMessage,
-    detail: messages.autoUpdateDownloadInstructions,
+    buttons: [messages.download, messages.later],
+    title: messages.updateSession,
+    message: messages.updateNewVersionDescription,
+    detail: messages.updateNewVersionDescription,
     defaultId: LATER_BUTTON,
     cancelId: DOWNLOAD_BUTTON,
   };
@@ -44,10 +44,10 @@ export async function showUpdateDialog(
   const LATER_BUTTON = 1;
   const options = {
     type: 'info' as const,
-    buttons: [messages.autoUpdateRestartButtonLabel, messages.autoUpdateLaterButtonLabel],
-    title: messages.autoUpdateNewVersionTitle,
-    message: messages.autoUpdateDownloadedMessage,
-    detail: messages.autoUpdateNewVersionInstructions,
+    buttons: [messages.restart, messages.later],
+    title: messages.updateSession,
+    message: messages.updateDownloaded,
+    detail: messages.updateDownloaded,
     defaultId: LATER_BUTTON,
     cancelId: RESTART_BUTTON,
   };
@@ -60,8 +60,8 @@ export async function showCannotUpdateDialog(mainWindow: BrowserWindow, messages
   const options = {
     type: 'error' as const,
     buttons: [messages.ok],
-    title: messages.cannotUpdate,
-    message: messages.cannotUpdateDetail,
+    title: messages.updateError,
+    message: messages.updateErrorDescription,
   };
   await dialog.showMessageBox(mainWindow, options);
 }

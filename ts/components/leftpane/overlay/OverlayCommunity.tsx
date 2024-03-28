@@ -79,10 +79,10 @@ export const OverlayCommunity = () => {
 
   useKey('Escape', closeOverlay);
 
-  const title = window.i18n('joinOpenGroup');
+  const title = window.i18n('communityJoin');
   const buttonText = window.i18n('join');
-  const subtitle = window.i18n('openGroupURL');
-  const placeholder = window.i18n('enterAnOpenGroupURL');
+  const subtitle = window.i18n('communityUrl');
+  const placeholder = window.i18n('communityEnterUrl');
 
   return (
     <div className="module-left-pane-overlay">

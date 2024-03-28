@@ -28,10 +28,10 @@ const getCurrentNotificationSettingText = (state: StateType): string | undefined
   switch (currentNotificationSetting) {
     case 'mentions_only':
       return window.i18n('notificationsMentionsOnly');
-      case 'disabled':
-        return window.i18n('notificationsMute');
-      case 'all':
-      default:
+    case 'disabled':
+      return window.i18n('notificationsMute');
+    case 'all':
+    default:
       return window.i18n('notificationsAllMessages');
   }
 };

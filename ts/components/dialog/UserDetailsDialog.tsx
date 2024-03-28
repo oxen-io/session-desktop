@@ -74,12 +74,12 @@ export const UserDetailsDialog = (props: UserDetailsModalState) => {
 
       <div className="session-modal__button-group__center">
         <SessionButton
-          text={window.i18n('startConversation')}
+          text={window.i18n('conversationsNew')}
           buttonType={SessionButtonType.Simple}
           onClick={onClickStartConversation}
         />
         <SessionButton
-          text={window.i18n('editMenuCopy')}
+          text={window.i18n('copy')}
           buttonType={SessionButtonType.Simple}
           onClick={() => {
             copyToClipboard(props.conversationId);

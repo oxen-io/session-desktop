@@ -29,8 +29,8 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
               window.toggleMenuBar();
               forceUpdate();
             }}
-            title={window.i18n('hideMenuBarTitle')}
-            description={window.i18n('hideMenuBarDescription')}
+            title={window.i18n('appearanceHideMenuBar')}
+            description={window.i18n('appearanceHideMenuBar')}
             active={isHideMenuBarActive}
           />
         )}
@@ -43,8 +43,8 @@ export const SettingsCategoryAppearance = (props: { hasPassword: boolean | null 
               await ensureThemeConsistency();
             }
           }}
-          title={window.i18n('matchThemeSystemSettingTitle')}
-          description={window.i18n('matchThemeSystemSettingDescription')}
+          title={window.i18n('appearanceAutoDarkMode')}
+          description={window.i18n('followSystemSettings')}
           active={isFollowSystemThemeEnabled}
           dataTestId="enable-follow-system-theme"
         />

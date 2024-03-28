@@ -18,7 +18,7 @@ const HideBannerMenuItem = (): JSX.Element => {
         dispatch(hideMessageRequestBanner());
       }}
     >
-      {window.i18n('hideBanner')}
+      {window.i18n('hide')}
     </Item>
   );
 };

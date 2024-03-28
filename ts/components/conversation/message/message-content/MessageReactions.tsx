@@ -126,7 +126,7 @@ const ExpandedReactions = (props: ExpandReactionsProps): ReactElement => {
       <Reactions {...props} />
       <StyledReadLess onClick={handleExpand}>
         <SessionIcon iconType="chevron" iconSize="medium" iconRotation={180} />
-        {window.i18n('expandedReactionsText')}
+        {window.i18n('showLess')}
       </StyledReadLess>
     </Flex>
   );

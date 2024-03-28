@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { isDevProd } from '../../shared/env_vars';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
 
 type TimerOptionsEntry = { name: string; value: number };
 export type TimerOptionsArray = Array<TimerOptionsEntry>;
@@ -32,15 +31,44 @@ const timerOptionsDurations: Array<{
   };
 });
 
+// TODO - This is copied from the messages.json file as a temporary solution. This will be replaced once time localization is completed.
+type TimerOptionKey =
+  | 'timerOption_0_seconds'
+  | 'timerOption_0_seconds_abbreviated'
+  | 'timerOption_10_seconds'
+  | 'timerOption_10_seconds_abbreviated'
+  | 'timerOption_12_hours'
+  | 'timerOption_12_hours_abbreviated'
+  | 'timerOption_1_day'
+  | 'timerOption_1_day_abbreviated'
+  | 'timerOption_1_hour'
+  | 'timerOption_1_hour_abbreviated'
+  | 'timerOption_1_minute'
+  | 'timerOption_1_minute_abbreviated'
+  | 'timerOption_1_week'
+  | 'timerOption_1_week_abbreviated'
+  | 'timerOption_2_weeks'
+  | 'timerOption_2_weeks_abbreviated'
+  | 'timerOption_30_minutes'
+  | 'timerOption_30_minutes_abbreviated'
+  | 'timerOption_30_seconds'
+  | 'timerOption_30_seconds_abbreviated'
+  | 'timerOption_5_minutes'
+  | 'timerOption_5_minutes_abbreviated'
+  | 'timerOption_5_seconds'
+  | 'timerOption_5_seconds_abbreviated'
+  | 'timerOption_6_hours'
+  | 'timerOption_6_hours_abbreviated';
+
 function getTimerOptionName(time: number, unit: moment.DurationInputArg2) {
   return (
-    window.i18n(['timerOption', time, unit].join('_') as LocalizerKeys) ||
+    window.i18n(['timerOption', time, unit].join('_') as TimerOptionKey) ||
     moment.duration(time, unit).humanize()
   );
 }
 
 function getTimerOptionAbbreviated(time: number, unit: string) {
-  return window.i18n(['timerOption', time, unit, 'abbreviated'].join('_') as LocalizerKeys);
+  return window.i18n(['timerOption', time, unit, 'abbreviated'].join('_') as TimerOptionKey);
 }
 
 function getName(seconds = 0) {

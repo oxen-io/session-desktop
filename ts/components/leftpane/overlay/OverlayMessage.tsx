@@ -49,10 +49,10 @@ export const OverlayMessage = () => {
   const [pubkeyOrOns, setPubkeyOrOns] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const title = window.i18n('newMessage');
+  const title = window.i18n('messageNew');
   const buttonText = window.i18n('next');
-  const subtitle = window.i18n('enterSessionID');
-  const placeholder = window.i18n('enterSessionIDOrONSName');
+  const subtitle = window.i18n('accountIdEnter');
+  const placeholder = window.i18n('accountIdEnterYourFriends');
 
   const disableNextButton = !pubkeyOrOns || loading;
 
@@ -80,7 +80,7 @@ export const OverlayMessage = () => {
 
   async function handleMessageButtonClick() {
     if ((!pubkeyOrOns && !pubkeyOrOns.length) || !pubkeyOrOns.trim().length) {
-      ToastUtils.pushToastError('invalidPubKey', window.i18n('invalidNumberError')); // or ons name
+      ToastUtils.pushToastError('invalidPubKey', window.i18n('onsErrorNotRecognised')); // or ons name
       return;
     }
     const pubkeyorOnsTrimmed = pubkeyOrOns.trim();
@@ -93,7 +93,7 @@ export const OverlayMessage = () => {
     // this might be an ONS, validate the regex first
     const mightBeOnsName = new RegExp(ONSResolve.onsNameRegex, 'g').test(pubkeyorOnsTrimmed);
     if (!mightBeOnsName) {
-      ToastUtils.pushToastError('invalidPubKey', window.i18n('invalidNumberError'));
+      ToastUtils.pushToastError('invalidPubKey', window.i18n('onsErrorNotRecognised'));
       return;
     }
     setLoading(true);
@@ -106,7 +106,7 @@ export const OverlayMessage = () => {
       await openConvoOnceResolved(resolvedSessionID);
     } catch (e) {
       window?.log?.warn('failed to resolve ons name', pubkeyorOnsTrimmed, e);
-      ToastUtils.pushToastError('invalidPubKey', window.i18n('failedResolveOns'));
+      ToastUtils.pushToastError('invalidPubKey', window.i18n('onsErrorUnableToSearch'));
     } finally {
       setLoading(false);
     }

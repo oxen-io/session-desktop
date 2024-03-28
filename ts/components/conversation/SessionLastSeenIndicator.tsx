@@ -76,7 +76,7 @@ export const SessionLastSeenIndicator = (props: {
   return (
     <LastSeenBarContainer id="unread-indicator" darkMode={darkMode}>
       <LastSeenBar />
-      <LastSeenText>{window.i18n('unreadMessages')}</LastSeenText>
+      <LastSeenText>{window.i18n('messageUnread')}</LastSeenText>
 
       <LastSeenBar />
     </LastSeenBarContainer>

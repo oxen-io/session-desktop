@@ -46,7 +46,7 @@ import {
   OPEN_GROUP_ROOMS_V2_TABLE,
   toSqliteBoolean,
 } from './database_utility';
-import { LocaleMessagesType } from './locale'; // checked - only node
+import type { LocalizerDictionary } from '../types/Localizer'; // checked - only node
 import { StorageItem } from './storage_item'; // checked - only node
 
 import { OpenGroupV2Room } from '../data/opengroups';
@@ -142,7 +142,7 @@ async function initializeSql({
 }: {
   configDir: string;
   key: string;
-  messages: LocaleMessagesType;
+  messages: LocalizerDictionary;
   passwordAttempt: boolean;
 }) {
   console.info('initializeSql sqlnode');
@@ -207,10 +207,10 @@ async function initializeSql({
     }
     console.log('Database startup error:', error.stack);
     const button = await dialog.showMessageBox({
-      buttons: [messages.copyErrorAndQuit, messages.clearAllData],
+      buttons: [messages.errorCopyAndQuit, messages.clearDataAll],
       defaultId: 0,
       detail: redactAll(error.stack),
-      message: messages.databaseError,
+      message: messages.errorDatabase,
       noLink: true,
       type: 'error',
     });

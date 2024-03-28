@@ -174,10 +174,10 @@ export const OverlayDisappearingMessages = () => {
           <HeaderTitle>{window.i18n('disappearingMessages')}</HeaderTitle>
           <HeaderSubtitle>
             {singleMode === 'deleteAfterRead'
-              ? window.i18n('disappearingMessagesModeAfterReadSubtitle')
+              ? window.i18n('disappearingMessagesDisappearAfterReadDescription')
               : singleMode === 'deleteAfterSend'
-              ? window.i18n('disappearingMessagesModeAfterSendSubtitle')
-              : window.i18n('settingAppliesToYourMessages')}
+              ? window.i18n('disappearingMessagesDisappearAfterSendDescription')
+              : window.i18n('disappearingMessagesDescription1')}
           </HeaderSubtitle>
         </Header>
         <DisappearingModes

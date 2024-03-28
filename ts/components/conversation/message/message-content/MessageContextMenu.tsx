@@ -148,7 +148,7 @@ const AdminActionItems = ({ messageId }: MessageId) => {
   return showAdminActions ? (
     <>
       <Item onClick={onBan}>{window.i18n('banUser')}</Item>
-      <Item onClick={onUnban}>{window.i18n('unbanUser')}</Item>
+      <Item onClick={onUnban}>{window.i18n('banUnbanUser')}</Item>
       {isSenderAdmin ? (
         <Item onClick={removeModerator}>{window.i18n('removeFromModerators')}</Item>
       ) : (
@@ -246,7 +246,7 @@ export const MessageContextMenu = (props: Props) => {
     [showEmojiPanel]
   );
 
-  const selectMessageText = window.i18n('selectMessage');
+  const selectMessageText = window.i18n('messageSelect');
 
   const onReply = useCallback(() => {
     if (isSelectedBlocked) {
@@ -375,18 +375,16 @@ export const MessageContextMenu = (props: Props) => {
             />
           )}
           {attachments?.length ? (
-            <Item onClick={saveAttachment}>{window.i18n('downloadAttachment')}</Item>
+            <Item onClick={saveAttachment}>{window.i18n('attachmentsDownload')}</Item>
           ) : null}
-          <Item onClick={copyText}>{window.i18n('copyMessage')}</Item>
-          {(isSent || !isOutgoing) && (
-            <Item onClick={onReply}>{window.i18n('replyToMessage')}</Item>
-          )}
+          <Item onClick={copyText}>{window.i18n('messageCopy')}</Item>
+          {(isSent || !isOutgoing) && <Item onClick={onReply}>{window.i18n('reply')}</Item>}
           <Item
             onClick={() => {
               void showMessageInfoOverlay({ messageId, dispatch });
             }}
           >
-            {window.i18n('moreInformation')}
+            {window.i18n('info')}
           </Item>
           <RetryItem messageId={messageId} />
           {isDeletable ? <Item onClick={onSelect}>{selectMessageText}</Item> : null}

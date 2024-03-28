@@ -14,8 +14,8 @@ const toggleCallMediaPermissions = async (triggerUIUpdate: () => void) => {
   if (!currentValue) {
     window.inboxStore?.dispatch(
       updateConfirmModal({
-        title: window.i18n('callMediaPermissionsDialogTitle'),
-        message: window.i18n('callMediaPermissionsDialogContent'),
+        title: window.i18n('callsVoiceAndVideoBeta'),
+        message: window.i18n('callsVoiceAndVideoModalDescription'),
         okTheme: SessionButtonColor.Danger,
         okText: window.i18n('continue'),
         onClickOk: async () => {
@@ -65,8 +65,8 @@ export const SettingsCategoryPermissions = (props: { hasPassword: boolean | null
             await window.toggleMediaPermissions();
             forceUpdate();
           }}
-          title={window.i18n('mediaPermissionsTitle')}
-          description={window.i18n('mediaPermissionsDescription')}
+          title={window.i18n('permissionsMicrophone')}
+          description={window.i18n('permissionsMicrophoneDescription')}
           active={Boolean(window.getSettingValue('media-permissions'))}
           dataTestId="enable-microphone"
         />
@@ -75,8 +75,8 @@ export const SettingsCategoryPermissions = (props: { hasPassword: boolean | null
             await toggleCallMediaPermissions(forceUpdate);
             forceUpdate();
           }}
-          title={window.i18n('callMediaPermissionsTitle')}
-          description={window.i18n('callMediaPermissionsDescription')}
+          title={window.i18n('callsVoiceAndVideoBeta')}
+          description={window.i18n('callsVoiceAndVideoToggleDescription')}
           active={Boolean(window.getCallMediaPermissions())}
           dataTestId="enable-calls"
         />
@@ -86,8 +86,8 @@ export const SettingsCategoryPermissions = (props: { hasPassword: boolean | null
             await window.setSettingValue(SettingsKey.settingsAutoUpdate, !old);
             forceUpdate();
           }}
-          title={window.i18n('autoUpdateSettingTitle')}
-          description={window.i18n('autoUpdateSettingDescription')}
+          title={window.i18n('permissionsAutoUpdate')}
+          description={window.i18n('permissionsAutoUpdateDescription')}
           active={Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate))}
         />
         <SessionToggleWithDescription
@@ -95,8 +95,8 @@ export const SettingsCategoryPermissions = (props: { hasPassword: boolean | null
             await toggleStartInTray();
             forceUpdate();
           }}
-          title={window.i18n('startInTrayTitle')}
-          description={window.i18n('startInTrayDescription')}
+          title={window.i18n('permissionsKeepInSystemTray')}
+          description={window.i18n('permissionsKeepInSystemTrayDescription')}
           active={isStartInTrayActive}
         />
       </>

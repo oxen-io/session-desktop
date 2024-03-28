@@ -277,7 +277,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
           pubkey
         );
         if (isUS) {
-          description = description?.replace(pubkeyWithAt, `@${window.i18n('you')}`);
+          description = description?.replace(
+            pubkeyWithAt,
+            `@${window.i18n('onionRoutingPathYou')}`
+          );
         } else if (displayName && displayName.length) {
           description = description?.replace(pubkeyWithAt, `@${displayName}`);
         }
@@ -285,7 +288,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       return description;
     }
     if ((this.get('attachments') || []).length > 0) {
-      return window.i18n('mediaMessage');
+      return window.i18n('contentDescriptionMediaMessage');
     }
     if (this.isExpirationTimerUpdate()) {
       const expireTimerUpdate = this.getExpirationTimerUpdate();
@@ -301,13 +304,20 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         expireTimer
       );
 
+      const source = expireTimerUpdate?.source;
+
       if (!expireTimerUpdate || expirationMode === 'off' || !expireTimer || expireTimer === 0) {
-        return window.i18n('disappearingMessagesDisabled');
+        return window.i18n('disappearingMessagesTurnedOff', {
+          name: source
+            ? getConversationController().get(source)?.getNicknameOrRealUsernameOrPlaceholder() ??
+              ''
+            : '',
+        });
       }
 
-      return window.i18n('timerSetTo', [
-        TimerOptions.getAbbreviated(expireTimerUpdate.expireTimer || 0),
-      ]);
+      return window.i18n('timerSetTo', {
+        time: TimerOptions.getAbbreviated(expireTimerUpdate.expireTimer || 0),
+      });
     }
 
     return '';
@@ -814,7 +824,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   public async markAsDeleted() {
     this.set({
       isDeleted: true,
-      body: window.i18n('messageDeletedPlaceholder'),
+      body: window.i18n('deleteMessageDeleted'),
       quote: undefined,
       groupInvitation: undefined,
       dataExtractionNotification: undefined,
@@ -1276,23 +1286,25 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
 
       if (arrayContainsUsOnly(groupUpdate.left)) {
-        return window.i18n('youLeftTheGroup');
+        return window.i18n('groupMemberYouLeft');
       }
 
       if (groupUpdate.left && groupUpdate.left.length === 1) {
-        return window.i18n('leftTheGroup', [
-          getConversationController().getContactProfileNameOrShortenedPubKey(groupUpdate.left[0]),
-        ]);
+        return window.i18n('groupMemberLeft', {
+          name: getConversationController().getContactProfileNameOrShortenedPubKey(
+            groupUpdate.left[0]
+          ),
+        });
       }
 
       const messages = [];
 
       if (!groupUpdate.name && !groupUpdate.joined && !groupUpdate.kicked && !groupUpdate.kicked) {
-        return window.i18n('updatedTheGroup'); // Group Updated
+        return window.i18n('groupUpdated');
       }
 
       if (groupUpdate.name) {
-        return window.i18n('titleIsNow', [groupUpdate.name]);
+        return window.i18n('groupNameNew', { groupname: groupUpdate.name });
       }
 
       if (groupUpdate.joined && groupUpdate.joined.length) {
@@ -1300,11 +1312,8 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
           getConversationController().getContactProfileNameOrShortenedPubKey
         );
 
-        if (names.length > 1) {
-          messages.push(window.i18n('multipleJoinedTheGroup', [names.join(', ')]));
-        } else {
-          messages.push(window.i18n('joinedTheGroup', names));
-        }
+        messages.push(window.i18n('groupMemberNew', { name: names.join(', ') }));
+
         return messages.join(' ');
       }
 
@@ -1315,20 +1324,16 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         );
 
         if (names.length > 1) {
-          messages.push(window.i18n('multipleKickedFromTheGroup', [names.join(', ')]));
+          messages.push(window.i18n('multipleKickedFromTheGroup', { name: names.join(', ') }));
         } else {
-          messages.push(window.i18n('kickedFromTheGroup', names));
+          messages.push(window.i18n('groupRemoved', { name: names[0] }));
         }
       }
       return messages.join(' ');
     }
 
-    if (this.isIncoming() && this.hasErrors()) {
-      return window.i18n('incomingError');
-    }
-
     if (this.isGroupInvitation()) {
-      return `😎 ${window.i18n('openGroupInvitation')}`;
+      return `😎 ${window.i18n('communityInvitation')}`;
     }
 
     if (this.isDataExtractionNotification()) {
@@ -1336,28 +1341,32 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         'dataExtractionNotification'
       ) as DataExtractionNotificationMsg;
       if (dataExtraction.type === SignalService.DataExtractionNotification.Type.SCREENSHOT) {
-        return window.i18n('tookAScreenshot', [
-          getConversationController().getContactProfileNameOrShortenedPubKey(dataExtraction.source),
-        ]);
+        return window.i18n('screenshotTaken', {
+          name: getConversationController().getContactProfileNameOrShortenedPubKey(
+            dataExtraction.source
+          ),
+        });
       }
 
-      return window.i18n('savedTheFile', [
-        getConversationController().getContactProfileNameOrShortenedPubKey(dataExtraction.source),
-      ]);
+      return window.i18n('attachmentsMediaSaved', {
+        name: getConversationController().getContactProfileNameOrShortenedPubKey(
+          dataExtraction.source
+        ),
+      });
     }
     if (this.isCallNotification()) {
-      const displayName = getConversationController().getContactProfileNameOrShortenedPubKey(
+      const name = getConversationController().getContactProfileNameOrShortenedPubKey(
         this.get('conversationId')
       );
       const callNotificationType = this.get('callNotificationType');
       if (callNotificationType === 'missed-call') {
-        return window.i18n('callMissed', [displayName]);
+        return window.i18n('callsMissedCallFrom', { name });
       }
       if (callNotificationType === 'started-call') {
-        return window.i18n('startedACall', [displayName]);
+        return window.i18n('callsYouCalled', { name });
       }
       if (callNotificationType === 'answered-a-call') {
-        return window.i18n('answeredACall', [displayName]);
+        return window.i18n('answeredACall', { name });
       }
     }
 
@@ -1381,8 +1390,8 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
               return isCommunity
                 ? window.i18n('leaveCommunityFailed')
                 : isGroup
-                ? window.i18n('leaveGroupFailed')
-                : window.i18n('deleteConversationFailed');
+                  ? window.i18n('groupErrorLeave')
+                  : window.i18n('deleteConversationFailed');
             default:
               assertUnreachable(
                 interactionType,
@@ -1396,7 +1405,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (this.get('reaction')) {
       const reaction = this.get('reaction');
       if (reaction && reaction.emoji && reaction.emoji !== '') {
-        return window.i18n('reactionNotification', [reaction.emoji]);
+        return window.i18n('emojiReactsNotification', { emoji: reaction.emoji });
       }
     }
     return this.get('body');
@@ -1461,7 +1470,7 @@ export function findAndFormatContact(pubkey: string): FindAndFormatContactType {
     pubkey === UserUtils.getOurPubKeyStrFromCache() ||
     (pubkey && PubKey.isBlinded(pubkey) && isUsAnySogsFromCache(pubkey))
   ) {
-    profileName = window.i18n('you');
+    profileName = window.i18n('onionRoutingPathYou');
     isMe = true;
   } else {
     profileName = contactModel?.getNicknameOrRealUsername() || null;

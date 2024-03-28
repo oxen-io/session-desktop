@@ -157,13 +157,13 @@ if (windowFromUserConfig) {
 // import {load as loadLocale} from '../..'
 import { getAppRootPath } from '../node/getRootPath';
 import { setLastestRelease } from '../node/latest_desktop_release';
-import { load as loadLocale, LocaleMessagesWithNameType } from '../node/locale';
+import { load as loadLocale } from '../node/locale';
 import { isDevProd, isTestIntegration } from '../shared/env_vars';
 import { classicDark } from '../themes';
 
 // Both of these will be set after app fires the 'ready' event
 let logger: Logger | null = null;
-let locale: LocaleMessagesWithNameType;
+let locale: ReturnType<typeof loadLocale>;
 
 function assertLogger(): Logger {
   if (!logger) {
@@ -862,10 +862,13 @@ async function requestShutdown() {
     //   exits the app before we've set everything up in preload() (so the browser isn't
     //   yet listening for these events), or if there are a whole lot of stacked-up tasks.
     // Note: two minutes is also our timeout for SQL tasks in data.ts in the browser.
-    setTimeout(() => {
-      console.log('requestShutdown: Response never received; forcing shutdown.');
-      resolve(undefined);
-    }, 2 * 60 * 1000);
+    setTimeout(
+      () => {
+        console.log('requestShutdown: Response never received; forcing shutdown.');
+        resolve(undefined);
+      },
+      2 * 60 * 1000
+    );
   });
 
   try {
@@ -974,7 +977,7 @@ ipc.on('password-window-login', async (event, passPhrase) => {
     await showMainWindow(passPhrase, passwordAttempt);
     sendResponse(undefined);
   } catch (e) {
-    const localisedError = locale.messages.removePasswordInvalid;
+    const localisedError = locale.messages.passwordIncorrect;
     sendResponse(localisedError);
   }
 });
@@ -1036,7 +1039,7 @@ ipc.on('set-password', async (event, passPhrase, oldPhrase) => {
 
     const hashMatches = oldPhrase && PasswordUtil.matchesHash(oldPhrase, hash);
     if (hash && !hashMatches) {
-      const incorrectOldPassword = locale.messages.invalidOldPassword;
+      const incorrectOldPassword = locale.messages.passwordCurrentIncorrect;
       sendResponse(
         incorrectOldPassword || 'Failed to set password: Old password provided is invalid'
       );
@@ -1057,7 +1060,7 @@ ipc.on('set-password', async (event, passPhrase, oldPhrase) => {
 
     sendResponse(undefined);
   } catch (e) {
-    const localisedError = locale.messages.setPasswordFail;
+    const localisedError = locale.messages.passwordFailed;
     sendResponse(localisedError || 'Failed to set password');
   }
 });

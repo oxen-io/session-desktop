@@ -249,7 +249,7 @@ export type StyleSessionSwitcher = {
 export const getThemeColors = (): Array<ThemeType> => [
   {
     id: 'classic-dark',
-    title: window.i18n('classicDarkThemeTitle'),
+    title: window.i18n('appearanceThemesClassicDark'),
     style: {
       background: THEMES.CLASSIC_DARK.COLOR0,
       border: THEMES.CLASSIC_DARK.COLOR3,
@@ -259,7 +259,7 @@ export const getThemeColors = (): Array<ThemeType> => [
   },
   {
     id: 'classic-light',
-    title: window.i18n('classicLightThemeTitle'),
+    title: window.i18n('appearanceThemesClassicLight'),
     style: {
       background: THEMES.CLASSIC_LIGHT.COLOR6,
       border: THEMES.CLASSIC_LIGHT.COLOR3,
@@ -269,7 +269,7 @@ export const getThemeColors = (): Array<ThemeType> => [
   },
   {
     id: 'ocean-dark',
-    title: window.i18n('oceanDarkThemeTitle'),
+    title: window.i18n('appearanceThemesOceanDark'),
     style: {
       background: THEMES.OCEAN_DARK.COLOR2,
       border: THEMES.OCEAN_DARK.COLOR4,
@@ -279,7 +279,7 @@ export const getThemeColors = (): Array<ThemeType> => [
   },
   {
     id: 'ocean-light',
-    title: window.i18n('oceanLightThemeTitle'),
+    title: window.i18n('appearanceThemesOceanLight'),
     style: {
       background: THEMES.OCEAN_LIGHT.COLOR7!,
       border: THEMES.OCEAN_LIGHT.COLOR3,

@@ -34,13 +34,13 @@ const Password = (props: PasswordProps) => {
     const isPasswordValid = matchesHash(passwordValue as string, passwordHash);
 
     if (!passwordValue) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('noGivenPassword'));
+      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('passwordCreate'));
 
       return false;
     }
 
     if (passwordHash && !isPasswordValid) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('invalidPassword'));
+      ToastUtils.pushToastError('enterPasswordErrorToast', i18n('passwordIncorrect'));
       return false;
     }
 
@@ -62,7 +62,7 @@ const Password = (props: PasswordProps) => {
         <input
           type="password"
           id="seed-input-password"
-          placeholder={i18n('enterPassword')}
+          placeholder={i18n('passwordCreate')}
           onKeyUp={onEnter}
         />
       </div>
@@ -143,6 +143,7 @@ const Seed = (props: SeedProps) => {
             maxWidth: '600px',
           }}
         >
+          {/** TODO: String localization - remove */}
           {i18n('recoveryPhraseSavePromptMain')}
         </p>
 
@@ -167,7 +168,7 @@ const Seed = (props: SeedProps) => {
         style={{ justifyContent: 'center', width: '100%' }}
       >
         <SessionButton
-          text={i18n('editMenuCopy')}
+          text={i18n('copy')}
           buttonType={SessionButtonType.Simple}
           onClick={() => {
             copyRecoveryPhrase(recoveryPhrase);
@@ -229,7 +230,7 @@ const SessionSeedModalInner = (props: ModalInnerProps) => {
     <>
       {!loadingSeed && (
         <SessionWrapperModal
-          title={window.i18n('showRecoveryPhrase')}
+          title={window.i18n('sessionRecoveryPassword')}
           onClose={onClose}
           showExitIcon={true}
         >

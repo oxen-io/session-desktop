@@ -123,7 +123,7 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
       >
         <CirclularIcon iconType="messageRequest" iconSize="medium" />
         <StyledMessageRequestBannerHeader>
-          {window.i18n('messageRequests')}
+          {window.i18n('sessionMessageRequests')}
         </StyledMessageRequestBannerHeader>
         <StyledUnreadCounter>
           <div>{conversationRequestsUnread || 0}</div>

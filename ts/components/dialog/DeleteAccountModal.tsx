@@ -87,10 +87,10 @@ async function deleteEverythingAndNetworkData() {
       window.inboxStore?.dispatch(updateDeleteAccountModal(null));
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          title: window.i18n('dialogClearAllDataDeletionFailedTitle'),
-          message: window.i18n('dialogClearAllDataDeletionFailedDesc'),
+          title: window.i18n('clearDataError'),
+          message: window.i18n('clearDataErrorDescriptionGeneric'),
           okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('deviceOnly'),
+          okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {
             await deleteDbLocally();
             window.restart();
@@ -114,13 +114,14 @@ async function deleteEverythingAndNetworkData() {
       // open a new confirm dialog to ask user what to do
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          title: window.i18n('dialogClearAllDataDeletionFailedTitle'),
-          message: window.i18n('dialogClearAllDataDeletionFailedMultiple', [
-            potentiallyMaliciousSnodes.join(', '),
-          ]),
-          messageSub: window.i18n('dialogClearAllDataDeletionFailedTitleQuestion'),
+          title: window.i18n('clearDataError'),
+          message: window.i18n('clearDataErrorDescription2', {
+            servicenodeid: potentiallyMaliciousSnodes.join(', '),
+            count: `${potentiallyMaliciousSnodes.length}`,
+          }),
+          messageSub: window.i18n('clearDeviceAndNetworkConfirm'),
           okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('deviceOnly'),
+          okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {
             await deleteDbLocally();
             window.restart();
@@ -165,10 +166,8 @@ const DescriptionBeforeAskingConfirmation = (props: {
   const { deleteMode, setDeleteMode } = props;
   return (
     <>
-      <span className="session-confirm-main-message">{window.i18n('deleteAccountWarning')}</span>
-      <span className="session-confirm-main-message">
-        {window.i18n('dialogClearAllDataDeletionQuestion')}
-      </span>
+      <span className="session-confirm-main-message">{window.i18n('clearDataAllDescription')}</span>
+      <span className="session-confirm-main-message">{window.i18n('clearDataAllDescription')}</span>
 
       <SpacerLG />
       <SessionRadioGroup
@@ -180,20 +179,18 @@ const DescriptionBeforeAskingConfirmation = (props: {
           }
         }}
         items={[
-          { label: window.i18n('deviceOnly'), value: DEVICE_ONLY },
-          { label: window.i18n('entireAccount'), value: 'device_and_network' },
+          { label: window.i18n('clearDeviceOnly'), value: DEVICE_ONLY },
+          { label: window.i18n('clearDeviceAndNetwork'), value: 'device_and_network' },
         ]}
       />
     </>
   );
 };
 
-const DescriptionWhenAskingConfirmation = (props: { deleteMode: DeleteModes }) => {
+const DescriptionWhenAskingConfirmation = () => {
   return (
     <span className="session-confirm-main-message">
-      {props.deleteMode === 'device_and_network'
-        ? window.i18n('areYouSureDeleteEntireAccount')
-        : window.i18n('areYouSureDeleteDeviceOnly')}
+      {window.i18n('clearDeviceAndNetworkConfirm')}
     </span>
   );
 };
@@ -243,12 +240,12 @@ export const DeleteAccountModal = () => {
 
   return (
     <SessionWrapperModal
-      title={window.i18n('clearAllData')}
+      title={window.i18n('clearDataAll')}
       onClose={onClickCancelHandler}
       showExitIcon={true}
     >
       {askingConfirmation ? (
-        <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
+        <DescriptionWhenAskingConfirmation />
       ) : (
         <DescriptionBeforeAskingConfirmation
           deleteMode={deleteMode}

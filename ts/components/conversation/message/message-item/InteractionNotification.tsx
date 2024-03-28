@@ -42,9 +42,9 @@ export const InteractionNotification = (props: PropsForInteractionNotification) 
       break;
     case ConversationInteractionType.Leave:
       text = isCommunity
-        ? window.i18n('leaveCommunityFailedPleaseTryAgain')
+        ? window.i18n('communityLeaveError')
         : isGroup
-        ? window.i18n('leaveGroupFailedPleaseTryAgain')
+        ? window.i18n('groupErrorLeave')
         : window.i18n('deleteConversationFailedPleaseTryAgain');
       break;
     default:

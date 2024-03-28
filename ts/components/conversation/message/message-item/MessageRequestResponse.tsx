@@ -16,10 +16,12 @@ export const MessageRequestResponse = (props: PropsForMessageRequestResponse) =>
   let msgText = '';
   if (isFromSync) {
     msgText = profileName
-      ? window.i18n('messageRequestAcceptedOurs', [profileName])
+      ? window.i18n('messageRequestYouHaveAccepted', {
+          name: profileName,
+        })
       : window.i18n('messageRequestAcceptedOursNoName');
   } else {
-    msgText = window.i18n('messageRequestAccepted');
+    msgText = window.i18n('messageRequestsAccepted');
   }
 
   return (

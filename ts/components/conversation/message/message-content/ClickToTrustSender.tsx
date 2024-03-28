@@ -38,12 +38,12 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
     const convo = getConversationController().get(sender);
     window.inboxStore?.dispatch(
       updateConfirmModal({
-        title: window.i18n('trustThisContactDialogTitle', [
-          convo.getContactProfileNameOrShortenedPubKey(),
-        ]),
-        message: window.i18n('trustThisContactDialogDescription', [
-          convo.getContactProfileNameOrShortenedPubKey(),
-        ]),
+        title: window.i18n('trustThisContactDialogTitle', {
+          name: convo.getContactProfileNameOrShortenedPubKey(),
+        }),
+        message: window.i18n('attachmentsAutoDownloadModalDescription', {
+          conversationname: convo.getContactProfileNameOrShortenedPubKey(),
+        }),
         closeTheme: SessionButtonColor.Danger,
         onClickOk: async () => {
           convo.set({ isTrustedForAttachmentDownload: true });

@@ -84,9 +84,7 @@ export const SessionSearchInput = () => {
     return null;
   }
 
-  const placeholder = isGroupCreationSearch
-    ? window.i18n('searchForContactsOnly')
-    : window.i18n('searchFor...');
+  const placeholder = isGroupCreationSearch ? window.i18n('searchContacts') : window.i18n('search');
 
   return (
     <StyledSearchInput>

@@ -484,12 +484,12 @@ class CompositionBoxInner extends React.Component<Props, State> {
         return i18n('youGotKickedFromGroup');
       }
       if (left) {
-        return i18n('youLeftTheGroup');
+        return i18n('groupMemberYouLeft');
       }
       if (isBlocked) {
-        return i18n('unblockToSend');
+        return i18n('blockBlockedDescription');
       }
-      return i18n('sendMessage');
+      return i18n('message');
     };
 
     const { isKickedFromGroup, left, isBlocked } = this.props.selectedConversation;
