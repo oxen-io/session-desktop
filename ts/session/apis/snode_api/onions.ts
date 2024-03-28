@@ -19,6 +19,7 @@ import { callUtilsWorker } from '../../../webworker/workers/browser/util_worker_
 import { encodeV4Request } from '../../onions/onionv4';
 import { fileServerHost } from '../file_server_api/FileServerApi';
 import { hrefPnServerProd } from '../push_notification_api/PnServer';
+import { PingPong421 } from './PingPong421';
 import { ERROR_CODE_NO_CONNECT } from './SNodeAPI';
 
 // hold the ed25519 key of a snode against the time it fails. Used to remove a snode only after a few failures (snodeFailureThreshold failures)
@@ -712,6 +713,13 @@ async function handle421InvalidSwarm({
     // this does not make much sense to have a 421 without a publicKey set.
     throw new Error('status 421 without a final destination or no associatedWith makes no sense');
   }
+  if (PingPong421.hasBeenReportingInvalid421(destinationSnodeEd25519, associatedWith)) {
+    window?.log?.info(
+      `Snode ${destinationSnodeEd25519} has been reporting invalid 421 about:${ed25519Str(associatedWith)}. Ignoring this report and removing snode entirely`
+    );
+    await handleNodeNotFound({ ed25519NotFound: destinationSnodeEd25519, associatedWith });
+    return;
+  }
   window?.log?.info(`Invalidating swarm for ${ed25519Str(associatedWith)}`);
 
   try {
@@ -725,7 +733,7 @@ async function handle421InvalidSwarm({
         parsedBody.snodes.map((s: any) => ed25519Str(s.pubkey_ed25519))
       );
 
-      await updateSwarmFor(associatedWith, parsedBody.snodes);
+      await updateSwarmFor(associatedWith, parsedBody.snodes, destinationSnodeEd25519);
       throw new pRetry.AbortError(ERROR_421_HANDLED_RETRY_REQUEST);
     }
     // remove this node from the swarm of this pubkey

@@ -3,12 +3,13 @@ import pRetry from 'p-retry';
 
 import { Data, Snode } from '../../../data/data';
 
-import { ed25519Str } from '../../onions/onionPath';
-import { OnionPaths } from '../../onions';
 import { Onions, SnodePool } from '.';
+import { OnionPaths } from '../../onions';
+import { ed25519Str } from '../../onions/onionPath';
 import { SeedNodeAPI } from '../seed_node_api';
-import { requestSnodesForPubkeyFromNetwork } from './getSwarmFor';
 import { ServiceNodesList } from './getServiceNodesList';
+import { requestSnodesForPubkeyFromNetwork } from './getSwarmFor';
+import { PingPong421 } from './PingPong421';
 
 /**
  * If we get less than this snode in a swarm, we fetch new snodes for this pubkey
@@ -271,8 +272,14 @@ export async function dropSnodeFromSwarmIfNeeded(
   await internalUpdateSwarmFor(pubkey, updatedSwarm);
 }
 
-export async function updateSwarmFor(pubkey: string, snodes: Array<Snode>): Promise<void> {
+export async function updateSwarmFor(
+  pubkey: string,
+  snodes: Array<Snode>,
+  snodeEd25519: string
+): Promise<void> {
   const edkeys = snodes.map((sn: Snode) => sn.pubkey_ed25519);
+  PingPong421.track421s({ associatedWith: pubkey, snodes, snodeEd25519 });
+
   await internalUpdateSwarmFor(pubkey, edkeys);
 }
 

@@ -12,6 +12,7 @@ import {
   sendMessageOnionV4BlindedRequest,
   sendSogsMessageOnionV4,
 } from '../apis/open_group_api/sogsv3/sogsV3SendMessage';
+import { PingPong421 } from '../apis/snode_api/PingPong421';
 import {
   NotEmptyArrayOfBatchResults,
   StoreOnNodeMessage,
@@ -253,11 +254,110 @@ async function sendMessagesDataToSnode(
         })
       : null;
 
-  const snode = sample(swarm);
+  let snode = sample(swarm);
   if (!snode) {
     throw new EmptySwarmError(destination, 'Ran out of swarm nodes to query');
   }
 
+  const rightSwarmForCurrentPk = [
+    '452d8d9c105c09d150ad97310c8082f1d9545fd0554d177accff8b8cf98c17b8',
+    '96ad275ae0a89cf0f665cd8426ed5ca6c1ecf983c6a879bdd070d7db91973cab',
+    '7b28341f90a98cda43576baf90f474ab2a7408094932db68abeee0e99a26adae',
+    '1ad24f05ae69cf26ee22c39a37c281cc32d9c62ad9667241cde2f8ecf5a6e956',
+    '55dac31711552a12f101aff9687afe34d474387f650741797a0ff6c762ee12ff',
+    '512e536913986004fdecdf91f6a6ca90c37a282c55781bd6bddf5d6ff2ef4186',
+    '28e9fe70f9d86bfa1b146898e53c167fafc1b8f694f0551257f0a3a9b079b110',
+  ];
+
+  const originalSnodeEd25519 = snode.pubkey_ed25519;
+  if (rightSwarmForCurrentPk.includes(snode.pubkey_ed25519)) {
+    console.warn('making it use wrong swarm');
+    snode = sample([
+      {
+        address: 'u7scdyit1m4qiuyo4gsffbcpie8rz5scbrwn8rmfgtfsdaf5juno.snode',
+        ip: '185.234.52.249',
+        port: 22021,
+        port_https: 22021,
+        port_omq: 22020,
+        port_quic: 22020,
+        pubkey_ed25519: '9f6cc182b192f4eacc10d1ac52858daa0e4beecc0928239165344b61e0bb4cc5',
+        pubkey_legacy: '9f6cc182b192f4eacc10d1ac52858daa0e4beecc0928239165344b61e0bb4cc5',
+        pubkey_x25519: '2ce63b89f905b72380bfada438900b9fb154b80ff5a7b94e516475537b98e500',
+      },
+      {
+        address: '13x3qjmi4kxq4dcxen7ozmcn7id5jgb56c583gr9iku9uss44tjo.snode',
+        ip: '65.108.143.80',
+        port: 22118,
+        port_https: 22118,
+        port_omq: 20218,
+        port_quic: 20218,
+        pubkey_ed25519: '965f972575d29eed0d8f40bb0bad82ed47b4983bf3367c989faaa7f9dadad453',
+        pubkey_legacy: '965f972575d29eed0d8f40bb0bad82ed47b4983bf3367c989faaa7f9dadad453',
+        pubkey_x25519: 'c0ad35153207afa026ba1235860bf04209512794f70ab2bffbc1f4f5b7457553',
+      },
+      {
+        address: 'ek8kmo45jyfwyzncmmuhqtsdpuqwuutd75igcf9neazzo6b47kyo.snode',
+        ip: '192.99.167.70',
+        port: 22021,
+        port_https: 22021,
+        port_omq: 22020,
+        port_quic: 22020,
+        pubkey_ed25519: 'a97cb0540ab11b8cf4915524791493dc9dcbfea2b4875b201c28e454fc7ec989',
+        pubkey_legacy: '428ea5c35b480b405c4c5ae7c746c36cdd49ce23eeea6617e2462f78783aea81',
+        pubkey_x25519: 'c0e30a540d14028bb8d4df5d82df3eda0533cb3e1875de937a41f541a332dd5d',
+      },
+      {
+        address: '3m9dj9ynwk85o5td8fghqxc3rwuq9xerc35ajxjsubpm7pewr4ry.snode',
+        ip: '104.243.43.55',
+        port: 22134,
+        port_https: 22134,
+        port_omq: 20234,
+        port_quic: 20234,
+        pubkey_ed25519: 'cafe34fc02a28fb86e23394dc73d992526efbd04667784bd36985abeb5142688',
+        pubkey_legacy: 'cafe34fc02a28fb86e23394dc73d992526efbd04667784bd36985abeb5142688',
+        pubkey_x25519: '5987acef97f448e9fc7e27620994d7bb9eacd41dc0d2aa908876eef4410f334f',
+      },
+      {
+        address: 'oirgc99wpymnqifpo3de7ebdrcjdwyqm95m6is4j1mwqn6b4uemo.snode',
+        ip: '5.161.90.230',
+        port: 22021,
+        port_https: 22021,
+        port_omq: 22020,
+        port_quic: 22020,
+        pubkey_ed25519: '8548667ff468162754ad86468ea02323123a01cbfed7eadb4992e8e1783a9a17',
+        pubkey_legacy: '8548667ff468162754ad86468ea02323123a01cbfed7eadb4992e8e1783a9a17',
+        pubkey_x25519: '210c0e2c7dc2a3de0bde5f5cfa57b7ba2d340bf4d3dc90ae4f47372cda79787a',
+      },
+      {
+        address: 'ymacysnn4ut1irq8ocsg8p9w3jzwmm3ebx856fb6tpwxehc9jafy.snode',
+        ip: '185.150.190.48',
+        port: 22105,
+        port_https: 22105,
+        port_omq: 20205,
+        port_quic: 20205,
+        pubkey_ed25519: '02f0c05842d4e32a91c7832c63b7f4ca6f45af280bcfbf143e8b68f4719f4e0a',
+        pubkey_legacy: '02f0c05842d4e32a91c7832c63b7f4ca6f45af280bcfbf143e8b68f4719f4e0a',
+        pubkey_x25519: '0eae2afbaff9a2b0c030949c3c1bc99b2324b4d02845eee86eed3a9758816e6d',
+      },
+      {
+        address: 'fc7xzcbk3gxxbxsguktdacrgra7abe1i7ycf8c1z5r4ig7inipuo.snode',
+        ip: '95.217.218.66',
+        port: 22104,
+        port_https: 22104,
+        port_omq: 22404,
+        port_quic: 22404,
+        pubkey_ed25519: '2b3afbb02ac99ef0bec69aa23c3086263b80a255e81853b257d9355376a2ab67',
+        pubkey_legacy: '2b3afbb02ac99ef0bec69aa23c3086263b80a255e81853b257d9355376a2ab67',
+        pubkey_x25519: '226dfab4897a5fc8802d3c6e27e55938d3a320c1126c7f1c4e82ba9771cedd29',
+      },
+    ]);
+  } else {
+    console.warn('making it use a single snode which also reports wrong swarm');
+  }
+  console.warn(
+    'hasBeenReportingInvalid421 ',
+    PingPong421.hasBeenReportingInvalid421(originalSnodeEd25519, destination)
+  );
   try {
     // No pRetry here as if this is a bad path it will be handled and retried in lokiOnionFetch.
     const storeResults = await SnodeAPIStore.storeOnNode(
