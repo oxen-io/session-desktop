@@ -3,18 +3,18 @@ import React from 'react';
 
 type ReceivedProps = {
   html: string;
-  as?: React.ElementType;
+  tag?: React.ElementType;
   key?: any;
   className?: string;
 };
 
-export const SessionHtmlRenderer = ({ as = 'div', key, html, className }: ReceivedProps) => {
+export const SessionHtmlRenderer = ({ tag = 'div', key, html, className }: ReceivedProps) => {
   const clean = DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
     FORBID_ATTR: ['script'],
   });
 
-  return React.createElement(as, {
+  return React.createElement(tag, {
     key,
     className,
 
