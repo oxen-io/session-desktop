@@ -9,7 +9,7 @@ import type {
 import { SessionHtmlRenderer } from './SessionHTMLRenderer';
 
 /** An array of supported html tags to render if found in a string */
-const supportedFormattingTags = ['b', 'i', 'u', 's'];
+const supportedFormattingTags = ['b', 'i', 'u', 's', 'br'];
 
 /** A regex to match supported formatting tags */
 const formattingTagRegex = new RegExp(
