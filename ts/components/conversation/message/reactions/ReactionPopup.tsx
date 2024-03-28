@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Data } from '../../../../data/data';
 import { PubKey } from '../../../../session/types/PubKey';
 import { isDarkTheme } from '../../../../state/selectors/theme';
+import { LocalizerToken } from '../../../../types/Localizer';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { findAndFormatContact } from '../../../../models/message';
 
@@ -87,7 +88,7 @@ const generateContactsString = async (
     });
     if (meIndex >= 0) {
       results.splice(meIndex, 1);
-      results = [window.i18n('you'), ...results];
+      results = [window.i18n('onionRoutingPathYou'), ...results];
     }
     if (results && results.length > 0) {
       return results;
@@ -104,33 +105,39 @@ const Contacts = (contacts: Array<string>, count: number) => {
   }
 
   const reactors = contacts.length;
-  if (reactors === 1 || reactors === 2 || reactors === 3) {
-    return (
-      <StyledContacts>
-        {window.i18n(
-          reactors === 1
-            ? 'reactionPopupOne'
-            : reactors === 2
-            ? 'reactionPopupTwo'
-            : 'reactionPopupThree',
-          contacts
-        )}{' '}
-        <span>{window.i18n('reactionPopup')}</span>
-      </StyledContacts>
-    );
+
+  let reactionPopupKey: LocalizerToken;
+  switch (reactors) {
+    case 1:
+      reactionPopupKey = 'reactionPopupOne';
+      break;
+    case 2:
+      reactionPopupKey = 'reactionPopupTwo';
+      break;
+    case 3:
+      reactionPopupKey = 'reactionPopupThree';
+      break;
+    default:
+      reactionPopupKey = 'reactionPopupMany';
   }
-  if (reactors > 3) {
-    return (
-      <StyledContacts>
-        {window.i18n('reactionPopupMany', [contacts[0], contacts[1], contacts[3]])}{' '}
+
+  return (
+    <StyledContacts>
+      {window.i18n(reactionPopupKey, {
+        name: contacts[0],
+        name2: contacts[1],
+        name3: contacts[2],
+      })}{' '}
+      {reactors > 3 ? (
         <StyledOthers darkMode={darkMode}>
-          {window.i18n(reactors === 4 ? 'otherSingular' : 'otherPlural', [`${count - 3}`])}
-        </StyledOthers>{' '}
-        <span>{window.i18n('reactionPopup')}</span>
-      </StyledContacts>
-    );
-  }
-  return null;
+          {window.i18n(reactors === 4 ? 'otherSingular' : 'otherPlural', {
+            number: `${count - 3}`,
+          })}
+        </StyledOthers>
+      ) : null}
+      <span>{window.i18n('reactionPopup')}</span>
+    </StyledContacts>
+  );
 };
 
 type Props = {
