@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useIsIncomingRequest } from '../../hooks/useParamSelector';
@@ -13,8 +13,7 @@ import {
   useSelectedIsNoteToSelf,
   useSelectedNicknameOrProfileNameOrShortenedPubkey,
 } from '../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
+import { I18n } from '../basic/I18n';
 
 const Container = styled.div`
   display: flex;
@@ -47,7 +46,7 @@ export const ConversationRequestExplanation = () => {
 
   return (
     <Container>
-      <TextInner>{window.i18n('respondingToRequestWarning')}</TextInner>
+      <TextInner>{window.i18n('messageRequestsAcceptDescription')}</TextInner>
     </Container>
   );
 };
@@ -64,27 +63,31 @@ export const NoMessageInConversation = () => {
   const canWrite = useSelector(getSelectedCanWrite);
   const privateBlindedAndBlockingMsgReqs = useSelectedHasDisabledBlindedMsgRequests();
   // TODOLATER use this selector across the whole application (left pane excluded)
-  const nameToRender = useSelectedNicknameOrProfileNameOrShortenedPubkey();
+  const name = useSelectedNicknameOrProfileNameOrShortenedPubkey();
+
+  const messageText = useMemo(() => {
+    if (isMe) {
+      return <I18n token="noteToSelfEmpty" />;
+    }
+
+    if (canWrite) {
+      return <I18n token="groupNoMessages" args={{ groupname: name }} />;
+    }
+
+    if (privateBlindedAndBlockingMsgReqs) {
+      return <I18n token="messageRequestsTurnedOff" args={{ name }} />;
+    }
+
+    return <I18n token="conversationsEmpty" args={{ conversationname: name }} />;
+  }, [isMe, canWrite, privateBlindedAndBlockingMsgReqs, name]);
 
   if (!selectedConversation || hasMessage) {
     return null;
   }
-  let localizedKey: LocalizerKeys = 'noMessagesInEverythingElse';
-  if (!canWrite) {
-    if (privateBlindedAndBlockingMsgReqs) {
-      localizedKey = 'noMessagesInBlindedDisabledMsgRequests';
-    } else {
-      localizedKey = 'noMessagesInReadOnly';
-    }
-  } else if (isMe) {
-    localizedKey = 'noMessagesInNoteToSelf';
-  }
 
   return (
     <Container data-testid="empty-conversation-notification">
-      <TextInner>
-        <SessionHtmlRenderer html={window.i18n(localizedKey, [nameToRender])} />
-      </TextInner>
+      <TextInner>{messageText}</TextInner>
     </Container>
   );
 };
