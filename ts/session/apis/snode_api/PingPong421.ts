@@ -4,6 +4,7 @@
  *
  */
 
+import { groupBy } from 'lodash';
 import { Snode } from '../../../data/data';
 import { RingBuffer } from '../../utils/RingBuffer';
 
@@ -20,10 +21,14 @@ export function track421s({ snodes, snodeEd25519, associatedWith }: Event421) {
   console.warn(`after insert state: ${snodeEd25519}:${associatedWith}   => `, latest421.toArray());
 }
 
-function hasBeenReportingInvalid421(snodeEd25519: string, associatedWith: string) {
+function doWeHaveASwarmFight({ associatedWith }: { associatedWith: string }) {
   const previous421WithRightDestination = latest421.toArray().filter(m => {
     return m.associatedWith === associatedWith;
   });
+
+  groupBy(previous421WithRightDestination, (a) => {
+    return a.
+  })
 
   const countOfOthersSayingHeIsOnTheRightSwarm = previous421WithRightDestination.filter(m => {
     return m.snodesEd25519.includes(snodeEd25519);
@@ -38,7 +43,7 @@ function hasBeenReportingInvalid421(snodeEd25519: string, associatedWith: string
     latest421.toArray()
   );
 
-  return countOfHimSayingEveryoneElseIsWrong > 0 && countOfOthersSayingHeIsOnTheRightSwarm > 1;
+  return countOfHimSayingEveryoneElseIsWrong > 2 && countOfOthersSayingHeIsOnTheRightSwarm > 2;
 }
 
 /**
@@ -48,4 +53,4 @@ function resetTracked421s() {
   latest421.clear();
 }
 
-export const PingPong421 = { hasBeenReportingInvalid421, track421s, resetTracked421s };
+export const PingPong421 = { doWeHaveASwarmFight, track421s, resetTracked421s };
