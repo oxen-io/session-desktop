@@ -12,7 +12,7 @@ import { GetMessageArgs, LocalizerDictionary, LocalizerToken } from '../types/Lo
 function i18nLog(message: string) {
   // eslint:disable: no-console
   // eslint-disable-next-line no-console
-  (window.log.error || console.log)(message);
+  (window?.log?.error ?? console.log)(message);
 }
 
 /**
