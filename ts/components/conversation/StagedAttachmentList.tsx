@@ -85,7 +85,7 @@ export const StagedAttachmentList = (props: Props) => {
             return (
               <Image
                 key={imageKey}
-                alt={window.i18n('stagedImageAttachment', [attachment.fileName])}
+                alt={''}
                 attachment={attachment}
                 softCorners={true}
                 playIconOverlay={isVideoAttachment(attachment)}

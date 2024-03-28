@@ -78,7 +78,7 @@ export const StagedLinkPreview = (props: Props) => {
         {isLoaded && image && isContentTypeImage ? (
           <StyledImage>
             <Image
-              alt={window.i18n('stagedPreviewThumbnail', [domain || ''])}
+              alt={domain ?? ''}
               attachment={image as any}
               height={100}
               width={100}

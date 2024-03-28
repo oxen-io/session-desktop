@@ -145,7 +145,6 @@ export const Image = (props: Props) => {
         <img
           className="module-image__caption-icon"
           src="images/caption-shadow.svg"
-          alt={window.i18n('imageCaptionIconAlt')}
           onDragStart={disableDrag}
         />
       ) : null}

@@ -229,7 +229,6 @@ export const LightboxObject = ({
       <img
         style={styles.object as any}
         onDragStart={disableDrag}
-        alt={window.i18n('lightboxImageAlt')}
         src={urlToLoad}
         ref={renderedRef}
       />

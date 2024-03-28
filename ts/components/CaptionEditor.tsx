@@ -17,14 +17,7 @@ const CaptionEditorObject = (props: Props) => {
 
   const isImageTypeSupported = GoogleChrome.isImageTypeSupported(contentType);
   if (isImageTypeSupported) {
-    return (
-      <img
-        className="module-caption-editor__image"
-        alt={window.i18n('imageAttachmentAlt')}
-        src={url}
-        onClick={onClose}
-      />
-    );
+    return <img className="module-caption-editor__image" src={url} onClick={onClose} />;
   }
 
   const isVideoTypeSupported = GoogleChrome.isVideoTypeSupported(contentType);

@@ -74,7 +74,7 @@ export const MessageLinkPreview = (props: Props) => {
           <div className="module-message__link-preview__image_container">
             <Image
               softCorners={true}
-              alt={window.i18n('previewThumbnail', [first.domain])}
+              alt={first.domain}
               height={linkPreviewsImageSize}
               width={linkPreviewsImageSize}
               url={first.image.url}

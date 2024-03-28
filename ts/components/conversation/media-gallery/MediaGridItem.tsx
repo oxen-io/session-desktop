@@ -15,7 +15,6 @@ type Props = {
 
 const MediaGridItemContent = (props: Props) => {
   const { mediaItem } = props;
-  const i18n = window.i18n;
   const { attachment, contentType } = mediaItem;
 
   const urlToDecrypt = mediaItem.thumbnailObjectUrl || '';
@@ -50,7 +49,6 @@ const MediaGridItemContent = (props: Props) => {
 
     return (
       <img
-        alt={i18n('lightboxImageAlt')}
         className="module-media-grid-item__image"
         src={srcData}
         onError={onImageError}
@@ -73,7 +71,6 @@ const MediaGridItemContent = (props: Props) => {
     return (
       <div className="module-media-grid-item__image-container">
         <img
-          alt={i18n('lightboxImageAlt')}
           className="module-media-grid-item__image"
           src={srcData}
           onError={onImageError}
