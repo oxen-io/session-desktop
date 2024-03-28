@@ -10,24 +10,24 @@ import {
   useSelectedDisplayNameInProfile,
   useSelectedNickname,
 } from '../../../../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../../../../types/LocalizerKeys';
+import { LocalizerToken } from '../../../../../types/Localizer';
 import { SessionIconType } from '../../../../icon';
 import { ExpirableReadableMessage } from '../ExpirableReadableMessage';
 import { NotificationBubble } from './NotificationBubble';
 
 type StyleType = Record<
   CallNotificationType,
-  { notificationTextKey: LocalizerKeys; iconType: SessionIconType; iconColor: string }
+  { notificationTextKey: LocalizerToken; iconType: SessionIconType; iconColor: string }
 >;
 
-const style: StyleType = {
+const style = {
   'missed-call': {
-    notificationTextKey: 'callMissed',
+    notificationTextKey: 'callsMissedCallFrom',
     iconType: 'callMissed',
     iconColor: 'var(--danger-color)',
   },
   'started-call': {
-    notificationTextKey: 'startedACall',
+    notificationTextKey: 'callsYouCalled',
     iconType: 'callOutgoing',
     iconColor: 'inherit',
   },
@@ -36,7 +36,7 @@ const style: StyleType = {
     iconType: 'callIncoming',
     iconColor: 'inherit',
   },
-};
+} satisfies StyleType;
 
 export const CallNotification = (props: PropsForCallNotification) => {
   const { messageId, notificationType } = props;
@@ -49,12 +49,11 @@ export const CallNotification = (props: PropsForCallNotification) => {
     nickname || displayNameInProfile || (selectedConvoId && PubKey.shorten(selectedConvoId));
 
   const styleItem = style[notificationType];
-  const notificationText = window.i18n(styleItem.notificationTextKey, [
-    displayName || window.i18n('unknown'),
-  ]);
-  if (!window.i18n(styleItem.notificationTextKey)) {
-    throw new Error(`invalid i18n key ${styleItem.notificationTextKey}`);
-  }
+
+  const notificationText = window.i18n(styleItem.notificationTextKey, {
+    name: displayName ?? window.i18n('unknown'),
+  });
+
   const iconType = styleItem.iconType;
   const iconColor = styleItem.iconColor;
 
