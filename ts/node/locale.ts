@@ -1,6 +1,7 @@
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import type { LocalizerDictionary } from '../types/Localizer';
 import { getAppRootPath } from './getRootPath';
 
 function normalizeLocaleName(locale: string) {
@@ -14,20 +15,18 @@ function normalizeLocaleName(locale: string) {
   return locale;
 }
 
-function getLocaleMessages(locale: string): LocaleMessagesType {
+function getLocaleMessages(locale: string): LocalizerDictionary {
   const onDiskLocale = locale.replace('-', '_');
 
   const targetFile = path.join(getAppRootPath(), '_locales', onDiskLocale, 'messages.json');
 
   return JSON.parse(fs.readFileSync(targetFile, 'utf-8'));
 }
-export type LocaleMessagesType = Record<string, string>;
-export type LocaleMessagesWithNameType = { messages: LocaleMessagesType; name: string };
 
-export function load({
-  appLocale,
-  logger,
-}: { appLocale?: string; logger?: any } = {}): LocaleMessagesWithNameType {
+export function load({ appLocale, logger }: { appLocale?: string; logger?: any } = {}): {
+  name: string;
+  messages: LocalizerDictionary;
+} {
   if (!appLocale) {
     throw new TypeError('`appLocale` is required');
   }
