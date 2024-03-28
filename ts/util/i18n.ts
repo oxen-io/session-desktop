@@ -54,7 +54,7 @@ export const setupi18n = (locale: string, dictionary: LocalizerDictionary) => {
       return '' as R;
     }
 
-    /** If a localized string does not have any arguments to substitute it is retured with no changes */
+    /** If a localized string does not have any arguments to substitute it is returned with no changes */
     if (!args) {
       return localizedString as R;
     }
