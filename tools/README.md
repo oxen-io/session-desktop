@@ -1,36 +1,80 @@
-**Those tools can be used to keep in sync our locale in the app between different language and with android translations**
+# Tools
 
+## Using the Python scripts
 
+The Python scripts are located in the `tools` directory. To run a script, use the following command:
 
-## Step 1: Find unused key locales in EN
+```bash
+python3 ./tools/<script>.py
+```
 
-`tools/unusedLocalizedString.py` is iterating over all root keys in _locales/en/message.json and try to find them on the code with a regex. If it does not find it, it will print a line with False.
-Some key exceptions are hardcoded to not report false negative
+Most of these scripts can take arguments. To see the arguments for a script, use the following command:
 
+```bash
+python3 ./tools/<script>.py --help
+```
 
-So just run:
-`tools/unusedLocalizedString.py |grep False`
-and double check by searching in the app if you can effectively remove those keys.
+## Utiltiy
 
+### Sort JSON
 
-## Step 2: Sync keys between each locales on desktop
+[./util/sortJson.py](./util/sortJson.py) sorts a given JSON file.
 
-This step removes every key in all locales not found in the locale EN.
-So if for example, you have a key in `it` which is not present in `en`, it will be removed and the `it` file will be written without it.
+```bash
+python3 ./tools/util/sortJson.py <file>
+```
 
-A summary for each language file is printed on the screen to let you know if anything was changed during the process
+## Localization
 
-`python3 tools/compareLocalizedStrings.py`
+There are several script that handle localization at different stages.
 
+### Find String
 
-## Step 3: Map translations from android to desktop
+[findString.py](./findString.py) is a utility script that searches for a given token across the codebase. This script searches in the following directories:
 
-This step matches translations from android to desktop. It needs to be run for each locale you want to update.
+- `./ts/`
 
+```bash
+python3 ./tools/findString.py <token>
+```
 
-`python3 tools/mapAndroidTranslationsToDesktop.py fr <path_to_android_root_project>`
+The script can automatically open the files in VSCode by passing the `--open` flag.
 
-Under the hood, it uses a item from the EN desktop locale called `androidKey` to find the matching translation for each locale.
+```bash
+python3 ./tools/findString.py <token> --open
+```
 
-Note that if a desktop key does not have an `androidKey` set, it will just be skipped
-The goal is to have an androidKey for each item, if possible. But for now apps are too different for that to make sense.
+**Warning:** The --open flag will open only the first result for the token in VSCode. If you wish to open more files, you can pass the `--limit` flag with the maximum number of files you wish to open. You can also pass the `--limit 0` flag to open all files containing the token.
+
+```bash
+python3 ./tools/findString.py <token> --open --limit 5
+```
+
+### [CrowdIn Post-Import](./localization/crowdInPostImport.sh)
+
+When a CrowdIn PR is made to update the localizations the [./localization/crowdInPostInstall.sh](./localization/crowdInPostImport.sh) - This script processes the imported files by running the following scripts:
+
+- [./util/sortJson.py](./util/sortJson.py) - This script sorts a json file and is run for all `messages.json` files locaed in `./_locales/`.
+- [./localization/generateLocales.py](./localization/generateLocales.py) - This script generates the TypeScript type definitions [locales.ts](../ts/localization/locales.ts). This script also validates the dynamic variables in each locale file and flags any errors.
+
+The generated type file is not commited to the repository and is generated at build time. It is generated here to ensure that changes to any type definitions are not problematic.
+
+## [Generate Localized Strings Analysis](./localization/generateLocalizedStringsAnalysis.sh)
+
+This script generates a report of the localized strings, identifying missing and unused strings, as well as strings that are used but not known about. Without any input files this script outputs:
+
+- [found_strings.csv] - A list of all strings found in the codebase.
+- [not_found_strings.csv] - A list of all strings not found in the codebase.
+- [potental_matches.csv] - A list of all not found strings in the codebase that have a potential match using a fuzzy search.
+
+The script can be run with:
+
+```bash
+  python3 ./tools/localization/generateLocalizedStringsAnalysis.py
+```
+
+The script can also take the following arguments:
+
+- `--output-dir` - The directory to output the files to. Default is `./tools/localization/analysis/`.
+- `--master-strings` - A file containging a master list of strings to compare against. This list specifies the list of known strings. When this is provided a `missing_strings.csv` file is generated. This file contains all strings in the codebase that are not in the master list.
+- `--to-be-removed` - A file containging a list of strings that are to be removed from the codebase. This list specifies the list of strings that are to be removed and so won't be flagged as missing from the master lists. Any strings in this list will not appear in the `missing_strings.csv` file.
