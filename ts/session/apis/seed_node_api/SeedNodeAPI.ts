@@ -230,6 +230,7 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
 
   const params = {
     active_only: true,
+    limit: 256,
     fields: {
       public_ip: true,
       storage_port: true,
