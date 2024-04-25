@@ -7,6 +7,7 @@ import { getConversationsCount } from '../state/selectors/conversations';
 import { getLeftOverlayMode } from '../state/selectors/section';
 import { cleanSearchTerm } from '../util/cleanSearchTerm';
 import { SessionIconButton } from './icon';
+import { UserUtils } from '../session/utils';
 
 const StyledSearchInput = styled.div`
   height: var(--search-input-height);
@@ -48,7 +49,8 @@ const StyledInput = styled.input`
 `;
 
 const doTheSearch = (dispatch: Dispatch<any>, cleanedTerm: string) => {
-  dispatch(search(cleanedTerm));
+  const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+  dispatch(search(cleanedTerm, ourNumber));
 };
 
 const debouncedSearch = debounce(doTheSearch, 50);

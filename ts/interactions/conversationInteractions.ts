@@ -5,6 +5,7 @@ import {
   ConversationInteractionType,
   ConversationInteractionStatus,
   READ_MESSAGE_STATE,
+  DisappearingMessageConversationModeType,
 } from '../models/conversationTypes';
 import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
 
@@ -18,7 +19,6 @@ import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../session/conversations';
 import { getSodiumRenderer } from '../session/crypto';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
-import { DisappearingMessageConversationModeType } from '../models/conversationTypes';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { fromHexToArray, toHex } from '../session/utils/String';
 import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';

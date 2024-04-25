@@ -1,10 +1,12 @@
 /* eslint-disable no-restricted-syntax */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { omit, toNumber } from 'lodash';
+
+import { Data } from '../../data/data';
+
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
 import { QuotedAttachmentType } from '../../components/conversation/message/message-content/quote/Quote';
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
-import { Data } from '../../data/data';
 import {
   ConversationInteractionStatus,
   ConversationInteractionType,
@@ -12,6 +14,7 @@ import {
   ConversationNotificationSettingType,
   ConversationTypeEnum,
   LastMessageStatusType,
+  DisappearingMessageConversationModeType,
 } from '../../models/conversationTypes';
 import {
   MessageModelType,
@@ -21,7 +24,6 @@ import {
 import { getConversationController } from '../../session/conversations';
 import { DisappearingMessages } from '../../session/disappearing_messages';
 import { DisappearingMessageType } from '../../session/disappearing_messages/types';
-import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 import { ReactionList } from '../../types/Reaction';
 
 export type CallNotificationType = 'missed-call' | 'started-call' | 'answered-a-call';

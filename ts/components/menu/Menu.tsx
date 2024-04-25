@@ -43,9 +43,9 @@ import {
 import {
   ConversationInteractionStatus,
   ConversationInteractionType,
+  ConversationNotificationSettingType,
 } from '../../models/conversationTypes';
 import { ConversationNotificationSetting } from '../../models/conversationAttributes';
-import { ConversationNotificationSettingType } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { PubKey } from '../../session/types';
 import {

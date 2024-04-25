@@ -108,6 +108,7 @@ import {
   ConversationAttributes,
   ConversationTypeEnum,
   READ_MESSAGE_STATE,
+  DisappearingMessageConversationModeType,
 } from './conversationTypes';
 
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
@@ -120,7 +121,6 @@ import {
 } from '../state/selectors/sogsRoomInfo'; // decide it it makes sense to move this to a redux slice?
 
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageConversationModeType } from './conversationTypes';
 import { FetchMsgExpirySwarm } from '../session/utils/job_runners/jobs/FetchMsgExpirySwarmJob';
 import { UpdateMsgExpirySwarm } from '../session/utils/job_runners/jobs/UpdateMsgExpirySwarmJob';
 import { ReleasedFeatures } from '../util/releaseFeature';

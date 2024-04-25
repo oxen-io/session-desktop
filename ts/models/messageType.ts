@@ -9,10 +9,9 @@ import {
   InteractionNotificationType,
   PropsForMessageWithConvoProps,
 } from '../state/ducks/conversations';
-import { LastMessageStatusType } from './conversationTypes';
+import { LastMessageStatusType, READ_MESSAGE_STATE } from './conversationTypes';
 import { AttachmentTypeWithPath } from '../types/Attachment';
 import { Reaction, ReactionList, SortedReactionList } from '../types/Reaction';
-import { READ_MESSAGE_STATE } from './conversationTypes';
 
 export type MessageModelType = 'incoming' | 'outgoing';
 

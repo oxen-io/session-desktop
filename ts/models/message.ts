@@ -38,7 +38,12 @@ import {
 import { Data } from '../data/data';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
-import { ConversationInteractionStatus, ConversationInteractionType } from './conversationTypes';
+import {
+  ConversationInteractionStatus,
+  ConversationInteractionType,
+  LastMessageStatusType,
+  READ_MESSAGE_STATE,
+} from './conversationTypes';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
@@ -78,7 +83,6 @@ import {
   PropsForQuote,
   messagesChanged,
 } from '../state/ducks/conversations';
-import { LastMessageStatusType } from './conversationTypes';
 import { AttachmentTypeWithPath, isVoiceMessage } from '../types/Attachment';
 import {
   deleteExternalMessageFiles,
@@ -94,7 +98,6 @@ import { LinkPreviews } from '../util/linkPreviews';
 import { Notifications } from '../util/notifications';
 import { Storage } from '../util/storage';
 import { ConversationModel } from './conversation';
-import { READ_MESSAGE_STATE } from './conversationTypes';
 // tslint:disable: cyclomatic-complexity
 
 /**

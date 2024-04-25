@@ -4,7 +4,10 @@ import { initWallClockListener } from '../../util/wallClockListener';
 
 import { Data } from '../../data/data';
 import { ConversationModel } from '../../models/conversation';
-import { READ_MESSAGE_STATE } from '../../models/conversationTypes';
+import {
+  READ_MESSAGE_STATE,
+  DisappearingMessageConversationModeType,
+} from '../../models/conversationTypes';
 import { MessageModel } from '../../models/message';
 import { SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
@@ -23,7 +26,6 @@ import {
   ReadyToDisappearMsgUpdate,
   incomingExpirationTypeToDisappearingMessageType,
 } from './types';
-import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 
 async function destroyMessagesAndUpdateRedux(
   messages: Array<{

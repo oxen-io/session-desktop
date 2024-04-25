@@ -1,20 +1,18 @@
 /* eslint-disable no-restricted-syntax */
 import _, { isNaN } from 'lodash';
+
 import { Data } from '../../data/data';
-import { AdvancedSearchOptions, SearchOptions } from '../../types/Search';
-import { cleanSearchTerm } from '../../util/cleanSearchTerm';
+import { AdvancedSearchOptions, SearchOptions } from '../../types/Search'; // ok: .d.ts
+import { cleanSearchTerm } from '../../util/cleanSearchTerm'; // ok: not importing anything else
 
 import { MessageResultProps } from '../../components/search/MessageSearchResults';
-import { ConversationTypeEnum } from '../../models/conversationTypes';
-import { PubKey } from '../../session/types';
-import { UserUtils } from '../../session/utils';
+import { ConversationTypeEnum } from '../../models/conversationTypes'; // ok: .d.ts
 import { ReduxConversationType } from './conversations';
 
 // State
 
 export type SearchStateType = {
   query: string;
-  normalizedPhoneNumber?: string;
   // For conversations we store just the id, and pull conversation props in the selector
   contactsAndGroups: Array<string>;
   messages?: Array<MessageResultProps>;
@@ -23,7 +21,6 @@ export type SearchStateType = {
 // Actions
 type SearchResultsPayloadType = {
   query: string;
-  normalizedPhoneNumber?: string;
   contactsAndGroups: Array<string>;
   messages?: Array<MessageResultProps>;
 };
@@ -60,18 +57,18 @@ export const actions = {
   updateSearchTerm,
 };
 
-export function search(query: string): SearchResultsKickoffActionType {
+export function search(query: string, ourNumber: string): SearchResultsKickoffActionType {
   return {
     type: 'SEARCH_RESULTS',
-    payload: doSearch(query), // this uses redux-promise-middleware
+    payload: doSearch(query, ourNumber), // this uses redux-promise-middleware
   };
 }
 
-async function doSearch(query: string): Promise<SearchResultsPayloadType> {
+async function doSearch(query: string, ourNumber: string): Promise<SearchResultsPayloadType> {
   const options: SearchOptions = {
     noteToSelf: window.i18n('noteToSelf').toLowerCase(),
     savedMessages: window.i18n('savedMessages').toLowerCase(),
-    ourNumber: UserUtils.getOurPubKeyStrFromCache(),
+    ourNumber,
   };
   const advancedSearchOptions = getAdvancedSearchOptionsFromQuery(query);
   const processedQuery = advancedSearchOptions.query;
@@ -87,7 +84,6 @@ async function doSearch(query: string): Promise<SearchResultsPayloadType> {
 
   return {
     query,
-    normalizedPhoneNumber: PubKey.normalize(query),
     contactsAndGroups,
     messages: filteredMessages,
   };
@@ -272,7 +268,7 @@ export function reducer(state: SearchStateType | undefined, action: SEARCH_TYPES
 
   if (action.type === 'SEARCH_RESULTS_FULFILLED') {
     const { payload } = action;
-    const { query, normalizedPhoneNumber, contactsAndGroups, messages } = payload;
+    const { query, contactsAndGroups, messages } = payload;
     // Reject if the associated query is not the most recent user-provided query
     if (state.query !== query) {
       return state;
@@ -281,7 +277,6 @@ export function reducer(state: SearchStateType | undefined, action: SEARCH_TYPES
     return {
       ...state,
       query,
-      normalizedPhoneNumber,
       contactsAndGroups,
       messages,
     };
