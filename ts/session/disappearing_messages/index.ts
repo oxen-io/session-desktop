@@ -4,7 +4,7 @@ import { initWallClockListener } from '../../util/wallClockListener';
 
 import { Data } from '../../data/data';
 import { ConversationModel } from '../../models/conversation';
-import { READ_MESSAGE_STATE } from '../../models/conversationAttributes';
+import { READ_MESSAGE_STATE } from '../../models/conversationTypes';
 import { MessageModel } from '../../models/message';
 import { SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
@@ -18,12 +18,12 @@ import {
   couldBeLegacyDisappearingMessageContent,
 } from './legacy';
 import {
-  DisappearingMessageConversationModeType,
-  DisappearingMessageMode,
   DisappearingMessageType,
   DisappearingMessageUpdate,
   ReadyToDisappearMsgUpdate,
+  incomingExpirationTypeToDisappearingMessageType,
 } from './types';
+import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 
 async function destroyMessagesAndUpdateRedux(
   messages: Array<{
@@ -375,7 +375,7 @@ async function checkForExpireUpdateInContentMessage(
   // NOTE we don't use the expirationType directly from the Content Message because we need to resolve it to the correct convo type first in case it is legacy or has errors
   const expirationMode = changeToDisappearingConversationMode(
     convoToUpdate,
-    DisappearingMessageMode[content.expirationType],
+    incomingExpirationTypeToDisappearingMessageType(content.expirationType),
     expirationTimer
   );
 

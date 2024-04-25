@@ -4,7 +4,7 @@ import Sinon, * as sinon from 'sinon';
 
 import chaiAsPromised from 'chai-as-promised';
 import { ConversationModel } from '../../../../models/conversation';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { getSwarmPollingInstance, SnodePool } from '../../../../session/apis/snode_api';
 import { resetHardForkCachedValues } from '../../../../session/apis/snode_api/hfHandling';
 import { SnodeAPIRetrieve } from '../../../../session/apis/snode_api/retrieveRequest';

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getMessageQueue } from '..';
 import { Data } from '../../data/data';
 import { ConversationModel } from '../../models/conversation';
-import { ConversationAttributes, ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationAttributes, ConversationTypeEnum } from '../../models/conversationTypes';
 import { MessageModel } from '../../models/message';
 import { MessageAttributesOptionals } from '../../models/messageType';
 import { SignalService } from '../../protobuf';

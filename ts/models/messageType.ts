@@ -7,12 +7,12 @@ import {
 import {
   CallNotificationType,
   InteractionNotificationType,
-  LastMessageStatusType,
   PropsForMessageWithConvoProps,
 } from '../state/ducks/conversations';
+import { LastMessageStatusType } from './conversationTypes';
 import { AttachmentTypeWithPath } from '../types/Attachment';
 import { Reaction, ReactionList, SortedReactionList } from '../types/Reaction';
-import { READ_MESSAGE_STATE } from './conversationAttributes';
+import { READ_MESSAGE_STATE } from './conversationTypes';
 
 export type MessageModelType = 'incoming' | 'outgoing';
 

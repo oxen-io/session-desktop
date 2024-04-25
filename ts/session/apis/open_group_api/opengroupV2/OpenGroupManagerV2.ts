@@ -23,7 +23,7 @@ import { OpenGroupServerPoller } from './OpenGroupServerPoller';
 import {
   CONVERSATION_PRIORITIES,
   ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+} from '../../../../models/conversationTypes';
 import { SessionUtilUserGroups } from '../../../utils/libsession/libsession_utils_user_groups';
 import { openGroupV2GetRoomInfoViaOnionV4 } from '../sogsv3/sogsV3RoomInfos';
 import { UserGroupsWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';

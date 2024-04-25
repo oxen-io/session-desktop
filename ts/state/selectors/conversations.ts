@@ -24,7 +24,8 @@ import { MessageTextSelectorProps } from '../../components/conversation/message/
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
-import { CONVERSATION_PRIORITIES, isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { CONVERSATION_PRIORITIES } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { LocalizerType } from '../../types/Util';

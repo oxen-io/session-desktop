@@ -2,8 +2,10 @@ import { isNil } from 'lodash';
 import {
   ConversationNotificationSettingType,
   ConversationTypeEnum,
+  ConversationInteractionType,
+  ConversationInteractionStatus,
   READ_MESSAGE_STATE,
-} from '../models/conversationAttributes';
+} from '../models/conversationTypes';
 import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
 
 import { SessionButtonColor } from '../components/basic/SessionButton';
@@ -16,7 +18,7 @@ import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../session/conversations';
 import { getSodiumRenderer } from '../session/crypto';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
-import { DisappearingMessageConversationModeType } from '../session/disappearing_messages/types';
+import { DisappearingMessageConversationModeType } from '../models/conversationTypes';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { fromHexToArray, toHex } from '../session/utils/String';
 import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
@@ -46,18 +48,6 @@ import { encryptProfile } from '../util/crypto/profileEncrypter';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { Storage, setLastProfileUpdateTimestamp } from '../util/storage';
 import { UserGroupsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
-
-export enum ConversationInteractionStatus {
-  Start = 'start',
-  Loading = 'loading',
-  Error = 'error',
-  Complete = 'complete',
-}
-
-export enum ConversationInteractionType {
-  Hide = 'hide',
-  Leave = 'leave',
-}
 
 export async function copyPublicKeyByConvoId(convoId: string) {
   if (OpenGroupUtils.isOpenGroupV2(convoId)) {

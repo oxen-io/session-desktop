@@ -13,7 +13,7 @@ import {
   deleteMessagesFromSwarmAndCompletelyLocally,
   deleteMessagesFromSwarmAndMarkAsDeletedLocally,
 } from '../interactions/conversations/unsendingInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationAttributes';
+import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationTypes';
 import { findCachedBlindedMatchOrLookupOnAllServers } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../session/conversations';
 import { concatUInt8Array, getSodiumRenderer } from '../session/crypto';

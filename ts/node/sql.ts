@@ -24,7 +24,7 @@ import {
   uniq,
 } from 'lodash';
 
-import { ConversationAttributes } from '../models/conversationAttributes';
+import { ConversationAttributes } from '../models/conversationTypes';
 import { PubKey } from '../session/types/PubKey'; // checked - only node
 import { redactAll } from '../util/privacy'; // checked - only node
 import {

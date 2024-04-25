@@ -8,12 +8,11 @@ import { Data } from '../../data/data';
 import {
   ConversationInteractionStatus,
   ConversationInteractionType,
-} from '../../interactions/conversationInteractions';
-import {
   CONVERSATION_PRIORITIES,
   ConversationNotificationSettingType,
   ConversationTypeEnum,
-} from '../../models/conversationAttributes';
+  LastMessageStatusType,
+} from '../../models/conversationTypes';
 import {
   MessageModelType,
   PropsForDataExtractionNotification,
@@ -21,10 +20,8 @@ import {
 } from '../../models/messageType';
 import { getConversationController } from '../../session/conversations';
 import { DisappearingMessages } from '../../session/disappearing_messages';
-import {
-  DisappearingMessageConversationModeType,
-  DisappearingMessageType,
-} from '../../session/disappearing_messages/types';
+import { DisappearingMessageType } from '../../session/disappearing_messages/types';
+import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 import { ReactionList } from '../../types/Reaction';
 
 export type CallNotificationType = 'missed-call' | 'started-call' | 'answered-a-call';
@@ -59,8 +56,6 @@ export type ContactPropsMessageDetail = {
   avatarPath?: string | null;
   errors?: Array<Error>;
 };
-
-export type LastMessageStatusType = 'sending' | 'sent' | 'read' | 'error' | undefined;
 
 export type FindAndFormatContactType = {
   pubkey: string;

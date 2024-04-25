@@ -7,7 +7,7 @@ import { MessageModel } from '../models/message';
 import { getConversationController } from '../session/conversations';
 import { Quote } from './types';
 
-import { ConversationTypeEnum } from '../models/conversationAttributes';
+import { ConversationTypeEnum } from '../models/conversationTypes';
 import { MessageDirection } from '../models/messageType';
 import { SignalService } from '../protobuf';
 import { DisappearingMessages } from '../session/disappearing_messages';

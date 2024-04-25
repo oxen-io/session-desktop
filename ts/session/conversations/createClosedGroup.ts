@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { ClosedGroup, getMessageQueue } from '..';
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { addKeyPairToCacheAndDBIfNeeded } from '../../receiver/closedGroups';
 import { ECKeyPair } from '../../receiver/keypairs';
 import { openConversationWithMessages } from '../../state/ducks/conversations';

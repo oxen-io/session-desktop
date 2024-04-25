@@ -13,7 +13,7 @@ import { StringUtils, UserUtils } from '../session/utils';
 import { handleClosedGroupControlMessage } from './closedGroups';
 import { handleMessageJob, toRegularMessage } from './queuedJob';
 
-import { ConversationTypeEnum } from '../models/conversationAttributes';
+import { ConversationTypeEnum } from '../models/conversationTypes';
 import { MessageModel } from '../models/message';
 import {
   createSwarmMessageSentFromNotUs,

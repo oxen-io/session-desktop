@@ -4,7 +4,7 @@ import {
   CONVERSATION_PRIORITIES,
   ConversationAttributes,
   ConversationAttributesWithNotSavedOnes,
-} from '../models/conversationAttributes';
+} from '../models/conversationTypes';
 
 export const CONVERSATIONS_TABLE = 'conversations';
 export const MESSAGES_TABLE = 'messages';

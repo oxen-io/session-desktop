@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 import useKey from 'react-use/lib/useKey';
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { ToastUtils } from '../../session/utils';
 import { openConversationWithMessages } from '../../state/ducks/conversations';

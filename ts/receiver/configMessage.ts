@@ -6,7 +6,7 @@ import { Data } from '../data/data';
 import { SettingsKey } from '../data/settings-key';
 import { ConversationInteraction } from '../interactions';
 import { deleteAllMessagesByConvoIdNoConfirmation } from '../interactions/conversationInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationAttributes';
+import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
 import { ClosedGroup } from '../session';
 import {

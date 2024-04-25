@@ -24,7 +24,7 @@ import { getMessageQueue } from '../..';
 import { getCallMediaPermissionsSettings } from '../../../components/settings/SessionSettings';
 import { Data } from '../../../data/data';
 import { approveConvoAndSendResponse } from '../../../interactions/conversationInteractions';
-import { READ_MESSAGE_STATE } from '../../../models/conversationAttributes';
+import { READ_MESSAGE_STATE } from '../../../models/conversationTypes';
 import { PnServer } from '../../apis/push_notification_api';
 import { GetNetworkTime } from '../../apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';

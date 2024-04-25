@@ -15,7 +15,7 @@ import {
   Storage,
 } from './storage';
 import { Registration } from './registration';
-import { ConversationTypeEnum } from '../models/conversationAttributes';
+import { ConversationTypeEnum } from '../models/conversationTypes';
 import { SessionKeyPair } from '../receiver/keypairs';
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
 

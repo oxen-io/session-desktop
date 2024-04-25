@@ -98,15 +98,17 @@ import { Reactions } from '../util/reactions';
 import { Registration } from '../util/registration';
 import { Storage } from '../util/storage';
 import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
   ConversationNotificationSetting,
-  ConversationTypeEnum,
   fillConvoAttributesWithDefaults,
   isDirectConversation,
   isOpenOrClosedGroup,
-  READ_MESSAGE_STATE,
 } from './conversationAttributes';
+import {
+  CONVERSATION_PRIORITIES,
+  ConversationAttributes,
+  ConversationTypeEnum,
+  READ_MESSAGE_STATE,
+} from './conversationTypes';
 
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
 import { SessionUtilUserProfile } from '../session/utils/libsession/libsession_utils_user_profile';
@@ -118,7 +120,7 @@ import {
 } from '../state/selectors/sogsRoomInfo'; // decide it it makes sense to move this to a redux slice?
 
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageConversationModeType } from '../session/disappearing_messages/types';
+import { DisappearingMessageConversationModeType } from './conversationTypes';
 import { FetchMsgExpirySwarm } from '../session/utils/job_runners/jobs/FetchMsgExpirySwarmJob';
 import { UpdateMsgExpirySwarm } from '../session/utils/job_runners/jobs/UpdateMsgExpirySwarmJob';
 import { ReleasedFeatures } from '../util/releaseFeature';

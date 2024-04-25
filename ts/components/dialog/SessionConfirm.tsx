@@ -5,10 +5,8 @@ import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { useLastMessage } from '../../hooks/useParamSelector';
 import { MessageInteraction } from '../../interactions';
-import {
-  ConversationInteractionStatus,
-  updateConversationInteractionState,
-} from '../../interactions/conversationInteractions';
+import { updateConversationInteractionState } from '../../interactions/conversationInteractions';
+import { ConversationInteractionStatus } from '../../models/conversationTypes';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';

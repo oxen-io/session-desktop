@@ -3,7 +3,7 @@
 import _, { isEmpty } from 'lodash';
 import { MessageResultProps } from '../components/search/MessageSearchResults';
 import { ConversationModel } from '../models/conversation';
-import { ConversationAttributes } from '../models/conversationAttributes';
+import { ConversationAttributes } from '../models/conversationTypes';
 import { MessageCollection, MessageModel } from '../models/message';
 import { MessageAttributes, MessageDirection } from '../models/messageType';
 import { StorageItem } from '../node/storage_item';

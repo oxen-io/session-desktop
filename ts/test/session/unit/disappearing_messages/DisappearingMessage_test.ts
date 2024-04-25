@@ -2,16 +2,11 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Sinon from 'sinon';
 import { Conversation, ConversationModel } from '../../../../models/conversation';
-import {
-  ConversationAttributes,
-  ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+import { ConversationAttributes, ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { DisappearingMessages } from '../../../../session/disappearing_messages';
-import {
-  DisappearingMessageConversationModeType,
-  DisappearingMessageType,
-} from '../../../../session/disappearing_messages/types';
+import { DisappearingMessageType } from '../../../../session/disappearing_messages/types';
+import { DisappearingMessageConversationModeType } from '../../../../models/conversationTypes';
 import { UserUtils } from '../../../../session/utils';
 import { isValidUnixTimestamp } from '../../../../session/utils/Timestamps';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';

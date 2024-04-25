@@ -9,7 +9,7 @@ import { SyncUtils, ToastUtils, UserUtils } from '../../session/utils';
 import { YourSessionIDPill, YourSessionIDSelectable } from '../basic/YourSessionIDPill';
 
 import { useOurAvatarPath, useOurConversationUsername } from '../../hooks/useParamSelector';
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { MAX_USERNAME_BYTES } from '../../session/constants';
 import { getConversationController } from '../../session/conversations';
 import { sanitizeSessionUsername } from '../../session/utils/String';

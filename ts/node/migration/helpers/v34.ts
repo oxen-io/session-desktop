@@ -10,7 +10,7 @@ import {
 } from 'libsession_util_nodejs';
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { isEmpty, isEqual } from 'lodash';
-import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes';
+import { CONVERSATION_PRIORITIES } from '../../../models/conversationTypes';
 import { HexKeyPair } from '../../../receiver/keypairs';
 import { fromHexToArray } from '../../../session/utils/String';
 import {

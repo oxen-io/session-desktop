@@ -1,11 +1,10 @@
 import { isString } from 'lodash';
 import { useSelector } from 'react-redux';
 import { useUnreadCount } from '../../hooks/useParamSelector';
-import { ConversationTypeEnum, isOpenOrClosedGroup } from '../../models/conversationAttributes';
-import {
-  DisappearingMessageConversationModeType,
-  DisappearingMessageConversationModes,
-} from '../../session/disappearing_messages/types';
+import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
+import { DisappearingMessageConversationModes } from '../../session/disappearing_messages/types';
+import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 import { PubKey } from '../../session/types';
 import { UserUtils } from '../../session/utils';
 import { ReleasedFeatures } from '../../util/releaseFeature';

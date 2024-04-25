@@ -5,7 +5,7 @@ import { AdvancedSearchOptions, SearchOptions } from '../../types/Search';
 import { cleanSearchTerm } from '../../util/cleanSearchTerm';
 
 import { MessageResultProps } from '../../components/search/MessageSearchResults';
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { PubKey } from '../../session/types';
 import { UserUtils } from '../../session/utils';
 import { ReduxConversationType } from './conversations';

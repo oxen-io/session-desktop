@@ -17,7 +17,7 @@ import { PubKey } from '../types';
 
 import { getMessageQueue } from '..';
 import { deleteAllMessagesByConvoIdNoConfirmation } from '../../interactions/conversationInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../../models/conversationAttributes';
+import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../../models/conversationTypes';
 import { removeAllClosedGroupEncryptionKeyPairs } from '../../receiver/closedGroups';
 import { getCurrentlySelectedConversationOutsideRedux } from '../../state/selectors/conversations';
 import { assertUnreachable } from '../../types/sqlSharedTypes';

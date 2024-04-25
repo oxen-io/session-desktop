@@ -29,7 +29,7 @@ import { handleCapabilities } from './sogsCapabilities';
 import { BatchSogsReponse, OpenGroupBatchRow, SubRequestMessagesType } from './sogsV3BatchPoll';
 
 import { Data } from '../../../../data/data';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { createSwarmMessageSentFromUs } from '../../../../models/messageFactory';
 import { SignalService } from '../../../../protobuf';
 import { innerHandleSwarmContentMessage } from '../../../../receiver/contentMessage';

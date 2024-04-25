@@ -13,7 +13,7 @@ import { decryptWithSessionProtocol } from './contentMessage';
 import { EnvelopePlus } from './types';
 
 import { ConversationModel } from '../models/conversation';
-import { ConversationTypeEnum } from '../models/conversationAttributes';
+import { ConversationTypeEnum } from '../models/conversationTypes';
 
 import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';

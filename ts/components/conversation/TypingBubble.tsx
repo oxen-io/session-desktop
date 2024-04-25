@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { TypingAnimation } from './TypingAnimation';
 
 interface TypingBubbleProps {

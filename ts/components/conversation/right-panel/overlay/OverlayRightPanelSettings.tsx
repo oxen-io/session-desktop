@@ -13,8 +13,6 @@ import {
 } from '../../../../hooks/useParamSelector';
 import { useIsRightPanelShowing } from '../../../../hooks/useUI';
 import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
   showAddModeratorsByConvoId,
   showInviteContactByConvoId,
   showLeaveGroupByConvoId,
@@ -22,6 +20,10 @@ import {
   showUpdateGroupMembersByConvoId,
   showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
+import {
+  ConversationInteractionStatus,
+  ConversationInteractionType,
+} from '../../../../models/conversationTypes';
 import { Constants } from '../../../../session';
 import { closeRightPanel } from '../../../../state/ducks/conversations';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';

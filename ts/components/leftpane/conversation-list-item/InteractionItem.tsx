@@ -6,7 +6,7 @@ import { useIsPrivate, useIsPublic } from '../../../hooks/useParamSelector';
 import {
   ConversationInteractionStatus,
   ConversationInteractionType,
-} from '../../../interactions/conversationInteractions';
+} from '../../../models/conversationTypes';
 import { getConversationController } from '../../../session/conversations';
 import { LastMessageType } from '../../../state/ducks/conversations';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';

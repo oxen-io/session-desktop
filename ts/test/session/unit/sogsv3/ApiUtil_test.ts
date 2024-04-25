@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import Sinon from 'sinon';
 import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import {
   hasExistingOpenGroup,
   isSessionRunOpenGroup,

@@ -11,7 +11,7 @@ import { MessageUtils, UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 
 import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { SignalService } from '../../../../protobuf';
 import { getOpenGroupV2ConversationId } from '../../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { SnodeNamespaces } from '../../../../session/apis/snode_api/namespaces';

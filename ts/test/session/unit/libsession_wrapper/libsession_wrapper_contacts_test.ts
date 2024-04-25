@@ -6,7 +6,7 @@ import {
   CONVERSATION_PRIORITIES,
   ConversationAttributes,
   ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+} from '../../../../models/conversationTypes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';

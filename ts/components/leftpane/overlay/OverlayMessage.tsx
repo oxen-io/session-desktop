@@ -3,7 +3,7 @@ import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 
 import { useDispatch } from 'react-redux';
-import { ConversationTypeEnum } from '../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../models/conversationTypes';
 import { getConversationController } from '../../../session/conversations';
 import { PubKey } from '../../../session/types';
 import { ToastUtils, UserUtils } from '../../../session/utils';

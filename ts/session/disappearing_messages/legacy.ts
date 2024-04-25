@@ -1,7 +1,7 @@
 // TODO legacy messages support will be removed in a future release
 import { ProtobufUtils, SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
-import { DisappearingMessageConversationModeType } from './types';
+import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 
 export function isLegacyDisappearingModeEnabled(
   expirationMode: DisappearingMessageConversationModeType | undefined

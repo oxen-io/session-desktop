@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import Sinon from 'sinon';
 import { KNOWN_BLINDED_KEYS_ITEM } from '../../../../data/settings-key';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { getSodiumNode } from '../../../../node/sodiumNode';
 import {
   addCachedBlindedKey,

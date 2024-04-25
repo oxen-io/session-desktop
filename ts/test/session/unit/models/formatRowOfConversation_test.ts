@@ -1,10 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import {
-  ConversationAttributes,
-  ConversationTypeEnum,
-  fillConvoAttributesWithDefaults,
-} from '../../../../models/conversationAttributes';
+import { fillConvoAttributesWithDefaults } from '../../../../models/conversationAttributes';
+import { ConversationAttributes, ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { formatRowOfConversation } from '../../../../node/database_utility';
 
 describe('formatRowOfConversation', () => {

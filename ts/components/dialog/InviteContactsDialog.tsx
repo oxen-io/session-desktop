@@ -3,7 +3,7 @@ import useKey from 'react-use/lib/useKey';
 
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { ConversationTypeEnum } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { VALIDATION } from '../../session/constants';
 import { getConversationController } from '../../session/conversations';
 import { ToastUtils, UserUtils } from '../../session/utils';

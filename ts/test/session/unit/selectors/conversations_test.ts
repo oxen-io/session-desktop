@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import {
   CONVERSATION_PRIORITIES,
   ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+} from '../../../../models/conversationTypes';
 
 import { ConversationLookupType } from '../../../../state/ducks/conversations';
 import {

@@ -22,8 +22,6 @@ import {
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
 import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
   approveConvoAndSendResponse,
   blockConvoById,
   clearNickNameByConvoId,
@@ -43,9 +41,11 @@ import {
   unblockConvoById,
 } from '../../interactions/conversationInteractions';
 import {
-  ConversationNotificationSetting,
-  ConversationNotificationSettingType,
-} from '../../models/conversationAttributes';
+  ConversationInteractionStatus,
+  ConversationInteractionType,
+} from '../../models/conversationTypes';
+import { ConversationNotificationSetting } from '../../models/conversationAttributes';
+import { ConversationNotificationSettingType } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { PubKey } from '../../session/types';
 import {

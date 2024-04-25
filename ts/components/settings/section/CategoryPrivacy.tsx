@@ -3,7 +3,7 @@ import React from 'react';
 
 import useUpdate from 'react-use/lib/useUpdate';
 import { SettingsKey } from '../../../data/settings-key';
-import { ConversationTypeEnum } from '../../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../../models/conversationTypes';
 import { updateConfirmModal } from '../../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../../basic/SessionButton';
 import { SpacerLG } from '../../basic/Text';

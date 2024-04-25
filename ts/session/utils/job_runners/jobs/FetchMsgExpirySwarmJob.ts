@@ -2,7 +2,7 @@
 import { compact, isEmpty, isNumber, uniq } from 'lodash';
 import { v4 } from 'uuid';
 import { Data } from '../../../../data/data';
-import { READ_MESSAGE_STATE } from '../../../../models/conversationAttributes';
+import { READ_MESSAGE_STATE } from '../../../../models/conversationTypes';
 import { MessageModel } from '../../../../models/message';
 import { isSignInByLinking } from '../../../../util/storage';
 import { getExpiriesFromSnode } from '../../../apis/snode_api/getExpiriesRequest';
