@@ -752,7 +752,8 @@ app.on('ready', async () => {
   assertLogger().info('app ready');
   assertLogger().info(`starting version ${packageJson.version}`);
   if (!locale) {
-    const appLocale = process.env.LANGUAGE || app.getLocale() || 'en';
+    const appLocale =
+      (userConfig.get('uiLanguage') as string) || process.env.LANGUAGE || app.getLocale() || 'en';
     locale = loadLocale({ appLocale, logger });
     assertLogger().info(`locale is ${appLocale}`);
   }
@@ -1148,6 +1149,23 @@ ipc.on('set-auto-update-setting', async (_event, enabled) => {
 
 ipc.on('get-native-theme', event => {
   event.sender.send('send-native-theme', nativeTheme.shouldUseDarkColors);
+});
+
+ipc.on('get-ui-language', async event => {
+  const uiLocaleName = String(
+    userConfig.get('uiLanguage') || process.env.LANGUAGE || app.getLocale() || 'en'
+  );
+
+  const normalizedLocale = uiLocaleName.split('_')[0].toLowerCase();
+
+  // eslint-disable-next-line no-param-reassign
+  event.returnValue = normalizedLocale;
+});
+
+ipc.on('set-ui-language', async (_event, uiLanguage) => {
+  userConfig.set('uiLanguage', uiLanguage);
+  app.relaunch();
+  app.exit();
 });
 
 nativeTheme.on('updated', () => {
