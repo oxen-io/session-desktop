@@ -12,6 +12,7 @@ import { Flex } from '../basic/Flex';
 import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
 import * as MIME from '../../types/MIME';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
+import { MIMEType } from '../../models/conversationTypes';
 
 const colorSVG = (url: string, color: string) => {
   return {
@@ -22,7 +23,7 @@ const colorSVG = (url: string, color: string) => {
 };
 
 type Props = {
-  contentType: MIME.MIMEType | undefined;
+  contentType: MIMEType | undefined;
   objectURL: string;
   caption?: string;
   onNext?: () => void;
@@ -207,7 +208,7 @@ export const LightboxObject = ({
   onObjectClick,
 }: {
   objectURL: string;
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   renderedRef: React.MutableRefObject<any>;
   onObjectClick: (event: any) => any;
 }) => {

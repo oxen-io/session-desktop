@@ -8,11 +8,11 @@ import autoBind from 'auto-bind';
 import styled from 'styled-components';
 import {
   quotedMessageToAnimate,
-  ReduxConversationType,
   resetOldBottomMessageId,
   resetOldTopMessageId,
-  SortedMessageModelProps,
 } from '../../state/ducks/conversations';
+import { SortedMessageModelProps } from '../../models/conversationTypes';
+import { ReduxConversationType } from '../../models/conversationTypes';
 import { SessionScrollButton } from '../SessionScrollButton';
 
 import {

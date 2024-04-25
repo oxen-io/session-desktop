@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';
-import { MessageRenderingProps } from '../../../../models/messageType';
+import { MessageRenderingProps } from '../../../../models/conversationTypes';
 import { ToastUtils } from '../../../../session/utils';
 import { openConversationToSpecificMessage } from '../../../../state/ducks/conversations';
 import { StateType } from '../../../../state/reducer';

@@ -7,13 +7,14 @@ import {
   ConversationsStateType,
   lookupQuote,
   MentionsMembersType,
+} from '../ducks/conversations';
+import { SortedMessageModelProps } from '../../models/conversationTypes';
+import {
   MessageModelPropsWithConvoProps,
   MessageModelPropsWithoutConvoProps,
   PropsForQuote,
-  QuoteLookupType,
-  ReduxConversationType,
-  SortedMessageModelProps,
-} from '../ducks/conversations';
+} from '../../models/conversationTypes';
+import { ReduxConversationType, CONVERSATION_PRIORITIES } from '../../models/conversationTypes';
 import { StateType } from '../reducer';
 
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
@@ -25,7 +26,6 @@ import { GenericReadableMessageSelectorProps } from '../../components/conversati
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
-import { CONVERSATION_PRIORITIES } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { LocalizerType } from '../../types/Util';
@@ -50,7 +50,7 @@ export const getConversationsCount = createSelector(getConversationLookup, (stat
   return Object.keys(state).length;
 });
 
-const getConversationQuotes = (state: StateType): QuoteLookupType | undefined => {
+const getConversationQuotes = (state: StateType) => {
   return state.conversations.quotes;
 };
 

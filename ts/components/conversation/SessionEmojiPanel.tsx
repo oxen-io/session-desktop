@@ -16,7 +16,7 @@ import {
 import { hexColorToRGB } from '../../util/hexColorToRGB';
 import { getPrimaryColor } from '../../state/selectors/primaryColor';
 import { i18nEmojiData } from '../../util/emoji';
-import { FixedBaseEmoji } from '../../types/Reaction';
+import { FixedBaseEmoji } from '../../models/conversationTypes';
 
 export const StyledEmojiPanel = styled.div<{
   isModal: boolean;

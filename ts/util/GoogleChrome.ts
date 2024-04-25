@@ -1,4 +1,4 @@
-import * as MIME from '../types/MIME';
+import { MIMEType } from '../models/conversationTypes';
 
 interface MIMETypeSupportMap {
   [key: string]: boolean;
@@ -23,7 +23,7 @@ const SUPPORTED_IMAGE_MIME_TYPES: MIMETypeSupportMap = {
   'image/png': true,
 };
 
-export const isImageTypeSupported = (mimeType: MIME.MIMEType): boolean =>
+export const isImageTypeSupported = (mimeType: MIMEType): boolean =>
   SUPPORTED_IMAGE_MIME_TYPES[mimeType] === true;
 
 const SUPPORTED_VIDEO_MIME_TYPES: MIMETypeSupportMap = {
@@ -33,5 +33,5 @@ const SUPPORTED_VIDEO_MIME_TYPES: MIMETypeSupportMap = {
 };
 
 // See: https://www.chromium.org/audio-video
-export const isVideoTypeSupported = (mimeType: MIME.MIMEType): boolean =>
+export const isVideoTypeSupported = (mimeType: MIMEType): boolean =>
   SUPPORTED_VIDEO_MIME_TYPES[mimeType] === true;

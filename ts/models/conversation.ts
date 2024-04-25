@@ -26,7 +26,17 @@ import { PubKey } from '../session/types';
 import { ToastUtils, UserUtils } from '../session/utils';
 import { BlockedNumberController } from '../util';
 import { MessageModel } from './message';
-import { MessageAttributesOptionals, MessageDirection } from './messageType';
+import {
+  MessageAttributesOptionals,
+  MessageDirection,
+  ReduxConversationType,
+  CONVERSATION_PRIORITIES,
+  ConversationAttributes,
+  ConversationTypeEnum,
+  READ_MESSAGE_STATE,
+  DisappearingMessageConversationModeType,
+  Reaction,
+} from './conversationTypes';
 
 import { Data } from '../data/data';
 import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
@@ -49,7 +59,6 @@ import {
   conversationsChanged,
   markConversationFullyRead,
   messagesDeleted,
-  ReduxConversationType,
 } from '../state/ducks/conversations';
 
 import {
@@ -86,7 +95,6 @@ import {
   loadAttachmentData,
 } from '../types/MessageAttachment';
 import { IMAGE_JPEG } from '../types/MIME';
-import { Reaction } from '../types/Reaction';
 import {
   assertUnreachable,
   roomHasBlindEnabled,
@@ -103,13 +111,6 @@ import {
   isDirectConversation,
   isOpenOrClosedGroup,
 } from './conversationAttributes';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
-  ConversationTypeEnum,
-  READ_MESSAGE_STATE,
-  DisappearingMessageConversationModeType,
-} from './conversationTypes';
 
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
 import { SessionUtilUserProfile } from '../session/utils/libsession/libsession_utils_user_profile';

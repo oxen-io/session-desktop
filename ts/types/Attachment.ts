@@ -7,64 +7,12 @@ import { ATTACHMENT_DEFAULT_MAX_SIDE } from '../util/attachmentsUtil';
 import { saveURLAsFile } from '../util/saveURLAsFile';
 import * as MIME from './MIME';
 import { THUMBNAIL_SIDE } from './attachments/VisualAttachment';
+import { AttachmentType, MIMEType } from '../models/conversationTypes';
 
 const MAX_WIDTH = THUMBNAIL_SIDE;
 const MAX_HEIGHT = THUMBNAIL_SIDE;
 const MIN_WIDTH = THUMBNAIL_SIDE;
 const MIN_HEIGHT = THUMBNAIL_SIDE;
-
-// Used for display
-
-export interface AttachmentType {
-  caption?: string;
-  contentType: MIME.MIMEType;
-  fileName: string;
-  /** Not included in protobuf, needs to be pulled from flags */
-  isVoiceMessage?: boolean;
-  /** For messages not already on disk, this will be a data url */
-  url: string;
-  videoUrl?: string;
-  size?: number;
-  fileSize: string | null;
-  pending?: boolean;
-  width?: number;
-  height?: number;
-  duration?: string;
-  screenshot: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-  } | null;
-  thumbnail: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-  } | null;
-}
-
-export interface AttachmentTypeWithPath extends AttachmentType {
-  path: string;
-  id: number;
-  flags?: number;
-  error?: any;
-
-  screenshot: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-    path?: string;
-  } | null;
-  thumbnail: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-    path?: string;
-  } | null;
-}
 
 // UI-focused functions
 
@@ -73,7 +21,7 @@ export function getExtensionForDisplay({
   contentType,
 }: {
   fileName: string;
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
 }): string | undefined {
   if (fileName && fileName.indexOf('.') >= 0) {
     const lastPeriod = fileName.lastIndexOf('.');
@@ -233,7 +181,7 @@ export type Attachment = {
   fileName?: string;
   caption?: string;
   flags?: SignalService.AttachmentPointer.Flags;
-  contentType?: MIME.MIMEType;
+  contentType?: MIMEType;
   size?: number;
   width?: number;
   height?: number;

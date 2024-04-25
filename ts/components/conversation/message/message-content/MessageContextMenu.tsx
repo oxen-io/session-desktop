@@ -15,7 +15,7 @@ import {
   addSenderAsModerator,
   removeSenderFromModerator,
 } from '../../../../interactions/messageInteractions';
-import { MessageRenderingProps } from '../../../../models/messageType';
+import { MessageRenderingProps } from '../../../../models/conversationTypes';
 import { pushUnblockToSend } from '../../../../session/utils/Toast';
 import {
   openRightPanel,

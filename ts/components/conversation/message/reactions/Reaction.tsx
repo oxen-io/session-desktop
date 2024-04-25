@@ -6,7 +6,7 @@ import { isUsAnySogsFromCache } from '../../../../session/apis/open_group_api/so
 import { UserUtils } from '../../../../session/utils';
 import { useIsMessageSelectionMode } from '../../../../state/selectors/selectedConversation';
 import { THEME_GLOBALS } from '../../../../themes/globals';
-import { SortedReactionList } from '../../../../types/Reaction';
+import { SortedReactionList } from '../../../../models/conversationTypes';
 import { abbreviateNumber } from '../../../../util/abbreviateNumber';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { popupXDefault, popupYDefault } from '../message-content/MessageReactions';

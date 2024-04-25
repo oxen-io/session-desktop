@@ -30,7 +30,7 @@ import { GetNetworkTime } from '../../apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
 import { DisappearingMessages } from '../../disappearing_messages';
-import { ReadyToDisappearMsgUpdate } from '../../disappearing_messages/types';
+import { ReadyToDisappearMsgUpdate } from '../../../models/conversationTypes';
 import { MessageSender } from '../../sending';
 import { getIsRinging } from '../RingingManager';
 import { getBlackSilenceMediaStream } from './Silence';

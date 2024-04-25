@@ -40,7 +40,7 @@ import {
   useSelectedSubscriberCount,
   useSelectedWeAreAdmin,
 } from '../../../../state/selectors/selectedConversation';
-import { AttachmentTypeWithPath } from '../../../../types/Attachment';
+import { AttachmentTypeWithPath } from '../../../../models/conversationTypes';
 import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
 import { Flex } from '../../../basic/Flex';

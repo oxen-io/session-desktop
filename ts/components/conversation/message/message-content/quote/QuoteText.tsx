@@ -5,7 +5,7 @@ import { useSelectedIsGroupOrCommunity } from '../../../../../state/selectors/se
 import { MIME } from '../../../../../types';
 import { GoogleChrome } from '../../../../../util';
 import { MessageBody } from '../MessageBody';
-import { QuoteProps } from './Quote';
+import { MIMEType, QuoteProps } from '../../../../../models/conversationTypes';
 
 const StyledQuoteText = styled.div<{ isIncoming: boolean }>`
   display: -webkit-box;
@@ -38,7 +38,7 @@ function getTypeLabel({
   contentType,
   isVoiceMessage,
 }: {
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   isVoiceMessage: boolean;
 }): string | undefined {
   if (GoogleChrome.isVideoTypeSupported(contentType)) {

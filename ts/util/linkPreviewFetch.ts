@@ -3,7 +3,8 @@ import { AbortSignal } from 'abort-controller';
 // eslint-disable-next-line import/no-unresolved
 import { AbortSignal as AbortSignalNode } from 'node-fetch/externals';
 
-import { IMAGE_GIF, IMAGE_ICO, IMAGE_JPEG, IMAGE_PNG, IMAGE_WEBP, MIMEType } from '../types/MIME';
+import { IMAGE_GIF, IMAGE_ICO, IMAGE_JPEG, IMAGE_PNG, IMAGE_WEBP } from '../types/MIME';
+import { MIMEType } from '../models/conversationTypes';
 
 const MAX_REQUEST_COUNT_WITH_REDIRECTS = 20;
 

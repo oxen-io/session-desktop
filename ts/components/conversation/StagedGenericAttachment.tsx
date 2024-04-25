@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { AttachmentType, getExtensionForDisplay } from '../../types/Attachment';
+import { getExtensionForDisplay } from '../../types/Attachment';
+import { AttachmentType } from '../../models/conversationTypes';
 
 interface Props {
   attachment: AttachmentType;

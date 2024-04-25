@@ -19,7 +19,7 @@ import { getConversationController } from '../session/conversations';
 import { concatUInt8Array, getSodiumRenderer } from '../session/crypto';
 import { removeMessagePadding } from '../session/crypto/BufferPadding';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { ReadyToDisappearMsgUpdate } from '../session/disappearing_messages/types';
+import { ReadyToDisappearMsgUpdate } from '../models/conversationTypes';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { GroupUtils, UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';

@@ -19,7 +19,7 @@ import {
 } from '../sogsv3/sogsV3BatchPoll';
 import { handleBatchPollResults } from '../sogsv3/sogsApiV3';
 import { fetchCapabilitiesAndUpdateRelatedRoomsOfServerUrl } from '../sogsv3/sogsV3Capabilities';
-import { OpenGroupReaction } from '../../../../types/Reaction';
+import { OpenGroupReaction } from '../../../../models/conversationTypes';
 import {
   markConversationInitialLoadingInProgress,
   openConversationWithMessages,

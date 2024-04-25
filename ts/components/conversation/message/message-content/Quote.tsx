@@ -14,6 +14,7 @@ import {
 } from '../../../../state/selectors/selectedConversation';
 import { ContactName } from '../../ContactName';
 import { MessageBody } from './MessageBody';
+import { MIMEType } from '../../../../models/conversationTypes';
 
 export type QuotePropsWithoutListener = {
   attachment?: QuotedAttachmentType;
@@ -31,7 +32,7 @@ export type QuotePropsWithListener = QuotePropsWithoutListener & {
 };
 
 export interface QuotedAttachmentType {
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   fileName: string;
   /** Not included in protobuf */
   isVoiceMessage: boolean;
@@ -39,7 +40,7 @@ export interface QuotedAttachmentType {
 }
 
 interface Attachment {
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   /** Not included in protobuf, and is loaded asynchronously */
   objectUrl?: string;
 }
@@ -68,7 +69,7 @@ function getTypeLabel({
   contentType,
   isVoiceMessage,
 }: {
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   isVoiceMessage: boolean;
 }): string | undefined {
   if (GoogleChrome.isVideoTypeSupported(contentType)) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { LabelWithInfo } from '.';
-import { PropsForAttachment } from '../../../../../../state/ducks/conversations';
+import { PropsForAttachment } from '../../../../../../models/conversationTypes';
 import { Flex } from '../../../../../basic/Flex';
 
 type Props = {

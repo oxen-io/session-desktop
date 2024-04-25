@@ -20,10 +20,10 @@ import {
   createSwarmMessageSentFromUs,
 } from '../models/messageFactory';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageUpdate } from '../session/disappearing_messages/types';
+import { DisappearingMessageUpdate } from '../models/conversationTypes';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { isUsFromCache } from '../session/utils/User';
-import { Action, Reaction } from '../types/Reaction';
+import { Reaction } from '../models/conversationTypes';
 import { toLogFormat } from '../types/attachments/Errors';
 import { Reactions } from '../util/reactions';
 
@@ -352,7 +352,7 @@ async function handleSwarmMessage(
       if (
         convoToAddMessageTo.isPrivate() &&
         msgModel.get('unread') &&
-        rawDataMessage.reaction.action === Action.REACT
+        rawDataMessage.reaction.action === SignalService.DataMessage.Reaction.Action.REACT
       ) {
         msgModel.set('reaction', rawDataMessage.reaction as Reaction);
         convoToAddMessageTo.throttledNotify(msgModel);

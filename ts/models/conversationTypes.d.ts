@@ -13,6 +13,8 @@
  *
  */
 
+import { Emoji, EmojiMartData } from '@emoji-mart/data'; // ok ?
+
 // ################################################################## //
 //                                                                    //
 // IMPORTANT: no imports in this file except from another d.ts which  //
@@ -38,12 +40,12 @@ export const enum ConversationTypeEnum {
 }
 
 export type ConversationNotificationSettingType = 'all' | 'disabled' | 'mentions_only';
+
 /**
  * Some fields are retrieved from the database as a select, but should not be saved in a commit()
  * TODO (do we, and can we use this)
  */
-
-export type ConversationAttributesNotSaved = {
+type ConversationAttributesNotSaved = {
   mentionedUs: boolean;
   unreadCount: number;
 };
@@ -157,3 +159,650 @@ export type DisappearingMessageConversationModeType =
   | 'deleteAfterRead'
   | 'deleteAfterSend'
   | 'legacy';
+
+export type LastMessageType = {
+  status: LastMessageStatusType;
+  text: string | null;
+  interactionType: ConversationInteractionType | null;
+  interactionStatus: ConversationInteractionStatus | null;
+};
+
+export type InteractionNotificationType = {
+  interactionType: ConversationInteractionType;
+  interactionStatus: ConversationInteractionStatus;
+};
+/**
+ * This closely matches ConversationAttributes except making a lot of fields optional.
+ * The size of the redux store is an issue considering the number of conversations we have, so having optional fields here
+ * allows us to not have them set if they have their default values.
+ */
+
+export type ReduxConversationType = {
+  id: string;
+  /**
+   * This must hold the real session username of the user for a private chat (not the nickname), and the real name of the group/closed group otherwise
+   */
+  displayNameInProfile?: string;
+  nickname?: string;
+
+  activeAt?: number;
+  lastMessage?: LastMessageType;
+  type: ConversationTypeEnum;
+  isMe?: boolean;
+  isPublic?: boolean;
+  isPrivate?: boolean; // !isPrivate means isGroup (group or community)
+  weAreAdmin?: boolean;
+  unreadCount?: number;
+  mentionedUs?: boolean;
+  expirationMode?: DisappearingMessageConversationModeType;
+  expireTimer?: number;
+  hasOutdatedClient?: string;
+  isTyping?: boolean;
+  isBlocked?: boolean;
+  isKickedFromGroup?: boolean;
+  left?: boolean;
+  avatarPath?: string | null; // absolute filepath to the avatar
+  groupAdmins?: Array<string>; // admins for closed groups and admins for open groups
+  members?: Array<string>; // members for closed groups only
+  zombies?: Array<string>; // members for closed groups only
+
+  /**
+   * If this is undefined, it means all notification are enabled
+   */
+  currentNotificationSetting?: ConversationNotificationSettingType;
+
+  priority?: number; // undefined means 0
+  isInitialFetchingInProgress?: boolean;
+  isApproved?: boolean;
+  didApproveMe?: boolean;
+
+  isMarkedUnread?: boolean;
+
+  blocksSogsMsgReqsTimestamp?: number; // undefined means 0
+};
+
+export type NotificationForConvoOption = {
+  name: string;
+  value: ConversationNotificationSettingType;
+};
+export type MessageModelType = 'incoming' | 'outgoing';
+
+export type MessageAttributes = {
+  // the id of the message
+  // this can have several uses:
+  id: string;
+  source: string;
+  quote?: any;
+  received_at?: number;
+  sent_at?: number;
+  preview?: any;
+  reaction?: Reaction;
+  reacts?: ReactionList;
+  reactsIndex?: number;
+  body?: string;
+  expirationType?: DisappearingMessageType;
+  /** in seconds, 0 means no expiration */
+  expireTimer: number;
+  /** in milliseconds */
+  expirationStartTimestamp: number;
+  expires_at?: number;
+  expirationTimerUpdate?: ExpirationTimerUpdate;
+  read_by: Array<string>; // we actually only care about the length of this. values are not used for anything
+  type: MessageModelType;
+  group_update?: MessageGroupUpdate;
+  groupInvitation?: any;
+  attachments?: any;
+  conversationId: string;
+  errors?: any;
+  flags?: number;
+  hasAttachments: 1 | 0;
+  hasFileAttachments: 1 | 0;
+  hasVisualMediaAttachments: 1 | 0;
+  /**
+   * 1 means unread, 0 or anything else is read.
+   * You can use the values from READ_MESSAGE_STATE.unread and READ_MESSAGE_STATE.read
+   */
+  unread: number;
+  group?: any;
+  /**
+   * timestamp is the sent_at timestamp, which is the envelope.timestamp
+   */
+  timestamp?: number;
+  status?: LastMessageStatusType;
+  sent_to: Array<string>;
+  sent: boolean;
+
+  /**
+   * The serverId is the id on the open group server itself.
+   * Each message sent to an open group gets a serverId.
+   * This is not the id for the server, but the id ON the server.
+   *
+   * This field is not set for a message not on an opengroup server.
+   */
+  serverId?: number;
+  /**
+   * This is the timestamp of that messages as it was saved by the Open group server.
+   * We rely on this one to order Open Group messages.
+   * This field is not set for a message not on an opengroup server.
+   */
+  serverTimestamp?: number;
+  /**
+   * This field is set to true if the message is for a public server.
+   * This is useful to make the Badge `Public` Appear on a sent message to a server, even if we did not get
+   * the response from the server yet that this message was successfully added.
+   */
+  isPublic: boolean;
+
+  /**
+   * sentSync set to true means we just triggered the sync message for this Private Chat message.
+   * We did not yet get the message sent confirmation, it was just added to the Outgoing MessageQueue
+   */
+  sentSync: boolean;
+
+  /**
+   * synced set to true means that this message was successfully sent by our current device to our other devices.
+   * It is set to true when the MessageQueue did effectively sent our sync message without errors.
+   */
+  synced: boolean;
+  sync: boolean;
+
+  direction: MessageModelType;
+
+  /**
+   * This is used for when a user screenshots or saves an attachment you sent.
+   * We display a small message just below the message referenced
+   */
+  dataExtractionNotification?: DataExtractionNotificationMsg;
+
+  /**
+   * For displaying a message to notifying when a request has been accepted.
+   */
+  messageRequestResponse?: MessageRequestResponseMsg;
+
+  /**
+   * This field is used for unsending messages and used in sending update expiry, get expiries and unsend message requests.
+   */
+  messageHash?: string;
+
+  /**
+   * This field is used for unsending messages and used in sending unsend message requests.
+   */
+  isDeleted?: boolean;
+
+  callNotificationType?: CallNotificationType;
+
+  /**
+   * This is used when a user has performed an interaction (hiding, leaving, etc.) on a conversation. At the moment, this is only used for showing interaction errors.
+   */
+  interactionNotification?: InteractionNotificationType;
+};
+
+export type DataExtractionNotificationMsg = {
+  type: number; // screenshot or saving event, based on SignalService.DataExtractionNotification.Type
+  source: string; // the guy who made a screenshot
+  referencedAttachmentTimestamp: number; // the attachment timestamp he screenshot
+};
+
+export type MessageRequestResponseMsg = {
+  source: string;
+  isApproved: boolean;
+};
+
+export const enum MessageDirection {
+  outgoing = 'outgoing',
+  incoming = 'incoming',
+}
+
+export type PropsForDataExtractionNotification = DataExtractionNotificationMsg & {
+  name: string;
+  messageId: string;
+};
+
+export type PropsForMessageRequestResponse = MessageRequestResponseMsg & {
+  conversationId?: string;
+  name?: string;
+  messageId: string;
+  receivedAt?: number;
+  isUnread: boolean;
+  isApproved?: boolean;
+  source?: string;
+};
+
+export type MessageGroupUpdate = {
+  left?: Array<string>;
+  joined?: Array<string>;
+  kicked?: Array<string>;
+  name?: string;
+};
+
+export type MessageAttributesOptionals = {
+  id?: string;
+  source: string;
+  quote?: any;
+  received_at?: number;
+  sent_at?: number;
+  preview?: any;
+  reaction?: Reaction;
+  reacts?: ReactionList;
+  reactsIndex?: number;
+  body?: string;
+  expirationType?: DisappearingMessageType;
+  expireTimer?: number;
+  expirationStartTimestamp?: number;
+  expires_at?: number;
+  expirationTimerUpdate?: ExpirationTimerUpdate;
+  read_by?: Array<string>; // we actually only care about the length of this. values are not used for anything
+  type: MessageModelType;
+  group_update?: MessageGroupUpdate;
+  groupInvitation?: any;
+  attachments?: any;
+  contact?: any;
+  conversationId: string;
+  errors?: any;
+  flags?: number;
+  hasAttachments?: boolean;
+  hasFileAttachments?: boolean;
+  hasVisualMediaAttachments?: boolean;
+  dataExtractionNotification?: {
+    type: number;
+    source: string;
+    referencedAttachmentTimestamp: number;
+  };
+  messageRequestResponse?: {
+    /** 1 means approved, 0 means unapproved. */
+    isApproved?: number;
+  };
+  unread?: number;
+  group?: any;
+  timestamp?: number;
+  status?: LastMessageStatusType;
+  sent_to?: Array<string>;
+  sent?: boolean;
+  serverId?: number;
+  serverTimestamp?: number;
+  isPublic?: boolean;
+  sentSync?: boolean;
+  synced?: boolean;
+  sync?: boolean;
+  direction?: MessageModelType;
+  messageHash?: string;
+  isDeleted?: boolean;
+  callNotificationType?: CallNotificationType;
+  interactionNotification?: InteractionNotificationType;
+};
+/**
+ * Those props are the one generated from a single Message improved by the one by the app itself.
+ * Some of the one added comes from the MessageList, some from redux, etc..
+ */
+
+export type MessageRenderingProps = PropsForMessageWithConvoProps & {
+  disableMenu?: boolean;
+  /** Note: this should be formatted for display */
+  attachments?: Array<AttachmentTypeWithPath>; // vs Array<PropsForAttachment>;
+
+  // whether or not to allow selecting the message
+  multiSelectMode: boolean;
+  firstMessageOfSeries: boolean;
+  lastMessageOfSeries: boolean;
+
+  sortedReacts?: SortedReactionList;
+};
+export type MessageResultProps = MessageAttributes & { snippet: string };
+export type DisappearingMessageType =
+  | 'unknown'
+  | Exclude<DisappearingMessageConversationModeType, 'off' | 'legacy'>;
+export type CallNotificationType = 'missed-call' | 'started-call' | 'answered-a-call';
+
+export type PropsForCallNotification = {
+  notificationType: CallNotificationType;
+  messageId: string;
+};
+
+export type MessageModelPropsWithoutConvoProps = {
+  propsForMessage: PropsForMessageWithoutConvoProps;
+  propsForExpiringMessage?: PropsForExpiringMessage;
+  propsForGroupInvitation?: PropsForGroupInvitation;
+  propsForTimerNotification?: PropsForExpirationTimer;
+  propsForDataExtractionNotification?: PropsForDataExtractionNotification;
+  propsForGroupUpdateMessage?: PropsForGroupUpdate;
+  propsForCallNotification?: PropsForCallNotification;
+  propsForMessageRequestResponse?: PropsForMessageRequestResponse;
+  propsForQuote?: PropsForQuote;
+  propsForInteractionNotification?: PropsForInteractionNotification;
+};
+
+export type MessageModelPropsWithConvoProps = SortedMessageModelProps & {
+  propsForMessage: PropsForMessageWithConvoProps;
+};
+
+export type ContactPropsMessageDetail = {
+  status: string | undefined;
+  pubkey: string;
+  name?: string | null;
+  profileName?: string | null;
+  avatarPath?: string | null;
+  errors?: Array<Error>;
+};
+
+export type FindAndFormatContactType = {
+  pubkey: string;
+  avatarPath: string | null;
+  name: string | null;
+  profileName: string | null;
+  isMe: boolean;
+};
+
+export type PropsForExpiringMessage = {
+  convoId?: string;
+  messageId: string;
+  direction: MessageModelType;
+  receivedAt?: number;
+  isUnread?: boolean;
+  expirationTimestamp?: number | null;
+  expirationDurationMs?: number | null;
+  isExpired?: boolean;
+};
+
+export type PropsForExpirationTimer = {
+  expirationMode: DisappearingMessageConversationModeType;
+  timespanText: string;
+  timespanSeconds: number | null;
+  disabled: boolean;
+  pubkey: string;
+  avatarPath: string | null;
+  name: string | null;
+  profileName: string | null;
+  type: 'fromMe' | 'fromSync' | 'fromOther';
+  messageId: string;
+};
+
+export type PropsForGroupUpdateGeneral = {
+  type: 'general';
+};
+
+export type PropsForGroupUpdateAdd = {
+  type: 'add';
+  added: Array<string>;
+};
+
+export type PropsForGroupUpdateKicked = {
+  type: 'kicked';
+  kicked: Array<string>;
+};
+
+export type PropsForGroupUpdateLeft = {
+  type: 'left';
+  left: Array<string>;
+};
+
+export type PropsForGroupUpdateName = {
+  type: 'name';
+  newName: string;
+};
+
+export type PropsForGroupUpdateType =
+  | PropsForGroupUpdateGeneral
+  | PropsForGroupUpdateAdd
+  | PropsForGroupUpdateKicked
+  | PropsForGroupUpdateName
+  | PropsForGroupUpdateLeft;
+
+export type PropsForGroupUpdate = {
+  change: PropsForGroupUpdateType;
+  messageId: string;
+};
+
+export type PropsForGroupInvitation = {
+  serverName: string;
+  url: string;
+  direction: MessageModelType;
+  acceptUrl: string;
+  messageId: string;
+};
+
+export type PropsForAttachment = {
+  id: number;
+  contentType: string;
+  caption?: string;
+  size: number;
+  width?: number;
+  height?: number;
+  duration?: string;
+  url: string;
+  path: string;
+  fileSize: string | null;
+  isVoiceMessage: boolean;
+  pending: boolean;
+  fileName: string;
+  error?: number; // if the download somhehow failed, this will be set to true and be 0-1 once saved in the db
+  screenshot: {
+    contentType: string;
+    width: number;
+    height: number;
+    url?: string;
+    path?: string;
+  } | null;
+  thumbnail: {
+    contentType: string;
+    width: number;
+    height: number;
+    url?: string;
+    path?: string;
+  } | null;
+};
+
+export type PropsForQuote = {
+  text?: string;
+  attachment?: QuotedAttachmentType;
+  author: string;
+  convoId?: string;
+  id?: string; // this is the quoted message timestamp
+  isFromMe?: boolean;
+  referencedMessageNotFound?: boolean;
+};
+
+export type PropsForInteractionNotification = {
+  notificationType: InteractionNotificationType;
+  convoId: string;
+  messageId: string;
+  receivedAt: number;
+  isUnread: boolean;
+};
+
+export type PropsForMessageWithoutConvoProps = {
+  id: string; // messageId
+  direction: MessageModelType;
+  timestamp: number;
+  sender: string; // this is the sender
+  convoId: string; // this is the conversation in which this message was sent
+  text?: string;
+
+  receivedAt?: number;
+  serverTimestamp?: number;
+  serverId?: number;
+  status?: LastMessageStatusType;
+  attachments?: Array<PropsForAttachment>;
+  reacts?: ReactionList;
+  reactsIndex?: number;
+  previews?: Array<any>;
+  quote?: PropsForQuote;
+  messageHash?: string;
+  isDeleted?: boolean;
+  isUnread?: boolean;
+  expirationType?: DisappearingMessageType;
+  expirationDurationMs?: number;
+  expirationTimestamp?: number | null;
+  isExpired?: boolean;
+  isTrustedForAttachmentDownload?: boolean;
+};
+
+export type PropsForMessageWithConvoProps = PropsForMessageWithoutConvoProps & {
+  conversationType: ConversationTypeEnum;
+  isPublic: boolean;
+  isKickedFromGroup: boolean;
+  weAreAdmin: boolean;
+  isSenderAdmin: boolean;
+  isDeletable: boolean;
+  isDeletableForEveryone: boolean;
+  isBlocked: boolean;
+  isDeleted?: boolean;
+}; // Used for display
+
+export type AttachmentType = {
+  caption?: string;
+  contentType: MIMEType;
+  fileName: string;
+  /** Not included in protobuf, needs to be pulled from flags */
+  isVoiceMessage?: boolean;
+  /** For messages not already on disk, this will be a data url */
+  url: string;
+  videoUrl?: string;
+  size?: number;
+  fileSize: string | null;
+  pending?: boolean;
+  width?: number;
+  height?: number;
+  duration?: string;
+  screenshot: {
+    height: number;
+    width: number;
+    url?: string;
+    contentType: MIMEType;
+  } | null;
+  thumbnail: {
+    height: number;
+    width: number;
+    url?: string;
+    contentType: MIMEType;
+  } | null;
+};
+
+export type AttachmentTypeWithPath = AttachmentType & {
+  path: string;
+  id: number;
+  flags?: number;
+  error?: any;
+
+  screenshot: {
+    height: number;
+    width: number;
+    url?: string;
+    contentType: MIMEType;
+    path?: string;
+  } | null;
+  thumbnail: {
+    height: number;
+    width: number;
+    url?: string;
+    contentType: MIMEType;
+    path?: string;
+  } | null;
+};
+export type FixedBaseEmoji = Emoji & {
+  search?: string;
+  // props from emoji panel click event
+  native?: string;
+  aliases?: Array<string>;
+  shortcodes?: string;
+  unified?: string;
+};
+
+export type NativeEmojiData = EmojiMartData & {
+  ariaLabels?: Record<string, string>;
+};
+
+export type Reaction = {
+  // this is in fact a uint64 so we will have an issue
+  id: number; // original message timestamp
+  author: string;
+  emoji: string;
+  action: Action;
+};
+// used for logic operations with reactions i.e responses, db, etc.
+
+export type ReactionList = Record<
+  string,
+  {
+    count: number;
+    index: number; // relies on reactsIndex in the message model
+    senders: Array<string>;
+    you: boolean; // whether we are in the senders list, used within 1-1 and closed groups for ignoring duplicate data messages, used within opengroups since we dont always have the full list of senders.
+  }
+>;
+// used when rendering reactions to guarantee sorted order using the index
+
+export type SortedReactionList = Array<
+  [string, { count: number; index: number; senders: Array<string>; you?: boolean }]
+>;
+
+export type OpenGroupReaction = {
+  index: number;
+  count: number;
+  you: boolean;
+  reactors: Array<string>;
+};
+
+export type OpenGroupReactionList = Record<string, OpenGroupReaction>;
+
+export type OpenGroupReactionResponse = {
+  added?: boolean;
+  removed?: boolean;
+  seqno: number;
+};
+export type SortedMessageModelProps = MessageModelPropsWithoutConvoProps & {
+  firstMessageOfSeries: boolean;
+  lastMessageOfSeries: boolean;
+};
+export type QuoteProps = {
+  author: string;
+  isFromMe: boolean;
+  isIncoming: boolean;
+  referencedMessageNotFound: boolean;
+  text?: string;
+  attachment?: QuotedAttachmentType;
+
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+};
+
+export type QuotedAttachmentThumbnailType = {
+  contentType: MIMEType;
+  /** Not included in protobuf, and is loaded asynchronously */
+  objectUrl?: string;
+};
+
+export type QuotedAttachmentType = {
+  contentType: MIMEType;
+  fileName: string;
+  /** Not included in protobuf */
+  isVoiceMessage: boolean;
+  thumbnail?: QuotedAttachmentThumbnailType;
+};
+export type DisappearAfterSendOnly = Exclude<DisappearingMessageType, 'deleteAfterRead'>;
+// TODO legacy messages support will be removed in a future release
+// expirationType will no longer have an undefined option
+/** Used for setting disappearing messages in conversations */
+
+export type ExpirationTimerUpdate = {
+  expirationType: DisappearingMessageType | undefined;
+  expireTimer: number;
+  source: string;
+  /** updated setting from another device */
+  fromSync?: boolean;
+};
+
+export type DisappearingMessageUpdate = {
+  expirationType: DisappearingMessageType;
+  expirationTimer: number;
+  // This is used for the expirationTimerUpdate
+  // TODO legacy messages support will be removed in a future release
+  isLegacyConversationSettingMessage?: boolean;
+  isLegacyDataMessage?: boolean;
+  isDisappearingMessagesV2Released?: boolean;
+  messageExpirationFromRetrieve: number | null;
+};
+
+export type ReadyToDisappearMsgUpdate = Pick<
+  DisappearingMessageUpdate,
+  'expirationType' | 'expirationTimer' | 'messageExpirationFromRetrieve'
+>;
+export type MIMEType = string;

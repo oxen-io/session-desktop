@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
-import { MessageRenderingProps } from '../../../../models/messageType';
+import { MessageRenderingProps } from '../../../../models/conversationTypes';
 import {
   getMessageTextProps,
   isMessageSelectionMode,

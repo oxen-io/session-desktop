@@ -24,18 +24,18 @@ import { MAX_ATTACHMENT_FILESIZE_BYTES } from '../../session/constants';
 import { getConversationController } from '../../session/conversations';
 import { ToastUtils } from '../../session/utils';
 import {
-  ReduxConversationType,
-  SortedMessageModelProps,
   openConversationToSpecificMessage,
   quoteMessage,
   resetSelectedMessageIds,
   updateMentionsMembers,
 } from '../../state/ducks/conversations';
+import { SortedMessageModelProps } from '../../models/conversationTypes';
+import { ReduxConversationType } from '../../models/conversationTypes';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { addStagedAttachmentsInConversation } from '../../state/ducks/stagedAttachments';
 import { SessionTheme } from '../../themes/SessionTheme';
 import { MIME } from '../../types';
-import { AttachmentTypeWithPath } from '../../types/Attachment';
+import { AttachmentTypeWithPath } from '../../models/conversationTypes';
 import {
   THUMBNAIL_CONTENT_TYPE,
   getAudioDuration,

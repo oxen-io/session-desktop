@@ -14,7 +14,7 @@ import { getCompleteUrlFromRoom } from '../../apis/open_group_api/utils/OpenGrou
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
 import { getConversationController } from '../../conversations';
-import { DisappearingMessageUpdate } from '../../disappearing_messages/types';
+import { DisappearingMessageUpdate } from '../../../models/conversationTypes';
 import { DataMessage } from '../../messages/outgoing';
 import {
   ConfigurationMessage,

@@ -5,14 +5,14 @@ import useKey from 'react-use/lib/useKey';
 import {
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
-} from '../../models/messageType';
+} from '../../models/conversationTypes';
 import {
   PropsForCallNotification,
   PropsForExpirationTimer,
   PropsForGroupInvitation,
   PropsForGroupUpdate,
   PropsForInteractionNotification,
-} from '../../state/ducks/conversations';
+} from '../../models/conversationTypes';
 import {
   getOldBottomMessageId,
   getOldTopMessageId,

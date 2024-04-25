@@ -5,7 +5,7 @@ import { contextMenu } from 'react-contexify';
 import { useSelector } from 'react-redux';
 import styled, { keyframes } from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
-import { MessageRenderingProps } from '../../../../models/messageType';
+import { MessageRenderingProps } from '../../../../models/conversationTypes';
 import { getConversationController } from '../../../../session/conversations';
 import { StateType } from '../../../../state/reducer';
 import { useMessageSelected } from '../../../../state/selectors';

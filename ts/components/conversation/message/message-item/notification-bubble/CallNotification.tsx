@@ -4,7 +4,7 @@ import { PubKey } from '../../../../../session/types';
 import {
   CallNotificationType,
   PropsForCallNotification,
-} from '../../../../../state/ducks/conversations';
+} from '../../../../../models/conversationTypes';
 import {
   useSelectedConversationKey,
   useSelectedDisplayNameInProfile,

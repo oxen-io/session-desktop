@@ -1,7 +1,7 @@
 import React from 'react';
 import * as GoogleChrome from '../util/GoogleChrome';
 
-import { AttachmentType } from '../types/Attachment';
+import { AttachmentType } from '../models/conversationTypes';
 
 type Props = {
   attachment: AttachmentType;

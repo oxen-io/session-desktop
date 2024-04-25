@@ -9,7 +9,7 @@ import {
 } from '../../../../models/conversationTypes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { DisappearingMessages } from '../../../../session/disappearing_messages';
-import { DisappearingMessageType } from '../../../../session/disappearing_messages/types';
+import { DisappearingMessageType } from '../../../../models/conversationTypes';
 import { UserUtils } from '../../../../session/utils';
 import { isValidUnixTimestamp } from '../../../../session/utils/Timestamps';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';

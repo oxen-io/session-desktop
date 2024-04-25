@@ -10,7 +10,7 @@ import { DisappearingMessageConversationModes } from '../../session/disappearing
 import { PubKey } from '../../session/types';
 import { UserUtils } from '../../session/utils';
 import { ReleasedFeatures } from '../../util/releaseFeature';
-import { ReduxConversationType } from '../ducks/conversations';
+import { ReduxConversationType } from '../../models/conversationTypes';
 import { StateType } from '../reducer';
 import {
   getIsMessageSelectionMode,

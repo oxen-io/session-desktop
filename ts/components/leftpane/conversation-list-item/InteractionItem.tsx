@@ -8,7 +8,7 @@ import {
   ConversationInteractionType,
 } from '../../../models/conversationTypes';
 import { getConversationController } from '../../../session/conversations';
-import { LastMessageType } from '../../../state/ducks/conversations';
+import { LastMessageType } from '../../../models/conversationTypes';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
 import { MessageBody } from '../../conversation/message/message-content/MessageBody';
 

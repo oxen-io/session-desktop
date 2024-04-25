@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { isNumber } from 'lodash';
 import { useDisableDrag } from '../../hooks/useDisableDrag';
 import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
-import { AttachmentType, AttachmentTypeWithPath } from '../../types/Attachment';
+import { AttachmentType, AttachmentTypeWithPath } from '../../models/conversationTypes';
 import { Spinner } from '../basic/Spinner';
 
 type Props = {

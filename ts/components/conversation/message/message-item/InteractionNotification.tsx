@@ -7,7 +7,7 @@ import {
   ConversationInteractionStatus,
   ConversationInteractionType,
 } from '../../../../models/conversationTypes';
-import { PropsForInteractionNotification } from '../../../../state/ducks/conversations';
+import { PropsForInteractionNotification } from '../../../../models/conversationTypes';
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { Flex } from '../../../basic/Flex';
 import { ReadableMessage } from './ReadableMessage';

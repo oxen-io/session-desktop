@@ -18,7 +18,7 @@ import { ConversationTypeEnum } from '../models/conversationTypes';
 import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
-import { DisappearingMessageUpdate } from '../session/disappearing_messages/types';
+import { DisappearingMessageUpdate } from '../models/conversationTypes';
 import { ClosedGroupEncryptionPairReplyMessage } from '../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
 import { UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';

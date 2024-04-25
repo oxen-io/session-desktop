@@ -10,7 +10,7 @@ import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/know
 import { TimerOptions, TimerOptionsArray } from '../session/disappearing_messages/timerOptions';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
-import { PropsForExpiringMessage } from '../state/ducks/conversations';
+import { PropsForExpiringMessage } from '../models/conversationTypes';
 import { StateType } from '../state/reducer';
 import {
   getMessagePropsByMessageId,

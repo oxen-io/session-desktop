@@ -5,6 +5,7 @@ import filesize from 'filesize';
 import {
   cloneDeep,
   debounce,
+  defaultsDeep,
   isEmpty,
   size as lodashSize,
   map,
@@ -12,6 +13,7 @@ import {
   pick,
   uniq,
 } from 'lodash';
+import { v4 } from 'uuid';
 import { SignalService } from '../protobuf';
 import { getMessageQueue } from '../session';
 import { getConversationController } from '../session/conversations';
@@ -32,18 +34,15 @@ import {
   MessageModelType,
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
-  fillMessageAttributesWithDefaults,
-} from './messageType';
-
-import { Data } from '../data/data';
-import { OpenGroupData } from '../data/opengroups';
-import { SettingsKey } from '../data/settings-key';
-import {
   ConversationInteractionStatus,
   ConversationInteractionType,
   LastMessageStatusType,
   READ_MESSAGE_STATE,
 } from './conversationTypes';
+
+import { Data } from '../data/data';
+import { OpenGroupData } from '../data/opengroups';
+import { SettingsKey } from '../data/settings-key';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
@@ -66,6 +65,7 @@ import {
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { isUsFromCache } from '../session/utils/User';
 import { buildSyncMessage } from '../session/utils/sync/syncUtils';
+import { messagesChanged } from '../state/ducks/conversations';
 import {
   FindAndFormatContactType,
   MessageModelPropsWithoutConvoProps,
@@ -81,9 +81,9 @@ import {
   PropsForGroupUpdateName,
   PropsForMessageWithoutConvoProps,
   PropsForQuote,
-  messagesChanged,
-} from '../state/ducks/conversations';
-import { AttachmentTypeWithPath, isVoiceMessage } from '../types/Attachment';
+} from './conversationTypes';
+import { isVoiceMessage } from '../types/Attachment';
+import { AttachmentTypeWithPath } from './conversationTypes';
 import {
   deleteExternalMessageFiles,
   getAbsoluteAttachmentPath,
@@ -91,7 +91,7 @@ import {
   loadPreviewData,
   loadQuoteData,
 } from '../types/MessageAttachment';
-import { ReactionList } from '../types/Reaction';
+import { ReactionList } from './conversationTypes';
 import { getAttachmentMetadata } from '../types/message/initializeAttachmentMetadata';
 import { assertUnreachable, roomHasBlindEnabled } from '../types/sqlSharedTypes';
 import { LinkPreviews } from '../util/linkPreviews';
@@ -114,6 +114,30 @@ export function arrayContainsUsOnly(arrayToCheck: Array<string> | undefined) {
 
 export function arrayContainsOneItemOnly(arrayToCheck: Array<string> | undefined) {
   return arrayToCheck && arrayToCheck.length === 1;
+}
+
+/**
+ * This function mutates optAttributes
+ * @param optAttributes the entry object attributes to set the defaults to.
+ */
+function fillMessageAttributesWithDefaults(
+  optAttributes: MessageAttributesOptionals
+): MessageAttributes {
+  const defaulted = defaultsDeep(optAttributes, {
+    expireTimer: 0, // disabled
+    id: v4(),
+    unread: READ_MESSAGE_STATE.read, // if nothing is set, this message is considered read
+  });
+  // this is just to cleanup a bit the db. delivered and delivered_to were removed, so every time we load a message
+  // we make sure to clean those fields in the json.
+  // the next commit() will write that to the disk
+  if (defaulted.delivered) {
+    delete defaulted.delivered;
+  }
+  if (defaulted.delivered_to) {
+    delete defaulted.delivered_to;
+  }
+  return defaulted;
 }
 
 export class MessageModel extends Backbone.Model<MessageAttributes> {

@@ -3,7 +3,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-mutable-exports  */
 import { init, I18n } from 'emoji-mart';
-import { FixedBaseEmoji, NativeEmojiData } from '../types/Reaction';
+import { FixedBaseEmoji, NativeEmojiData } from '../models/conversationTypes';
 import { loadEmojiPanelI18n } from './i18n';
 
 export type SizeClassType = 'default' | 'small' | 'medium' | 'large' | 'jumbo';

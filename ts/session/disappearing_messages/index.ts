@@ -20,12 +20,12 @@ import {
   checkIsLegacyDisappearingDataMessage,
   couldBeLegacyDisappearingMessageContent,
 } from './legacy';
+import { incomingExpirationTypeToDisappearingMessageType } from './types';
 import {
-  DisappearingMessageType,
   DisappearingMessageUpdate,
   ReadyToDisappearMsgUpdate,
-  incomingExpirationTypeToDisappearingMessageType,
-} from './types';
+} from '../../models/conversationTypes';
+import { DisappearingMessageType } from '../../models/conversationTypes';
 
 async function destroyMessagesAndUpdateRedux(
   messages: Array<{

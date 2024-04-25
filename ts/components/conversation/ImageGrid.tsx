@@ -3,12 +3,11 @@ import styled from 'styled-components';
 
 import {
   areAllAttachmentsVisual,
-  AttachmentType,
-  AttachmentTypeWithPath,
   getAlt,
   getThumbnailUrl,
   isVideoAttachment,
 } from '../../types/Attachment';
+import { AttachmentType, AttachmentTypeWithPath } from '../../models/conversationTypes';
 
 import { useIsMessageVisible } from '../../contexts/isMessageVisibleContext';
 import { useMessageSelected } from '../../state/selectors';

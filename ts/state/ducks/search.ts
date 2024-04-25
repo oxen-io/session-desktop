@@ -5,9 +5,11 @@ import { Data } from '../../data/data';
 import { AdvancedSearchOptions, SearchOptions } from '../../types/Search'; // ok: .d.ts
 import { cleanSearchTerm } from '../../util/cleanSearchTerm'; // ok: not importing anything else
 
-import { MessageResultProps } from '../../components/search/MessageSearchResults';
-import { ConversationTypeEnum } from '../../models/conversationTypes'; // ok: .d.ts
-import { ReduxConversationType } from './conversations';
+import {
+  ConversationTypeEnum,
+  ReduxConversationType,
+  MessageResultProps,
+} from '../../models/conversationTypes'; // ok: .d.ts
 
 // State
 

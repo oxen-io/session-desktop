@@ -4,8 +4,8 @@ import {
   MessageModelPropsWithConvoProps,
   PropsForAttachment,
   PropsForQuote,
-  ReduxConversationType,
-} from '../ducks/conversations';
+} from '../../models/conversationTypes';
+import { ReduxConversationType } from '../../models/conversationTypes';
 import { LastMessageStatusType } from '../../models/conversationTypes';
 import { StateType } from '../reducer';
 import { getIsMessageSelected, getMessagePropsByMessageId } from './conversations';

@@ -62,7 +62,7 @@ import {
 } from '../types/sqlSharedTypes';
 
 import { KNOWN_BLINDED_KEYS_ITEM, SettingsKey } from '../data/settings-key';
-import { MessageAttributes } from '../models/messageType';
+import { MessageAttributes } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
 import { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';

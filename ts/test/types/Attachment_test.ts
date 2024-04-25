@@ -4,6 +4,7 @@ import moment from 'moment';
 import * as Attachment from '../../types/Attachment';
 import * as MIME from '../../types/MIME';
 import { SignalService } from '../../protobuf';
+import { AttachmentType } from '../../models/conversationTypes';
 
 const stringToArrayBuffer = (str: string) => {
   if (typeof str !== 'string') {
@@ -20,7 +21,7 @@ const stringToArrayBuffer = (str: string) => {
 describe('Attachment', () => {
   describe('getFileExtension', () => {
     it('should return file extension from content type', () => {
-      const input: Attachment.AttachmentType = {
+      const input: AttachmentType = {
         fileName: 'funny-cat.mov',
         url: 'funny-cat.mov',
         contentType: MIME.IMAGE_GIF,
@@ -32,7 +33,7 @@ describe('Attachment', () => {
     });
 
     it('should return file extension for QuickTime videos', () => {
-      const input: Attachment.AttachmentType = {
+      const input: AttachmentType = {
         fileName: 'funny-cat.mov',
         url: 'funny-cat.mov',
         contentType: MIME.VIDEO_QUICKTIME,
@@ -44,7 +45,7 @@ describe('Attachment', () => {
     });
 
     it('should return file extension for application files', () => {
-      const input: Attachment.AttachmentType = {
+      const input: AttachmentType = {
         fileName: 'funny-cat.odt',
         url: 'funny-cat.odt',
         contentType: MIME.ODT,
@@ -59,7 +60,7 @@ describe('Attachment', () => {
   describe('getSuggestedFilename', () => {
     context('for attachment with filename', () => {
       it('should generate a filename without timestamp', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.mov',
           url: 'funny-cat.mov',
           contentType: MIME.VIDEO_QUICKTIME,
@@ -72,7 +73,7 @@ describe('Attachment', () => {
         assert.strictEqual(actual, expected);
       });
       it('should generate a filename without timestamp but with an index', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.mov',
           url: 'funny-cat.mov',
           contentType: MIME.VIDEO_QUICKTIME,
@@ -88,7 +89,7 @@ describe('Attachment', () => {
         assert.strictEqual(actual, expected);
       });
       it('should generate a filename with an extension if contentType is not setup', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.ini',
           url: 'funny-cat.ini',
           contentType: '',
@@ -105,7 +106,7 @@ describe('Attachment', () => {
       });
 
       it('should generate a filename with an extension if contentType is text/plain', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.txt',
           url: 'funny-cat.txt',
           contentType: 'text/plain',
@@ -121,7 +122,7 @@ describe('Attachment', () => {
         assert.strictEqual(actual, expected);
       });
       it('should generate a filename with an extension if contentType is json', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.json',
           url: 'funny-cat.json',
           contentType: '',
@@ -139,7 +140,7 @@ describe('Attachment', () => {
     });
     context('for attachment without filename', () => {
       it('should generate a filename based on timestamp', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           contentType: MIME.VIDEO_QUICKTIME,
           url: 'funny-cat.mov',
           fileName: 'funny-cat.mov',
@@ -158,7 +159,7 @@ describe('Attachment', () => {
     });
     context('for attachment with index', () => {
       it('should generate a filename based on timestamp if filename is not set', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: '',
           url: 'funny-cat.mov',
           contentType: MIME.VIDEO_QUICKTIME,
@@ -177,7 +178,7 @@ describe('Attachment', () => {
       });
 
       it('should generate a filename based on filename if present', () => {
-        const attachment: Attachment.AttachmentType = {
+        const attachment: AttachmentType = {
           fileName: 'funny-cat.mov',
           url: 'funny-cat.mov',
           contentType: MIME.VIDEO_QUICKTIME,

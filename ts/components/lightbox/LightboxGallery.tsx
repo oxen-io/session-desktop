@@ -6,14 +6,13 @@ import { Lightbox } from './Lightbox';
 
 import { showLightBox } from '../../state/ducks/conversations';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
-import { MIME } from '../../types';
-import { AttachmentTypeWithPath } from '../../types/Attachment';
+import { AttachmentTypeWithPath, MIMEType } from '../../models/conversationTypes';
 import { saveAttachmentToDisk } from '../../util/attachmentsUtil';
 
 export interface MediaItemType {
   objectURL?: string;
   thumbnailObjectUrl?: string;
-  contentType: MIME.MIMEType;
+  contentType: MIMEType;
   index: number;
   attachment: AttachmentTypeWithPath;
   messageTimestamp: number;

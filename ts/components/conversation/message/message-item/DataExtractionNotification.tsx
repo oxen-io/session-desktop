@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropsForDataExtractionNotification } from '../../../../models/messageType';
+import { PropsForDataExtractionNotification } from '../../../../models/conversationTypes';
 import { SignalService } from '../../../../protobuf';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';

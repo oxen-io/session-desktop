@@ -5,7 +5,8 @@ import { SignalService } from '../protobuf';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { ToastUtils, UserUtils } from '../session/utils';
 
-import { Action, OpenGroupReactionList, ReactionList, RecentReactions } from '../types/Reaction';
+import { RecentReactions } from '../types/Reaction';
+import { OpenGroupReactionList, ReactionList } from '../models/conversationTypes';
 import { getRecentReactions, saveRecentReations } from './storage';
 
 const SOGSReactorsFetchCount = 5;
@@ -69,6 +70,7 @@ const getMessageByReaction = async (
  */
 const sendMessageReaction = async (messageId: string, emoji: string) => {
   const found = await Data.getMessageById(messageId);
+  const { Action } = SignalService.DataMessage.Reaction;
   if (found) {
     const conversationModel = found?.getConversation();
     if (!conversationModel) {
@@ -100,7 +102,7 @@ const sendMessageReaction = async (messageId: string, emoji: string) => {
     }
 
     const author = found.get('source');
-    let action: Action = Action.REACT;
+    let action: SignalService.DataMessage.Reaction.Action = Action.REACT;
 
     const reacts = found.get('reacts');
     if (reacts?.[emoji]?.senders?.includes(me)) {
@@ -167,7 +169,7 @@ const handleMessageReaction = async ({
   let count = details.count || 0;
 
   if (details.you && senders.includes(sender)) {
-    if (reaction.action === Action.REACT) {
+    if (reaction.action === SignalService.DataMessage.Reaction.Action.REACT) {
       window.log.warn('Received duplicate message for your reaction. Ignoring it');
       return undefined;
     }
@@ -177,7 +179,7 @@ const handleMessageReaction = async ({
   }
 
   switch (reaction.action) {
-    case Action.REACT:
+    case SignalService.DataMessage.Reaction.Action.REACT:
       if (senders.includes(sender)) {
         window.log.warn('Received duplicate reaction message. Ignoring it', reaction, sender);
         return undefined;
@@ -185,7 +187,7 @@ const handleMessageReaction = async ({
       details.senders.push(sender);
       count += 1;
       break;
-    case Action.REMOVE:
+    case SignalService.DataMessage.Reaction.Action.REMOVE:
     default:
       if (senders?.length > 0) {
         const sendersIndex = senders.indexOf(sender);
@@ -217,7 +219,7 @@ const handleMessageReaction = async ({
 
   if (!you) {
     window.log.info(
-      `${sender} ${reaction.action === Action.REACT ? 'added' : 'removed'} a ${
+      `${sender} ${reaction.action === SignalService.DataMessage.Reaction.Action.REACT ? 'added' : 'removed'} a ${
         reaction.emoji
       } reaction`
     );

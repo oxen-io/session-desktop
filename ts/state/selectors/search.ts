@@ -6,7 +6,7 @@ import { StateType } from '../reducer';
 import { ConversationLookupType } from '../ducks/conversations';
 import { SearchStateType } from '../ducks/search';
 import { getConversationLookup } from './conversations';
-import { MessageResultProps } from '../../components/search/MessageSearchResults';
+import { MessageResultProps } from '../../models/conversationTypes';
 
 export const getSearch = (state: StateType): SearchStateType => state.search;
 

@@ -1,11 +1,11 @@
 // eslint:disable: no-require-imports no-var-requires one-variable-per-declaration no-void-expression function-name
 
 import _, { isEmpty } from 'lodash';
-import { MessageResultProps } from '../components/search/MessageSearchResults';
+import { MessageResultProps } from '../models/conversationTypes';
 import { ConversationModel } from '../models/conversation';
 import { ConversationAttributes } from '../models/conversationTypes';
 import { MessageCollection, MessageModel } from '../models/message';
-import { MessageAttributes, MessageDirection } from '../models/messageType';
+import { MessageAttributes, MessageDirection } from '../models/conversationTypes';
 import { StorageItem } from '../node/storage_item';
 import { HexKeyPair } from '../receiver/keypairs';
 import { Quote } from '../receiver/types';

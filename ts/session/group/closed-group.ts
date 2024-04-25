@@ -6,7 +6,7 @@ import { Data } from '../../data/data';
 import { ConversationModel } from '../../models/conversation';
 import { ConversationAttributes, ConversationTypeEnum } from '../../models/conversationTypes';
 import { MessageModel } from '../../models/message';
-import { MessageAttributesOptionals } from '../../models/messageType';
+import { MessageAttributesOptionals } from '../../models/conversationTypes';
 import { SignalService } from '../../protobuf';
 import {
   addKeyPairToCacheAndDBIfNeeded,
@@ -19,7 +19,7 @@ import { getConversationController } from '../conversations';
 import { generateCurve25519KeyPairWithoutPrefix } from '../crypto';
 import { encryptUsingSessionProtocol } from '../crypto/MessageEncrypter';
 import { DisappearingMessages } from '../disappearing_messages';
-import { DisappearAfterSendOnly, DisappearingMessageUpdate } from '../disappearing_messages/types';
+import { DisappearAfterSendOnly, DisappearingMessageUpdate } from '../../models/conversationTypes';
 import { ClosedGroupAddedMembersMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupAddedMembersMessage';
 import { ClosedGroupEncryptionPairMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairMessage';
 import { ClosedGroupNameChangeMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNameChangeMessage';

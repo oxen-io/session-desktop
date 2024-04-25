@@ -2,13 +2,14 @@ import { AbortSignal } from 'abort-controller';
 import { SearchIndex } from 'emoji-mart';
 import { Data } from '../../../../data/data';
 import { ConversationModel } from '../../../../models/conversation';
-import { Action, OpenGroupReactionResponse, Reaction } from '../../../../types/Reaction';
+import { OpenGroupReactionResponse, Reaction } from '../../../../models/conversationTypes';
 import { Reactions } from '../../../../util/reactions';
 import { OnionSending } from '../../../onions/onionSend';
 import { ToastUtils, UserUtils } from '../../../utils';
 import { OpenGroupPollingUtils } from '../opengroupV2/OpenGroupPollingUtils';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
+import { SignalService } from '../../../../protobuf';
 
 export const hasReactionSupport = async (
   conversationId: string,
@@ -71,7 +72,8 @@ export const sendSogsReactionOnionV4 = async (
   // eslint-disable-next-line @typescript-eslint/await-thenable
   const emoji = (await SearchIndex.search(reaction.emoji)) ? reaction.emoji : '🖾';
   const endpoint = `/room/${room}/reaction/${reaction.id}/${emoji}`;
-  const method = reaction.action === Action.REACT ? 'PUT' : 'DELETE';
+  const method =
+    reaction.action === SignalService.DataMessage.Reaction.Action.REACT ? 'PUT' : 'DELETE';
   const serverPubkey = allValidRoomInfos[0].serverPublicKey;
 
   // Since responses can take a long time we immediately update the sender's UI and if there is a problem it is overwritten by handleOpenGroupMessageReactions later.
@@ -113,7 +115,11 @@ export const sendSogsReactionOnionV4 = async (
     throw new Error('putReaction parsing failed');
   }
 
-  const success = Boolean(reaction.action === Action.REACT ? rawMessage.added : rawMessage.removed);
+  const success = Boolean(
+    reaction.action === SignalService.DataMessage.Reaction.Action.REACT
+      ? rawMessage.added
+      : rawMessage.removed
+  );
 
   return success;
 };

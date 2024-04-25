@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller';
-import { OpenGroupReactionResponse } from '../../../../types/Reaction';
+import { OpenGroupReactionResponse } from '../../../../models/conversationTypes';
 import { Reactions } from '../../../../util/reactions';
 import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';

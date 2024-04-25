@@ -16,7 +16,7 @@ import { SettingsKey } from '../../../data/settings-key';
 import { showLinkSharingConfirmationModalDialog } from '../../../interactions/conversationInteractions';
 import { getConversationController } from '../../../session/conversations';
 import { ToastUtils } from '../../../session/utils';
-import { ReduxConversationType } from '../../../state/ducks/conversations';
+import { ReduxConversationType } from '../../../models/conversationTypes';
 import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
 import { StateType } from '../../../state/reducer';
 import {
@@ -28,9 +28,9 @@ import {
   getSelectedCanWrite,
   getSelectedConversationKey,
 } from '../../../state/selectors/selectedConversation';
-import { AttachmentType } from '../../../types/Attachment';
+import { AttachmentType } from '../../../models/conversationTypes';
 import { processNewAttachment } from '../../../types/MessageAttachment';
-import { FixedBaseEmoji } from '../../../types/Reaction';
+import { FixedBaseEmoji } from '../../../models/conversationTypes';
 import { AttachmentUtil } from '../../../util';
 import {
   StagedAttachmentImportedType,

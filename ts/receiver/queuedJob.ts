@@ -8,17 +8,14 @@ import { getConversationController } from '../session/conversations';
 import { Quote } from './types';
 
 import { ConversationTypeEnum } from '../models/conversationTypes';
-import { MessageDirection } from '../models/messageType';
+import { MessageDirection } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
 import { DisappearingMessages } from '../session/disappearing_messages';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
-import {
-  MessageModelPropsWithoutConvoProps,
-  lookupQuote,
-  pushQuotedMessageDetails,
-} from '../state/ducks/conversations';
+import { lookupQuote, pushQuotedMessageDetails } from '../state/ducks/conversations';
+import { MessageModelPropsWithoutConvoProps } from '../models/conversationTypes';
 import { showMessageRequestBannerOutsideRedux } from '../state/ducks/userConfig';
 import { getHideMessageRequestBannerOutsideRedux } from '../state/selectors/userConfig';
 import { GoogleChrome } from '../util';

@@ -4,12 +4,9 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
-import { MessageModelType, MessageRenderingProps } from '../../../../models/messageType';
-import {
-  PropsForAttachment,
-  showLightBox,
-  toggleSelectedMessageId,
-} from '../../../../state/ducks/conversations';
+import { MessageModelType, MessageRenderingProps } from '../../../../models/conversationTypes';
+import { showLightBox, toggleSelectedMessageId } from '../../../../state/ducks/conversations';
+import { PropsForAttachment } from '../../../../models/conversationTypes';
 import { StateType } from '../../../../state/reducer';
 import { useMessageSelected } from '../../../../state/selectors';
 import {
@@ -17,8 +14,6 @@ import {
   isMessageSelectionMode,
 } from '../../../../state/selectors/conversations';
 import {
-  AttachmentType,
-  AttachmentTypeWithPath,
   canDisplayImagePreview,
   getExtensionForDisplay,
   hasImage,
@@ -27,6 +22,7 @@ import {
   isImage,
   isVideo,
 } from '../../../../types/Attachment';
+import { AttachmentType, AttachmentTypeWithPath } from '../../../../models/conversationTypes';
 import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
 import { Spinner } from '../../../basic/Spinner';
 import { AudioPlayerWithEncryptedFile } from '../../H5AudioPlayer';

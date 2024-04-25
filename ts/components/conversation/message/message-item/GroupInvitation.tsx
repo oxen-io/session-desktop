@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { acceptOpenGroupInvitation } from '../../../../interactions/messageInteractions';
-import { PropsForGroupInvitation } from '../../../../state/ducks/conversations';
+import { PropsForGroupInvitation } from '../../../../models/conversationTypes';
 import { SessionIconButton } from '../../../icon';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 

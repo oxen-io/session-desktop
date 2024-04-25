@@ -2,10 +2,7 @@ import React from 'react';
 
 import { useConversationsUsernameWithQuoteOrFullPubkey } from '../../../../hooks/useParamSelector';
 import { arrayContainsUsOnly } from '../../../../models/message';
-import {
-  PropsForGroupUpdate,
-  PropsForGroupUpdateType,
-} from '../../../../state/ducks/conversations';
+import { PropsForGroupUpdate, PropsForGroupUpdateType } from '../../../../models/conversationTypes';
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';
