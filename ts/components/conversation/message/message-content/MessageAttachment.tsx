@@ -31,7 +31,7 @@ import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
 import { Spinner } from '../../../basic/Spinner';
 import { AudioPlayerWithEncryptedFile } from '../../H5AudioPlayer';
 import { ImageGrid } from '../../ImageGrid';
-import type { LightBoxOptions } from '../../SessionConversation';
+import type { LightBoxOptions } from '../../../../models/conversationTypes';
 import { ClickToTrustSender } from './ClickToTrustSender';
 import { MessageHighlighter } from './MessageHighlighter';
 

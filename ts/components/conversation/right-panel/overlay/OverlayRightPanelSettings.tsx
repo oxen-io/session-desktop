@@ -43,7 +43,7 @@ import { Avatar, AvatarSize } from '../../../avatar/Avatar';
 import { Flex } from '../../../basic/Flex';
 import { SpacerLG, SpacerMD, SpacerXL } from '../../../basic/Text';
 import { PanelButtonGroup, PanelIconButton } from '../../../buttons';
-import type { MediaItemType } from '../../../lightbox/LightboxGallery';
+import type { MediaItemType } from '../../../../models/conversationTypes';
 import { MediaGallery } from '../../media-gallery/MediaGallery';
 import { Header, StyledScrollContainer } from './components';
 

@@ -6,7 +6,13 @@ import { blobToArrayBuffer } from 'blob-util';
 import loadImage from 'blueimp-load-image';
 import classNames from 'classnames';
 import styled from 'styled-components';
-import type { SendMessageType, StagedAttachmentType } from './composition/CompositionBox';
+import type {
+  SendMessageType,
+  StagedAttachmentType,
+  SortedMessageModelProps,
+  ReduxConversationType,
+  LightBoxOptions,
+} from '../../models/conversationTypes';
 import { CompositionBox } from './composition/CompositionBox';
 
 import { perfEnd, perfStart } from '../../session/utils/Performance';
@@ -26,11 +32,6 @@ import {
   resetSelectedMessageIds,
   updateMentionsMembers,
 } from '../../state/ducks/conversations';
-import type {
-  SortedMessageModelProps,
-  ReduxConversationType,
-  AttachmentTypeWithPath,
-} from '../../models/conversationTypes';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { addStagedAttachmentsInConversation } from '../../state/ducks/stagedAttachments';
 import { SessionTheme } from '../../themes/SessionTheme';
@@ -48,7 +49,6 @@ import { MessageView } from '../MainViewController';
 import { SplitViewContainer } from '../SplitViewContainer';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { InConversationCallContainer } from '../calling/InConversationCallContainer';
-import type { MediaItemType } from '../lightbox/LightboxGallery';
 import { LightboxGallery } from '../lightbox/LightboxGallery';
 import { NoMessageInConversation } from './SubtleNotification';
 import { ConversationHeaderWithDetails } from './header/ConversationHeader';
@@ -63,11 +63,6 @@ const DEFAULT_JPEG_QUALITY = 0.85;
 interface State {
   isDraggingFile: boolean;
 }
-export interface LightBoxOptions {
-  media: Array<MediaItemType>;
-  attachment: AttachmentTypeWithPath;
-}
-
 interface Props {
   ourDisplayNameInProfile: string;
   ourNumber: string;

@@ -18,13 +18,13 @@ import type {
 import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
 import type { StateType } from '../reducer';
 
-import type { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
+import type { ReplyingToMessageProps } from '../../models/conversationTypes';
 import type { MessageAttachmentSelectorProps } from '../../components/conversation/message/message-content/MessageAttachment';
 import type { MessageContentSelectorProps } from '../../components/conversation/message/message-content/MessageContent';
 import type { MessageContentWithStatusSelectorProps } from '../../components/conversation/message/message-content/MessageContentWithStatus';
 import type { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
 import type { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
-import type { LightBoxOptions } from '../../components/conversation/SessionConversation';
+import type { LightBoxOptions } from '../../models/conversationTypes';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';

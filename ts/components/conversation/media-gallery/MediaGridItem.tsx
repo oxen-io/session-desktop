@@ -5,8 +5,8 @@ import { isImageTypeSupported, isVideoTypeSupported } from '../../../util/Google
 import { useEncryptedFileFetch } from '../../../hooks/useEncryptedFileFetch';
 import { showLightBox } from '../../../state/ducks/conversations';
 import { useDisableDrag } from '../../../hooks/useDisableDrag';
-import type { LightBoxOptions } from '../SessionConversation';
-import type { MediaItemType } from '../../lightbox/LightboxGallery';
+import type { LightBoxOptions } from '../../../models/conversationTypes';
+import type { MediaItemType } from '../../../models/conversationTypes';
 
 type Props = {
   mediaItem: MediaItemType;

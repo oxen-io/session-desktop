@@ -5,10 +5,10 @@ import { callReducer as call } from './ducks/call'; // ok: importing only Ringin
 import type { ConversationsStateType } from './ducks/conversations'; // ok
 import { reducer as conversations } from './ducks/conversations'; // todo
 import type { DefaultRoomsState } from './ducks/defaultRooms'; // ok: only importing d.ts
-import { defaultRoomReducer as defaultRooms } from './ducks/defaultRooms'; // todo
+import { defaultRoomReducer as defaultRooms } from './ducks/defaultRooms'; // ok: only importing d.ts
 import { reducer as primaryColor } from './ducks/primaryColor'; // ok: importing only Constants.tsx which is not importing anything else
 import type { SearchStateType } from './ducks/search'; // ok
-import { reducer as search } from './ducks/search'; // todo
+import { reducer as search } from './ducks/search'; // todo: Data is left
 import type { SectionStateType } from './ducks/section'; // ok
 import { reducer as section } from './ducks/section'; // ok: importing only SessionSettingsCategory which is not importing anything else
 import type { SogsRoomInfoState } from './ducks/sogsRoomInfo'; // ok
@@ -18,15 +18,15 @@ import type { UserStateType } from './ducks/user'; // ok
 import { reducer as user } from './ducks/user'; // ok: not importing anything else
 
 import type { PrimaryColorStateType, ThemeStateType } from '../themes/constants/colors'; // ok: not importing anything else
-import type { ModalState } from './ducks/modalDialog';
+import type { ModalState } from './ducks/modalDialog'; // ok
 import { modalReducer as modals } from './ducks/modalDialog'; // todo
-import type { OnionState } from './ducks/onion';
+import type { OnionState } from './ducks/onion'; // ok
 import { defaultOnionReducer as onionPaths } from './ducks/onion'; // ok: not importing anything else
-import type { SettingsState } from './ducks/settings';
+import type { SettingsState } from './ducks/settings'; // ok
 import { settingsReducer } from './ducks/settings'; // ok: just importing settings-key.tsx which is not importing anything else
 import type { StagedAttachmentsStateType } from './ducks/stagedAttachments';
-import { reducer as stagedAttachments } from './ducks/stagedAttachments';
-import type { UserConfigState } from './ducks/userConfig';
+import { reducer as stagedAttachments } from './ducks/stagedAttachments'; // ok: only imports conversationTypes
+import type { UserConfigState } from './ducks/userConfig'; // ok
 import { userConfigReducer as userConfig } from './ducks/userConfig'; // ok: not importing anything else
 
 export type StateType = {

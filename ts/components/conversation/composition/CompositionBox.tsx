@@ -21,6 +21,10 @@ import type {
   ReduxConversationType,
   AttachmentType,
   FixedBaseEmoji,
+  SendMessageType,
+  ReplyingToMessageProps,
+  StagedAttachmentType,
+  StagedLinkPreviewData,
 } from '../../../models/conversationTypes';
 import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
 import type { StateType } from '../../../state/reducer';
@@ -66,45 +70,7 @@ import {
   styleForCompositionBoxSuggestions,
 } from './UserMentions';
 
-export interface ReplyingToMessageProps {
-  convoId: string;
-  id: string; // this is the quoted message timestamp
-  author: string;
-  timestamp: number;
-  text?: string;
-  attachments?: Array<any>;
-}
-
-export type StagedLinkPreviewImage = {
-  data: ArrayBuffer;
-  size: number;
-  width: number;
-  height: number;
-  contentType: string;
-};
-
-export interface StagedLinkPreviewData {
-  isLoaded: boolean;
-  title: string | null;
-  url: string | null;
-  domain: string | null;
-  image?: StagedLinkPreviewImage;
-}
-
-export interface StagedAttachmentType extends AttachmentType {
-  file: File;
-  path?: string; // a bit hacky, but this is the only way to make our sending audio message be playable, this must be used only for those message
-}
-
-export type SendMessageType = {
-  body: string;
-  attachments: Array<StagedAttachmentImportedType> | undefined;
-  quote: any | undefined;
-  preview: any | undefined;
-  groupInvitation: { url: string | undefined; name: string } | undefined;
-};
-
-interface Props {
+type CompositionBoxProps = {
   sendMessage: (msg: SendMessageType) => void;
   selectedConversationKey?: string;
   selectedConversation: ReduxConversationType | undefined;
@@ -113,16 +79,16 @@ interface Props {
   stagedAttachments: Array<StagedAttachmentType>;
   onChoseAttachments: (newAttachments: Array<File>) => void;
   htmlDirection: HTMLDirection;
-}
+};
 
-interface State {
+type CompositionBoxState = {
   showRecordingView: boolean;
   draft: string;
   showEmojiPanel: boolean;
   ignoredLink?: string; // set the ignored url when users closed the link preview
   stagedLinkPreview?: StagedLinkPreviewData;
   showCaptionEditor?: AttachmentType;
-}
+};
 
 const sendMessageStyle = (dir?: HTMLDirection) => {
   return {
@@ -271,7 +237,7 @@ const StyledSendMessageInput = styled.div<{ dir?: HTMLDirection }>`
   }
 `;
 
-class CompositionBoxInner extends React.Component<Props, State> {
+class CompositionBoxInner extends React.Component<CompositionBoxProps, CompositionBoxState> {
   private readonly textarea: React.RefObject<any>;
   private readonly fileInput: React.RefObject<HTMLInputElement>;
   private readonly emojiPanel: React.RefObject<HTMLDivElement>;
@@ -280,7 +246,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
   private container: HTMLDivElement | null;
   private lastBumpTypingMessageLength: number = 0;
 
-  constructor(props: Props) {
+  constructor(props: CompositionBoxProps) {
     super(props);
     this.state = getDefaultState(props.selectedConversationKey);
 
@@ -310,7 +276,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     div?.removeEventListener('paste', this.handlePaste);
   }
 
-  public componentDidUpdate(prevProps: Props, _prevState: State) {
+  public componentDidUpdate(prevProps: CompositionBoxProps) {
     // reset the state on new conversation key
     if (prevProps.selectedConversationKey !== this.props.selectedConversationKey) {
       this.setState(getDefaultState(this.props.selectedConversationKey), this.focusCompositionBox);

@@ -2,7 +2,7 @@ import React from 'react';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
 import type { AbortSignal } from 'abort-controller';
-import type { StagedLinkPreviewData } from './composition/CompositionBox';
+import type { StagedLinkPreviewData } from '../../models/conversationTypes';
 
 import { arrayBufferFromFile } from '../../types/Attachment';
 import { AttachmentUtil, LinkPreviewUtil } from '../../util';
@@ -11,25 +11,26 @@ import { StagedLinkPreview } from './StagedLinkPreview';
 import { getImageDimensions } from '../../types/attachments/VisualAttachment';
 import { LinkPreviews } from '../../util/linkPreviews';
 
-export interface StagedLinkPreviewProps extends StagedLinkPreviewData {
+type StagedLinkPreviewProps = StagedLinkPreviewData & {
   onClose: (url: string) => void;
-}
+};
+
 export const LINK_PREVIEW_TIMEOUT = 20 * 1000;
 
-export interface GetLinkPreviewResultImage {
+type GetLinkPreviewResultImage = {
   data: ArrayBuffer;
   size: number;
   contentType: string;
   width: number;
   height: number;
-}
+};
 
-export interface GetLinkPreviewResult {
+type GetLinkPreviewResult = {
   title: string;
   url: string;
   image?: GetLinkPreviewResultImage;
   date: number | null;
-}
+};
 
 export const getPreview = async (
   url: string,

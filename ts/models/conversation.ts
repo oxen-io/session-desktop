@@ -56,10 +56,7 @@ import {
   messagesDeleted,
 } from '../state/ducks/conversations';
 
-import type {
-  ReplyingToMessageProps,
-  SendMessageType,
-} from '../components/conversation/composition/CompositionBox';
+import type { ReplyingToMessageProps, SendMessageType } from './conversationTypes';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
 import {

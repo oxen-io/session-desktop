@@ -6,26 +6,15 @@ import { Lightbox } from './Lightbox';
 
 import { showLightBox } from '../../state/ducks/conversations';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
-import type { AttachmentTypeWithPath, MIMEType } from '../../models/conversationTypes';
 import { saveAttachmentToDisk } from '../../util/attachmentsUtil';
+import type { MediaItemType } from '../../models/conversationTypes';
 
-export interface MediaItemType {
-  objectURL?: string;
-  thumbnailObjectUrl?: string;
-  contentType: MIMEType;
-  index: number;
-  attachment: AttachmentTypeWithPath;
-  messageTimestamp: number;
-  messageSender: string;
-  messageId: string;
-}
-
-type Props = {
+type LightboxGalleryProps = {
   media: Array<MediaItemType>;
   selectedIndex: number;
 };
 
-export const LightboxGallery = (props: Props) => {
+export const LightboxGallery = (props: LightboxGalleryProps) => {
   const { media } = props;
   const [currentIndex, setCurrentIndex] = useState(-1);
   const selectedConversation = useSelectedConversationKey();

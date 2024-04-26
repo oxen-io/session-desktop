@@ -3,7 +3,7 @@ import React from 'react';
 import { DocumentListItem } from './DocumentListItem';
 import { MediaGridItem } from './MediaGridItem';
 import { missingCaseError } from '../../../util/missingCaseError';
-import type { MediaItemType } from '../../lightbox/LightboxGallery';
+import type { MediaItemType } from '../../../models/conversationTypes';
 
 type Props = {
   type: 'media' | 'documents';

@@ -68,12 +68,12 @@ function updateSearch(dispatch: Dispatch<any>, searchTerm: string) {
   if (searchTerm.length < 2) {
     return;
   }
-  // this effectively trigger a search
   const cleanedTerm = cleanSearchTerm(searchTerm);
   if (!cleanedTerm) {
     return;
   }
-
+  
+  // this effectively trigger a search
   debouncedSearch(dispatch, searchTerm);
 }
 export const SessionSearchInput = () => {

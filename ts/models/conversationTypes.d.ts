@@ -9,6 +9,14 @@
  */
 
 import type { Emoji, EmojiMartData } from '@emoji-mart/data'; // ok ?
+import {
+  MIMEType,
+  AttachmentTypeWithPath,
+  AttachmentType,
+  AttachmentTypeWithPath,
+  MediaItemType,
+} from './conversationTypes';
+import { StagedAttachmentImportedType } from '../util/attachmentsUtil';
 
 // ################################################################## //
 //                                                                    //
@@ -819,4 +827,55 @@ export type AdvancedSearchOptions = {
   from?: string;
   before: number;
   after: number;
+};
+export interface MediaItemType {
+  objectURL?: string;
+  thumbnailObjectUrl?: string;
+  contentType: MIMEType;
+  index: number;
+  attachment: AttachmentTypeWithPath;
+  messageTimestamp: number;
+  messageSender: string;
+  messageId: string;
+}
+export type ReplyingToMessageProps = {
+  convoId: string;
+  id: string; // this is the quoted message timestamp
+  author: string;
+  timestamp: number;
+  text?: string;
+  attachments?: Array<any>;
+};
+
+export type StagedLinkPreviewImage = {
+  data: ArrayBuffer;
+  size: number;
+  width: number;
+  height: number;
+  contentType: string;
+};
+
+export type StagedLinkPreviewData = {
+  isLoaded: boolean;
+  title: string | null;
+  url: string | null;
+  domain: string | null;
+  image?: StagedLinkPreviewImage;
+};
+
+export type StagedAttachmentType = AttachmentType & {
+  file: File;
+  path?: string; // a bit hacky, but this is the only way to make our sending audio message be playable, this must be used only for those message
+};
+
+export type SendMessageType = {
+  body: string;
+  attachments: Array<StagedAttachmentImportedType> | undefined;
+  quote: any | undefined;
+  preview: any | undefined;
+  groupInvitation: { url: string | undefined; name: string } | undefined;
+};
+export type LightBoxOptions = {
+  media: Array<MediaItemType>;
+  attachment: AttachmentTypeWithPath;
 };

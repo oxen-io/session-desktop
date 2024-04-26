@@ -5,11 +5,11 @@ import { omit, toNumber } from 'lodash';
 
 import { Data } from '../../data/data';
 
-import type { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
-import type { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import type {
+  ReplyingToMessageProps,
   ReduxConversationType,
   MessageModelPropsWithoutConvoProps,
+  LightBoxOptions,
 } from '../../models/conversationTypes';
 import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
 import { getConversationController } from '../../session/conversations';

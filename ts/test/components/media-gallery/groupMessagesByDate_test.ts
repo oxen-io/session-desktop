@@ -5,7 +5,7 @@ import { IMAGE_JPEG } from '../../../types/MIME';
 import type { Section } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
 import { groupMediaItemsByDate } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
 import { TestUtils } from '../../test-utils';
-import type { MediaItemType } from '../../../components/lightbox/LightboxGallery';
+import type { MediaItemType } from '../../../models/conversationTypes';
 
 const generatedMessageSenderKey = TestUtils.generateFakePubKey().key;
 

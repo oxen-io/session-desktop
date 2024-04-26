@@ -3,7 +3,7 @@ import imageType from 'image-type';
 
 import { arrayBufferToBlob } from 'blob-util';
 import loadImage from 'blueimp-load-image';
-import type { StagedAttachmentType } from '../components/conversation/composition/CompositionBox';
+import type { StagedAttachmentType } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { sendDataExtractionNotification } from '../session/messages/outgoing/controlMessage/DataExtractionNotificationMessage';

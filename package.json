@@ -175,6 +175,7 @@
     "chai-bytes": "^0.1.2",
     "cross-env": "^6.0.3",
     "css-loader": "^6.7.2",
+    "dependency-cruiser": "^16.3.1",
     "dmg-builder": "23.6.0",
     "electron": "25.8.4",
     "electron-builder": "23.0.8",
@@ -209,7 +210,7 @@
     "webpack-cli": "^5.1.4"
   },
   "engines": {
-    "node": "18.15.0"
+    "node": "18.17.0"
   },
   "build": {
     "appId": "com.loki-project.messenger-desktop",
@@ -263,7 +264,11 @@
         "StartupWMClass": "Session"
       },
       "asarUnpack": "node_modules/spellchecker/vendor/hunspell_dictionaries",
-      "target": ["deb", "rpm", "freebsd"],
+      "target": [
+        "deb",
+        "rpm",
+        "freebsd"
+      ],
       "icon": "build/icon-linux.icns"
     },
     "asarUnpack": [
