@@ -1,4 +1,4 @@
-import { KeyPair } from 'libsodium-wrappers-sumo';
+import type { KeyPair } from 'libsodium-wrappers-sumo';
 import { fromHexToArray, toHex } from '../session/utils/String';
 
 export type HexKeyPair = {

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { isCI, isDevProd } from '../../shared/env_vars';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import type { LocalizerKeys } from '../../types/LocalizerKeys';
 
 type TimerOptionsEntry = { name: string; value: number };
 export type TimerOptionsArray = Array<TimerOptionsEntry>;

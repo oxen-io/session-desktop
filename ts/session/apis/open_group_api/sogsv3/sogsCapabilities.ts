@@ -1,7 +1,7 @@
 import { findIndex } from 'lodash';
 import { OpenGroupData } from '../../../../data/opengroups';
-import { DecodedResponseBodiesV4 } from '../../../onions/onionv4';
-import { BatchSogsReponse, OpenGroupBatchRow } from './sogsV3BatchPoll';
+import type { DecodedResponseBodiesV4 } from '../../../onions/onionv4';
+import type { BatchSogsReponse, OpenGroupBatchRow } from './sogsV3BatchPoll';
 import { parseCapabilities } from './sogsV3Capabilities';
 
 /**

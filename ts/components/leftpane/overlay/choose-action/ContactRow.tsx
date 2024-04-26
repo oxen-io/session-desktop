@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { useAvatarPath } from '../../../../hooks/useParamSelector';
 import { openConversationWithMessages } from '../../../../state/ducks/conversations';
 import { updateUserDetailsModal } from '../../../../state/ducks/modalDialog';

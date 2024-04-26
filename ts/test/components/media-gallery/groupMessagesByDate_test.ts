@@ -2,12 +2,10 @@ import { assert } from 'chai';
 import { shuffle } from 'lodash';
 
 import { IMAGE_JPEG } from '../../../types/MIME';
-import {
-  groupMediaItemsByDate,
-  Section,
-} from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
+import type { Section } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
+import { groupMediaItemsByDate } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
 import { TestUtils } from '../../test-utils';
-import { MediaItemType } from '../../../components/lightbox/LightboxGallery';
+import type { MediaItemType } from '../../../models/conversationTypes';
 
 const generatedMessageSenderKey = TestUtils.generateFakePubKey().key;
 

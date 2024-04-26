@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SessionIcon, SessionIconType } from '../icon';
+import type { SessionIconType } from '../icon';
+import { SessionIcon } from '../icon';
 
 export enum SessionDropDownItemType {
   Default = 'default',

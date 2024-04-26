@@ -4,12 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import * as Constants from '../constants';
 import { Data } from '../../data/data';
-import { MessageModel } from '../../models/message';
+import type { MessageModel } from '../../models/message';
 import { downloadAttachment, downloadAttachmentSogsV3 } from '../../receiver/attachments';
 import { initializeAttachmentLogic, processNewAttachment } from '../../types/MessageAttachment';
 import { getAttachmentMetadata } from '../../types/message/initializeAttachmentMetadata';
 import { was404Error } from '../apis/snode_api/onions';
-import { AttachmentDownloadMessageDetails } from '../../types/sqlSharedTypes';
+import type { AttachmentDownloadMessageDetails } from '../../types/sqlSharedTypes';
 
 // this may cause issues if we increment that value to > 1, but only having one job will block the whole queue while one attachment is downloading
 const MAX_ATTACHMENT_JOB_PARALLELISM = 3;

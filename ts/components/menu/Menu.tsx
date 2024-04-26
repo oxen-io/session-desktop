@@ -22,8 +22,6 @@ import {
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
 import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
   approveConvoAndSendResponse,
   blockConvoById,
   clearNickNameByConvoId,
@@ -42,10 +40,9 @@ import {
   showUpdateGroupNameByConvoId,
   unblockConvoById,
 } from '../../interactions/conversationInteractions';
-import {
-  ConversationNotificationSetting,
-  ConversationNotificationSettingType,
-} from '../../models/conversationAttributes';
+import type { ConversationNotificationSettingType } from '../../models/conversationTypes';
+
+import { ConversationNotificationSetting } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';
 import { PubKey } from '../../session/types';
 import {
@@ -55,7 +52,7 @@ import {
 } from '../../state/ducks/modalDialog';
 import { getIsMessageSection } from '../../state/selectors/section';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import type { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionButtonColor } from '../basic/SessionButton';
 
 /** Menu items standardized */
@@ -154,8 +151,7 @@ export const LeaveGroupOrCommunityMenuItem = () => {
       >
         {isPublic
           ? window.i18n('leaveCommunity')
-          : lastMessage?.interactionType === ConversationInteractionType.Leave &&
-              lastMessage?.interactionStatus === ConversationInteractionStatus.Error
+          : lastMessage?.interactionType === 'leave' && lastMessage?.interactionStatus === 'error'
             ? window.i18n('deleteConversation')
             : window.i18n('leaveGroup')}
       </Item>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SuggestionDataItem } from 'react-mentions';
+import type { SuggestionDataItem } from 'react-mentions';
 import styled from 'styled-components';
 import { SearchIndex } from 'emoji-mart';
 // eslint-disable-next-line import/extensions

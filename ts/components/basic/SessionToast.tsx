@@ -4,7 +4,8 @@ import styled from 'styled-components';
 
 import { Flex } from './Flex';
 
-import { SessionIcon, SessionIconType } from '../icon';
+import type { SessionIconType } from '../icon';
+import { SessionIcon } from '../icon';
 
 // NOTE We don't change the color strip on the left based on the type. 16/09/2022
 export enum SessionToastType {

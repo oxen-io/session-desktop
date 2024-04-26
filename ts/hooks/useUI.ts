@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
-import { RightOverlayMode } from '../state/ducks/section';
-import { StateType } from '../state/reducer';
+import type { RightOverlayMode } from '../state/ducks/section';
+import type { StateType } from '../state/reducer';
 import { isRightPanelShowing } from '../state/selectors/conversations';
 
 export function useIsRightPanelShowing(): boolean {

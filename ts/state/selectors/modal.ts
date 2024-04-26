@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { StateType } from '../reducer';
-import {
+import type { StateType } from '../reducer';
+import type {
   AddModeratorsModalState,
   BanOrUnbanUserModalState,
   ChangeNickNameModalState,

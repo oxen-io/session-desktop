@@ -4,7 +4,7 @@ import { SignalService } from '../../protobuf';
 import { PnServer } from '../apis/push_notification_api';
 import { DisappearingMessages } from '../disappearing_messages';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import { RawMessage } from '../types';
+import type { RawMessage } from '../types';
 import { UserUtils } from '../utils';
 
 async function handlePublicMessageSentSuccess(

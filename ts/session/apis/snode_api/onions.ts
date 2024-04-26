@@ -1,20 +1,21 @@
-import { AbortSignal } from 'abort-controller';
+import type { AbortSignal } from 'abort-controller';
 import ByteBuffer from 'bytebuffer';
 import https from 'https';
 import { to_string } from 'libsodium-wrappers-sumo';
 import { cloneDeep, isEmpty, isString, omit } from 'lodash';
-import insecureNodeFetch, { RequestInit, Response } from 'node-fetch';
+import type { RequestInit, Response } from 'node-fetch';
+import insecureNodeFetch from 'node-fetch';
 import pRetry from 'p-retry';
 // eslint-disable-next-line import/no-unresolved
-import { AbortSignal as AbortSignalNode } from 'node-fetch/externals';
+import type { AbortSignal as AbortSignalNode } from 'node-fetch/externals';
 
 import { dropSnodeFromSnodePool, dropSnodeFromSwarmIfNeeded, updateSwarmFor } from './snodePool';
 
 import { OnionPaths } from '../../onions';
-import { ed25519Str, incrementBadPathCountOrDrop } from '../../onions/onionPath';
-import { toHex } from '../../utils/String';
+import { incrementBadPathCountOrDrop } from '../../onions/onionPath';
+import { ed25519Str, toHex } from '../../utils/String';
 
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { callUtilsWorker } from '../../../webworker/workers/browser/util_worker_interface';
 import { encodeV4Request } from '../../onions/onionv4';
 import { fileServerHost } from '../file_server_api/FileServerApi';

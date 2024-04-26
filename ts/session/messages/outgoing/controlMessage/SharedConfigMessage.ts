@@ -1,10 +1,10 @@
 // this is not a very good name, but a configuration message is a message sent to our other devices so sync our current public and closed groups
-import Long from 'long';
+import type Long from 'long';
 
 import { ContentMessage } from '..';
 import { SignalService } from '../../../../protobuf';
 import { TTL_DEFAULT } from '../../../constants';
-import { MessageParams } from '../Message';
+import type { MessageParams } from '../Message';
 
 interface SharedConfigParams extends MessageParams {
   seqno: Long;

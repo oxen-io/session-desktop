@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { MessageUtils, ToastUtils, UserUtils } from '..';
 import { SignalService } from '../../../protobuf';
+import type { CallStatusEnum } from '../../../state/ducks/call';
 import {
-  CallStatusEnum,
   answerCall,
   callConnected,
   callReconnecting,
@@ -18,23 +18,24 @@ import {
 import { openConversationWithMessages } from '../../../state/ducks/conversations';
 import { getConversationController } from '../../conversations';
 import { CallMessage } from '../../messages/outgoing/controlMessage/CallMessage';
-import { ed25519Str } from '../../onions/onionPath';
 import { PubKey } from '../../types';
 
 import { getMessageQueue } from '../..';
 import { getCallMediaPermissionsSettings } from '../../../components/settings/SessionSettings';
 import { Data } from '../../../data/data';
 import { approveConvoAndSendResponse } from '../../../interactions/conversationInteractions';
-import { READ_MESSAGE_STATE } from '../../../models/conversationAttributes';
+import type { ReadyToDisappearMsgUpdate } from '../../../models/conversationTypes';
+
 import { PnServer } from '../../apis/push_notification_api';
 import { GetNetworkTime } from '../../apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
 import { DisappearingMessages } from '../../disappearing_messages';
-import { ReadyToDisappearMsgUpdate } from '../../disappearing_messages/types';
 import { MessageSender } from '../../sending';
 import { getIsRinging } from '../RingingManager';
 import { getBlackSilenceMediaStream } from './Silence';
+import { ed25519Str } from '../String';
+import { READ_MESSAGE_STATE } from '../../../models/constEnums';
 
 export type InputItem = { deviceId: string; label: string };
 
@@ -415,8 +416,11 @@ async function createOfferAndSendIt(recipient: string, msgIdentifier: string | n
     if (offer && offer.sdp) {
       const lines = offer.sdp.split(/\r?\n/);
       const lineWithFtmpIndex = lines.findIndex(f => f.startsWith('a=fmtp:111'));
-      const partBeforeComma = lines[lineWithFtmpIndex].split(';');
-      lines[lineWithFtmpIndex] = `${partBeforeComma[0]};cbr=1`;
+      // If webrtc does not find any audio input when initializing, the offer will not have a line with `a=fmtp:111` at all, `lineWithFtmpIndex` will be invalid.
+      if (lineWithFtmpIndex > -1) {
+        const partBeforeComma = lines[lineWithFtmpIndex].split(';');
+        lines[lineWithFtmpIndex] = `${partBeforeComma[0]};cbr=1`;
+      }
       let overridenSdps = lines.join('\n');
       overridenSdps = overridenSdps.replace(
         // eslint-disable-next-line prefer-regex-literals

@@ -12,7 +12,7 @@ import { generateFakeIncomingPrivateMessage, stubWindowLog } from '../../../test
 import { DEFAULT_RECENT_REACTS } from '../../../../session/constants';
 
 import { UserUtils } from '../../../../session/utils';
-import { SignalService } from '../../../../protobuf';
+import type { SignalService } from '../../../../protobuf';
 import { MessageCollection } from '../../../../models/message';
 
 chai.use(chaiAsPromised as any);

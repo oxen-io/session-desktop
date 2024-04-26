@@ -1,10 +1,10 @@
 import _, { intersectionWith, sampleSize } from 'lodash';
 import { SnodePool } from '.';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
 import { minSnodePoolCount, requiredSnodesForAgreement } from './snodePool';
-import { GetServiceNodesSubRequest } from './SnodeRequestTypes';
+import type { GetServiceNodesSubRequest } from './SnodeRequestTypes';
 
 function buildSnodeListRequests(): Array<GetServiceNodesSubRequest> {
   const request: GetServiceNodesSubRequest = {
@@ -13,6 +13,9 @@ function buildSnodeListRequests(): Array<GetServiceNodesSubRequest> {
       endpoint: 'get_service_nodes',
       params: {
         active_only: true,
+        // If you are thinking of adding the `limit` field here: don't.
+        // We fetch the full list because when we retrieve it we also remove from all the swarms we already know, any snode not part of that fetched list.
+        // If the limit was set, we would remove a lot of valid snodes from the swarms we've already fetched.
         fields: {
           public_ip: true,
           storage_port: true,

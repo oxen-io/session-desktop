@@ -1,24 +1,33 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import { callReducer as call, CallStateType } from './ducks/call';
-import { reducer as conversations, ConversationsStateType } from './ducks/conversations';
-import { defaultRoomReducer as defaultRooms, DefaultRoomsState } from './ducks/defaultRooms';
-import { reducer as primaryColor } from './ducks/primaryColor';
-import { reducer as search, SearchStateType } from './ducks/search';
-import { reducer as section, SectionStateType } from './ducks/section';
-import { ReduxSogsRoomInfos, SogsRoomInfoState } from './ducks/sogsRoomInfo';
-import { reducer as theme } from './ducks/theme';
-import { reducer as user, UserStateType } from './ducks/user';
+import type { CallStateType } from './ducks/call'; // ok
+import { callReducer as call } from './ducks/call'; // ok: importing only RingingManager.ts which is not importing anything else
+import type { ConversationsStateType } from './ducks/conversations'; // ok
+import { reducer as conversations } from './ducks/conversations'; // todo
+import type { DefaultRoomsState } from './ducks/defaultRooms'; // ok: only importing d.ts
+import { defaultRoomReducer as defaultRooms } from './ducks/defaultRooms'; // ok: only importing d.ts
+import { reducer as primaryColor } from './ducks/primaryColor'; // ok: importing only Constants.tsx which is not importing anything else
+import type { SearchStateType } from './ducks/search'; // ok
+import { reducer as search } from './ducks/search'; // todo: Data is left
+import type { SectionStateType } from './ducks/section'; // ok
+import { reducer as section } from './ducks/section'; // ok: importing only SessionSettingsCategory which is not importing anything else
+import type { SogsRoomInfoState } from './ducks/sogsRoomInfo'; // ok
+import { ReduxSogsRoomInfos } from './ducks/sogsRoomInfo'; // ok: importing nothing else
+import { reducer as theme } from './ducks/theme'; // ok: importing only Constants.tsx which is not importing anything else
+import type { UserStateType } from './ducks/user'; // ok
+import { reducer as user } from './ducks/user'; // ok: not importing anything else
 
-import { PrimaryColorStateType, ThemeStateType } from '../themes/constants/colors';
-import { modalReducer as modals, ModalState } from './ducks/modalDialog';
-import { defaultOnionReducer as onionPaths, OnionState } from './ducks/onion';
-import { settingsReducer, SettingsState } from './ducks/settings';
-import {
-  reducer as stagedAttachments,
-  StagedAttachmentsStateType,
-} from './ducks/stagedAttachments';
-import { userConfigReducer as userConfig, UserConfigState } from './ducks/userConfig';
+import type { PrimaryColorStateType, ThemeStateType } from '../themes/constants/colors'; // ok: not importing anything else
+import type { ModalState } from './ducks/modalDialog'; // ok
+import { modalReducer as modals } from './ducks/modalDialog'; // todo
+import type { OnionState } from './ducks/onion'; // ok
+import { defaultOnionReducer as onionPaths } from './ducks/onion'; // ok: not importing anything else
+import type { SettingsState } from './ducks/settings'; // ok
+import { settingsReducer } from './ducks/settings'; // ok: just importing settings-key.tsx which is not importing anything else
+import type { StagedAttachmentsStateType } from './ducks/stagedAttachments';
+import { reducer as stagedAttachments } from './ducks/stagedAttachments'; // ok: only imports conversationTypes
+import type { UserConfigState } from './ducks/userConfig'; // ok
+import { userConfigReducer as userConfig } from './ducks/userConfig'; // ok: not importing anything else
 
 export type StateType = {
   search: SearchStateType;
@@ -37,7 +46,7 @@ export type StateType = {
   settings: SettingsState;
 };
 
-export const reducers = {
+const reducers = {
   search,
   conversations,
   user,

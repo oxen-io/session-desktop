@@ -1,5 +1,5 @@
-import { OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationModel } from '../../../../models/conversation';
+import type { OpenGroupV2Room } from '../../../../data/opengroups';
+import type { ConversationModel } from '../../../../models/conversation';
 import { getConversationController } from '../../../conversations';
 import { PromiseUtils, ToastUtils } from '../../../utils';
 

@@ -1,5 +1,5 @@
 import { isArray, omit } from 'lodash';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { updateIsOnline } from '../../../state/ducks/onion';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
@@ -8,13 +8,13 @@ import { SnodeNamespace, SnodeNamespaces } from './namespaces';
 import { TTL_DEFAULT } from '../../constants';
 import { UserUtils } from '../../utils';
 import { sleepFor } from '../../utils/Promise';
-import {
+import type {
   RetrieveLegacyClosedGroupSubRequestType,
   RetrieveSubRequestType,
   UpdateExpiryOnNodeSubRequest,
 } from './SnodeRequestTypes';
 import { SnodeSignature } from './snodeSignatures';
-import { RetrieveMessagesResultsBatched, RetrieveMessagesResultsContent } from './types';
+import type { RetrieveMessagesResultsBatched, RetrieveMessagesResultsContent } from './types';
 
 async function buildRetrieveRequest(
   lastHashes: Array<string>,
@@ -124,7 +124,7 @@ async function retrieveNextMessages(
   );
   // let exceptions bubble up
   // no retry for this one as this a call we do every few seconds while polling for messages
-  const timeOutMs = 4 * 1000;
+  const timeOutMs = 10 * 1000; // yes this is a long timeout for just messages, but 4s timeouts way to often...
   const timeoutPromise = async () => sleepFor(timeOutMs);
   const fetchPromise = async () =>
     doSnodeBatchRequest(retrieveRequestsParams, targetNode, timeOutMs, associatedWith);
@@ -166,7 +166,8 @@ async function retrieveNextMessages(
 
     GetNetworkTime.handleTimestampOffsetFromNetwork('retrieve', bodyFirstResult.t);
 
-    // merge results with their corresponding namespaces
+    // NOTE: We don't want to sort messages here because the ordering depends on the snode and when it received each messages.
+    // The last_hash for that snode has to be the last one we've received from that same snode, othwerwise we end up fetching the same messages over and over again.
     return results.map((result, index) => ({
       code: result.code,
       messages: result.body as RetrieveMessagesResultsContent,

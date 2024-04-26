@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
 import { addToCache, getAllFromCache, getAllFromCacheForSource, removeFromCache } from './cache';
 
@@ -14,7 +14,7 @@ import { SignalService } from '../protobuf';
 import { StringUtils, UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { createTaskWithTimeout } from '../session/utils/TaskWithTimeout';
-import { UnprocessedParameter } from '../types/sqlSharedTypes';
+import type { UnprocessedParameter } from '../types/sqlSharedTypes';
 import { getEnvelopeId } from './common';
 
 export { downloadAttachment } from './attachments';

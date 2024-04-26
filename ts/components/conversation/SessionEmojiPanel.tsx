@@ -5,18 +5,20 @@ import { useSelector } from 'react-redux';
 import Picker from '@emoji-mart/react';
 
 import { getTheme, isDarkTheme } from '../../state/selectors/theme';
-import {
-  COLORS,
+import type {
   ColorsType,
   PrimaryColorStateType,
-  THEMES,
   ThemeStateType,
+} from '../../themes/constants/colors.js';
+import {
+  COLORS,
+  THEMES,
   // eslint-disable-next-line import/extensions
 } from '../../themes/constants/colors.js';
 import { hexColorToRGB } from '../../util/hexColorToRGB';
 import { getPrimaryColor } from '../../state/selectors/primaryColor';
 import { i18nEmojiData } from '../../util/emoji';
-import { FixedBaseEmoji } from '../../types/Reaction';
+import type { FixedBaseEmoji } from '../../models/conversationTypes';
 
 export const StyledEmojiPanel = styled.div<{
   isModal: boolean;

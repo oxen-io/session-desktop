@@ -26,10 +26,17 @@ import { PubKey } from '../session/types';
 import { ToastUtils, UserUtils } from '../session/utils';
 import { BlockedNumberController } from '../util';
 import { MessageModel } from './message';
-import { MessageAttributesOptionals, MessageDirection } from './messageType';
+import type {
+  MessageAttributesOptionals,
+  ReduxConversationType,
+  ConversationAttributes,
+  DisappearingMessageConversationModeType,
+  Reaction,
+  OpenGroupRequestCommonType,
+} from './conversationTypes';
+import { CONVERSATION_PRIORITIES, READ_MESSAGE_STATE } from './constEnums';
 
 import { Data } from '../data/data';
-import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { getOpenGroupV2FromConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ExpirationTimerUpdateMessage } from '../session/messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
@@ -37,25 +44,19 @@ import { ReadReceiptMessage } from '../session/messages/outgoing/controlMessage/
 import { TypingMessage } from '../session/messages/outgoing/controlMessage/TypingMessage';
 import { GroupInvitationMessage } from '../session/messages/outgoing/visibleMessage/GroupInvitationMessage';
 import { OpenGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import {
-  VisibleMessage,
-  VisibleMessageParams,
-} from '../session/messages/outgoing/visibleMessage/VisibleMessage';
+import type { VisibleMessageParams } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
+import { VisibleMessage } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
 import { perfEnd, perfStart } from '../session/utils/Performance';
-import { toHex } from '../session/utils/String';
+import { ed25519Str, toHex } from '../session/utils/String';
 import { createTaskWithTimeout } from '../session/utils/TaskWithTimeout';
 import {
   actions as conversationActions,
   conversationsChanged,
   markConversationFullyRead,
   messagesDeleted,
-  ReduxConversationType,
 } from '../state/ducks/conversations';
 
-import {
-  ReplyingToMessageProps,
-  SendMessageType,
-} from '../components/conversation/composition/CompositionBox';
+import type { ReplyingToMessageProps, SendMessageType } from './conversationTypes';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
 import {
@@ -70,11 +71,8 @@ import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
 import { getSodiumRenderer } from '../session/crypto';
 import { addMessagePadding } from '../session/crypto/BufferPadding';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
-import {
-  MessageRequestResponse,
-  MessageRequestResponseParams,
-} from '../session/messages/outgoing/controlMessage/MessageRequestResponse';
-import { ed25519Str } from '../session/onions/onionPath';
+import type { MessageRequestResponseParams } from '../session/messages/outgoing/controlMessage/MessageRequestResponse';
+import { MessageRequestResponse } from '../session/messages/outgoing/controlMessage/MessageRequestResponse';
 import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
 import { SessionUtilContact } from '../session/utils/libsession/libsession_utils_contacts';
 import { SessionUtilConvoInfoVolatile } from '../session/utils/libsession/libsession_utils_convo_info_volatile';
@@ -87,26 +85,21 @@ import {
   loadAttachmentData,
 } from '../types/MessageAttachment';
 import { IMAGE_JPEG } from '../types/MIME';
-import { Reaction } from '../types/Reaction';
+import type { SaveConversationReturn } from '../types/sqlSharedTypes';
 import {
   assertUnreachable,
   roomHasBlindEnabled,
   roomHasReactionsEnabled,
-  SaveConversationReturn,
 } from '../types/sqlSharedTypes';
 import { Notifications } from '../util/notifications';
 import { Reactions } from '../util/reactions';
 import { Registration } from '../util/registration';
 import { Storage } from '../util/storage';
 import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
   ConversationNotificationSetting,
-  ConversationTypeEnum,
   fillConvoAttributesWithDefaults,
   isDirectConversation,
   isOpenOrClosedGroup,
-  READ_MESSAGE_STATE,
 } from './conversationAttributes';
 
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
@@ -119,7 +112,6 @@ import {
 } from '../state/selectors/sogsRoomInfo'; // decide it it makes sense to move this to a redux slice?
 
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageConversationModeType } from '../session/disappearing_messages/types';
 import { FetchMsgExpirySwarm } from '../session/utils/job_runners/jobs/FetchMsgExpirySwarmJob';
 import { UpdateMsgExpirySwarm } from '../session/utils/job_runners/jobs/UpdateMsgExpirySwarmJob';
 import { ReleasedFeatures } from '../util/releaseFeature';
@@ -216,8 +208,8 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   }
   public isClosedGroup(): boolean {
     return Boolean(
-      (this.get('type') === ConversationTypeEnum.GROUP && this.id.startsWith('05')) ||
-        (this.get('type') === ConversationTypeEnum.GROUPV3 && this.id.startsWith('03'))
+      (this.get('type') === 'group' && this.id.startsWith('05')) ||
+        (this.get('type') === 'groupv3' && this.id.startsWith('03'))
     );
   }
 
@@ -572,10 +564,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       };
 
       const shouldApprove = !this.isApproved() && this.isPrivate();
-      const incomingMessageCount = await Data.getMessageCountByType(
-        this.id,
-        MessageDirection.incoming
-      );
+      const incomingMessageCount = await Data.getMessageCountByType(this.id, 'incoming');
       const hasIncomingMessages = incomingMessageCount > 0;
 
       if (PubKey.isBlinded(this.id)) {
@@ -1798,7 +1787,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
     const convo = await getConversationController().getOrCreateAndWait(
       message.get('source'),
-      ConversationTypeEnum.PRIVATE
+      'private'
     );
 
     const iconUrl = await this.getNotificationIcon();
@@ -1909,10 +1898,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       };
 
       const shouldApprove = !this.isApproved() && this.isPrivate();
-      const incomingMessageCount = await Data.getMessageCountByType(
-        this.id,
-        MessageDirection.incoming
-      );
+      const incomingMessageCount = await Data.getMessageCountByType(this.id, 'incoming');
       const hasIncomingMessages = incomingMessageCount > 0;
 
       if (PubKey.isBlinded(this.id)) {

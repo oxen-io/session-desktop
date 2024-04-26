@@ -11,13 +11,14 @@ import { randomBytes } from 'crypto';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { describe } from 'mocha';
-import Sinon, * as sinon from 'sinon';
+import type * as sinon from 'sinon';
+import Sinon from 'sinon';
 
-import { ContentMessage } from '../../../../session/messages/outgoing';
+import type { ContentMessage } from '../../../../session/messages/outgoing';
 import { ClosedGroupMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupMessage';
 import { MessageSender } from '../../../../session/sending';
 import { MessageQueue } from '../../../../session/sending/MessageQueue';
-import { PubKey } from '../../../../session/types';
+import type { PubKey } from '../../../../session/types';
 import { GroupUtils, PromiseUtils, UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 import { PendingMessageCacheStub } from '../../../test-utils/stubs';

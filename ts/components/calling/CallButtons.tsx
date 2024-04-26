@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { CallManager, ToastUtils } from '../../session/utils';
-import { InputItem } from '../../session/utils/calling/CallManager';
+import type { InputItem } from '../../session/utils/calling/CallManager';
 import { setFullScreenCall } from '../../state/ducks/call';
 import { getHasOngoingCallWithPubkey } from '../../state/selectors/call';
 import { SessionIconButton } from '../icon';

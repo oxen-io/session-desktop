@@ -27,7 +27,7 @@ import { initialSectionState } from '../state/ducks/section';
 import { getEmptyStagedAttachmentsState } from '../state/ducks/stagedAttachments';
 import { initialThemeState } from '../state/ducks/theme';
 import { initialUserConfigState } from '../state/ducks/userConfig';
-import { StateType } from '../state/reducer';
+import type { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
 import { SettingsKey } from '../data/settings-key';
@@ -91,7 +91,18 @@ function createSessionInboxStore() {
 function setupLeftPane(forceUpdateInboxComponent: () => void) {
   window.openConversationWithMessages = openConversationWithMessages;
   window.inboxStore = createSessionInboxStore();
-  window.inboxStore.dispatch(updateAllOnStorageReady());
+
+  window.inboxStore.dispatch(
+    updateAllOnStorageReady({
+      hasBlindedMsgRequestsEnabled: Storage.getBoolOrFalse(
+        SettingsKey.hasBlindedMsgRequestsEnabled
+      ),
+      someDeviceOutdatedSyncing: Storage.getBoolOrFalse(SettingsKey.someDeviceOutdatedSyncing),
+      settingsLinkPreview: Storage.getBoolOrFalse(SettingsKey.settingsLinkPreview),
+      hasFollowSystemThemeEnabled: Storage.getBoolOrFalse(SettingsKey.hasFollowSystemThemeEnabled),
+      hasShiftSendEnabled: Storage.getBoolOrFalse(SettingsKey.hasShiftSendEnabled),
+    })
+  );
   forceUpdateInboxComponent();
 }
 

@@ -2,14 +2,14 @@ import chai from 'chai';
 import Sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 
-import { SignalService } from '../../../../protobuf';
+import type { SignalService } from '../../../../protobuf';
 
 import { ConfigurationMessage } from '../../../../session/messages/outgoing/controlMessage/ConfigurationMessage';
 import { UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 
 import * as cache from '../../../../receiver/cache';
-import { EnvelopePlus } from '../../../../receiver/types';
+import type { EnvelopePlus } from '../../../../receiver/types';
 
 import { ConfigMessageHandler } from '../../../../receiver/configMessage';
 import { ConfigurationSync } from '../../../../session/utils/job_runners/jobs/ConfigurationSyncJob';

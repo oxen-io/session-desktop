@@ -1,11 +1,9 @@
 import { SignalService } from '../../../../protobuf';
 import { PubKey } from '../../../types';
 import { StringUtils } from '../../../utils';
-import {
-  ClosedGroupMessage,
-  ClosedGroupMessageParams,
-} from '../controlMessage/group/ClosedGroupMessage';
-import { VisibleMessage } from './VisibleMessage';
+import type { ClosedGroupMessageParams } from '../controlMessage/group/ClosedGroupMessage';
+import { ClosedGroupMessage } from '../controlMessage/group/ClosedGroupMessage';
+import type { VisibleMessage } from './VisibleMessage';
 
 interface ClosedGroupVisibleMessageParams
   extends Omit<ClosedGroupMessageParams, 'expireTimer' | 'expirationType'> {

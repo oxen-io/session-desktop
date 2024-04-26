@@ -5,12 +5,8 @@ import { Data } from '../../../../data/data';
 import { isSignInByLinking } from '../../../../util/storage';
 import { DisappearingMessages } from '../../../disappearing_messages';
 import { runners } from '../JobRunner';
-import {
-  AddJobCheckReturn,
-  PersistedJob,
-  RunJobResult,
-  UpdateMsgExpirySwarmPersistedData,
-} from '../PersistedJob';
+import type { AddJobCheckReturn, UpdateMsgExpirySwarmPersistedData } from '../PersistedJob';
+import { PersistedJob, RunJobResult } from '../PersistedJob';
 
 class UpdateMsgExpirySwarmJob extends PersistedJob<UpdateMsgExpirySwarmPersistedData> {
   constructor({

@@ -7,10 +7,10 @@ import { UserUtils } from '..';
 import { ConfigDumpData } from '../../../data/configDump/configDump';
 import { SignalService } from '../../../protobuf';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
-import { ConfigWrapperObjectTypes } from '../../../webworker/workers/browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../../../webworker/workers/browser/libsession_worker_functions';
 import { GenericWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
 import { GetNetworkTime } from '../../apis/snode_api/getNetworkTime';
-import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
+import type { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
 import { ConfigurationSync } from '../job_runners/jobs/ConfigurationSyncJob';
 

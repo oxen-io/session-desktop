@@ -1,25 +1,23 @@
 /* eslint-disable no-await-in-loop */
+import { to_hex } from 'libsodium-wrappers-sumo';
 import { compact, isArray, isEmpty, isNumber, isString } from 'lodash';
 import { v4 } from 'uuid';
 import { UserUtils } from '../..';
 import { ConfigDumpData } from '../../../../data/configDump/configDump';
 import { ConfigurationSyncJobDone } from '../../../../shims/events';
-import { GenericWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
-import { NotEmptyArrayOfBatchResults } from '../../../apis/snode_api/SnodeRequestTypes';
-import { getConversationController } from '../../../conversations';
-import { SharedConfigMessage } from '../../../messages/outgoing/controlMessage/SharedConfigMessage';
-import { MessageSender } from '../../../sending/MessageSender';
-import { LibSessionUtil, OutgoingConfResult } from '../../libsession/libsession_utils';
-import { runners } from '../JobRunner';
-import {
-  AddJobCheckReturn,
-  ConfigurationSyncPersistedData,
-  PersistedJob,
-  RunJobResult,
-} from '../PersistedJob';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';
-import { allowOnlyOneAtATime } from '../../Promise';
 import { isSignInByLinking } from '../../../../util/storage';
+import { GenericWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
+import type { NotEmptyArrayOfBatchResults } from '../../../apis/snode_api/SnodeRequestTypes';
+import { getConversationController } from '../../../conversations';
+import type { SharedConfigMessage } from '../../../messages/outgoing/controlMessage/SharedConfigMessage';
+import { MessageSender } from '../../../sending/MessageSender';
+import { allowOnlyOneAtATime } from '../../Promise';
+import type { OutgoingConfResult } from '../../libsession/libsession_utils';
+import { LibSessionUtil } from '../../libsession/libsession_utils';
+import { runners } from '../JobRunner';
+import type { AddJobCheckReturn, ConfigurationSyncPersistedData } from '../PersistedJob';
+import { PersistedJob, RunJobResult } from '../PersistedJob';
 
 const defaultMsBetweenRetries = 15000; // a long time between retries, to avoid running multiple jobs at the same time, when one was postponed at the same time as one already planned (5s)
 const defaultMaxAttempts = 2;
@@ -207,6 +205,29 @@ class ConfigurationSyncJob extends PersistedJob<ConfigurationSyncPersistedData> 
           message: item.message,
         };
       });
+
+      if (window.sessionFeatureFlags.debug.debugLibsessionDumps) {
+        for (let index = 0; index < LibSessionUtil.requiredUserVariants.length; index++) {
+          const variant = LibSessionUtil.requiredUserVariants[index];
+
+          window.log.info(
+            `ConfigurationSyncJob: current dumps: ${variant}:`,
+            to_hex(await GenericWrapperActions.dump(variant))
+          );
+        }
+        window.log.info(
+          'ConfigurationSyncJob: About to push changes: ',
+          msgs.map(m => {
+            return {
+              ...m,
+              message: {
+                ...m.message,
+                data: to_hex(m.message.data),
+              },
+            };
+          })
+        );
+      }
 
       const result = await MessageSender.sendMessagesToSnode(
         msgs,

@@ -8,7 +8,7 @@ import { TestUtils } from '../../../test-utils';
 import * as SNodeAPI from '../../../../session/apis/snode_api';
 
 import * as OnionPaths from '../../../../session/onions/onionPath';
-import { GuardNode, Snode } from '../../../../data/data';
+import type { GuardNode, Snode } from '../../../../data/data';
 import {
   generateFakeSnodes,
   generateFakeSnodeWithEdKey,

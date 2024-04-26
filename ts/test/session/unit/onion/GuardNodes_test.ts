@@ -1,11 +1,12 @@
 import chai from 'chai';
-import Sinon, * as sinon from 'sinon';
+import type * as sinon from 'sinon';
+import Sinon from 'sinon';
 import { describe } from 'mocha';
 import chaiAsPromised from 'chai-as-promised';
 
 import { TestUtils } from '../../../test-utils';
 import { Onions, SnodePool } from '../../../../session/apis/snode_api';
-import { Snode } from '../../../../data/data';
+import type { Snode } from '../../../../data/data';
 
 import * as OnionPaths from '../../../../session/onions/onionPath';
 import {

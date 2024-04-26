@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { setIsRinging } from '../../session/utils/RingingManager';
 
 export type CallStatusEnum = 'offering' | 'incoming' | 'connecting' | 'ongoing' | undefined;

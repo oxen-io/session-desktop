@@ -1,12 +1,13 @@
-import React, { MouseEvent, useState } from 'react';
+import type { MouseEvent } from 'react';
+import React, { useState } from 'react';
 
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import { useIsMessageSelectionMode } from '../../../../../state/selectors/selectedConversation';
-import * as MIME from '../../../../../types/MIME';
 import { QuoteAuthor } from './QuoteAuthor';
 import { QuoteIconContainer } from './QuoteIconContainer';
 import { QuoteText } from './QuoteText';
+import type { QuoteProps } from '../../../../../models/conversationTypes';
 
 const StyledQuoteContainer = styled.div`
   min-width: 300px; // if the quoted content is small it doesn't look very good so we set a minimum
@@ -42,31 +43,6 @@ const StyledQuoteTextContent = styled.div`
   flex-direction: column;
   justify-content: center;
 `;
-
-export type QuoteProps = {
-  author: string;
-  isFromMe: boolean;
-  isIncoming: boolean;
-  referencedMessageNotFound: boolean;
-  text?: string;
-  attachment?: QuotedAttachmentType;
-
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
-};
-
-export interface QuotedAttachmentThumbnailType {
-  contentType: MIME.MIMEType;
-  /** Not included in protobuf, and is loaded asynchronously */
-  objectUrl?: string;
-}
-
-export interface QuotedAttachmentType {
-  contentType: MIME.MIMEType;
-  fileName: string;
-  /** Not included in protobuf */
-  isVoiceMessage: boolean;
-  thumbnail?: QuotedAttachmentThumbnailType;
-}
 
 export const Quote = (props: QuoteProps) => {
   const isSelectionMode = useIsMessageSelectionMode();

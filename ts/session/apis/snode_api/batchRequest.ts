@@ -1,12 +1,10 @@
 import { isArray } from 'lodash';
-import { Snode } from '../../../data/data';
-import { processOnionRequestErrorAtDestination, SnodeResponse } from './onions';
+import type { Snode } from '../../../data/data';
+import type { SnodeResponse } from './onions';
+import { processOnionRequestErrorAtDestination } from './onions';
 import { snodeRpc } from './sessionRpc';
-import {
-  MAX_SUBREQUESTS_COUNT,
-  NotEmptyArrayOfBatchResults,
-  SnodeApiSubRequests,
-} from './SnodeRequestTypes';
+import type { NotEmptyArrayOfBatchResults, SnodeApiSubRequests } from './SnodeRequestTypes';
+import { MAX_SUBREQUESTS_COUNT } from './SnodeRequestTypes';
 
 /**
  * This is the equivalent to the batch send on sogs. The target node runs each sub request and returns a list of all the sub status and bodies.

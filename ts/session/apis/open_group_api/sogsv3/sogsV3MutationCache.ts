@@ -6,7 +6,7 @@
 
 import { filter, findIndex, remove } from 'lodash';
 import { Reactions } from '../../../../util/reactions';
-import { OpenGroupReactionMessageV4 } from '../opengroupV2/OpenGroupServerPoller';
+import type { OpenGroupReactionMessageV4 } from '../opengroupV2/OpenGroupServerPoller';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
 
 export enum ChangeType {

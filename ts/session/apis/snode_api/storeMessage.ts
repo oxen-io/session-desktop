@@ -1,8 +1,8 @@
 import { isEmpty } from 'lodash';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
-import {
+import type {
   DeleteByHashesFromNodeParams,
   DeleteFromNodeSubRequest,
   NotEmptyArrayOfBatchResults,

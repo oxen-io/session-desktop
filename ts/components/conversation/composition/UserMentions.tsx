@@ -1,6 +1,6 @@
 import React from 'react';
-import { SuggestionDataItem } from 'react-mentions';
-import { HTMLDirection } from '../../../util/i18n';
+import type { SuggestionDataItem } from 'react-mentions';
+import type { HTMLDirection } from '../../../util/i18n';
 import { MemberListItem } from '../../MemberListItem';
 
 const listRTLStyle = { position: 'absolute', bottom: '0px', right: '100%' };

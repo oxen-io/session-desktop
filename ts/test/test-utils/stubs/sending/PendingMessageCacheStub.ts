@@ -1,5 +1,5 @@
 import { PendingMessageCache } from '../../../../session/sending';
-import { RawMessage } from '../../../../session/types';
+import type { RawMessage } from '../../../../session/types';
 
 export class PendingMessageCacheStub extends PendingMessageCache {
   public dbData: Array<RawMessage>;

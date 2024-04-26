@@ -1,7 +1,8 @@
 import { SettingsKey } from '../../../../data/settings-key';
-import { SignalService } from '../../../../protobuf';
+import type { SignalService } from '../../../../protobuf';
 import { Storage } from '../../../../util/storage';
-import { VisibleMessage, VisibleMessageParams } from './VisibleMessage';
+import type { VisibleMessageParams } from './VisibleMessage';
+import { VisibleMessage } from './VisibleMessage';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type OpenGroupVisibleMessageParams = Omit<

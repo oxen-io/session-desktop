@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { StateType } from '../../../../state/reducer';
+import type { StateType } from '../../../../state/reducer';
 import { getGenericReadableMessageSelectorProps } from '../../../../state/selectors/conversations';
 import { THUMBNAIL_SIDE } from '../../../../types/attachments/VisualAttachment';
 import { GenericReadableMessage } from './GenericReadableMessage';

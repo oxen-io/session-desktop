@@ -2,17 +2,15 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import useKey from 'react-use/lib/useKey';
-import {
+import type {
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
-} from '../../models/messageType';
-import {
   PropsForCallNotification,
   PropsForExpirationTimer,
   PropsForGroupInvitation,
   PropsForGroupUpdate,
   PropsForInteractionNotification,
-} from '../../state/ducks/conversations';
+} from '../../models/conversationTypes';
 import {
   getOldBottomMessageId,
   getOldTopMessageId,

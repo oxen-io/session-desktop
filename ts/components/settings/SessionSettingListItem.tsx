@@ -1,16 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-  SessionButton,
+import type {
   SessionButtonColor,
   SessionButtonShape,
   SessionButtonType,
 } from '../basic/SessionButton';
+import { SessionButton } from '../basic/SessionButton';
 import { SessionToggle } from '../basic/SessionToggle';
-import { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
+import type { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
 import { SessionIconButton } from '../icon';
-import { Noop } from '../../types/Util';
 
 type ButtonSettingsProps = {
   title?: string;
@@ -113,7 +112,7 @@ export const SessionSettingsItemWrapper = (props: {
   );
 };
 
-export const SessionSettingsTitleWithLink = (props: { title: string; onClick: Noop }) => {
+export const SessionSettingsTitleWithLink = (props: { title: string; onClick: () => void }) => {
   const { onClick, title } = props;
   return (
     <StyledSettingItemClickable onClick={onClick}>

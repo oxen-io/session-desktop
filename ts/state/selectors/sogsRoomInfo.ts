@@ -1,6 +1,6 @@
 import { isEmpty, isNil } from 'lodash';
-import { SogsRoomInfoState } from '../ducks/sogsRoomInfo';
-import { StateType } from '../reducer';
+import type { SogsRoomInfoState } from '../ducks/sogsRoomInfo';
+import type { StateType } from '../reducer';
 
 const getSogsRoomInfoState = (state: StateType): SogsRoomInfoState => state.sogsRoomInfo;
 

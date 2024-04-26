@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useState } from 'react';
-import styled, { CSSProperties } from 'styled-components';
-import { PropsForAttachment } from '../../../../../../state/ducks/conversations';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
+import type { PropsForAttachment } from '../../../../../../models/conversationTypes';
 import { getAlt, getThumbnailUrl, isVideoAttachment } from '../../../../../../types/Attachment';
 import { Flex } from '../../../../../basic/Flex';
 import { SessionIconButton } from '../../../../../icon';

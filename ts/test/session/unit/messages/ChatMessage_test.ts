@@ -4,12 +4,12 @@ import { TextEncoder } from 'util';
 import { toNumber } from 'lodash';
 import { SignalService } from '../../../../protobuf';
 import { Constants } from '../../../../session';
-import {
+import type {
   AttachmentPointerWithUrl,
   PreviewWithAttachmentUrl,
   Quote,
-  VisibleMessage,
 } from '../../../../session/messages/outgoing/visibleMessage/VisibleMessage';
+import { VisibleMessage } from '../../../../session/messages/outgoing/visibleMessage/VisibleMessage';
 
 const sharedNoExpire = {
   expirationType: null,

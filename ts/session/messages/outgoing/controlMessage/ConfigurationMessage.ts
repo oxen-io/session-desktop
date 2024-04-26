@@ -1,8 +1,8 @@
 // this is not a very good name, but a configuration message is a message sent to our other devices so sync our current public and closed groups
 
 import { SignalService } from '../../../../protobuf';
-import { MessageParams } from '../Message';
-import { ECKeyPair } from '../../../../receiver/keypairs';
+import type { MessageParams } from '../Message';
+import type { ECKeyPair } from '../../../../receiver/keypairs';
 import { fromHexToArray } from '../../../utils/String';
 import { PubKey } from '../../../types';
 import { ContentMessage } from '..';

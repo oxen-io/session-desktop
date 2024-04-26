@@ -4,7 +4,7 @@ import ByteBuffer from 'bytebuffer';
 import chaiAsPromised from 'chai-as-promised';
 
 // Can't import type as StringUtils.Encoding
-import { Encoding } from '../../../../session/utils/String';
+import type { Encoding } from '../../../../session/utils/String';
 import { StringUtils } from '../../../../session/utils';
 
 chai.use(chaiAsPromised as any);

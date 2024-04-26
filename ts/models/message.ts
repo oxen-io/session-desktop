@@ -5,6 +5,7 @@ import filesize from 'filesize';
 import {
   cloneDeep,
   debounce,
+  defaultsDeep,
   isEmpty,
   size as lodashSize,
   map,
@@ -12,6 +13,7 @@ import {
   pick,
   uniq,
 } from 'lodash';
+import { v4 } from 'uuid';
 import { SignalService } from '../protobuf';
 import { getMessageQueue } from '../session';
 import { getConversationController } from '../session/conversations';
@@ -24,7 +26,7 @@ import {
   uploadLinkPreviewToFileServer,
   uploadQuoteThumbnailsToFileServer,
 } from '../session/utils';
-import {
+import type {
   DataExtractionNotificationMsg,
   MessageAttributes,
   MessageAttributesOptionals,
@@ -32,41 +34,8 @@ import {
   MessageModelType,
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
-  fillMessageAttributesWithDefaults,
-} from './messageType';
-
-import { Data } from '../data/data';
-import { OpenGroupData } from '../data/opengroups';
-import { SettingsKey } from '../data/settings-key';
-import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
-} from '../interactions/conversationInteractions';
-import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
-import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
-import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
-import { DURATION } from '../session/constants';
-import { DisappearingMessages } from '../session/disappearing_messages';
-import { TimerOptions } from '../session/disappearing_messages/timerOptions';
-import {
-  OpenGroupVisibleMessage,
-  OpenGroupVisibleMessageParams,
-} from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import {
-  VisibleMessage,
-  VisibleMessageParams,
-} from '../session/messages/outgoing/visibleMessage/VisibleMessage';
-import {
-  uploadAttachmentsV3,
-  uploadLinkPreviewsV3,
-  uploadQuoteThumbnailsV3,
-} from '../session/utils/AttachmentsV2';
-import { perfEnd, perfStart } from '../session/utils/Performance';
-import { isUsFromCache } from '../session/utils/User';
-import { buildSyncMessage } from '../session/utils/sync/syncUtils';
-import {
-  FindAndFormatContactType,
   LastMessageStatusType,
+  FindAndFormatContactType,
   MessageModelPropsWithoutConvoProps,
   PropsForAttachment,
   PropsForExpirationTimer,
@@ -80,9 +49,34 @@ import {
   PropsForGroupUpdateName,
   PropsForMessageWithoutConvoProps,
   PropsForQuote,
-  messagesChanged,
-} from '../state/ducks/conversations';
-import { AttachmentTypeWithPath, isVoiceMessage } from '../types/Attachment';
+  AttachmentTypeWithPath,
+  ReactionList,
+} from './conversationTypes';
+import { READ_MESSAGE_STATE } from './constEnums';
+
+import { Data } from '../data/data';
+import { OpenGroupData } from '../data/opengroups';
+import { SettingsKey } from '../data/settings-key';
+import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
+import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
+import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
+import { DURATION } from '../session/constants';
+import { DisappearingMessages } from '../session/disappearing_messages';
+import { TimerOptions } from '../session/disappearing_messages/timerOptions';
+import type { OpenGroupVisibleMessageParams } from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
+import { OpenGroupVisibleMessage } from '../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
+import type { VisibleMessageParams } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
+import { VisibleMessage } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
+import {
+  uploadAttachmentsV3,
+  uploadLinkPreviewsV3,
+  uploadQuoteThumbnailsV3,
+} from '../session/utils/AttachmentsV2';
+import { perfEnd, perfStart } from '../session/utils/Performance';
+import { isUsFromCache } from '../session/utils/User';
+import { buildSyncMessage } from '../session/utils/sync/syncUtils';
+import { messagesChanged } from '../state/ducks/conversations';
+import { isVoiceMessage } from '../types/Attachment';
 import {
   deleteExternalMessageFiles,
   getAbsoluteAttachmentPath,
@@ -90,14 +84,12 @@ import {
   loadPreviewData,
   loadQuoteData,
 } from '../types/MessageAttachment';
-import { ReactionList } from '../types/Reaction';
 import { getAttachmentMetadata } from '../types/message/initializeAttachmentMetadata';
 import { assertUnreachable, roomHasBlindEnabled } from '../types/sqlSharedTypes';
 import { LinkPreviews } from '../util/linkPreviews';
 import { Notifications } from '../util/notifications';
 import { Storage } from '../util/storage';
-import { ConversationModel } from './conversation';
-import { READ_MESSAGE_STATE } from './conversationAttributes';
+import type { ConversationModel } from './conversation';
 // tslint:disable: cyclomatic-complexity
 
 /**
@@ -114,6 +106,30 @@ export function arrayContainsUsOnly(arrayToCheck: Array<string> | undefined) {
 
 export function arrayContainsOneItemOnly(arrayToCheck: Array<string> | undefined) {
   return arrayToCheck && arrayToCheck.length === 1;
+}
+
+/**
+ * This function mutates optAttributes
+ * @param optAttributes the entry object attributes to set the defaults to.
+ */
+function fillMessageAttributesWithDefaults(
+  optAttributes: MessageAttributesOptionals
+): MessageAttributes {
+  const defaulted = defaultsDeep(optAttributes, {
+    expireTimer: 0, // disabled
+    id: v4(),
+    unread: READ_MESSAGE_STATE.read, // if nothing is set, this message is considered read
+  });
+  // this is just to cleanup a bit the db. delivered and delivered_to were removed, so every time we load a message
+  // we make sure to clean those fields in the json.
+  // the next commit() will write that to the disk
+  if (defaulted.delivered) {
+    delete defaulted.delivered;
+  }
+  if (defaulted.delivered_to) {
+    delete defaulted.delivered_to;
+  }
+  return defaulted;
 }
 
 export class MessageModel extends Backbone.Model<MessageAttributes> {
@@ -1365,7 +1381,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       const { interactionType, interactionStatus } = interactionNotification;
 
       // NOTE For now we only show interaction errors in the message history
-      if (interactionStatus === ConversationInteractionStatus.Error) {
+      if (interactionStatus === 'error') {
         const convo = getConversationController().get(this.get('conversationId'));
 
         if (convo) {
@@ -1373,10 +1389,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
           const isCommunity = convo.isPublic();
 
           switch (interactionType) {
-            case ConversationInteractionType.Hide:
+            case 'hide':
               // there is no text for hiding changes
               return '';
-            case ConversationInteractionType.Leave:
+            case 'leave':
               return isCommunity
                 ? window.i18n('leaveCommunityFailed')
                 : isGroup

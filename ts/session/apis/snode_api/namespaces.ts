@@ -1,6 +1,6 @@
 import { last, orderBy } from 'lodash';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
-import { PickEnum } from '../../../types/Enums';
+import type { PickEnum } from '../../../types/Enums';
 
 export enum SnodeNamespaces {
   /**

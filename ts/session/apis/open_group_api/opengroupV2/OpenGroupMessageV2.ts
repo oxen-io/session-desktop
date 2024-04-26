@@ -1,5 +1,5 @@
 import { sign } from 'curve25519-js';
-import { SessionKeyPair } from '../../../../receiver/keypairs';
+import type { SessionKeyPair } from '../../../../receiver/keypairs';
 import { callUtilsWorker } from '../../../../webworker/workers/browser/util_worker_interface';
 import { getSodiumRenderer } from '../../../crypto';
 import { UserUtils } from '../../../utils';

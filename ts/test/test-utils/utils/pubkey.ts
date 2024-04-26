@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import _ from 'lodash';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { ECKeyPair } from '../../../receiver/keypairs';
 import { PubKey } from '../../../session/types';
 

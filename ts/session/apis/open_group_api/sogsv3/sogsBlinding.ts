@@ -2,12 +2,13 @@ import { crypto_hash_sha512, from_hex, to_hex } from 'libsodium-wrappers-sumo';
 import { isEqual } from 'lodash';
 
 import { encode, fromUInt8ArrayToBase64, stringToUint8Array, toHex } from '../../../utils/String';
-import { concatUInt8Array, getSodiumRenderer, LibSodiumWrappers } from '../../../crypto';
+import type { LibSodiumWrappers } from '../../../crypto';
+import { concatUInt8Array, getSodiumRenderer } from '../../../crypto';
 
-import { ByteKeyPair } from '../../../utils/User';
+import type { ByteKeyPair } from '../../../utils/User';
 import { StringUtils } from '../../../utils';
 import { KeyPrefixType, PubKey } from '../../../types';
-import { OpenGroupRequestHeaders } from '../opengroupV2/OpenGroupPollingUtils';
+import type { OpenGroupRequestHeaders } from '../opengroupV2/OpenGroupPollingUtils';
 import {
   combineKeys,
   generateBlindingFactor,

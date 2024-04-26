@@ -1,5 +1,5 @@
-import { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
-import { SnodeNamespaces } from './namespaces';
+import type { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
+import type { SnodeNamespaces } from './namespaces';
 
 export type SwarmForSubRequest = { method: 'get_swarm'; params: { pubkey: string } };
 
@@ -73,6 +73,9 @@ export type GetServiceNodesSubRequest = {
     endpoint: 'get_service_nodes';
     params: {
       active_only: true;
+      // If you are thinking of adding the `limit` field here: don't.
+      // We fetch the full list because when we retrieve it we also remove from all the swarms we already know, any snode not part of that fetched list.
+      // If the limit was set, we would remove a lot of valid snodes from the swarms we've already fetched.
       fields: {
         public_ip: true;
         storage_port: true;

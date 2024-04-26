@@ -5,7 +5,8 @@ import { getConversationController } from '../../../conversations';
 import { DisappearingMessages } from '../../../disappearing_messages';
 import { PubKey } from '../../../types';
 import { UserUtils } from '../../../utils';
-import { ExpirableMessage, ExpirableMessageParams } from '../ExpirableMessage';
+import type { ExpirableMessageParams } from '../ExpirableMessage';
+import { ExpirableMessage } from '../ExpirableMessage';
 
 interface DataExtractionNotificationMessageParams extends ExpirableMessageParams {
   referencedAttachmentTimestamp: number;

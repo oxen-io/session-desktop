@@ -1,5 +1,6 @@
 import { debounce } from 'lodash';
-import React, { Dispatch, useState } from 'react';
+import type { Dispatch } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { clearSearch, search, updateSearchTerm } from '../state/ducks/search';
@@ -7,6 +8,7 @@ import { getConversationsCount } from '../state/selectors/conversations';
 import { getLeftOverlayMode } from '../state/selectors/section';
 import { cleanSearchTerm } from '../util/cleanSearchTerm';
 import { SessionIconButton } from './icon';
+import { UserUtils } from '../session/utils';
 
 const StyledSearchInput = styled.div`
   height: var(--search-input-height);
@@ -48,7 +50,8 @@ const StyledInput = styled.input`
 `;
 
 const doTheSearch = (dispatch: Dispatch<any>, cleanedTerm: string) => {
-  dispatch(search(cleanedTerm));
+  const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+  dispatch(search(cleanedTerm, ourNumber));
 };
 
 const debouncedSearch = debounce(doTheSearch, 50);
@@ -65,12 +68,12 @@ function updateSearch(dispatch: Dispatch<any>, searchTerm: string) {
   if (searchTerm.length < 2) {
     return;
   }
-  // this effectively trigger a search
   const cleanedTerm = cleanSearchTerm(searchTerm);
   if (!cleanedTerm) {
     return;
   }
-
+  
+  // this effectively trigger a search
   debouncedSearch(dispatch, searchTerm);
 }
 export const SessionSearchInput = () => {

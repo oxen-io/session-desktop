@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { SessionConversation } from '../../components/conversation/SessionConversation';
-import { HTMLDirection } from '../../util/i18n';
+import type { HTMLDirection } from '../../util/i18n';
 import { mapDispatchToProps } from '../actions';
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 import { getHasOngoingCallWithFocusedConvo } from '../selectors/call';
 import {
   getIsSelectedConvoInitialLoadingInProgress,

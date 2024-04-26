@@ -1,17 +1,17 @@
 import React from 'react';
 import { PubKey } from '../../../../../session/types';
 
-import {
+import type {
   CallNotificationType,
   PropsForCallNotification,
-} from '../../../../../state/ducks/conversations';
+} from '../../../../../models/conversationTypes';
 import {
   useSelectedConversationKey,
   useSelectedDisplayNameInProfile,
   useSelectedNickname,
 } from '../../../../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../../../../types/LocalizerKeys';
-import { SessionIconType } from '../../../../icon';
+import type { LocalizerKeys } from '../../../../../types/LocalizerKeys';
+import type { SessionIconType } from '../../../../icon';
 import { ExpirableReadableMessage } from '../ExpirableReadableMessage';
 import { NotificationBubble } from './NotificationBubble';
 

@@ -13,7 +13,7 @@ import {
   useSelectedIsNoteToSelf,
   useSelectedNicknameOrProfileNameOrShortenedPubkey,
 } from '../../state/selectors/selectedConversation';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import type { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 
 const Container = styled.div`

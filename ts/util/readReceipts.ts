@@ -1,4 +1,4 @@
-import { MessageCollection } from '../models/message';
+import type { MessageCollection } from '../models/message';
 
 import { Data } from '../data/data';
 import { getConversationController } from '../session/conversations';

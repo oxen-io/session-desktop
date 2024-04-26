@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Sinon from 'sinon';
-import {
-  GetExpiriesFromNodeSubRequest,
-  fakeHash,
-} from '../../../../session/apis/snode_api/SnodeRequestTypes';
-import {
+import type { GetExpiriesFromNodeSubRequest } from '../../../../session/apis/snode_api/SnodeRequestTypes';
+import { fakeHash } from '../../../../session/apis/snode_api/SnodeRequestTypes';
+import type {
   GetExpiriesFromSnodeProps,
   GetExpiriesRequestResponseResults,
+} from '../../../../session/apis/snode_api/getExpiriesRequest';
+import {
   buildGetExpiriesRequest,
   processGetExpiriesRequestResponse,
 } from '../../../../session/apis/snode_api/getExpiriesRequest';
@@ -15,7 +15,8 @@ import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTim
 import { SnodeSignature } from '../../../../session/apis/snode_api/snodeSignatures';
 import { UserUtils } from '../../../../session/utils';
 import { isValidUnixTimestamp } from '../../../../session/utils/Timestamps';
-import { TypedStub, generateFakeSnode, stubWindowLog } from '../../../test-utils/utils';
+import type { TypedStub } from '../../../test-utils/utils';
+import { generateFakeSnode, stubWindowLog } from '../../../test-utils/utils';
 
 chai.use(chaiAsPromised as any);
 

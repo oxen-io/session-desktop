@@ -1,5 +1,5 @@
-import { SignalService } from '../../protobuf';
-import { SnodeNamespaces } from '../apis/snode_api/namespaces';
+import type { SignalService } from '../../protobuf';
+import type { SnodeNamespaces } from '../apis/snode_api/namespaces';
 
 export type RawMessage = {
   identifier: string;

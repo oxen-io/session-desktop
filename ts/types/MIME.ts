@@ -1,4 +1,4 @@
-export type MIMEType = string;
+import type { MIMEType } from '../models/conversationTypes';
 
 export const APPLICATION_OCTET_STREAM = 'application/octet-stream' as MIMEType;
 export const APPLICATION_JSON = 'application/json' as MIMEType;

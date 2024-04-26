@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import { getUnreadConversationRequests } from '../../state/selectors/conversations';
 import { isSearching } from '../../state/selectors/search';
 import { getHideMessageRequestBanner } from '../../state/selectors/userConfig';
-import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
+import type { SessionIconSize, SessionIconType } from '../icon';
+import { SessionIcon } from '../icon';
 import { MessageRequestBannerContextMenu } from '../menu/MessageRequestBannerContextMenu';
 
 const StyledMessageRequestBanner = styled.div`

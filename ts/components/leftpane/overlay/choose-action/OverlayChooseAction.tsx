@@ -6,7 +6,8 @@ import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { resetLeftOverlayMode, setLeftOverlayMode } from '../../../../state/ducks/section';
 
-import { SessionIcon, SessionIconType } from '../../../icon';
+import type { SessionIconType } from '../../../icon';
+import { SessionIcon } from '../../../icon';
 import { ContactsListWithBreaks } from './ContactsListWithBreaks';
 
 const StyledActionRow = styled.button`

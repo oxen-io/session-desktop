@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { parseOpenGroupV2 } from '../../../session/apis/open_group_api/opengroupV2/JoinOpenGroupV2';
 import { sogsV3FetchPreviewBase64 } from '../../../session/apis/open_group_api/sogsv3/sogsV3FetchFile';
 import { updateDefaultBase64RoomData } from '../../../state/ducks/defaultRooms';
-import { StateType } from '../../../state/reducer';
+import type { StateType } from '../../../state/reducer';
 import { Avatar, AvatarSize } from '../../avatar/Avatar';
 import { Flex } from '../../basic/Flex';
 import { PillContainerHoverable, StyledPillContainerHoverable } from '../../basic/PillContainer';

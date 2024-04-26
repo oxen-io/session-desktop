@@ -1,13 +1,13 @@
-import { RawMessage } from '../types/RawMessage';
+import type { RawMessage } from '../types/RawMessage';
 
-import { PubKey } from '../types';
+import type { PubKey } from '../types';
 import { ClosedGroupMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMessage';
 import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
 import { ClosedGroupEncryptionPairReplyMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
-import { ContentMessage } from '../messages/outgoing';
+import type { ContentMessage } from '../messages/outgoing';
 import { ExpirationTimerUpdateMessage } from '../messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
 import { SignalService } from '../../protobuf';
-import { SnodeNamespaces } from '../apis/snode_api/namespaces';
+import type { SnodeNamespaces } from '../apis/snode_api/namespaces';
 
 function getEncryptionTypeFromMessageType(
   message: ContentMessage,

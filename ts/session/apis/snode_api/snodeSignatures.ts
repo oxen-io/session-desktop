@@ -1,7 +1,7 @@
 import { getSodiumRenderer } from '../../crypto';
 import { StringUtils, UserUtils } from '../../utils';
 import { fromHexToArray, fromUInt8ArrayToBase64 } from '../../utils/String';
-import { WithShortenOrExtend } from './SnodeRequestTypes';
+import type { WithShortenOrExtend } from './SnodeRequestTypes';
 import { GetNetworkTime } from './getNetworkTime';
 
 export type SnodeSignatureResult = {

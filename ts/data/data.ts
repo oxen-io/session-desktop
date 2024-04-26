@@ -1,19 +1,22 @@
 // eslint:disable: no-require-imports no-var-requires one-variable-per-declaration no-void-expression function-name
 
 import _, { isEmpty } from 'lodash';
-import { MessageResultProps } from '../components/search/MessageSearchResults';
+import type {
+  MessageResultProps,
+  ConversationAttributes,
+  MessageAttributes,
+  MessageDirection,
+} from '../models/conversationTypes';
 import { ConversationModel } from '../models/conversation';
-import { ConversationAttributes } from '../models/conversationAttributes';
 import { MessageCollection, MessageModel } from '../models/message';
-import { MessageAttributes, MessageDirection } from '../models/messageType';
-import { StorageItem } from '../node/storage_item';
-import { HexKeyPair } from '../receiver/keypairs';
-import { Quote } from '../receiver/types';
+import type { StorageItem } from '../node/storage_item';
+import type { HexKeyPair } from '../receiver/keypairs';
+import type { Quote } from '../receiver/types';
 import { getSodiumRenderer } from '../session/crypto';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { PubKey } from '../session/types';
+import type { PubKey } from '../session/types';
 import { fromArrayBufferToBase64, fromBase64ToArrayBuffer } from '../session/utils/String';
-import {
+import type {
   AsyncWrapper,
   MsgDuplicateSearchOpenGroup,
   SaveConversationReturn,
@@ -107,6 +110,10 @@ async function updateSwarmNodesForPubkey(
   snodeEdKeys: Array<string>
 ): Promise<void> {
   await channels.updateSwarmNodesForPubkey(pubkey, snodeEdKeys);
+}
+
+async function clearOutAllSnodesNotInPool(edKeysOfSnodePool: Array<string>): Promise<void> {
+  await channels.clearOutAllSnodesNotInPool(edKeysOfSnodePool);
 }
 
 // Closed group
@@ -802,6 +809,7 @@ export const Data = {
   generateAttachmentKeyIfEmpty,
   getSwarmNodesForPubkey,
   updateSwarmNodesForPubkey,
+  clearOutAllSnodesNotInPool,
   getAllEncryptionKeyPairsForGroup,
   getLatestClosedGroupEncryptionKeyPair,
   addClosedGroupEncryptionKeyPair,

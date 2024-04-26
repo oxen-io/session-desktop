@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 
 import useInterval from 'react-use/lib/useInterval';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { getTimerBucketIcon } from '../../util/timer';
 
 import { SessionIcon } from '../icon/SessionIcon';

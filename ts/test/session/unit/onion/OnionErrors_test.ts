@@ -1,5 +1,6 @@
 import chai from 'chai';
-import Sinon, * as sinon from 'sinon';
+import type * as sinon from 'sinon';
+import Sinon from 'sinon';
 import { describe } from 'mocha';
 import chaiAsPromised from 'chai-as-promised';
 import AbortController from 'abort-controller';
@@ -13,7 +14,7 @@ import {
   Onions,
   OXEN_SERVER_ERROR,
 } from '../../../../session/apis/snode_api/onions';
-import { Snode } from '../../../../data/data';
+import type { Snode } from '../../../../data/data';
 import { pathFailureCount } from '../../../../session/onions/onionPath';
 import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
 import { generateFakeSnodeWithEdKey, stubData } from '../../../test-utils/utils';

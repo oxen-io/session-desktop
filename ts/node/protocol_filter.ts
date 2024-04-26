@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { Protocol, ProtocolRequest } from 'electron';
+import type { Protocol, ProtocolRequest } from 'electron';
 
 function eliminateAllAfterCharacter(str: string, character: string) {
   const index = str.indexOf(character);

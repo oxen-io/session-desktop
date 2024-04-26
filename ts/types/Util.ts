@@ -1,4 +1,4 @@
-import { LocalizerKeys } from './LocalizerKeys';
+import type { LocalizerKeys } from './LocalizerKeys';
 
 export type RenderTextCallbackType = (options: {
   text: string;
@@ -7,5 +7,3 @@ export type RenderTextCallbackType = (options: {
 }) => JSX.Element;
 
 export type LocalizerType = (key: LocalizerKeys, values?: Array<string>) => string;
-
-export type Noop = () => void;

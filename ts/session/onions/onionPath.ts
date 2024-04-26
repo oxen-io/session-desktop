@@ -5,7 +5,8 @@ import pRetry from 'p-retry';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
 
-import { Data, Snode } from '../../data/data';
+import type { Snode } from '../../data/data';
+import { Data } from '../../data/data';
 import * as SnodePool from '../apis/snode_api/snodePool';
 import { UserUtils } from '../utils';
 import { Onions, snodeHttpsAgent } from '../apis/snode_api/onions';
@@ -14,6 +15,7 @@ import { updateOnionPaths } from '../../state/ducks/onion';
 import { ERROR_CODE_NO_CONNECT } from '../apis/snode_api/SNodeAPI';
 import { OnionPaths } from '.';
 import { APPLICATION_JSON } from '../../types/MIME';
+import { ed25519Str } from '../utils/String';
 
 const desiredGuardCount = 3;
 const minimumGuardCount = 2;
@@ -62,8 +64,6 @@ const pathFailureThreshold = 3;
 // so using GuardNode would not be correct (there is
 // some naming issue here it seems)
 export let guardNodes: Array<Snode> = [];
-
-export const ed25519Str = (ed25519Key: string) => `(...${ed25519Key.substr(58)})`;
 
 export async function buildNewOnionPathsOneAtATime() {
   // this function may be called concurrently make sure we only have one inflight

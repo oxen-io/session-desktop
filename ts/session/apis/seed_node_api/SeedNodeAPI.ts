@@ -11,7 +11,7 @@ import { SeedNodeAPI } from '.';
 import { allowOnlyOneAtATime } from '../../utils/Promise';
 import { APPLICATION_JSON } from '../../../types/MIME';
 import { isLinux } from '../../../OS';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 
 /**
  * Fetch all snodes from seed nodes.
@@ -230,6 +230,9 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
 
   const params = {
     active_only: true,
+    // If you are thinking of adding the `limit` field here: don't.
+    // We fetch the full list because when we retrieve it we also remove from all the swarms we already know, any snode not part of that fetched list.
+    // If the limit was set, we would remove a lot of valid snodes from the swarms we've already fetched.
     fields: {
       public_ip: true,
       storage_port: true,

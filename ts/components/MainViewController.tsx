@@ -1,5 +1,5 @@
 import React from 'react';
-import { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
 
 export const MessageView = () => {
   const noDragStyle = { '-webkit-user-drag': 'none' } as CSSProperties;

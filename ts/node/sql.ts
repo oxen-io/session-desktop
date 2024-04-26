@@ -1,4 +1,4 @@
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { app, clipboard, dialog, Notification } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -12,6 +12,7 @@ import {
   differenceBy,
   forEach,
   fromPairs,
+  intersection,
   isArray,
   isEmpty,
   isNumber,
@@ -23,8 +24,8 @@ import {
   uniq,
 } from 'lodash';
 
-import { ConversationAttributes } from '../models/conversationAttributes';
-import { PubKey } from '../session/types/PubKey'; // checked - only node
+import type { ConversationAttributes, MessageAttributes } from '../models/conversationTypes';
+import type { PubKey } from '../session/types/PubKey'; // checked - only node
 import { redactAll } from '../util/privacy'; // checked - only node
 import {
   arrayStrToJson,
@@ -46,24 +47,22 @@ import {
   OPEN_GROUP_ROOMS_V2_TABLE,
   toSqliteBoolean,
 } from './database_utility';
-import { LocaleMessagesType } from './locale'; // checked - only node
-import { StorageItem } from './storage_item'; // checked - only node
+import type { LocaleMessagesType } from './locale'; // checked - only node
+import type { StorageItem } from './storage_item'; // checked - only node
 
-import { OpenGroupV2Room } from '../data/opengroups';
-import {
-  CONFIG_DUMP_TABLE,
+import type { OpenGroupV2Room } from '../data/opengroups';
+import type {
   MsgDuplicateSearchOpenGroup,
-  roomHasBlindEnabled,
   SaveConversationReturn,
   UnprocessedDataNode,
   UnprocessedParameter,
   UpdateLastHashType,
 } from '../types/sqlSharedTypes';
+import { CONFIG_DUMP_TABLE, roomHasBlindEnabled } from '../types/sqlSharedTypes';
 
 import { KNOWN_BLINDED_KEYS_ITEM, SettingsKey } from '../data/settings-key';
-import { MessageAttributes } from '../models/messageType';
 import { SignalService } from '../protobuf';
-import { Quote } from '../receiver/types';
+import type { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';
 import {
   getSQLCipherIntegrityCheck,
@@ -78,6 +77,7 @@ import {
   initDbInstanceWith,
   isInstanceInitialized,
 } from './sqlInstance';
+import { ed25519Str } from '../session/utils/String';
 
 // eslint:disable: function-name non-literal-fs-path
 
@@ -396,6 +396,32 @@ function updateSwarmNodesForPubkey(pubkey: string, snodeEdKeys: Array<string>) {
       pubkey,
       json: objectToJSON(snodeEdKeys),
     });
+}
+
+function clearOutAllSnodesNotInPool(edKeysOfSnodePool: Array<string>) {
+  const allSwarms = assertGlobalInstance()
+    .prepare(`SELECT * FROM ${NODES_FOR_PUBKEY_TABLE};`)
+    .all();
+
+  allSwarms.forEach(swarm => {
+    try {
+      const json = JSON.parse(swarm.json);
+      if (isArray(json)) {
+        const intersect = intersection(json, edKeysOfSnodePool);
+        if (intersect.length !== json.length) {
+          updateSwarmNodesForPubkey(swarm.pubkey, intersect);
+          console.info(
+            `clearOutAllSnodesNotInPool: updating swarm of ${ed25519Str(swarm.pubkey)} to `,
+            intersect
+          );
+        }
+      }
+    } catch (e) {
+      console.warn(
+        `Failed to parse swarm while iterating in clearOutAllSnodesNotInPool for pk: ${ed25519Str(swarm?.pubkey)}`
+      );
+    }
+  });
 }
 
 function getConversationCount() {
@@ -2449,6 +2475,7 @@ export const sqlNode = {
 
   getSwarmNodesForPubkey,
   updateSwarmNodesForPubkey,
+  clearOutAllSnodesNotInPool,
   getGuardNodes,
   updateGuardNodes,
 

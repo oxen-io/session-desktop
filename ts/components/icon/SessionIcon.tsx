@@ -1,7 +1,8 @@
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-import { icons, SessionIconSize, SessionIconType } from '.';
+import type { SessionIconSize, SessionIconType } from '.';
+import { icons } from '.';
 
 export type SessionIconProps = {
   iconType: SessionIconType;

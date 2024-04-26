@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { HTMLDirection } from '../../util/i18n';
+import type { HTMLDirection } from '../../util/i18n';
 
 export interface FlexProps {
   children?: any;

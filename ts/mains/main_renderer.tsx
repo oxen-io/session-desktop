@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom';
 
 import nativeEmojiData from '@emoji-mart/data';
 import { ipcRenderer } from 'electron';
-// eslint-disable-next-line import/no-named-default
-import { default as React } from 'react';
+import React from 'react';
 
 import { isMacOS } from '../OS';
 import { SessionInboxView } from '../components/SessionInboxView';
@@ -13,7 +12,7 @@ import { SessionRegistrationView } from '../components/registration/SessionRegis
 import { Data } from '../data/data';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
-import { MessageModel } from '../models/message';
+import type { MessageModel } from '../models/message';
 import { deleteAllLogs } from '../node/logs';
 import { queueAllCached } from '../receiver/receiver';
 import { loadKnownBlindedKeys } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';

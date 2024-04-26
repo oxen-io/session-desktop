@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
+import type { DraggableData, DraggableEvent } from 'react-draggable';
+import Draggable from 'react-draggable';
 
 import styled from 'styled-components';
 import { getHasOngoingCall, getHasOngoingCallWith } from '../../state/selectors/call';

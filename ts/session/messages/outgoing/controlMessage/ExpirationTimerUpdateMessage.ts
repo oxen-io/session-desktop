@@ -3,7 +3,7 @@ import { TTL_DEFAULT } from '../../../constants';
 import { PubKey } from '../../../types';
 import { StringUtils } from '../../../utils';
 import { DataMessage } from '../DataMessage';
-import { ExpirableMessageParams } from '../ExpirableMessage';
+import type { ExpirableMessageParams } from '../ExpirableMessage';
 
 interface ExpirationTimerUpdateMessageParams extends ExpirableMessageParams {
   groupId?: string | PubKey;

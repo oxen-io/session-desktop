@@ -1,6 +1,6 @@
 import { hexColorToRGB } from '../util/hexColorToRGB';
 import { COLORS, THEMES } from './constants/colors';
-import { ThemeColorVariables } from './variableColors';
+import type { ThemeColorVariables } from './variableColors';
 
 export const oceanLight: ThemeColorVariables = {
   '--danger-color': THEMES.OCEAN_LIGHT.DANGER,

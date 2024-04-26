@@ -2,7 +2,7 @@
 //   https://electronjs.org/docs/api/session#sessetpermissionrequesthandlerhandler
 import { session } from 'electron';
 
-import { UserConfig } from './config/user_config';
+import type { UserConfig } from './config/user_config';
 
 const PERMISSIONS: Record<string, boolean> = {
   // Allowed

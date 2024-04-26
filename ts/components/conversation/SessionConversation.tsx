@@ -6,11 +6,14 @@ import { blobToArrayBuffer } from 'blob-util';
 import loadImage from 'blueimp-load-image';
 import classNames from 'classnames';
 import styled from 'styled-components';
-import {
-  CompositionBox,
+import type {
   SendMessageType,
   StagedAttachmentType,
-} from './composition/CompositionBox';
+  SortedMessageModelProps,
+  ReduxConversationType,
+  LightBoxOptions,
+} from '../../models/conversationTypes';
+import { CompositionBox } from './composition/CompositionBox';
 
 import { perfEnd, perfStart } from '../../session/utils/Performance';
 
@@ -24,8 +27,6 @@ import { MAX_ATTACHMENT_FILESIZE_BYTES } from '../../session/constants';
 import { getConversationController } from '../../session/conversations';
 import { ToastUtils } from '../../session/utils';
 import {
-  ReduxConversationType,
-  SortedMessageModelProps,
   openConversationToSpecificMessage,
   quoteMessage,
   resetSelectedMessageIds,
@@ -35,7 +36,6 @@ import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { addStagedAttachmentsInConversation } from '../../state/ducks/stagedAttachments';
 import { SessionTheme } from '../../themes/SessionTheme';
 import { MIME } from '../../types';
-import { AttachmentTypeWithPath } from '../../types/Attachment';
 import {
   THUMBNAIL_CONTENT_TYPE,
   getAudioDuration,
@@ -49,12 +49,12 @@ import { MessageView } from '../MainViewController';
 import { SplitViewContainer } from '../SplitViewContainer';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { InConversationCallContainer } from '../calling/InConversationCallContainer';
-import { LightboxGallery, MediaItemType } from '../lightbox/LightboxGallery';
+import { LightboxGallery } from '../lightbox/LightboxGallery';
 import { NoMessageInConversation } from './SubtleNotification';
 import { ConversationHeaderWithDetails } from './header/ConversationHeader';
 
 import { isAudio } from '../../types/MIME';
-import { HTMLDirection } from '../../util/i18n';
+import type { HTMLDirection } from '../../util/i18n';
 import { NoticeBanner } from '../NoticeBanner';
 import { SessionSpinner } from '../basic/SessionSpinner';
 import { RightPanel, StyledRightPanelContainer } from './right-panel/RightPanel';
@@ -63,11 +63,6 @@ const DEFAULT_JPEG_QUALITY = 0.85;
 interface State {
   isDraggingFile: boolean;
 }
-export interface LightBoxOptions {
-  media: Array<MediaItemType>;
-  attachment: AttachmentTypeWithPath;
-}
-
 interface Props {
   ourDisplayNameInProfile: string;
   ourNumber: string;

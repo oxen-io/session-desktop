@@ -1,4 +1,4 @@
-import { ThemeStateType } from '../../themes/constants/colors';
+import type { ThemeStateType } from '../../themes/constants/colors';
 
 export const APPLY_THEME = 'APPLY_THEME';
 

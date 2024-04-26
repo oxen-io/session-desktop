@@ -1,5 +1,5 @@
 import { SignalService } from '../../../../../protobuf';
-import { MessageParams } from '../../Message';
+import type { MessageParams } from '../../Message';
 import { ContentMessage } from '../..';
 
 interface ReceiptMessageParams extends MessageParams {

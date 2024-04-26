@@ -8,18 +8,18 @@ import autoBind from 'auto-bind';
 import styled from 'styled-components';
 import {
   quotedMessageToAnimate,
-  ReduxConversationType,
   resetOldBottomMessageId,
   resetOldTopMessageId,
-  SortedMessageModelProps,
 } from '../../state/ducks/conversations';
+import type {
+  SortedMessageModelProps,
+  ReduxConversationType,
+} from '../../models/conversationTypes';
 import { SessionScrollButton } from '../SessionScrollButton';
 
-import {
-  ScrollToLoadedMessageContext,
-  ScrollToLoadedReasons,
-} from '../../contexts/ScrollToLoadedMessage';
-import { StateType } from '../../state/reducer';
+import type { ScrollToLoadedReasons } from '../../contexts/ScrollToLoadedMessage';
+import { ScrollToLoadedMessageContext } from '../../contexts/ScrollToLoadedMessage';
+import type { StateType } from '../../state/reducer';
 import {
   getQuotedMessageToAnimate,
   getSelectedConversation,

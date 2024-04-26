@@ -1,4 +1,4 @@
-import { SnodeNamespaces } from './namespaces';
+import type { SnodeNamespaces } from './namespaces';
 
 export type RetrieveMessageItem = {
   hash: string;

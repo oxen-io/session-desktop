@@ -3,12 +3,19 @@ import { messagesExpired } from '../../state/ducks/conversations';
 import { initWallClockListener } from '../../util/wallClockListener';
 
 import { Data } from '../../data/data';
-import { ConversationModel } from '../../models/conversation';
-import { READ_MESSAGE_STATE } from '../../models/conversationAttributes';
-import { MessageModel } from '../../models/message';
+import type { ConversationModel } from '../../models/conversation';
+import type {
+  DisappearingMessageConversationModeType,
+  DisappearingMessageUpdate,
+  ReadyToDisappearMsgUpdate,
+  DisappearingMessageType,
+} from '../../models/conversationTypes';
+import { READ_MESSAGE_STATE } from '../../models/constEnums';
+import type { MessageModel } from '../../models/message';
 import { SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
-import { ExpiringDetails, expireMessagesOnSnode } from '../apis/snode_api/expireRequest';
+import type { ExpiringDetails } from '../apis/snode_api/expireRequest';
+import { expireMessagesOnSnode } from '../apis/snode_api/expireRequest';
 import { GetNetworkTime } from '../apis/snode_api/getNetworkTime';
 import { getConversationController } from '../conversations';
 import { isValidUnixTimestamp } from '../utils/Timestamps';
@@ -17,13 +24,7 @@ import {
   checkIsLegacyDisappearingDataMessage,
   couldBeLegacyDisappearingMessageContent,
 } from './legacy';
-import {
-  DisappearingMessageConversationModeType,
-  DisappearingMessageMode,
-  DisappearingMessageType,
-  DisappearingMessageUpdate,
-  ReadyToDisappearMsgUpdate,
-} from './types';
+import { incomingExpirationTypeToDisappearingMessageType } from './types';
 
 async function destroyMessagesAndUpdateRedux(
   messages: Array<{
@@ -375,7 +376,7 @@ async function checkForExpireUpdateInContentMessage(
   // NOTE we don't use the expirationType directly from the Content Message because we need to resolve it to the correct convo type first in case it is legacy or has errors
   const expirationMode = changeToDisappearingConversationMode(
     convoToUpdate,
-    DisappearingMessageMode[content.expirationType],
+    incomingExpirationTypeToDisappearingMessageType(content.expirationType),
     expirationTimer
   );
 
