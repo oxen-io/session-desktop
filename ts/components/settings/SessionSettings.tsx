@@ -18,7 +18,7 @@ import { CategoryConversations } from './section/CategoryConversations';
 import { SettingsCategoryHelp } from './section/CategoryHelp';
 import { SettingsCategoryPermissions } from './section/CategoryPermissions';
 import { SettingsCategoryPrivacy } from './section/CategoryPrivacy';
-import type { SessionSettingCategory, PasswordAction } from '../../types/ReduxTypes';
+import type { SessionSettingCategory, PasswordAction } from '../../models/conversationTypes';
 
 export function displayPasswordModal(
   passwordAction: PasswordAction,

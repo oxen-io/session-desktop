@@ -1,20 +1,20 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import type { CallStateType } from './ducks/call';
+import type { CallStateType } from './ducks/call'; // ok
 import { callReducer as call } from './ducks/call'; // ok: importing only RingingManager.ts which is not importing anything else
-import type { ConversationsStateType } from './ducks/conversations';
+import type { ConversationsStateType } from './ducks/conversations'; // ok
 import { reducer as conversations } from './ducks/conversations'; // todo
-import type { DefaultRoomsState } from './ducks/defaultRooms';
+import type { DefaultRoomsState } from './ducks/defaultRooms'; // ok: only importing d.ts
 import { defaultRoomReducer as defaultRooms } from './ducks/defaultRooms'; // todo
 import { reducer as primaryColor } from './ducks/primaryColor'; // ok: importing only Constants.tsx which is not importing anything else
-import type { SearchStateType } from './ducks/search';
+import type { SearchStateType } from './ducks/search'; // ok
 import { reducer as search } from './ducks/search'; // todo
-import type { SectionStateType } from './ducks/section';
+import type { SectionStateType } from './ducks/section'; // ok
 import { reducer as section } from './ducks/section'; // ok: importing only SessionSettingsCategory which is not importing anything else
-import type { SogsRoomInfoState } from './ducks/sogsRoomInfo';
+import type { SogsRoomInfoState } from './ducks/sogsRoomInfo'; // ok
 import { ReduxSogsRoomInfos } from './ducks/sogsRoomInfo'; // ok: importing nothing else
 import { reducer as theme } from './ducks/theme'; // ok: importing only Constants.tsx which is not importing anything else
-import type { UserStateType } from './ducks/user';
+import type { UserStateType } from './ducks/user'; // ok
 import { reducer as user } from './ducks/user'; // ok: not importing anything else
 
 import type { PrimaryColorStateType, ThemeStateType } from '../themes/constants/colors'; // ok: not importing anything else

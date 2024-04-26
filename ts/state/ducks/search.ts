@@ -2,10 +2,13 @@
 import _, { isNaN } from 'lodash';
 
 import { Data } from '../../data/data';
-import type { AdvancedSearchOptions, SearchOptions } from '../../types/Search'; // ok: .d.ts
+import type {
+  AdvancedSearchOptions,
+  SearchOptions,
+  ReduxConversationType,
+  MessageResultProps,
+} from '../../models/conversationTypes';
 import { cleanSearchTerm } from '../../util/cleanSearchTerm'; // ok: not importing anything else
-
-import type { ReduxConversationType, MessageResultProps } from '../../models/conversationTypes';
 
 // State
 

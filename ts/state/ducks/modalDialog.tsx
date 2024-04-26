@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import type { SessionConfirmDialogProps } from '../../components/dialog/SessionConfirm';
-import type { EditProfilePictureModalProps, PasswordAction } from '../../types/ReduxTypes';
+import type { EditProfilePictureModalProps, PasswordAction } from '../../models/conversationTypes';
 
 export type BanType = 'ban' | 'unban';
 

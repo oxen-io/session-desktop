@@ -790,3 +790,33 @@ export type OpenGroupV2InfoJoinable = OpenGroupV2Info & {
   completeUrl: string;
   base64Data?: string;
 };
+export type SessionSettingCategory =
+  | 'privacy'
+  | 'notifications'
+  | 'conversations'
+  | 'messageRequests'
+  | 'appearance'
+  | 'permissions'
+  | 'help'
+  | 'recoveryPhrase'
+  | 'ClearData';
+
+export type PasswordAction = 'set' | 'change' | 'remove' | 'enter';
+
+export type EditProfilePictureModalProps = {
+  avatarPath: string | null;
+  profileName: string | undefined;
+  ourId: string;
+};
+export type SearchOptions = {
+  ourNumber: string;
+  noteToSelf: string;
+  savedMessages: string;
+};
+
+export type AdvancedSearchOptions = {
+  query: string;
+  from?: string;
+  before: number;
+  after: number;
+};

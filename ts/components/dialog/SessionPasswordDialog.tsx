@@ -11,7 +11,7 @@ import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/S
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
-import type { PasswordAction } from '../../types/ReduxTypes';
+import type { PasswordAction } from '../../models/conversationTypes';
 
 interface Props {
   passwordAction: PasswordAction;

@@ -11,7 +11,7 @@ import { SessionSpinner } from '../basic/SessionSpinner';
 import { SpacerLG } from '../basic/Text';
 import { SessionIconButton } from '../icon';
 import { ProfileAvatar } from './EditProfileDialog';
-import type { EditProfilePictureModalProps } from '../../types/ReduxTypes';
+import type { EditProfilePictureModalProps } from '../../models/conversationTypes';
 
 const StyledAvatarContainer = styled.div`
   cursor: pointer;
