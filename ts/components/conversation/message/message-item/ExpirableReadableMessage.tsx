@@ -5,7 +5,10 @@ import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
-import type { MessageModelType, PropsForExpiringMessage } from '../../../../models/conversationTypes';
+import type {
+  MessageModelType,
+  PropsForExpiringMessage,
+} from '../../../../models/conversationTypes';
 import { getConversationController } from '../../../../session/conversations';
 import { messagesExpired } from '../../../../state/ducks/conversations';
 import { getIncrement } from '../../../../util/timer';

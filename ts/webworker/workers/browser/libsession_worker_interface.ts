@@ -13,7 +13,10 @@ import { join } from 'path';
 
 import { getAppRootPath } from '../../../node/getRootPath';
 import { WorkerInterface } from '../../worker_interface';
-import type { ConfigWrapperObjectTypes, LibSessionWorkerFunctions } from './libsession_worker_functions';
+import type {
+  ConfigWrapperObjectTypes,
+  LibSessionWorkerFunctions,
+} from './libsession_worker_functions';
 
 let libsessionWorkerInterface: WorkerInterface | undefined;
 

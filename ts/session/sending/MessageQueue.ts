@@ -20,7 +20,7 @@ import type { ClosedGroupVisibleMessage } from '../messages/outgoing/visibleMess
 import type { SyncMessageType } from '../utils/sync/syncUtils';
 import { MessageSentHandler } from './MessageSentHandler';
 
-import type { OpenGroupRequestCommonType } from '../apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../models/conversationTypes';
 import type { OpenGroupMessageV2 } from '../apis/open_group_api/opengroupV2/OpenGroupMessageV2';
 import { sendSogsReactionOnionV4 } from '../apis/open_group_api/sogsv3/sogsV3SendReaction';
 import type {

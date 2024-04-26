@@ -9,36 +9,23 @@ import { getConversationController } from '../../../conversations';
 import { allowOnlyOneAtATime } from '../../../utils/Promise';
 import { getAllRoomInfos } from '../sogsv3/sogsV3RoomInfos';
 import { parseOpenGroupV2 } from './JoinOpenGroupV2';
+import type { OpenGroupV2InfoJoinable } from '../../../../models/conversationTypes';
 
-export type OpenGroupRequestCommonType = {
-  serverUrl: string;
-  roomId: string;
-};
+const ourSogsLegacyIp = '116.203.70.33';
+const ourSogsDomainName = 'open.getsession.org';
+const ourSogsUrl = `https://${ourSogsDomainName}`;
 
-export type OpenGroupCapabilityRequest = {
-  server: string;
-  endpoint: string;
-  serverPubKey: string;
-  headers: Record<string, string | number>;
-  method: string;
-  useV4: boolean;
-};
-
-export type OpenGroupV2Info = {
-  id: string;
-  name: string;
-  imageId?: string;
-  capabilities?: Array<string>;
-};
-
-export type OpenGroupV2InfoJoinable = OpenGroupV2Info & {
-  completeUrl: string;
-  base64Data?: string;
-};
-
-export const ourSogsLegacyIp = '116.203.70.33';
-export const ourSogsDomainName = 'open.getsession.org';
-export const ourSogsUrl = `https://${ourSogsDomainName}`;
+/**
+ * Return our server url *with* https if the url looks like our server's url.
+ * This is to take care of people adding our server via the http prefix rather than https.
+ * If the serverUrl doesn't match our serverUrl, return the argument without change.
+ */
+export function getOverridenUrlIfOurServer(serverUrl: string) {
+  return (serverUrl.includes(`://${ourSogsDomainName}`) && !serverUrl.startsWith('https')) ||
+    serverUrl.includes(`://${ourSogsLegacyIp}`)
+    ? ourSogsUrl
+    : serverUrl;
+}
 
 /**
  * This function returns true if the server url given matches any of the sogs run by Session.

@@ -32,11 +32,11 @@ import type {
   ConversationAttributes,
   DisappearingMessageConversationModeType,
   Reaction,
+  OpenGroupRequestCommonType,
 } from './conversationTypes';
 import { CONVERSATION_PRIORITIES, READ_MESSAGE_STATE } from './constEnums';
 
 import { Data } from '../data/data';
-import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { getOpenGroupV2FromConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ExpirationTimerUpdateMessage } from '../session/messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';

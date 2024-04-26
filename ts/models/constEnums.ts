@@ -32,6 +32,6 @@ export const enum CONVERSATION_PRIORITIES {
 }
 
 export const enum READ_MESSAGE_STATE {
-  read = 1,
-  unread = 0,
+  read = 0,
+  unread = 1,
 }

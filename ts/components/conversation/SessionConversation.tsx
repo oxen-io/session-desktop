@@ -6,12 +6,8 @@ import { blobToArrayBuffer } from 'blob-util';
 import loadImage from 'blueimp-load-image';
 import classNames from 'classnames';
 import styled from 'styled-components';
-import type {
-  SendMessageType,
-  StagedAttachmentType} from './composition/CompositionBox';
-import {
-  CompositionBox,
-} from './composition/CompositionBox';
+import type { SendMessageType, StagedAttachmentType } from './composition/CompositionBox';
+import { CompositionBox } from './composition/CompositionBox';
 
 import { perfEnd, perfStart } from '../../session/utils/Performance';
 

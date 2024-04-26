@@ -13,8 +13,8 @@ import {
   getAllValidOpenGroupV2ConversationRoomInfos,
   getOpenGroupV2ConversationId,
 } from '../utils/OpenGroupUtils';
-import type { OpenGroupRequestCommonType } from './ApiUtil';
-import { ourSogsDomainName, ourSogsLegacyIp, ourSogsUrl } from './ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../../../models/conversationTypes';
+import { getOverridenUrlIfOurServer } from './ApiUtil';
 import { OpenGroupServerPoller } from './OpenGroupServerPoller';
 
 import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
@@ -58,11 +58,7 @@ export class OpenGroupManagerV2 {
     publicKey: string
   ): Promise<ConversationModel | undefined> {
     // make sure to use the https version of our official sogs
-    const overridenUrl =
-      (serverUrl.includes(`://${ourSogsDomainName}`) && !serverUrl.startsWith('https')) ||
-      serverUrl.includes(`://${ourSogsLegacyIp}`)
-        ? ourSogsUrl
-        : serverUrl;
+    const overridenUrl = getOverridenUrlIfOurServer(serverUrl);
 
     const oneAtaTimeStr = `oneAtaTimeOpenGroupV2Join:${overridenUrl}${roomId}`;
     return allowOnlyOneAtATime(oneAtaTimeStr, async () => {

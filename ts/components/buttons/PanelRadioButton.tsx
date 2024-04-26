@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { SessionRadio } from '../basic/SessionRadio';
-import type { PanelButtonProps} from './PanelButton';
+import type { PanelButtonProps } from './PanelButton';
 import { PanelButton, PanelButtonText, StyledContent } from './PanelButton';
 
 const StyledPanelButton = styled(PanelButton)`

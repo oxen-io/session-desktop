@@ -765,3 +765,28 @@ export type ReadyToDisappearMsgUpdate = Pick<
   'expirationType' | 'expirationTimer' | 'messageExpirationFromRetrieve'
 >;
 export type MIMEType = string;
+export type OpenGroupRequestCommonType = {
+  serverUrl: string;
+  roomId: string;
+};
+
+export type OpenGroupCapabilityRequest = {
+  server: string;
+  endpoint: string;
+  serverPubKey: string;
+  headers: Record<string, string | number>;
+  method: string;
+  useV4: boolean;
+};
+
+export type OpenGroupV2Info = {
+  id: string;
+  name: string;
+  imageId?: string;
+  capabilities?: Array<string>;
+};
+
+export type OpenGroupV2InfoJoinable = OpenGroupV2Info & {
+  completeUrl: string;
+  base64Data?: string;
+};

@@ -9,13 +9,8 @@ import { decryptProfile } from '../../../../util/crypto/profileEncrypter';
 import { getConversationController } from '../../../conversations';
 import { fromHexToArray } from '../../String';
 import { runners } from '../JobRunner';
-import type {
-  AddJobCheckReturn,
-  AvatarDownloadPersistedData} from '../PersistedJob';
-import {
-  PersistedJob,
-  RunJobResult,
-} from '../PersistedJob';
+import type { AddJobCheckReturn, AvatarDownloadPersistedData } from '../PersistedJob';
+import { PersistedJob, RunJobResult } from '../PersistedJob';
 
 const defaultMsBetweenRetries = 10000;
 const defaultMaxAttemps = 3;

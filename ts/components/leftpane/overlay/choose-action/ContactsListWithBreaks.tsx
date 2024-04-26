@@ -5,8 +5,7 @@ import type { Index, ListRowProps } from 'react-virtualized';
 import { AutoSizer, List } from 'react-virtualized';
 import type { CSSProperties } from 'styled-components';
 import styled from 'styled-components';
-import type {
-  DirectContactsByNameType} from '../../../../state/selectors/conversations';
+import type { DirectContactsByNameType } from '../../../../state/selectors/conversations';
 import {
   getDirectContactsByName,
   getDirectContactsCount,

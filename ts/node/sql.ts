@@ -56,11 +56,9 @@ import type {
   SaveConversationReturn,
   UnprocessedDataNode,
   UnprocessedParameter,
-  UpdateLastHashType} from '../types/sqlSharedTypes';
-import {
-  CONFIG_DUMP_TABLE,
-  roomHasBlindEnabled,
+  UpdateLastHashType,
 } from '../types/sqlSharedTypes';
+import { CONFIG_DUMP_TABLE, roomHasBlindEnabled } from '../types/sqlSharedTypes';
 
 import { KNOWN_BLINDED_KEYS_ITEM, SettingsKey } from '../data/settings-key';
 import { SignalService } from '../protobuf';

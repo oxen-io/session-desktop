@@ -3,8 +3,7 @@ import type { CommunityInfo, LegacyGroupInfo, UserGroupsType } from 'libsession_
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
 import type { ConversationModel } from '../../../models/conversation';
-import type {
-  CommunityInfoFromDBValues} from '../../../types/sqlSharedTypes';
+import type { CommunityInfoFromDBValues } from '../../../types/sqlSharedTypes';
 import {
   assertUnreachable,
   getCommunityInfoFromDBValues,

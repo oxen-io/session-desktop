@@ -1,7 +1,7 @@
 import { isFinite } from 'lodash';
 import type { Attachment } from '../../types/Attachment';
 
-import type { OpenGroupRequestCommonType } from '../apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../models/conversationTypes';
 import { uploadFileToRoomSogs3 } from '../apis/open_group_api/sogsv3/sogsV3SendFile';
 import { addAttachmentPadding } from '../crypto/BufferPadding';
 import type {

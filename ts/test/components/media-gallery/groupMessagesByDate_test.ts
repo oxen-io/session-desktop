@@ -2,11 +2,8 @@ import { assert } from 'chai';
 import { shuffle } from 'lodash';
 
 import { IMAGE_JPEG } from '../../../types/MIME';
-import type {
-  Section} from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
-import {
-  groupMediaItemsByDate,
-} from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
+import type { Section } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
+import { groupMediaItemsByDate } from '../../../components/conversation/media-gallery/groupMediaItemsByDate';
 import { TestUtils } from '../../test-utils';
 import type { MediaItemType } from '../../../components/lightbox/LightboxGallery';
 

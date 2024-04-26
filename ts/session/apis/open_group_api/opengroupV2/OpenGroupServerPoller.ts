@@ -5,14 +5,15 @@ import { isNumber, isObject } from 'lodash';
 import autoBind from 'auto-bind';
 
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
-import type { OpenGroupRequestCommonType } from './ApiUtil';
+import type {
+  OpenGroupRequestCommonType,
+  OpenGroupReaction,
+} from '../../../../models/conversationTypes';
 
 import { OpenGroupData } from '../../../../data/opengroups';
 import type { OpenGroupMessageV2 } from './OpenGroupMessageV2';
 import { DURATION } from '../../../constants';
-import type {
-  OpenGroupBatchRow,
-  SubRequestMessagesObjectType} from '../sogsv3/sogsV3BatchPoll';
+import type { OpenGroupBatchRow, SubRequestMessagesObjectType } from '../sogsv3/sogsV3BatchPoll';
 import {
   batchGlobalIsSuccess,
   parseBatchGlobalStatusCode,
@@ -20,7 +21,6 @@ import {
 } from '../sogsv3/sogsV3BatchPoll';
 import { handleBatchPollResults } from '../sogsv3/sogsApiV3';
 import { fetchCapabilitiesAndUpdateRelatedRoomsOfServerUrl } from '../sogsv3/sogsV3Capabilities';
-import type { OpenGroupReaction } from '../../../../models/conversationTypes';
 import {
   markConversationInitialLoadingInProgress,
   openConversationWithMessages,

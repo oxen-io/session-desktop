@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import type { LeftOverlayMode, SectionStateType} from '../ducks/section';
+import type { LeftOverlayMode, SectionStateType } from '../ducks/section';
 import { SectionType } from '../ducks/section';
 import type { StateType } from '../reducer';
 import type { SessionSettingCategory } from '../../types/ReduxTypes';

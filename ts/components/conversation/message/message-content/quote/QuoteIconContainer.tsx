@@ -2,7 +2,10 @@ import React from 'react';
 import { isEmpty, noop } from 'lodash';
 import styled from 'styled-components';
 
-import type { QuotedAttachmentThumbnailType, QuoteProps } from '../../../../../models/conversationTypes';
+import type {
+  QuotedAttachmentThumbnailType,
+  QuoteProps,
+} from '../../../../../models/conversationTypes';
 import { GoogleChrome } from '../../../../../util';
 import { MIME } from '../../../../../types';
 

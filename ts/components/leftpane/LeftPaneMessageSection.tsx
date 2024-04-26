@@ -8,7 +8,7 @@ import { SearchResults } from '../search/SearchResults';
 import { LeftPaneSectionHeader } from './LeftPaneSectionHeader';
 import { MessageRequestsBanner } from './MessageRequestsBanner';
 
-import type { LeftOverlayMode} from '../../state/ducks/section';
+import type { LeftOverlayMode } from '../../state/ducks/section';
 import { setLeftOverlayMode } from '../../state/ducks/section';
 import { getLeftOverlayMode } from '../../state/selectors/section';
 import { assertUnreachable } from '../../types/sqlSharedTypes';

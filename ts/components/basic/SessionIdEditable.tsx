@@ -1,4 +1,4 @@
-import type { ChangeEvent, KeyboardEvent} from 'react';
+import type { ChangeEvent, KeyboardEvent } from 'react';
 import React, { useRef } from 'react';
 import classNames from 'classnames';
 import { useFocusMount } from '../../hooks/useFocusMount';

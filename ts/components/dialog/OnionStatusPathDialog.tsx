@@ -6,7 +6,7 @@ import useHover from 'react-use/lib/useHover';
 import styled from 'styled-components';
 
 import { isEmpty, isTypedArray } from 'lodash';
-import type { CityResponse} from 'maxmind';
+import type { CityResponse } from 'maxmind';
 import { Reader } from 'maxmind';
 import { useMount } from 'react-use';
 import type { Snode } from '../../data/data';

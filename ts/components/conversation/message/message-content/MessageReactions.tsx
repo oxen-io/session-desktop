@@ -3,7 +3,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { useMessageReactsPropsById } from '../../../../hooks/useParamSelector';
-import type { MessageRenderingProps, SortedReactionList } from '../../../../models/conversationTypes';
+import type {
+  MessageRenderingProps,
+  SortedReactionList,
+} from '../../../../models/conversationTypes';
 import { REACT_LIMIT } from '../../../../session/constants';
 import { useSelectedIsGroupOrCommunity } from '../../../../state/selectors/selectedConversation';
 import { nativeEmojiData } from '../../../../util/emoji';

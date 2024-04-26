@@ -1,12 +1,8 @@
 import type { AbortSignal } from 'abort-controller';
 import AbortController from 'abort-controller';
 import { isFinite, isUndefined, toNumber } from 'lodash';
-import type {
-  OpenGroupV2Room,
-  OpenGroupV2RoomWithImageID} from '../../../../data/opengroups';
-import {
-  OpenGroupData,
-} from '../../../../data/opengroups';
+import type { OpenGroupV2Room, OpenGroupV2RoomWithImageID } from '../../../../data/opengroups';
+import { OpenGroupData } from '../../../../data/opengroups';
 import { MIME } from '../../../../types';
 import { processNewAttachment } from '../../../../types/MessageAttachment';
 import { roomHasBlindEnabled } from '../../../../types/sqlSharedTypes';

@@ -10,7 +10,7 @@ import type {
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { isArray, isEmpty, isEqual } from 'lodash';
 import type { OpenGroupV2Room } from '../data/opengroups';
-import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../models/conversationTypes';
 import { fromHexToArray } from '../session/utils/String';
 import type { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 

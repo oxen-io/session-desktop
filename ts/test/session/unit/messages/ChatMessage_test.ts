@@ -7,10 +7,9 @@ import { Constants } from '../../../../session';
 import type {
   AttachmentPointerWithUrl,
   PreviewWithAttachmentUrl,
-  Quote} from '../../../../session/messages/outgoing/visibleMessage/VisibleMessage';
-import {
-  VisibleMessage,
+  Quote,
 } from '../../../../session/messages/outgoing/visibleMessage/VisibleMessage';
+import { VisibleMessage } from '../../../../session/messages/outgoing/visibleMessage/VisibleMessage';
 
 const sharedNoExpire = {
   expirationType: null,

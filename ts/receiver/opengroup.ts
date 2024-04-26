@@ -4,7 +4,7 @@ import {
   createPublicMessageSentFromUs,
 } from '../models/messageFactory';
 import { SignalService } from '../protobuf';
-import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../models/conversationTypes';
 import type { OpenGroupMessageV4 } from '../session/apis/open_group_api/opengroupV2/OpenGroupServerPoller';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getOpenGroupV2ConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';

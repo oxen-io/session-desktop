@@ -9,10 +9,9 @@ import type {
   FetchMsgExpirySwarmPersistedData,
   PersistedJob,
   TypeOfPersistedData,
-  UpdateMsgExpirySwarmPersistedData} from './PersistedJob';
-import {
-  RunJobResult,
+  UpdateMsgExpirySwarmPersistedData,
 } from './PersistedJob';
+import { RunJobResult } from './PersistedJob';
 import type { JobRunnerType } from './jobs/JobRunnerType';
 
 /**

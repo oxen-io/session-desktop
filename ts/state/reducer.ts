@@ -24,11 +24,8 @@ import type { OnionState } from './ducks/onion';
 import { defaultOnionReducer as onionPaths } from './ducks/onion'; // ok: not importing anything else
 import type { SettingsState } from './ducks/settings';
 import { settingsReducer } from './ducks/settings'; // ok: just importing settings-key.tsx which is not importing anything else
-import type {
-  StagedAttachmentsStateType} from './ducks/stagedAttachments';
-import {
-  reducer as stagedAttachments,
-} from './ducks/stagedAttachments';
+import type { StagedAttachmentsStateType } from './ducks/stagedAttachments';
+import { reducer as stagedAttachments } from './ducks/stagedAttachments';
 import type { UserConfigState } from './ducks/userConfig';
 import { userConfigReducer as userConfig } from './ducks/userConfig'; // ok: not importing anything else
 

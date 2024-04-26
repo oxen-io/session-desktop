@@ -3,7 +3,7 @@ import { compact, uniq } from 'lodash';
 import type { OpenGroupV2Room } from '../../../../data/opengroups';
 import { capabilitiesListHasBlindEnabled } from '../../../../types/sqlSharedTypes';
 import { OnionSending } from '../../../onions/onionSend';
-import type { OpenGroupV2Info } from '../opengroupV2/ApiUtil';
+import type { OpenGroupV2Info } from '../../../../models/conversationTypes';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
 import { fetchCapabilitiesAndUpdateRelatedRoomsOfServerUrl } from './sogsV3Capabilities';
 

@@ -10,7 +10,7 @@ import { handleOpenGroupV4Message } from '../../../../receiver/opengroup';
 import { callUtilsWorker } from '../../../../webworker/workers/browser/util_worker_interface';
 import { getConversationController } from '../../../conversations';
 import { PubKey } from '../../../types';
-import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../../../models/conversationTypes';
 import type { OpenGroupMessageV4 } from '../opengroupV2/OpenGroupServerPoller';
 import { getRoomAndUpdateLastFetchTimestamp } from '../opengroupV2/OpenGroupServerPoller';
 import { filterDuplicatesFromDbAndIncomingV4 } from '../opengroupV2/SogsFilterDuplicate';

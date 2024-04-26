@@ -6,7 +6,7 @@ import _, { isEmpty, isNil, isNumber, isString, sample, toNumber } from 'lodash'
 import pRetry from 'p-retry';
 import { Data } from '../../data/data';
 import { SignalService } from '../../protobuf';
-import type { OpenGroupRequestCommonType } from '../apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../models/conversationTypes';
 import { OpenGroupMessageV2 } from '../apis/open_group_api/opengroupV2/OpenGroupMessageV2';
 import {
   sendMessageOnionV4BlindedRequest,

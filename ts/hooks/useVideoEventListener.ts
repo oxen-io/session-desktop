@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import useMountedState from 'react-use/lib/useMountedState';
-import type {
-  CallManagerOptionsType,
-  InputItem} from '../session/utils/calling/CallManager';
+import type { CallManagerOptionsType, InputItem } from '../session/utils/calling/CallManager';
 import {
   addVideoEventsListener,
   DEVICE_DISABLED_DEVICE_ID,

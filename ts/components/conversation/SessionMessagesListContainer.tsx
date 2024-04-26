@@ -11,14 +11,14 @@ import {
   resetOldBottomMessageId,
   resetOldTopMessageId,
 } from '../../state/ducks/conversations';
-import type { SortedMessageModelProps, ReduxConversationType } from '../../models/conversationTypes';
+import type {
+  SortedMessageModelProps,
+  ReduxConversationType,
+} from '../../models/conversationTypes';
 import { SessionScrollButton } from '../SessionScrollButton';
 
-import type {
-  ScrollToLoadedReasons} from '../../contexts/ScrollToLoadedMessage';
-import {
-  ScrollToLoadedMessageContext,
-} from '../../contexts/ScrollToLoadedMessage';
+import type { ScrollToLoadedReasons } from '../../contexts/ScrollToLoadedMessage';
+import { ScrollToLoadedMessageContext } from '../../contexts/ScrollToLoadedMessage';
 import type { StateType } from '../../state/reducer';
 import {
   getQuotedMessageToAnimate,

@@ -5,7 +5,8 @@ import type { UpdateExpiryOnNodeSubRequest } from '../../../../session/apis/snod
 import type {
   ExpireMessageWithExpiryOnSnodeProps,
   ExpireRequestResponseResults,
-  verifyExpireMsgsResponseSignatureProps} from '../../../../session/apis/snode_api/expireRequest';
+  verifyExpireMsgsResponseSignatureProps,
+} from '../../../../session/apis/snode_api/expireRequest';
 import {
   buildExpireRequestSingleExpiry,
   processExpireRequestResponse,

@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 // eslint-disable-next-line import/no-named-default
 import type { ChangeEvent, MouseEvent } from 'react';
-import { default as React, useState } from 'react';
+import React, { useState } from 'react';
 import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
 import { Avatar, AvatarSize } from '../avatar/Avatar';

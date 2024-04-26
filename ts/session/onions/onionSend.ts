@@ -15,7 +15,8 @@ import { pnServerPubkeyHex, pnServerUrl } from '../apis/push_notification_api/Pn
 import type {
   FinalDestNonSnodeOptions,
   FinalRelayOptions,
-  SnodeResponse} from '../apis/snode_api/onions';
+  SnodeResponse,
+} from '../apis/snode_api/onions';
 import {
   Onions,
   STATUS_NO_STATUS,

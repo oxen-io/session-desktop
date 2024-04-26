@@ -8,7 +8,8 @@ import { getTheme, isDarkTheme } from '../../state/selectors/theme';
 import type {
   ColorsType,
   PrimaryColorStateType,
-  ThemeStateType} from '../../themes/constants/colors.js';
+  ThemeStateType,
+} from '../../themes/constants/colors.js';
 import {
   COLORS,
   THEMES,

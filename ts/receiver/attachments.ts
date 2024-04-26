@@ -4,7 +4,7 @@ import type { MessageModel } from '../models/message';
 import { Data } from '../data/data';
 import { AttachmentDownloads } from '../session/utils';
 import type { ConversationModel } from '../models/conversation';
-import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../models/conversationTypes';
 import { getUnpaddedAttachment } from '../session/crypto/BufferPadding';
 import { decryptAttachment } from '../util/crypto/attachmentsEncrypter';
 import { callUtilsWorker } from '../webworker/workers/browser/util_worker_interface';

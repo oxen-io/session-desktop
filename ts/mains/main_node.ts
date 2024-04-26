@@ -4,8 +4,7 @@
 /* eslint-disable import/order */
 /* eslint-disable no-console */
 
-import type {
-  IpcMainEvent} from 'electron';
+import type { IpcMainEvent } from 'electron';
 import {
   app,
   BrowserWindow,

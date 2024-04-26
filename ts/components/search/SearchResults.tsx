@@ -8,8 +8,7 @@ import styled from 'styled-components';
 import { ConversationListItem } from '../leftpane/conversation-list-item/ConversationListItem';
 import { MessageSearchResult } from './MessageSearchResults';
 
-import type {
-  SearchResultsMergedListItem} from '../../state/selectors/search';
+import type { SearchResultsMergedListItem } from '../../state/selectors/search';
 import {
   getHasSearchResults,
   getSearchResultsList,

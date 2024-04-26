@@ -1,4 +1,4 @@
-import type { MouseEvent} from 'react';
+import type { MouseEvent } from 'react';
 import React, { useState } from 'react';
 
 import { isEmpty } from 'lodash';

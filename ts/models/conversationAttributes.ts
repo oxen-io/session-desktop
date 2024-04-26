@@ -2,8 +2,8 @@ import { defaults } from 'lodash';
 import type {
   ConversationAttributes,
   ConversationNotificationSettingType,
+  ConversationTypeEnum,
 } from './conversationTypes';
-import { ConversationTypeEnum } from './conversationTypes';
 import { CONVERSATION_PRIORITIES } from './constEnums';
 
 export function isOpenOrClosedGroup(conversationType: ConversationTypeEnum) {

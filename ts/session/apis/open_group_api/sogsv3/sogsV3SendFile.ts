@@ -2,7 +2,7 @@ import AbortController from 'abort-controller';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { roomHasBlindEnabled } from '../../../../types/sqlSharedTypes';
 import { OnionSending } from '../../../onions/onionSend';
-import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../../../models/conversationTypes';
 import { batchGlobalIsSuccess } from './sogsV3BatchPoll';
 
 /**

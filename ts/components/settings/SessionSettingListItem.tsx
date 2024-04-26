@@ -4,10 +4,9 @@ import styled from 'styled-components';
 import type {
   SessionButtonColor,
   SessionButtonShape,
-  SessionButtonType} from '../basic/SessionButton';
-import {
-  SessionButton,
+  SessionButtonType,
 } from '../basic/SessionButton';
+import { SessionButton } from '../basic/SessionButton';
 import { SessionToggle } from '../basic/SessionToggle';
 import type { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
 import { SessionIconButton } from '../icon';

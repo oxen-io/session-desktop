@@ -1,5 +1,5 @@
 import { debounce, noop } from 'lodash';
-import type { AriaRole, MouseEventHandler} from 'react';
+import type { AriaRole, MouseEventHandler } from 'react';
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useDispatch, useSelector } from 'react-redux';

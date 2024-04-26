@@ -6,11 +6,8 @@ import { assertUnreachable, roomHasBlindEnabled } from '../../../../types/sqlSha
 import { Reactions } from '../../../../util/reactions';
 import type { OnionV4JSONSnodeResponse } from '../../../onions/onionSend';
 import { OnionSending } from '../../../onions/onionSend';
-import type {
-  OpenGroupRequestHeaders} from '../opengroupV2/OpenGroupPollingUtils';
-import {
-  OpenGroupPollingUtils,
-} from '../opengroupV2/OpenGroupPollingUtils';
+import type { OpenGroupRequestHeaders } from '../opengroupV2/OpenGroupPollingUtils';
+import { OpenGroupPollingUtils } from '../opengroupV2/OpenGroupPollingUtils';
 import { addJsonContentTypeToHeaders } from './sogsV3SendMessage';
 
 type BatchFetchRequestOptions = {

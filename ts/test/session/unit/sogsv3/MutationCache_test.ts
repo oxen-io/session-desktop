@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai';
 import Sinon from 'sinon';
-import type {
-  SogsV3Mutation} from '../../../../session/apis/open_group_api/sogsv3/sogsV3MutationCache';
+import type { SogsV3Mutation } from '../../../../session/apis/open_group_api/sogsv3/sogsV3MutationCache';
 import {
   addToMutationCache,
   ChangeType,

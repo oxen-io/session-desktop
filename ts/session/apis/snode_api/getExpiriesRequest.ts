@@ -5,7 +5,7 @@ import type { Snode } from '../../../data/data';
 import { UserUtils } from '../../utils';
 import { EmptySwarmError } from '../../utils/errors';
 import { SeedNodeAPI } from '../seed_node_api';
-import type { GetExpiriesFromNodeSubRequest} from './SnodeRequestTypes';
+import type { GetExpiriesFromNodeSubRequest } from './SnodeRequestTypes';
 import { fakeHash } from './SnodeRequestTypes';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';

@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { BrowserWindow} from 'electron';
+import type { BrowserWindow } from 'electron';
 import { app, Menu, Tray } from 'electron';
 import { getAppRootPath } from './getRootPath';
 import type { LocaleMessagesType } from './locale';

@@ -11,9 +11,7 @@ import { gt as isVersionGreaterThan, parse as parseVersion } from 'semver';
 import { windowMarkShouldQuit } from '../node/window_state';
 
 import { getLastestRelease } from '../node/latest_desktop_release';
-import type {
-  LoggerType,
-  MessagesType} from './common';
+import type { LoggerType, MessagesType } from './common';
 import {
   getPrintableError,
   showCannotUpdateDialog,

@@ -16,13 +16,8 @@ import { allowOnlyOneAtATime } from '../../Promise';
 import type { OutgoingConfResult } from '../../libsession/libsession_utils';
 import { LibSessionUtil } from '../../libsession/libsession_utils';
 import { runners } from '../JobRunner';
-import type {
-  AddJobCheckReturn,
-  ConfigurationSyncPersistedData} from '../PersistedJob';
-import {
-  PersistedJob,
-  RunJobResult,
-} from '../PersistedJob';
+import type { AddJobCheckReturn, ConfigurationSyncPersistedData } from '../PersistedJob';
+import { PersistedJob, RunJobResult } from '../PersistedJob';
 
 const defaultMsBetweenRetries = 15000; // a long time between retries, to avoid running multiple jobs at the same time, when one was postponed at the same time as one already planned (5s)
 const defaultMaxAttempts = 2;

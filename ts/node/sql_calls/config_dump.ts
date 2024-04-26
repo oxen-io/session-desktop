@@ -6,10 +6,9 @@ import { compact, uniq } from 'lodash';
 import type {
   ConfigDumpDataNode,
   ConfigDumpRow,
-  ConfigDumpRowWithoutData} from '../../types/sqlSharedTypes';
-import {
-  CONFIG_DUMP_TABLE,
+  ConfigDumpRowWithoutData,
 } from '../../types/sqlSharedTypes';
+import { CONFIG_DUMP_TABLE } from '../../types/sqlSharedTypes';
 // eslint-disable-next-line import/no-unresolved, import/extensions
 import type { ConfigWrapperObjectTypes } from '../../webworker/workers/browser/libsession_worker_functions';
 import { assertGlobalInstance } from '../sqlInstance';

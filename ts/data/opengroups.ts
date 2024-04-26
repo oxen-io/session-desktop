@@ -1,5 +1,5 @@
 import { cloneDeep, isNumber, uniq } from 'lodash';
-import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../models/conversationTypes';
 import { isOpenGroupV2 } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { channels } from './channels';
 

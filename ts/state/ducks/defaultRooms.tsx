@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { OpenGroupV2InfoJoinable } from '../../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupV2InfoJoinable } from '../../models/conversationTypes';
 
 export type DefaultRoomsState = {
   rooms: Array<OpenGroupV2InfoJoinable>;

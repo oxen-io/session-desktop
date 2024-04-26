@@ -17,13 +17,8 @@ import { StringUtils, UserUtils } from '../../utils';
 import { fromBase64ToArray, fromHexToArray } from '../../utils/String';
 import { EmptySwarmError } from '../../utils/errors';
 import { SeedNodeAPI } from '../seed_node_api';
-import type {
-  UpdateExpiryOnNodeSubRequest,
-  WithShortenOrExtend} from './SnodeRequestTypes';
-import {
-  MAX_SUBREQUESTS_COUNT,
-  fakeHash,
-} from './SnodeRequestTypes';
+import type { UpdateExpiryOnNodeSubRequest, WithShortenOrExtend } from './SnodeRequestTypes';
+import { MAX_SUBREQUESTS_COUNT, fakeHash } from './SnodeRequestTypes';
 import { doSnodeBatchRequest } from './batchRequest';
 import { getSwarmFor } from './snodePool';
 import { SnodeSignature } from './snodeSignatures';

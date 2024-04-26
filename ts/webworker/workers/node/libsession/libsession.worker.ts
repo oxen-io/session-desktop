@@ -1,8 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-case-declarations */
 import { isEmpty, isNull } from 'lodash';
-import type {
-  BaseConfigWrapperNode} from 'libsession_util_nodejs';
+import type { BaseConfigWrapperNode } from 'libsession_util_nodejs';
 import {
   ContactsConfigWrapperNode,
   ConvoInfoVolatileWrapperNode,

@@ -3,12 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getPrimaryColor } from '../../state/selectors/primaryColor';
 import { getTheme } from '../../state/selectors/theme';
-import type {
-  StyleSessionSwitcher} from '../../themes/constants/colors';
-import {
-  getPrimaryColors,
-  getThemeColors,
-} from '../../themes/constants/colors';
+import type { StyleSessionSwitcher } from '../../themes/constants/colors';
+import { getPrimaryColors, getThemeColors } from '../../themes/constants/colors';
 import { switchPrimaryColorTo } from '../../themes/switchPrimaryColor';
 import { switchThemeTo } from '../../themes/switchTheme';
 import { SessionRadio, SessionRadioPrimaryColors } from '../basic/SessionRadio';

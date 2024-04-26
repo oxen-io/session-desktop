@@ -11,7 +11,7 @@ import {
 import { getConversationController } from '../../session/conversations/ConversationController';
 import { PubKey } from '../../session/types';
 import { ToastUtils } from '../../session/utils';
-import type { BanType} from '../../state/ducks/modalDialog';
+import type { BanType } from '../../state/ducks/modalDialog';
 import { updateBanOrUnbanUserModal } from '../../state/ducks/modalDialog';
 import { isDarkTheme } from '../../state/selectors/theme';
 import { SessionHeaderSearchInput } from '../SessionHeaderSearchInput';

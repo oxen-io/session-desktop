@@ -4,11 +4,9 @@ import { sleepFor } from '../../../../../session/utils/Promise';
 import type {
   AddJobCheckReturn,
   FakeSleepForMultiJobData,
-  FakeSleepJobData} from '../../../../../session/utils/job_runners/PersistedJob';
-import {
-  PersistedJob,
-  RunJobResult,
+  FakeSleepJobData,
 } from '../../../../../session/utils/job_runners/PersistedJob';
+import { PersistedJob, RunJobResult } from '../../../../../session/utils/job_runners/PersistedJob';
 
 export class FakeSleepForMultiJob extends PersistedJob<FakeSleepForMultiJobData> {
   constructor({

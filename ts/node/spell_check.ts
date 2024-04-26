@@ -1,4 +1,4 @@
-import type { BrowserWindow} from 'electron';
+import type { BrowserWindow } from 'electron';
 import { Menu } from 'electron';
 import { sync as osLocaleSync } from 'os-locale';
 

@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import type { Dispatch} from 'react';
+import type { Dispatch } from 'react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';

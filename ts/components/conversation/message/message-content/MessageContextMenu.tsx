@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import type { Dispatch} from 'react';
+import type { Dispatch } from 'react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { isNumber } from 'lodash';
-import type { ItemParams} from 'react-contexify';
+import type { ItemParams } from 'react-contexify';
 import { Item, Menu, useContextMenu } from 'react-contexify';
 import { useDispatch } from 'react-redux';
 import { useClickAway, useMouse } from 'react-use';

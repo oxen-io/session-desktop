@@ -28,10 +28,9 @@ import type { UnsendMessage } from '../../messages/outgoing/controlMessage/Unsen
 import type {
   AttachmentPointerWithUrl,
   PreviewWithAttachmentUrl,
-  Quote} from '../../messages/outgoing/visibleMessage/VisibleMessage';
-import {
-  VisibleMessage,
+  Quote,
 } from '../../messages/outgoing/visibleMessage/VisibleMessage';
+import { VisibleMessage } from '../../messages/outgoing/visibleMessage/VisibleMessage';
 import { PubKey } from '../../types';
 import { fromBase64ToArray, fromHexToArray } from '../String';
 import { ConfigurationSync } from '../job_runners/jobs/ConfigurationSyncJob';
