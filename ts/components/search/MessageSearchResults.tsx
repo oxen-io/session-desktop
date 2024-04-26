@@ -1,5 +1,6 @@
 import React from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 
 import { useConversationUsername, useIsPrivate } from '../../hooks/useParamSelector';
 import { UserUtils } from '../../session/utils';
@@ -9,7 +10,7 @@ import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { MessageBodyHighlight } from '../basic/MessageBodyHighlight';
 import { ContactName } from '../conversation/ContactName';
 import { Timestamp } from '../conversation/Timestamp';
-import { MessageResultProps } from '../../models/conversationTypes';
+import type { MessageResultProps } from '../../models/conversationTypes';
 
 const StyledConversationTitleResults = styled.div`
   flex-grow: 1;

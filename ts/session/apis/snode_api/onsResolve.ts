@@ -7,7 +7,7 @@ import {
   stringToUint8Array,
   toHex,
 } from '../../utils/String';
-import { OnsResolveSubRequest } from './SnodeRequestTypes';
+import type { OnsResolveSubRequest } from './SnodeRequestTypes';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
 import { getRandomSnode } from './snodePool';

@@ -1,5 +1,5 @@
 import { isArray, omit } from 'lodash';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { updateIsOnline } from '../../../state/ducks/onion';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
@@ -8,13 +8,13 @@ import { SnodeNamespace, SnodeNamespaces } from './namespaces';
 import { TTL_DEFAULT } from '../../constants';
 import { UserUtils } from '../../utils';
 import { sleepFor } from '../../utils/Promise';
-import {
+import type {
   RetrieveLegacyClosedGroupSubRequestType,
   RetrieveSubRequestType,
   UpdateExpiryOnNodeSubRequest,
 } from './SnodeRequestTypes';
 import { SnodeSignature } from './snodeSignatures';
-import { RetrieveMessagesResultsBatched, RetrieveMessagesResultsContent } from './types';
+import type { RetrieveMessagesResultsBatched, RetrieveMessagesResultsContent } from './types';
 
 async function buildRetrieveRequest(
   lastHashes: Array<string>,

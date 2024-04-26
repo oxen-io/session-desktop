@@ -3,12 +3,9 @@ import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import { useIsPrivate, useIsPublic } from '../../../hooks/useParamSelector';
-import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
-} from '../../../models/conversationTypes';
+import type { LastMessageType } from '../../../models/conversationTypes';
+
 import { getConversationController } from '../../../session/conversations';
-import { LastMessageType } from '../../../models/conversationTypes';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
 import { MessageBody } from '../../conversation/message/message-content/MessageBody';
 
@@ -57,20 +54,19 @@ export const InteractionItem = (props: InteractionItemProps) => {
   let errorText = '';
 
   switch (interactionType) {
-    case ConversationInteractionType.Hide:
+    case 'hide':
       // if it's hidden or pending hiding, we don't show any text
       break;
-    case ConversationInteractionType.Leave:
+    case 'leave':
       errorText = isCommunity
         ? window.i18n('leaveCommunityFailed')
         : isGroup
           ? window.i18n('leaveGroupFailed')
           : window.i18n('deleteConversationFailed');
       text =
-        interactionStatus === ConversationInteractionStatus.Error
+        interactionStatus === 'error'
           ? errorText
-          : interactionStatus === ConversationInteractionStatus.Start ||
-              interactionStatus === ConversationInteractionStatus.Loading
+          : interactionStatus === 'start' || interactionStatus === 'loading'
             ? window.i18n('leaving')
             : text;
       break;
@@ -89,7 +85,7 @@ export const InteractionItem = (props: InteractionItemProps) => {
     <div className="module-conversation-list-item__message">
       <StyledInteractionItemText
         className="module-conversation-list-item__message__text"
-        isError={Boolean(interactionStatus === ConversationInteractionStatus.Error)}
+        isError={Boolean(interactionStatus === 'error')}
       >
         <MessageBody text={text} disableJumbomoji={true} disableLinks={true} isGroup={isGroup} />
       </StyledInteractionItemText>

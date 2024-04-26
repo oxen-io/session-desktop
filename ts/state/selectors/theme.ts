@@ -1,5 +1,5 @@
-import { ThemeStateType } from '../../themes/constants/colors';
-import { StateType } from '../reducer';
+import type { ThemeStateType } from '../../themes/constants/colors';
+import type { StateType } from '../reducer';
 import { checkDarkTheme, checkLightTheme } from '../../util/theme';
 
 export const getTheme = (state: StateType): ThemeStateType => state.theme;

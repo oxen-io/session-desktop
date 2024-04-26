@@ -10,24 +10,24 @@ import { toHex } from '../session/utils/String';
 import { BlockedNumberController } from '../util';
 import { removeFromCache } from './cache';
 import { decryptWithSessionProtocol } from './contentMessage';
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
-import { ConversationModel } from '../models/conversation';
-import { ConversationTypeEnum } from '../models/conversationTypes';
+import type { ConversationModel } from '../models/conversation';
+import type { DisappearingMessageUpdate } from '../models/conversationTypes';
 
 import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
-import { DisappearingMessageUpdate } from '../models/conversationTypes';
 import { ClosedGroupEncryptionPairReplyMessage } from '../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
 import { UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { Storage } from '../util/storage';
 // eslint-disable-next-line import/no-unresolved, import/extensions
-import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 import { getSettingsKeyFromLibsessionWrapper } from './configMessage';
-import { ECKeyPair, HexKeyPair } from './keypairs';
+import type { HexKeyPair } from './keypairs';
+import { ECKeyPair } from './keypairs';
 import { queueAllCachedFromSource } from './receiver';
 
 export const distributingClosedGroupEncryptionKeyPairs = new Map<string, ECKeyPair>();
@@ -343,8 +343,7 @@ export async function handleNewClosedGroup(
   }
 
   const convo =
-    groupConvo ||
-    (await getConversationController().getOrCreateAndWait(groupId, ConversationTypeEnum.GROUP));
+    groupConvo || (await getConversationController().getOrCreateAndWait(groupId, 'group'));
   // ***** Creating a new group *****
   window?.log?.info('Received a new ClosedGroup of id:', groupId);
 
@@ -575,7 +574,7 @@ async function performIfValid(
     return;
   }
   // make sure the conversation with this user exist (even if it's just hidden)
-  await getConversationController().getOrCreateAndWait(sender, ConversationTypeEnum.PRIVATE);
+  await getConversationController().getOrCreateAndWait(sender, 'private');
 
   const moreRecentOrNah = await sentAtMoreRecentThanWrapper(envelopeTimestamp, 'UserGroupsConfig');
   const shouldNotApplyGroupChange = moreRecentOrNah === 'wrapper_more_recent';
@@ -680,9 +679,7 @@ async function handleClosedGroupMembersAdded(
   const members = [...oldMembers, ...membersNotAlreadyPresent];
   // make sure the conversation with those members (even if it's just hidden)
   await Promise.all(
-    members.map(async m =>
-      getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE)
-    )
+    members.map(async m => getConversationController().getOrCreateAndWait(m, 'private'))
   );
 
   const groupDiff: ClosedGroup.GroupDiff = {
@@ -939,7 +936,7 @@ async function sendLatestKeyPairToUsers(
   await Promise.all(
     targetUsers.map(async member => {
       window?.log?.info(`Sending latest closed group encryption key pair to: ${member}`);
-      await getConversationController().getOrCreateAndWait(member, ConversationTypeEnum.PRIVATE);
+      await getConversationController().getOrCreateAndWait(member, 'private');
 
       const wrappers = await ClosedGroup.buildEncryptionKeyPairWrappers([member], keyPairToUse);
 

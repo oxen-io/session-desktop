@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line camelcase
-import {
+import type {
   ContactInfoSet,
   DisappearingMessageConversationModeType,
   LegacyGroupInfo,
@@ -9,10 +9,10 @@ import {
 } from 'libsession_util_nodejs';
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { isArray, isEmpty, isEqual } from 'lodash';
-import { OpenGroupV2Room } from '../data/opengroups';
-import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupV2Room } from '../data/opengroups';
+import type { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { fromHexToArray } from '../session/utils/String';
-import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 
 /**
  * This wrapper can be used to make a function type not async, asynced.

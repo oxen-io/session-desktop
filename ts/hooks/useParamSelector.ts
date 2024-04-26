@@ -7,11 +7,12 @@ import {
   hasValidOutgoingRequestValues,
 } from '../models/conversation';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
-import { TimerOptions, TimerOptionsArray } from '../session/disappearing_messages/timerOptions';
+import type { TimerOptionsArray } from '../session/disappearing_messages/timerOptions';
+import { TimerOptions } from '../session/disappearing_messages/timerOptions';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
-import { PropsForExpiringMessage } from '../models/conversationTypes';
-import { StateType } from '../state/reducer';
+import type { PropsForExpiringMessage } from '../models/conversationTypes';
+import type { StateType } from '../state/reducer';
 import {
   getMessagePropsByMessageId,
   getMessageReactsProps,

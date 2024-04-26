@@ -1,5 +1,6 @@
 import React from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 
 type TextProps = {
   text: string;

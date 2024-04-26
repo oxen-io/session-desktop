@@ -1,4 +1,4 @@
-import { MessageModel } from '../../models/message';
+import type { MessageModel } from '../../models/message';
 import * as Attachment from '../Attachment';
 
 const hasAttachmentInMessage =

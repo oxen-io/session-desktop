@@ -2,18 +2,14 @@
 import { compact, isEmpty, isNumber, uniq } from 'lodash';
 import { v4 } from 'uuid';
 import { Data } from '../../../../data/data';
-import { READ_MESSAGE_STATE } from '../../../../models/conversationTypes';
-import { MessageModel } from '../../../../models/message';
+import type { MessageModel } from '../../../../models/message';
 import { isSignInByLinking } from '../../../../util/storage';
 import { getExpiriesFromSnode } from '../../../apis/snode_api/getExpiriesRequest';
 import { DisappearingMessages } from '../../../disappearing_messages';
 import { runners } from '../JobRunner';
-import {
-  AddJobCheckReturn,
-  FetchMsgExpirySwarmPersistedData,
-  PersistedJob,
-  RunJobResult,
-} from '../PersistedJob';
+import type { AddJobCheckReturn, FetchMsgExpirySwarmPersistedData } from '../PersistedJob';
+import { PersistedJob, RunJobResult } from '../PersistedJob';
+import { READ_MESSAGE_STATE } from '../../../../models/constEnums';
 
 class FetchMsgExpirySwarmJob extends PersistedJob<FetchMsgExpirySwarmPersistedData> {
   constructor({

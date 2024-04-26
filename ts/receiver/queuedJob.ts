@@ -2,20 +2,18 @@ import _, { isEmpty, isNumber } from 'lodash';
 import { queueAttachmentDownloads } from './attachments';
 
 import { Data } from '../data/data';
-import { ConversationModel } from '../models/conversation';
-import { MessageModel } from '../models/message';
+import type { ConversationModel } from '../models/conversation';
+import type { MessageModel } from '../models/message';
 import { getConversationController } from '../session/conversations';
-import { Quote } from './types';
+import type { Quote } from './types';
 
-import { ConversationTypeEnum } from '../models/conversationTypes';
-import { MessageDirection } from '../models/conversationTypes';
+import type { MessageModelPropsWithoutConvoProps } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
 import { DisappearingMessages } from '../session/disappearing_messages';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { PubKey } from '../session/types';
 import { UserUtils } from '../session/utils';
 import { lookupQuote, pushQuotedMessageDetails } from '../state/ducks/conversations';
-import { MessageModelPropsWithoutConvoProps } from '../models/conversationTypes';
 import { showMessageRequestBannerOutsideRedux } from '../state/ducks/userConfig';
 import { getHideMessageRequestBannerOutsideRedux } from '../state/selectors/userConfig';
 import { GoogleChrome } from '../util';
@@ -264,10 +262,7 @@ async function handleRegularMessage(
 
   if (type === 'incoming') {
     if (conversation.isPrivate()) {
-      const incomingMessageCount = await Data.getMessageCountByType(
-        conversation.id,
-        MessageDirection.incoming
-      );
+      const incomingMessageCount = await Data.getMessageCountByType(conversation.id, 'incoming');
       const isFirstRequestMessage = incomingMessageCount < 2;
       if (
         conversation.isIncomingRequest() &&
@@ -380,7 +375,7 @@ export async function handleMessageJob(
 
   const sendingDeviceConversation = await getConversationController().getOrCreateAndWait(
     source,
-    ConversationTypeEnum.PRIVATE
+    'private'
   );
   try {
     messageModel.set({ flags: regularDataMessage.flags });

@@ -2,13 +2,15 @@ import { isString } from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AutoSizer, List } from 'react-virtualized';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 
 import { ConversationListItem } from '../leftpane/conversation-list-item/ConversationListItem';
 import { MessageSearchResult } from './MessageSearchResults';
 
+import type {
+  SearchResultsMergedListItem} from '../../state/selectors/search';
 import {
-  SearchResultsMergedListItem,
   getHasSearchResults,
   getSearchResultsList,
   getSearchTerm,

@@ -3,10 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getMessageQueue } from '..';
 import { Data } from '../../data/data';
-import { ConversationModel } from '../../models/conversation';
-import { ConversationAttributes, ConversationTypeEnum } from '../../models/conversationTypes';
-import { MessageModel } from '../../models/message';
-import { MessageAttributesOptionals } from '../../models/conversationTypes';
+import type { ConversationModel } from '../../models/conversation';
+import type {
+  ConversationAttributes,
+  MessageAttributesOptionals,
+  DisappearAfterSendOnly,
+  DisappearingMessageUpdate,
+} from '../../models/conversationTypes';
+import type { MessageModel } from '../../models/message';
 import { SignalService } from '../../protobuf';
 import {
   addKeyPairToCacheAndDBIfNeeded,
@@ -19,7 +23,6 @@ import { getConversationController } from '../conversations';
 import { generateCurve25519KeyPairWithoutPrefix } from '../crypto';
 import { encryptUsingSessionProtocol } from '../crypto/MessageEncrypter';
 import { DisappearingMessages } from '../disappearing_messages';
-import { DisappearAfterSendOnly, DisappearingMessageUpdate } from '../../models/conversationTypes';
 import { ClosedGroupAddedMembersMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupAddedMembersMessage';
 import { ClosedGroupEncryptionPairMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairMessage';
 import { ClosedGroupNameChangeMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNameChangeMessage';
@@ -67,7 +70,7 @@ export async function initiateClosedGroupUpdate(
   const isGroupV3 = PubKey.isClosedGroupV3(groupId);
   const convo = await getConversationController().getOrCreateAndWait(
     groupId,
-    isGroupV3 ? ConversationTypeEnum.GROUPV3 : ConversationTypeEnum.GROUP
+    isGroupV3 ? 'groupv3' : 'group'
   );
 
   const expirationType = DisappearingMessages.changeToDisappearingMessageType(
@@ -245,10 +248,7 @@ function buildGroupDiff(convo: ConversationModel, update: GroupInfo): GroupDiff 
 export async function updateOrCreateClosedGroup(details: GroupInfo) {
   const { id } = details;
 
-  const conversation = await getConversationController().getOrCreateAndWait(
-    id,
-    ConversationTypeEnum.GROUP
-  );
+  const conversation = await getConversationController().getOrCreateAndWait(id, 'group');
 
   const updates: Pick<
     ConversationAttributes,
@@ -257,7 +257,7 @@ export async function updateOrCreateClosedGroup(details: GroupInfo) {
     displayNameInProfile: details.name,
     members: details.members,
     // Note: legacy group to not support change of admins.
-    type: ConversationTypeEnum.GROUP,
+    type: 'group',
     active_at: details.activeAt ? details.activeAt : 0,
     left: !details.activeAt,
   };
@@ -344,7 +344,7 @@ async function sendAddedMembers(
   });
 
   const promises = addedMembers.map(async m => {
-    await getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE);
+    await getConversationController().getOrCreateAndWait(m, 'private');
     const memberPubKey = PubKey.cast(m);
     await getMessageQueue().sendToPubKey(
       memberPubKey,

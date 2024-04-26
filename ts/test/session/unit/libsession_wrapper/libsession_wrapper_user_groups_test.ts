@@ -1,14 +1,11 @@
 import { expect } from 'chai';
 
-import { LegacyGroupInfo } from 'libsession_util_nodejs';
+import type { LegacyGroupInfo } from 'libsession_util_nodejs';
 import { describe } from 'mocha';
 import Sinon from 'sinon';
 import { ConversationModel } from '../../../../models/conversation';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
-  ConversationTypeEnum,
-} from '../../../../models/conversationTypes';
+import type { ConversationAttributes } from '../../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';
@@ -24,7 +21,7 @@ describe('libsession_user_groups', () => {
   const groupECKeyPair = generateFakeECKeyPair();
   const communityUrl = 'http://example.org/roomId1234';
   const validArgs = {
-    type: ConversationTypeEnum.GROUP,
+    type: 'group',
     active_at: 1234,
   } as ConversationAttributes;
 
@@ -63,7 +60,7 @@ describe('libsession_user_groups', () => {
     describe('legacy closed groups', () => {
       const validLegacyGroupArgs = {
         ...validArgs,
-        type: ConversationTypeEnum.GROUP,
+        type: 'group',
         id: '05123456564',
       } as ConversationAttributes;
 
@@ -126,7 +123,7 @@ describe('libsession_user_groups', () => {
         SessionUtilUserGroups.isUserGroupToStoreInWrapper(
           new ConversationModel({
             ...validArgs,
-            type: ConversationTypeEnum.GROUPV3,
+            type: 'groupv3',
             id: '03123456564',
           })
         )
@@ -159,7 +156,7 @@ describe('libsession_user_groups', () => {
           new ConversationModel({
             ...validArgs,
             id: '0511111',
-            type: ConversationTypeEnum.PRIVATE,
+            type: 'private',
           })
         )
       ).to.be.eq(false);

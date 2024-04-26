@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SessionIcon, SessionIconType } from '../../../../icon';
+import type { SessionIconType } from '../../../../icon';
+import { SessionIcon } from '../../../../icon';
 
 const NotificationBubbleFlex = styled.div`
   display: flex;

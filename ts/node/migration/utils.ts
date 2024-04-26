@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { isArray } from 'lodash';
 import { CONVERSATIONS_TABLE } from '../database_utility';
 import { getIdentityKeys, sqlNode } from '../sql';

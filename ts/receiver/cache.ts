@@ -1,9 +1,9 @@
 import { map, toNumber } from 'lodash';
 
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 import { StringUtils } from '../session/utils';
 import { Data } from '../data/data';
-import { UnprocessedParameter } from '../types/sqlSharedTypes';
+import type { UnprocessedParameter } from '../types/sqlSharedTypes';
 
 export async function removeFromCache(envelope: Pick<EnvelopePlus, 'id'>) {
   return Data.removeUnprocessed(envelope.id);

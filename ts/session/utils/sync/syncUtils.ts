@@ -4,7 +4,7 @@ import { UserUtils } from '..';
 import { getMessageQueue } from '../..';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
-import { ConversationModel } from '../../../models/conversation';
+import type { ConversationModel } from '../../../models/conversation';
 import { SignalService } from '../../../protobuf';
 import { ECKeyPair } from '../../../receiver/keypairs';
 import { ConfigurationSyncJobDone } from '../../../shims/events';
@@ -14,7 +14,7 @@ import { getCompleteUrlFromRoom } from '../../apis/open_group_api/utils/OpenGrou
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
 import { getConversationController } from '../../conversations';
-import { DisappearingMessageUpdate } from '../../../models/conversationTypes';
+import type { DisappearingMessageUpdate } from '../../../models/conversationTypes';
 import { DataMessage } from '../../messages/outgoing';
 import {
   ConfigurationMessage,
@@ -22,13 +22,14 @@ import {
   ConfigurationMessageContact,
 } from '../../messages/outgoing/controlMessage/ConfigurationMessage';
 import { ExpirationTimerUpdateMessage } from '../../messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
-import { MessageRequestResponse } from '../../messages/outgoing/controlMessage/MessageRequestResponse';
-import { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
-import { UnsendMessage } from '../../messages/outgoing/controlMessage/UnsendMessage';
-import {
+import type { MessageRequestResponse } from '../../messages/outgoing/controlMessage/MessageRequestResponse';
+import type { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
+import type { UnsendMessage } from '../../messages/outgoing/controlMessage/UnsendMessage';
+import type {
   AttachmentPointerWithUrl,
   PreviewWithAttachmentUrl,
-  Quote,
+  Quote} from '../../messages/outgoing/visibleMessage/VisibleMessage';
+import {
   VisibleMessage,
 } from '../../messages/outgoing/visibleMessage/VisibleMessage';
 import { PubKey } from '../../types';

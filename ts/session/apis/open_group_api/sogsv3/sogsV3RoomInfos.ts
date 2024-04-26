@@ -1,9 +1,9 @@
 import AbortController from 'abort-controller';
 import { compact, uniq } from 'lodash';
-import { OpenGroupV2Room } from '../../../../data/opengroups';
+import type { OpenGroupV2Room } from '../../../../data/opengroups';
 import { capabilitiesListHasBlindEnabled } from '../../../../types/sqlSharedTypes';
 import { OnionSending } from '../../../onions/onionSend';
-import { OpenGroupV2Info } from '../opengroupV2/ApiUtil';
+import type { OpenGroupV2Info } from '../opengroupV2/ApiUtil';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
 import { fetchCapabilitiesAndUpdateRelatedRoomsOfServerUrl } from './sogsV3Capabilities';
 

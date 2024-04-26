@@ -1,5 +1,5 @@
 import React from 'react';
-import { DisappearingMessageConversationModeType } from '../../../../../models/conversationTypes';
+import type { DisappearingMessageConversationModeType } from '../../../../../models/conversationTypes';
 import { PanelButtonGroup, PanelLabel } from '../../../../buttons/PanelButton';
 import { PanelRadioButton } from '../../../../buttons/PanelRadioButton';
 

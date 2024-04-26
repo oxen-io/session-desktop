@@ -1,4 +1,4 @@
-import { SignalService } from '../protobuf';
+import type { SignalService } from '../protobuf';
 
 export interface Quote {
   id: number; // this is in fact a uint64 so we will have an issue

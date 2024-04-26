@@ -1,10 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { CommunityInfo, LegacyGroupInfo, UserGroupsType } from 'libsession_util_nodejs';
+import type { CommunityInfo, LegacyGroupInfo, UserGroupsType } from 'libsession_util_nodejs';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
-import { ConversationModel } from '../../../models/conversation';
+import type { ConversationModel } from '../../../models/conversation';
+import type {
+  CommunityInfoFromDBValues} from '../../../types/sqlSharedTypes';
 import {
-  CommunityInfoFromDBValues,
   assertUnreachable,
   getCommunityInfoFromDBValues,
   getLegacyGroupInfoFromDBValues,

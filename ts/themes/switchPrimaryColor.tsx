@@ -1,7 +1,8 @@
 import { find } from 'lodash';
-import { Dispatch } from '@reduxjs/toolkit';
+import type { Dispatch } from '@reduxjs/toolkit';
 import { applyPrimaryColor } from '../state/ducks/primaryColor';
-import { COLORS, ColorsType, getPrimaryColors, PrimaryColorStateType } from './constants/colors';
+import type { ColorsType, PrimaryColorStateType } from './constants/colors';
+import { COLORS, getPrimaryColors } from './constants/colors';
 
 export function findPrimaryColorId(hexCode: string): PrimaryColorStateType | undefined {
   const primaryColors = getPrimaryColors();

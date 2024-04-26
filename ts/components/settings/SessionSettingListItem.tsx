@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-  SessionButton,
+import type {
   SessionButtonColor,
   SessionButtonShape,
-  SessionButtonType,
+  SessionButtonType} from '../basic/SessionButton';
+import {
+  SessionButton,
 } from '../basic/SessionButton';
 import { SessionToggle } from '../basic/SessionToggle';
-import { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
+import type { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
 import { SessionIconButton } from '../icon';
 
 type ButtonSettingsProps = {

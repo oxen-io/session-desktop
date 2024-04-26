@@ -6,9 +6,10 @@ import useHover from 'react-use/lib/useHover';
 import styled from 'styled-components';
 
 import { isEmpty, isTypedArray } from 'lodash';
-import { CityResponse, Reader } from 'maxmind';
+import type { CityResponse} from 'maxmind';
+import { Reader } from 'maxmind';
 import { useMount } from 'react-use';
-import { Snode } from '../../data/data';
+import type { Snode } from '../../data/data';
 import { onionPathModal } from '../../state/ducks/modalDialog';
 import {
   useFirstOnionPath,

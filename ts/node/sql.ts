@@ -1,4 +1,4 @@
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { app, clipboard, dialog, Notification } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -24,8 +24,8 @@ import {
   uniq,
 } from 'lodash';
 
-import { ConversationAttributes } from '../models/conversationTypes';
-import { PubKey } from '../session/types/PubKey'; // checked - only node
+import type { ConversationAttributes, MessageAttributes } from '../models/conversationTypes';
+import type { PubKey } from '../session/types/PubKey'; // checked - only node
 import { redactAll } from '../util/privacy'; // checked - only node
 import {
   arrayStrToJson,
@@ -47,24 +47,24 @@ import {
   OPEN_GROUP_ROOMS_V2_TABLE,
   toSqliteBoolean,
 } from './database_utility';
-import { LocaleMessagesType } from './locale'; // checked - only node
-import { StorageItem } from './storage_item'; // checked - only node
+import type { LocaleMessagesType } from './locale'; // checked - only node
+import type { StorageItem } from './storage_item'; // checked - only node
 
-import { OpenGroupV2Room } from '../data/opengroups';
-import {
-  CONFIG_DUMP_TABLE,
+import type { OpenGroupV2Room } from '../data/opengroups';
+import type {
   MsgDuplicateSearchOpenGroup,
-  roomHasBlindEnabled,
   SaveConversationReturn,
   UnprocessedDataNode,
   UnprocessedParameter,
-  UpdateLastHashType,
+  UpdateLastHashType} from '../types/sqlSharedTypes';
+import {
+  CONFIG_DUMP_TABLE,
+  roomHasBlindEnabled,
 } from '../types/sqlSharedTypes';
 
 import { KNOWN_BLINDED_KEYS_ITEM, SettingsKey } from '../data/settings-key';
-import { MessageAttributes } from '../models/conversationTypes';
 import { SignalService } from '../protobuf';
-import { Quote } from '../receiver/types';
+import type { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';
 import {
   getSQLCipherIntegrityCheck,

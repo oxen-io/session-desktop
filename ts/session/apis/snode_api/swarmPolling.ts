@@ -2,17 +2,18 @@
 /* eslint-disable more/no-then */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { compact, concat, flatten, last, sample, toNumber, uniqBy } from 'lodash';
-import { Data, Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
+import { Data } from '../../../data/data';
 import { SignalService } from '../../../protobuf';
 import * as Receiver from '../../../receiver/receiver';
 import { PubKey } from '../../types';
 import { ERROR_CODE_NO_CONNECT } from './SNodeAPI';
 import * as snodePool from './snodePool';
 
-import { ConversationModel } from '../../../models/conversation';
+import type { ConversationModel } from '../../../models/conversation';
 import { ConfigMessageHandler } from '../../../receiver/configMessage';
 import { decryptEnvelopeWithOurKey } from '../../../receiver/contentMessage';
-import { EnvelopePlus } from '../../../receiver/types';
+import type { EnvelopePlus } from '../../../receiver/types';
 import { updateIsOnline } from '../../../state/ducks/onion';
 import { ReleasedFeatures } from '../../../util/releaseFeature';
 import {
@@ -21,12 +22,12 @@ import {
 } from '../../../webworker/workers/browser/libsession_worker_interface';
 import { DURATION, SWARM_POLLING_TIMEOUT } from '../../constants';
 import { getConversationController } from '../../conversations';
-import { IncomingMessage } from '../../messages/incoming/IncomingMessage';
+import type { IncomingMessage } from '../../messages/incoming/IncomingMessage';
 import { StringUtils, UserUtils } from '../../utils';
 import { LibSessionUtil } from '../../utils/libsession/libsession_utils';
 import { SnodeNamespace, SnodeNamespaces } from './namespaces';
 import { SnodeAPIRetrieve } from './retrieveRequest';
-import { RetrieveMessageItem, RetrieveMessagesResultsBatched } from './types';
+import type { RetrieveMessageItem, RetrieveMessagesResultsBatched } from './types';
 import { ed25519Str } from '../../utils/String';
 
 export function extractWebSocketContent(

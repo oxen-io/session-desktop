@@ -1,9 +1,10 @@
 import AbortController from 'abort-controller';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type {
+  OpenGroupBatchRow} from './sogsV3BatchPoll';
 import {
   batchFirstSubIsSuccess,
   batchGlobalIsSuccess,
-  OpenGroupBatchRow,
   sogsBatchSend,
 } from './sogsV3BatchPoll';
 

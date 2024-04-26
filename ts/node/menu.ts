@@ -1,5 +1,5 @@
 import { isString } from 'lodash';
-import { LocaleMessagesType } from './locale';
+import type { LocaleMessagesType } from './locale';
 
 export const createTemplate = (
   options: {

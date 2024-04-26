@@ -7,7 +7,7 @@ import {
   getThumbnailUrl,
   isVideoAttachment,
 } from '../../types/Attachment';
-import { AttachmentType, AttachmentTypeWithPath } from '../../models/conversationTypes';
+import type { AttachmentType, AttachmentTypeWithPath } from '../../models/conversationTypes';
 
 import { useIsMessageVisible } from '../../contexts/isMessageVisibleContext';
 import { useMessageSelected } from '../../state/selectors';

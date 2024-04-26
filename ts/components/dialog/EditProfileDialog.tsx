@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 // eslint-disable-next-line import/no-named-default
-import { ChangeEvent, MouseEvent, default as React, useState } from 'react';
+import type { ChangeEvent, MouseEvent } from 'react';
+import { default as React, useState } from 'react';
 import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
@@ -9,7 +10,6 @@ import { SyncUtils, ToastUtils, UserUtils } from '../../session/utils';
 import { YourSessionIDPill, YourSessionIDSelectable } from '../basic/YourSessionIDPill';
 
 import { useOurAvatarPath, useOurConversationUsername } from '../../hooks/useParamSelector';
-import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { MAX_USERNAME_BYTES } from '../../session/constants';
 import { getConversationController } from '../../session/conversations';
 import { sanitizeSessionUsername } from '../../session/utils/String';
@@ -50,10 +50,7 @@ const QRView = ({ sessionID }: { sessionID: string }) => {
 
 const updateDisplayName = async (newName: string) => {
   const ourNumber = UserUtils.getOurPubKeyStrFromCache();
-  const conversation = await getConversationController().getOrCreateAndWait(
-    ourNumber,
-    ConversationTypeEnum.PRIVATE
-  );
+  const conversation = await getConversationController().getOrCreateAndWait(ourNumber, 'private');
   conversation.setSessionDisplayNameNoCommit(newName);
 
   // might be good to not trigger a sync if the name did not change

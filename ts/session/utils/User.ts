@@ -4,9 +4,9 @@ import { Data } from '../../data/data';
 import { PubKey } from '../types';
 import { fromHexToArray, toHex } from './String';
 import { getConversationController } from '../conversations';
-import { LokiProfile } from '../../types/Message';
+import type { LokiProfile } from '../../types/Message';
 import { getOurPubKeyStrFromStorage, Storage } from '../../util/storage';
-import { SessionKeyPair } from '../../receiver/keypairs';
+import type { SessionKeyPair } from '../../receiver/keypairs';
 
 export type HexKeyPair = {
   pubKey: string;

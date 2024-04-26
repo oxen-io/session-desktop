@@ -1,6 +1,6 @@
 import { from_string, to_string } from 'libsodium-wrappers-sumo';
 import { isString, omit, toNumber } from 'lodash';
-import { EncodeV4OnionRequestInfos, SnodeResponseV4 } from '../apis/snode_api/onions';
+import type { EncodeV4OnionRequestInfos, SnodeResponseV4 } from '../apis/snode_api/onions';
 import { concatUInt8Array } from '../crypto';
 
 export const encodeV4Request = (requestInfo: EncodeV4OnionRequestInfos): Uint8Array => {

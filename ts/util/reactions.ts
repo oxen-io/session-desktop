@@ -1,12 +1,12 @@
 import { isEmpty } from 'lodash';
 import { Data } from '../data/data';
-import { MessageModel } from '../models/message';
+import type { MessageModel } from '../models/message';
 import { SignalService } from '../protobuf';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { ToastUtils, UserUtils } from '../session/utils';
 
 import { RecentReactions } from '../types/Reaction';
-import { OpenGroupReactionList, ReactionList } from '../models/conversationTypes';
+import type { OpenGroupReactionList, ReactionList } from '../models/conversationTypes';
 import { getRecentReactions, saveRecentReations } from './storage';
 
 const SOGSReactorsFetchCount = 5;

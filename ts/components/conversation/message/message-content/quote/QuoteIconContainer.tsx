@@ -2,12 +2,13 @@ import React from 'react';
 import { isEmpty, noop } from 'lodash';
 import styled from 'styled-components';
 
-import { QuotedAttachmentThumbnailType, QuoteProps } from '../../../../../models/conversationTypes';
+import type { QuotedAttachmentThumbnailType, QuoteProps } from '../../../../../models/conversationTypes';
 import { GoogleChrome } from '../../../../../util';
 import { MIME } from '../../../../../types';
 
 import { QuoteImage } from './QuoteImage';
-import { icons, SessionIconType } from '../../../../icon';
+import type { SessionIconType } from '../../../../icon';
+import { icons } from '../../../../icon';
 
 function getObjectUrl(thumbnail: QuotedAttachmentThumbnailType | undefined): string | undefined {
   if (thumbnail && thumbnail.objectUrl) {

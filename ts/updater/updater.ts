@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable no-console */
 import * as path from 'path';
-import { app, BrowserWindow } from 'electron';
-import { autoUpdater, UpdateInfo } from 'electron-updater';
+import type { BrowserWindow } from 'electron';
+import { app } from 'electron';
+import type { UpdateInfo } from 'electron-updater';
+import { autoUpdater } from 'electron-updater';
 import * as fs from 'fs-extra';
 import { gt as isVersionGreaterThan, parse as parseVersion } from 'semver';
 
 import { windowMarkShouldQuit } from '../node/window_state';
 
 import { getLastestRelease } from '../node/latest_desktop_release';
+import type {
+  LoggerType,
+  MessagesType} from './common';
 import {
   getPrintableError,
-  LoggerType,
-  MessagesType,
   showCannotUpdateDialog,
   showDownloadUpdateDialog,
   showUpdateDialog,

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
 
-import { MediaItemType } from '../../lightbox/LightboxGallery';
+import type { MediaItemType } from '../../lightbox/LightboxGallery';
 import { AttachmentSection } from './AttachmentSection';
 import { EmptyState } from './EmptyState';
 

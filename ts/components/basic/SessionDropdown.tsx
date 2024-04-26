@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { SessionIcon, SessionIconType } from '../icon';
+import type { SessionIconType } from '../icon';
+import { SessionIcon } from '../icon';
 
-import { SessionDropdownItem, SessionDropDownItemType } from './SessionDropdownItem';
+import type { SessionDropDownItemType } from './SessionDropdownItem';
+import { SessionDropdownItem } from './SessionDropdownItem';
 
 // THIS IS DROPDOWN ACCORDION STYLE OPTIONS SELECTOR ELEMENT, NOT A CONTEXTMENU
 

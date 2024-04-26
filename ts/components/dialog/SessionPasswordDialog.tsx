@@ -6,7 +6,7 @@ import { ToastUtils } from '../../session/utils';
 import { Data } from '../../data/data';
 import { SpacerSM } from '../basic/Text';
 import { sessionPassword } from '../../state/ducks/modalDialog';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
+import type { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';

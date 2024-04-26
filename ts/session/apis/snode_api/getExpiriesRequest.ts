@@ -1,16 +1,17 @@
 /* eslint-disable no-restricted-syntax */
 import { isFinite, isNil, isNumber, sample } from 'lodash';
 import pRetry from 'p-retry';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { UserUtils } from '../../utils';
 import { EmptySwarmError } from '../../utils/errors';
 import { SeedNodeAPI } from '../seed_node_api';
-import { GetExpiriesFromNodeSubRequest, fakeHash } from './SnodeRequestTypes';
+import type { GetExpiriesFromNodeSubRequest} from './SnodeRequestTypes';
+import { fakeHash } from './SnodeRequestTypes';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
 import { getSwarmFor } from './snodePool';
 import { SnodeSignature } from './snodeSignatures';
-import { GetExpiriesResultsContent } from './types';
+import type { GetExpiriesResultsContent } from './types';
 
 export type GetExpiriesRequestResponseResults = Record<string, number>;
 

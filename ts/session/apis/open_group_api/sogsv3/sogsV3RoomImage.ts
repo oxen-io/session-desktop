@@ -1,6 +1,6 @@
 import AbortController from 'abort-controller';
 import { isNumber } from 'lodash';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { batchFirstSubIsSuccess, batchGlobalIsSuccess, sogsBatchSend } from './sogsV3BatchPoll';
 import { uploadFileToRoomSogs3 } from './sogsV3SendFile';
 

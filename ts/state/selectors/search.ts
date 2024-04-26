@@ -1,12 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { compact, isEmpty } from 'lodash';
 
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 
-import { ConversationLookupType } from '../ducks/conversations';
-import { SearchStateType } from '../ducks/search';
+import type { ConversationLookupType } from '../ducks/conversations';
+import type { SearchStateType } from '../ducks/search';
 import { getConversationLookup } from './conversations';
-import { MessageResultProps } from '../../models/conversationTypes';
+import type { MessageResultProps } from '../../models/conversationTypes';
 
 export const getSearch = (state: StateType): SearchStateType => state.search;
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SessionIcon, SessionIconType } from '../icon';
-import { PanelButton, PanelButtonProps, PanelButtonText, StyledContent } from './PanelButton';
+import type { SessionIconType } from '../icon';
+import { SessionIcon } from '../icon';
+import type { PanelButtonProps} from './PanelButton';
+import { PanelButton, PanelButtonText, StyledContent } from './PanelButton';
 
 interface PanelIconButton extends Omit<PanelButtonProps, 'children'> {
   iconType: SessionIconType;

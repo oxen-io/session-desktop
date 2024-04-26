@@ -1,6 +1,6 @@
 // this file is a weird one as it is used by both sides of electron at the same time
 
-import { LocaleMessagesType } from '../node/locale';
+import type { LocaleMessagesType } from '../node/locale';
 
 export const setupi18n = (locale: string, messages: LocaleMessagesType) => {
   if (!locale) {

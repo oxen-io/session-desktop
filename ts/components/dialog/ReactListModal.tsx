@@ -16,7 +16,7 @@ import {
   useSelectedIsPublic,
   useSelectedWeAreModerator,
 } from '../../state/selectors/selectedConversation';
-import { SortedReactionList } from '../../models/conversationTypes';
+import type { SortedReactionList } from '../../models/conversationTypes';
 import { nativeEmojiData } from '../../util/emoji';
 import { Reactions } from '../../util/reactions';
 import { SessionWrapperModal } from '../SessionWrapperModal';

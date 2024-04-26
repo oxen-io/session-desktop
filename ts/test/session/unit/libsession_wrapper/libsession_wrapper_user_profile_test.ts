@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import Sinon from 'sinon';
 
 import { ConversationModel } from '../../../../models/conversation';
-import { ConversationAttributes, ConversationTypeEnum } from '../../../../models/conversationTypes';
+import type { ConversationAttributes } from '../../../../models/conversationTypes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';
@@ -18,7 +18,7 @@ describe('libsession_user_profile', () => {
   const ourNumber = TestUtils.generateFakePubKeyStr();
   const validArgs = {
     id: ourNumber,
-    type: ConversationTypeEnum.PRIVATE,
+    type: 'private',
     isApproved: true,
     active_at: 123,
     didApproveMe: true,

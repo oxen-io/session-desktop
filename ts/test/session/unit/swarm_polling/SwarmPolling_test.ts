@@ -3,12 +3,11 @@ import { describe } from 'mocha';
 import Sinon, * as sinon from 'sinon';
 
 import chaiAsPromised from 'chai-as-promised';
-import { ConversationModel } from '../../../../models/conversation';
-import { ConversationTypeEnum } from '../../../../models/conversationTypes';
+import type { ConversationModel } from '../../../../models/conversation';
 import { getSwarmPollingInstance, SnodePool } from '../../../../session/apis/snode_api';
 import { resetHardForkCachedValues } from '../../../../session/apis/snode_api/hfHandling';
 import { SnodeAPIRetrieve } from '../../../../session/apis/snode_api/retrieveRequest';
-import { SwarmPolling } from '../../../../session/apis/snode_api/swarmPolling';
+import type { SwarmPolling } from '../../../../session/apis/snode_api/swarmPolling';
 import { SWARM_POLLING_TIMEOUT } from '../../../../session/constants';
 import { getConversationController } from '../../../../session/conversations';
 import { PubKey } from '../../../../session/types';
@@ -57,7 +56,7 @@ describe('SwarmPolling', () => {
 
     const convoController = getConversationController();
     await convoController.load();
-    getConversationController().getOrCreate(ourPubkey.key, ConversationTypeEnum.PRIVATE);
+    getConversationController().getOrCreate(ourPubkey.key, 'private');
 
     swarmPolling = getSwarmPollingInstance();
     swarmPolling.resetSwarmPolling();
@@ -87,7 +86,7 @@ describe('SwarmPolling', () => {
       it('returns ACTIVE for convo with less than two days old activeAt', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convo.set('active_at', Date.now() - 2 * 23 * 3600 * 1000); // 23 * 2 = 46 hours old
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -98,7 +97,7 @@ describe('SwarmPolling', () => {
       it('returns INACTIVE for convo with undefined activeAt', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convo.set('active_at', undefined);
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -109,7 +108,7 @@ describe('SwarmPolling', () => {
       it('returns MEDIUM_ACTIVE for convo with activeAt of more than 2 days but less than a week old', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convo.set('active_at', Date.now() - 1000 * 3600 * 25 * 2); // 25 hours x 2 = 50 hours old
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -125,7 +124,7 @@ describe('SwarmPolling', () => {
       it('returns INACTIVE for convo with  activeAt of more than a week', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convo.set('active_at', Date.now() - 1000 * 3600 * 24 * 8); // 8 days
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -138,7 +137,7 @@ describe('SwarmPolling', () => {
       it('returns ACTIVE for convo with less than two days old activeAt', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakeClosedGroupV3PkStr(),
-          ConversationTypeEnum.GROUPV3
+          'groupv3'
         );
         convo.set('active_at', Date.now() - 2 * 23 * 3600 * 1000); // 23 * 2 = 46 hours old
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -149,7 +148,7 @@ describe('SwarmPolling', () => {
       it('returns INACTIVE for convo with undefined activeAt', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakeClosedGroupV3PkStr(),
-          ConversationTypeEnum.GROUPV3
+          'groupv3'
         );
         convo.set('active_at', undefined);
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -160,7 +159,7 @@ describe('SwarmPolling', () => {
       it('returns MEDIUM_ACTIVE for convo with activeAt of more than 2 days but less than a week old', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakeClosedGroupV3PkStr(),
-          ConversationTypeEnum.GROUPV3
+          'groupv3'
         );
         convo.set('active_at', Date.now() - 1000 * 3600 * 25 * 2); // 25 hours x 2 = 50 hours old
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -176,7 +175,7 @@ describe('SwarmPolling', () => {
       it('returns INACTIVE for convo with  activeAt of more than a week', () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakeClosedGroupV3PkStr(),
-          ConversationTypeEnum.GROUPV3
+          'groupv3'
         );
         convo.set('active_at', Date.now() - 1000 * 3600 * 24 * 8); // 8 days
         expect(swarmPolling.getPollingTimeout(PubKey.cast(convo.id as string))).to.eq(
@@ -194,10 +193,7 @@ describe('SwarmPolling', () => {
       Sinon.restore();
     });
     it('does run for our pubkey even if activeAt is really old ', async () => {
-      const convo = getConversationController().getOrCreate(
-        ourNumber,
-        ConversationTypeEnum.PRIVATE
-      );
+      const convo = getConversationController().getOrCreate(ourNumber, 'private');
       convo.set('active_at', Date.now() - 1000 * 3600 * 25);
       await swarmPolling.start(true);
 
@@ -206,10 +202,7 @@ describe('SwarmPolling', () => {
     });
 
     it('does run for our pubkey even if activeAt is recent ', async () => {
-      const convo = getConversationController().getOrCreate(
-        ourNumber,
-        ConversationTypeEnum.PRIVATE
-      );
+      const convo = getConversationController().getOrCreate(ourNumber, 'private');
       convo.set('active_at', Date.now());
       await swarmPolling.start(true);
 
@@ -221,7 +214,7 @@ describe('SwarmPolling', () => {
       it('does run for group pubkey on start no matter the recent timestamp', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         TestUtils.stubLibSessionWorker(undefined);
         convo.set('active_at', Date.now());
@@ -238,7 +231,7 @@ describe('SwarmPolling', () => {
       it('does only poll from -10 for closed groups if HF >= 19.1  ', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         TestUtils.stubLibSessionWorker(undefined);
         getItemByIdStub.restore();
@@ -268,7 +261,7 @@ describe('SwarmPolling', () => {
       it('does run for group pubkey on start but not another time if activeAt is old ', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         TestUtils.stubLibSessionWorker(undefined);
 
@@ -291,7 +284,7 @@ describe('SwarmPolling', () => {
       it('does run twice if activeAt less than one hour ', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
 
         // fake that the group is part of the wrapper otherwise we stop tracking it after the first polling event
@@ -324,7 +317,7 @@ describe('SwarmPolling', () => {
       it('does run twice if activeAt is inactive and we tick longer than 2 minutes', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         // fake that the group is part of the wrapper otherwise we stop tracking it after the first polling event
         Sinon.stub(UserGroupsWrapperActions, 'getLegacyGroup').resolves({} as any);
@@ -356,7 +349,7 @@ describe('SwarmPolling', () => {
       it('does run once only if group is inactive and we tick less than 2 minutes ', async () => {
         const convo = getConversationController().getOrCreate(
           TestUtils.generateFakePubKeyStr(),
-          ConversationTypeEnum.GROUP
+          'group'
         );
         pollOnceForKeySpy.resetHistory();
         TestUtils.stubLibSessionWorker(undefined);
@@ -384,7 +377,7 @@ describe('SwarmPolling', () => {
         beforeEach(async () => {
           convo = getConversationController().getOrCreate(
             TestUtils.generateFakePubKeyStr(),
-            ConversationTypeEnum.GROUP
+            'group'
           );
           TestUtils.stubLibSessionWorker({});
 

@@ -2,11 +2,10 @@
 import { expect } from 'chai';
 import Sinon from 'sinon';
 import { KNOWN_BLINDED_KEYS_ITEM } from '../../../../data/settings-key';
-import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { getSodiumNode } from '../../../../node/sodiumNode';
+import type { BlindedIdMapping } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import {
   addCachedBlindedKey,
-  BlindedIdMapping,
   findCachedBlindedIdFromUnblinded,
   findCachedBlindedMatchOrLookItUp,
   getCachedNakedKeyFromBlinded,
@@ -20,7 +19,7 @@ import {
   writeKnownBlindedKeys,
 } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../../../../session/conversations';
-import { LibSodiumWrappers } from '../../../../session/crypto';
+import type { LibSodiumWrappers } from '../../../../session/crypto';
 import { UserUtils } from '../../../../session/utils';
 import { expectAsyncToThrow, stubData, stubWindowLog } from '../../../test-utils/utils';
 import { TestUtils } from '../../../test-utils';
@@ -514,18 +513,12 @@ describe('knownBlindedKeys', () => {
       it('does iterate over all the conversations and find the first one matching (passes)', async () => {
         await loadKnownBlindedKeys();
         // adding a private conversation with a known match of the blinded pubkey we have
-        await getConversationController().getOrCreateAndWait(
-          realSessionId,
-          ConversationTypeEnum.PRIVATE
-        );
+        await getConversationController().getOrCreateAndWait(realSessionId, 'private');
         const convo = await getConversationController().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
-          ConversationTypeEnum.PRIVATE
+          'private'
         );
-        await getConversationController().getOrCreateAndWait(
-          realSessionId2,
-          ConversationTypeEnum.PRIVATE
-        );
+        await getConversationController().getOrCreateAndWait(realSessionId2, 'private');
         convo.set({ isApproved: true });
         const real = await findCachedBlindedMatchOrLookItUp(
           knownBlindingMatch.blindedId,
@@ -548,7 +541,7 @@ describe('knownBlindedKeys', () => {
         // adding a private conversation with a known match of the blinded pubkey we have
         const convo = await getConversationController().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
-          ConversationTypeEnum.PRIVATE
+          'private'
         );
         convo.set({ isApproved: false });
         const real = await findCachedBlindedMatchOrLookItUp(
@@ -566,7 +559,7 @@ describe('knownBlindedKeys', () => {
         // adding a private conversation with a known match of the blinded pubkey we have
         const convo = await getConversationController().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convo.set({ isApproved: false });
         const real = await findCachedBlindedMatchOrLookItUp(

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 // tslint:disable-next-line: no-submodule-imports
 import useKey from 'react-use/lib/useKey';
 import { closeRightPanel } from '../../../../../state/ducks/conversations';
-import { PropsForAttachment } from '../../../../../models/conversationTypes';
+import type { PropsForAttachment } from '../../../../../models/conversationTypes';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../../state/ducks/section';
 import { getMessageInfoId } from '../../../../../state/selectors/conversations';
 import { Flex } from '../../../../basic/Flex';

@@ -1,17 +1,18 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai';
 import Sinon from 'sinon';
+import type {
+  SogsV3Mutation} from '../../../../session/apis/open_group_api/sogsv3/sogsV3MutationCache';
 import {
   addToMutationCache,
   ChangeType,
   getMutationCache,
   processMessagesUsingCache,
-  SogsV3Mutation,
   updateMutationCache,
 } from '../../../../session/apis/open_group_api/sogsv3/sogsV3MutationCache';
 import { TestUtils } from '../../../test-utils';
 import { Reactions } from '../../../../util/reactions';
-import {
+import type {
   OpenGroupMessageV4,
   OpenGroupReactionMessageV4,
 } from '../../../../session/apis/open_group_api/opengroupV2/OpenGroupServerPoller';

@@ -4,26 +4,20 @@
 import { clone, groupBy, isEqual, uniqBy } from 'lodash';
 import autoBind from 'auto-bind';
 
-import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationModel } from '../../../../models/conversation';
+import type { OpenGroupV2Room } from '../../../../data/opengroups';
+import { OpenGroupData } from '../../../../data/opengroups';
+import type { ConversationModel } from '../../../../models/conversation';
 import { getConversationController } from '../../../conversations';
 import { allowOnlyOneAtATime } from '../../../utils/Promise';
 import {
   getAllValidOpenGroupV2ConversationRoomInfos,
   getOpenGroupV2ConversationId,
 } from '../utils/OpenGroupUtils';
-import {
-  OpenGroupRequestCommonType,
-  ourSogsDomainName,
-  ourSogsLegacyIp,
-  ourSogsUrl,
-} from './ApiUtil';
+import type { OpenGroupRequestCommonType } from './ApiUtil';
+import { ourSogsDomainName, ourSogsLegacyIp, ourSogsUrl } from './ApiUtil';
 import { OpenGroupServerPoller } from './OpenGroupServerPoller';
 
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationTypeEnum,
-} from '../../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
 import { SessionUtilUserGroups } from '../../../utils/libsession/libsession_utils_user_groups';
 import { openGroupV2GetRoomInfoViaOnionV4 } from '../sogsv3/sogsV3RoomInfos';
 import { UserGroupsWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
@@ -205,7 +199,7 @@ export class OpenGroupManagerV2 {
 
       const conversation = await getConversationController().getOrCreateAndWait(
         conversationId,
-        ConversationTypeEnum.GROUP
+        'group'
       );
       updatedRoom.imageID = roomInfos.imageId || undefined;
       updatedRoom.roomName = roomInfos.name || undefined;

@@ -1,7 +1,7 @@
 import { ContentMessage } from '..';
 import { Constants } from '../../..';
 import { SignalService } from '../../../../protobuf';
-import { MessageParams } from '../Message';
+import type { MessageParams } from '../Message';
 
 interface TypingMessageParams extends MessageParams {
   isTyping: boolean;

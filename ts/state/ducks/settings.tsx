@@ -1,6 +1,7 @@
 import { isBoolean } from 'lodash';
 
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { SettingsKey } from '../../data/settings-key'; // ok: does not import anything else
 
 const SettingsBoolsKeyTrackedInRedux = [

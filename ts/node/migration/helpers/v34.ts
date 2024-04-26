@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
-import {
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type {
   ContactInfoSet,
   ContactsConfigWrapperNode,
   DisappearingMessageConversationModeType,
@@ -10,14 +10,11 @@ import {
 } from 'libsession_util_nodejs';
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { isEmpty, isEqual } from 'lodash';
-import { CONVERSATION_PRIORITIES } from '../../../models/conversationTypes';
-import { HexKeyPair } from '../../../receiver/keypairs';
+import { CONVERSATION_PRIORITIES } from '../../../models/constEnums';
+import type { HexKeyPair } from '../../../receiver/keypairs';
 import { fromHexToArray } from '../../../session/utils/String';
-import {
-  CONFIG_DUMP_TABLE,
-  ConfigDumpRow,
-  maybeArrayJSONtoArray,
-} from '../../../types/sqlSharedTypes';
+import type { ConfigDumpRow } from '../../../types/sqlSharedTypes';
+import { CONFIG_DUMP_TABLE, maybeArrayJSONtoArray } from '../../../types/sqlSharedTypes';
 import { sqlNode } from '../../sql';
 import { checkTargetMigration, hasDebugEnvVariable } from '../utils';
 

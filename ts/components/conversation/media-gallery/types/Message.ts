@@ -1,4 +1,4 @@
-import { Attachment } from '../../../../types/Attachment';
+import type { Attachment } from '../../../../types/Attachment';
 
 export type Message = {
   id: string;

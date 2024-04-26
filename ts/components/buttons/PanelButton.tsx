@@ -1,5 +1,7 @@
-import React, { ReactNode } from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import type { ReactNode } from 'react';
+import React from 'react';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { Flex } from '../basic/Flex';
 
 // NOTE Used for descendant components

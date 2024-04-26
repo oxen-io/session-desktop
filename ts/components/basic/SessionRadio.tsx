@@ -1,5 +1,7 @@
-import React, { ChangeEvent } from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import type { ChangeEvent } from 'react';
+import React from 'react';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { Flex } from './Flex';
 
 const StyledButton = styled.button<{ disabled: boolean }>`

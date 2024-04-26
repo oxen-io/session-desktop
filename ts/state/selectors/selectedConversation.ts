@@ -2,16 +2,15 @@ import { isString } from 'lodash';
 import { useSelector } from 'react-redux';
 import { useUnreadCount } from '../../hooks/useParamSelector';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
-import {
-  ConversationTypeEnum,
+import type {
   DisappearingMessageConversationModeType,
+  ReduxConversationType,
 } from '../../models/conversationTypes';
 import { DisappearingMessageConversationModes } from '../../session/disappearing_messages/types';
 import { PubKey } from '../../session/types';
 import { UserUtils } from '../../session/utils';
 import { ReleasedFeatures } from '../../util/releaseFeature';
-import { ReduxConversationType } from '../../models/conversationTypes';
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 import {
   getIsMessageSelectionMode,
   getSelectedConversation,
@@ -123,7 +122,7 @@ function getSelectedBlindedDisabledMsgRequests(state: StateType) {
   return isBlindedAndDisabledMsgRequests;
 }
 
-const getSelectedConversationType = (state: StateType): ConversationTypeEnum | null => {
+const getSelectedConversationType = (state: StateType) => {
   const selected = getSelectedConversation(state);
   if (!selected || !selected.type) {
     return null;
@@ -141,7 +140,7 @@ const getSelectedConversationIsGroupV2 = (state: StateType): boolean => {
   if (!selected || !selected.type) {
     return false;
   }
-  return selected.type === ConversationTypeEnum.GROUPV3;
+  return selected.type === 'groupv3';
 };
 
 /**
@@ -152,11 +151,7 @@ export const isClosedGroupConversation = (state: StateType): boolean => {
   if (!selected) {
     return false;
   }
-  return (
-    (selected.type === ConversationTypeEnum.GROUP && !selected.isPublic) ||
-    selected.type === ConversationTypeEnum.GROUPV3 ||
-    false
-  );
+  return (selected.type === 'group' && !selected.isPublic) || selected.type === 'groupv3' || false;
 };
 
 const getSelectedGroupMembers = (state: StateType): Array<string> => {

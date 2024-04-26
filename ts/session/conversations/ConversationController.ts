@@ -1,11 +1,12 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable more/no-then */
-import { ConvoVolatileType } from 'libsession_util_nodejs';
+import type { ConvoVolatileType } from 'libsession_util_nodejs';
 import { isEmpty, isNil } from 'lodash';
 
 import { Data } from '../../data/data';
 import { OpenGroupData } from '../../data/opengroups';
-import { ConversationCollection, ConversationModel } from '../../models/conversation';
+import type { ConversationModel } from '../../models/conversation';
+import { ConversationCollection } from '../../models/conversation';
 import {
   actions as conversationActions,
   resetConversationExternal,
@@ -17,7 +18,8 @@ import { PubKey } from '../types';
 
 import { getMessageQueue } from '..';
 import { deleteAllMessagesByConvoIdNoConfirmation } from '../../interactions/conversationInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../../models/conversationTypes';
+import { ConversationTypeEnum } from '../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
 import { removeAllClosedGroupEncryptionKeyPairs } from '../../receiver/closedGroups';
 import { getCurrentlySelectedConversationOutsideRedux } from '../../state/selectors/conversations';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
@@ -90,15 +92,11 @@ export class ConversationController {
       throw new TypeError("'id' must be a string");
     }
 
-    if (
-      type !== ConversationTypeEnum.PRIVATE &&
-      type !== ConversationTypeEnum.GROUP &&
-      type !== ConversationTypeEnum.GROUPV3
-    ) {
+    if (type !== 'private' && type !== 'group' && type !== 'groupv3') {
       throw new TypeError(`'type' must be 'private' or 'group' or 'groupv3' but got: '${type}'`);
     }
 
-    if (type === ConversationTypeEnum.GROUPV3 && !PubKey.isClosedGroupV3(id)) {
+    if (type === 'groupv3' && !PubKey.isClosedGroupV3(id)) {
       throw new Error(
         'required v3 closed group` ` but the pubkey does not match the 03 prefix for them'
       );

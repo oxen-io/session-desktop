@@ -1,18 +1,20 @@
 import AbortController from 'abort-controller';
-import { OpenGroupReactionResponse } from '../../../../models/conversationTypes';
+import type { OpenGroupReactionResponse } from '../../../../models/conversationTypes';
 import { Reactions } from '../../../../util/reactions';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
+import type {
+  OpenGroupBatchRow} from './sogsV3BatchPoll';
 import {
   batchFirstSubIsSuccess,
   batchGlobalIsSuccess,
-  OpenGroupBatchRow,
   sogsBatchSend,
 } from './sogsV3BatchPoll';
+import type {
+  SogsV3Mutation} from './sogsV3MutationCache';
 import {
   addToMutationCache,
   ChangeType,
-  SogsV3Mutation,
   updateMutationCache,
 } from './sogsV3MutationCache';
 import { hasReactionSupport } from './sogsV3SendReaction';

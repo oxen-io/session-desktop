@@ -6,11 +6,12 @@ import { isUsAnySogsFromCache } from '../../../../session/apis/open_group_api/so
 import { UserUtils } from '../../../../session/utils';
 import { useIsMessageSelectionMode } from '../../../../state/selectors/selectedConversation';
 import { THEME_GLOBALS } from '../../../../themes/globals';
-import { SortedReactionList } from '../../../../models/conversationTypes';
+import type { SortedReactionList } from '../../../../models/conversationTypes';
 import { abbreviateNumber } from '../../../../util/abbreviateNumber';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { popupXDefault, popupYDefault } from '../message-content/MessageReactions';
-import { POPUP_WIDTH, ReactionPopup, TipPosition } from './ReactionPopup';
+import type { TipPosition } from './ReactionPopup';
+import { POPUP_WIDTH, ReactionPopup } from './ReactionPopup';
 
 const StyledReaction = styled.button<{
   selected: boolean;

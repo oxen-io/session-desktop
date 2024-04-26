@@ -1,4 +1,5 @@
-import AbortController, { AbortSignal } from 'abort-controller';
+import type { AbortSignal } from 'abort-controller';
+import AbortController from 'abort-controller';
 import { isArray, isEmpty, isEqual, isObject } from 'lodash';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { OnionSending } from '../../../onions/onionSend';

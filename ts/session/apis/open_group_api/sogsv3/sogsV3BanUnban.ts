@@ -1,7 +1,8 @@
 import AbortController from 'abort-controller';
-import { PubKey } from '../../../types';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
-import { batchFirstSubIsSuccess, OpenGroupBatchRow, sogsBatchSend } from './sogsV3BatchPoll';
+import type { PubKey } from '../../../types';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupBatchRow} from './sogsV3BatchPoll';
+import { batchFirstSubIsSuccess, sogsBatchSend } from './sogsV3BatchPoll';
 
 export const sogsV3BanUser = async (
   userToBan: PubKey,

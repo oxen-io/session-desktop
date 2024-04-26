@@ -1,7 +1,7 @@
 import { app, clipboard, dialog } from 'electron';
 import { redactAll } from '../util/privacy'; // checked - only node
-import { LocaleMessagesType } from './locale'; // checked - only node
-import { ConsoleCustom } from './logging'; // checked - only node
+import type { LocaleMessagesType } from './locale'; // checked - only node
+import type { ConsoleCustom } from './logging'; // checked - only node
 
 // We use hard-coded strings until we're able to update these strings from the locale.
 let quitText = 'Quit';

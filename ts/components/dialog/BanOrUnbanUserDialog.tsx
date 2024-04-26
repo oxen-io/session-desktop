@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useFocusMount } from '../../hooks/useFocusMount';
 import { useConversationPropsById } from '../../hooks/useParamSelector';
-import { ConversationModel } from '../../models/conversation';
+import type { ConversationModel } from '../../models/conversation';
 import {
   sogsV3BanUser,
   sogsV3UnbanUser,
@@ -11,7 +11,8 @@ import {
 import { getConversationController } from '../../session/conversations/ConversationController';
 import { PubKey } from '../../session/types';
 import { ToastUtils } from '../../session/utils';
-import { BanType, updateBanOrUnbanUserModal } from '../../state/ducks/modalDialog';
+import type { BanType} from '../../state/ducks/modalDialog';
+import { updateBanOrUnbanUserModal } from '../../state/ducks/modalDialog';
 import { isDarkTheme } from '../../state/selectors/theme';
 import { SessionHeaderSearchInput } from '../SessionHeaderSearchInput';
 import { SessionWrapperModal } from '../SessionWrapperModal';

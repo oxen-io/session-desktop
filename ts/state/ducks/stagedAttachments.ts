@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import { StagedAttachmentType } from '../../components/conversation/composition/CompositionBox';
+import type { StagedAttachmentType } from '../../components/conversation/composition/CompositionBox';
 
 export type StagedAttachmentsStateType = {
   stagedAttachments: { [conversationKey: string]: Array<StagedAttachmentType> };

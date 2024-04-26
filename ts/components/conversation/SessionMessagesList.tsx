@@ -2,11 +2,9 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import useKey from 'react-use/lib/useKey';
-import {
+import type {
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
-} from '../../models/conversationTypes';
-import {
   PropsForCallNotification,
   PropsForExpirationTimer,
   PropsForGroupInvitation,

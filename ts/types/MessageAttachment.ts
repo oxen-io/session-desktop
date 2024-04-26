@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { isArrayBuffer, isEmpty, isString, isUndefined, omit } from 'lodash';
-import { ConversationAttributes } from '../models/conversationTypes';
+import type { ConversationAttributes } from '../models/conversationTypes';
 import { createDeleter, getAttachmentsPath } from '../shared/attachments/shared_attachments';
 import {
   createAbsolutePathGetter,

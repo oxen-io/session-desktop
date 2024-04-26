@@ -20,10 +20,8 @@ import {
   showUpdateGroupMembersByConvoId,
   showUpdateGroupNameByConvoId,
 } from '../../../../interactions/conversationInteractions';
-import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
-} from '../../../../models/conversationTypes';
+import type { AttachmentTypeWithPath } from '../../../../models/conversationTypes';
+
 import { Constants } from '../../../../session';
 import { closeRightPanel } from '../../../../state/ducks/conversations';
 import { resetRightOverlayMode, setRightOverlayMode } from '../../../../state/ducks/section';
@@ -40,13 +38,12 @@ import {
   useSelectedSubscriberCount,
   useSelectedWeAreAdmin,
 } from '../../../../state/selectors/selectedConversation';
-import { AttachmentTypeWithPath } from '../../../../models/conversationTypes';
 import { getAbsoluteAttachmentPath } from '../../../../types/MessageAttachment';
 import { Avatar, AvatarSize } from '../../../avatar/Avatar';
 import { Flex } from '../../../basic/Flex';
 import { SpacerLG, SpacerMD, SpacerXL } from '../../../basic/Text';
 import { PanelButtonGroup, PanelIconButton } from '../../../buttons';
-import { MediaItemType } from '../../../lightbox/LightboxGallery';
+import type { MediaItemType } from '../../../lightbox/LightboxGallery';
 import { MediaGallery } from '../../media-gallery/MediaGallery';
 import { Header, StyledScrollContainer } from './components';
 
@@ -260,8 +257,7 @@ export const OverlayRightPanelSettings = () => {
   const hasDisappearingMessages = !isPublic && !commonNoShow;
   const leaveGroupString = isPublic
     ? window.i18n('leaveCommunity')
-    : lastMessage?.interactionType === ConversationInteractionType.Leave &&
-        lastMessage?.interactionStatus === ConversationInteractionStatus.Error
+    : lastMessage?.interactionType === 'leave' && lastMessage?.interactionStatus === 'error'
       ? window.i18n('deleteConversation')
       : isKickedFromGroup
         ? window.i18n('youGotKickedFromGroup')

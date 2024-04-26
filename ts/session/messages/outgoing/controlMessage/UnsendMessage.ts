@@ -1,6 +1,6 @@
 import { SignalService } from '../../../../protobuf';
 import { ContentMessage } from '../ContentMessage';
-import { MessageParams } from '../Message';
+import type { MessageParams } from '../Message';
 
 interface UnsendMessageParams extends MessageParams {
   timestamp: number;

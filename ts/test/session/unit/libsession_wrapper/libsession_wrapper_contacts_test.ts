@@ -2,11 +2,8 @@ import { expect } from 'chai';
 
 import Sinon from 'sinon';
 import { ConversationModel } from '../../../../models/conversation';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
-  ConversationTypeEnum,
-} from '../../../../models/conversationTypes';
+import type { ConversationAttributes } from '../../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';
@@ -22,7 +19,7 @@ describe('libsession_contacts', () => {
   const validArgs = {
     // NOTE we hardcode this key to make testing easier for bad whitespaces
     id: '050123456789abcdef050123456789abcdef0123456789abcdef050123456789ab',
-    type: ConversationTypeEnum.PRIVATE,
+    type: 'private',
     isApproved: true,
     active_at: 123,
     didApproveMe: true,
@@ -50,7 +47,7 @@ describe('libsession_contacts', () => {
     it('excludes non private', () => {
       expect(
         SessionUtilContact.isContactToStoreInWrapper(
-          new ConversationModel({ ...validArgs, type: ConversationTypeEnum.GROUP })
+          new ConversationModel({ ...validArgs, type: 'group' })
         )
       ).to.be.eq(false);
     });
@@ -58,7 +55,7 @@ describe('libsession_contacts', () => {
     it('includes private', () => {
       expect(
         SessionUtilContact.isContactToStoreInWrapper(
-          new ConversationModel({ ...validArgs, type: ConversationTypeEnum.PRIVATE })
+          new ConversationModel({ ...validArgs, type: 'private' })
         )
       ).to.be.eq(true);
     });
@@ -68,7 +65,7 @@ describe('libsession_contacts', () => {
         SessionUtilContact.isContactToStoreInWrapper(
           new ConversationModel({
             ...validArgs,
-            type: ConversationTypeEnum.PRIVATE,
+            type: 'private',
             priority: CONVERSATION_PRIORITIES.hidden,
           })
         )
@@ -80,7 +77,7 @@ describe('libsession_contacts', () => {
         SessionUtilContact.isContactToStoreInWrapper(
           new ConversationModel({
             ...validArgs,
-            type: ConversationTypeEnum.PRIVATE,
+            type: 'private',
             id: '1511111111111',
           })
         )
@@ -92,7 +89,7 @@ describe('libsession_contacts', () => {
         SessionUtilContact.isContactToStoreInWrapper(
           new ConversationModel({
             ...validArgs,
-            type: ConversationTypeEnum.PRIVATE,
+            type: 'private',
             priority: CONVERSATION_PRIORITIES.hidden,
             active_at: 0,
           })

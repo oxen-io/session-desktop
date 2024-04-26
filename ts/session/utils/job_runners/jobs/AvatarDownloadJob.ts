@@ -9,9 +9,10 @@ import { decryptProfile } from '../../../../util/crypto/profileEncrypter';
 import { getConversationController } from '../../../conversations';
 import { fromHexToArray } from '../../String';
 import { runners } from '../JobRunner';
-import {
+import type {
   AddJobCheckReturn,
-  AvatarDownloadPersistedData,
+  AvatarDownloadPersistedData} from '../PersistedJob';
+import {
   PersistedJob,
   RunJobResult,
 } from '../PersistedJob';

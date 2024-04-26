@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
+import type { Dispatch} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { isNumber } from 'lodash';
-import { Item, ItemParams, Menu, useContextMenu } from 'react-contexify';
+import type { ItemParams} from 'react-contexify';
+import { Item, Menu, useContextMenu } from 'react-contexify';
 import { useDispatch } from 'react-redux';
 import { useClickAway, useMouse } from 'react-use';
 import styled from 'styled-components';
@@ -15,7 +17,7 @@ import {
   addSenderAsModerator,
   removeSenderFromModerator,
 } from '../../../../interactions/messageInteractions';
-import { MessageRenderingProps } from '../../../../models/conversationTypes';
+import type { MessageRenderingProps } from '../../../../models/conversationTypes';
 import { pushUnblockToSend } from '../../../../session/utils/Toast';
 import {
   openRightPanel,

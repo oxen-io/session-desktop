@@ -8,7 +8,7 @@ import {
 } from '../../state/ducks/stagedAttachments';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 import { areAllAttachmentsVisual, getUrl, isVideoAttachment } from '../../types/Attachment';
-import { AttachmentType } from '../../models/conversationTypes';
+import type { AttachmentType } from '../../models/conversationTypes';
 import { isImageTypeSupported, isVideoTypeSupported } from '../../util/GoogleChrome';
 import { Image } from './Image';
 import { StagedGenericAttachment } from './StagedGenericAttachment';

@@ -8,16 +8,18 @@ import { ConfigurationSyncJobDone } from '../../../../shims/events';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';
 import { isSignInByLinking } from '../../../../util/storage';
 import { GenericWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
-import { NotEmptyArrayOfBatchResults } from '../../../apis/snode_api/SnodeRequestTypes';
+import type { NotEmptyArrayOfBatchResults } from '../../../apis/snode_api/SnodeRequestTypes';
 import { getConversationController } from '../../../conversations';
-import { SharedConfigMessage } from '../../../messages/outgoing/controlMessage/SharedConfigMessage';
+import type { SharedConfigMessage } from '../../../messages/outgoing/controlMessage/SharedConfigMessage';
 import { MessageSender } from '../../../sending/MessageSender';
 import { allowOnlyOneAtATime } from '../../Promise';
-import { LibSessionUtil, OutgoingConfResult } from '../../libsession/libsession_utils';
+import type { OutgoingConfResult } from '../../libsession/libsession_utils';
+import { LibSessionUtil } from '../../libsession/libsession_utils';
 import { runners } from '../JobRunner';
-import {
+import type {
   AddJobCheckReturn,
-  ConfigurationSyncPersistedData,
+  ConfigurationSyncPersistedData} from '../PersistedJob';
+import {
   PersistedJob,
   RunJobResult,
 } from '../PersistedJob';

@@ -1,15 +1,19 @@
 /* eslint-disable no-restricted-syntax */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { omit, toNumber } from 'lodash';
 
 import { Data } from '../../data/data';
 
-import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
-import { LightBoxOptions } from '../../components/conversation/SessionConversation';
-import { CONVERSATION_PRIORITIES, ReduxConversationType } from '../../models/conversationTypes';
+import type { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
+import type { LightBoxOptions } from '../../components/conversation/SessionConversation';
+import type {
+  ReduxConversationType,
+  MessageModelPropsWithoutConvoProps,
+} from '../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
 import { getConversationController } from '../../session/conversations';
 import { DisappearingMessages } from '../../session/disappearing_messages';
-import { MessageModelPropsWithoutConvoProps } from '../../models/conversationTypes';
 
 export type ConversationLookupType = {
   [key: string]: ReduxConversationType;

@@ -15,8 +15,7 @@ import {
   Storage,
 } from './storage';
 import { Registration } from './registration';
-import { ConversationTypeEnum } from '../models/conversationTypes';
-import { SessionKeyPair } from '../receiver/keypairs';
+import type { SessionKeyPair } from '../receiver/keypairs';
 import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
 
 /**
@@ -194,10 +193,7 @@ async function registrationDone(ourPubkey: string, displayName: string) {
     window.log.warn('LibSessionUtil.initializeLibSessionUtilWrappers failed with', e.message);
   }
   // Ensure that we always have a conversation for ourself
-  const conversation = await getConversationController().getOrCreateAndWait(
-    ourPubkey,
-    ConversationTypeEnum.PRIVATE
-  );
+  const conversation = await getConversationController().getOrCreateAndWait(ourPubkey, 'private');
   conversation.setSessionDisplayNameNoCommit(displayName);
 
   await conversation.setIsApproved(true, false);

@@ -4,10 +4,15 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
-import { MessageModelType, MessageRenderingProps } from '../../../../models/conversationTypes';
+import type {
+  MessageModelType,
+  MessageRenderingProps,
+  PropsForAttachment,
+  AttachmentType,
+  AttachmentTypeWithPath,
+} from '../../../../models/conversationTypes';
 import { showLightBox, toggleSelectedMessageId } from '../../../../state/ducks/conversations';
-import { PropsForAttachment } from '../../../../models/conversationTypes';
-import { StateType } from '../../../../state/reducer';
+import type { StateType } from '../../../../state/reducer';
 import { useMessageSelected } from '../../../../state/selectors';
 import {
   getMessageAttachmentProps,
@@ -22,12 +27,11 @@ import {
   isImage,
   isVideo,
 } from '../../../../types/Attachment';
-import { AttachmentType, AttachmentTypeWithPath } from '../../../../models/conversationTypes';
 import { saveAttachmentToDisk } from '../../../../util/attachmentsUtil';
 import { Spinner } from '../../../basic/Spinner';
 import { AudioPlayerWithEncryptedFile } from '../../H5AudioPlayer';
 import { ImageGrid } from '../../ImageGrid';
-import { LightBoxOptions } from '../../SessionConversation';
+import type { LightBoxOptions } from '../../SessionConversation';
 import { ClickToTrustSender } from './ClickToTrustSender';
 import { MessageHighlighter } from './MessageHighlighter';
 

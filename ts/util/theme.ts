@@ -1,4 +1,4 @@
-import { ThemeStateType } from '../themes/constants/colors';
+import type { ThemeStateType } from '../themes/constants/colors';
 
 export const checkDarkTheme = (theme: ThemeStateType): boolean => theme.includes('dark');
 export const checkLightTheme = (theme: ThemeStateType): boolean => theme.includes('light');

@@ -4,7 +4,7 @@ import moment from 'moment';
 import * as Attachment from '../../types/Attachment';
 import * as MIME from '../../types/MIME';
 import { SignalService } from '../../protobuf';
-import { AttachmentType } from '../../models/conversationTypes';
+import type { AttachmentType } from '../../models/conversationTypes';
 
 const stringToArrayBuffer = (str: string) => {
   if (typeof str !== 'string') {

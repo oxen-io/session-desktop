@@ -5,9 +5,10 @@ import useKey from 'react-use/lib/useKey';
 
 import { SessionJoinableRooms } from './SessionJoinableDefaultRooms';
 
+import type {
+  JoinSogsRoomUICallbackArgs} from '../../../session/apis/open_group_api/opengroupV2/JoinOpenGroupV2';
 import {
   joinOpenGroupV2WithUIEvents,
-  JoinSogsRoomUICallbackArgs,
 } from '../../../session/apis/open_group_api/opengroupV2/JoinOpenGroupV2';
 import { openGroupV2CompleteURLRegex } from '../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ToastUtils } from '../../../session/utils';

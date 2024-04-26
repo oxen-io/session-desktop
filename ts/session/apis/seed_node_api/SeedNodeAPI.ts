@@ -11,7 +11,7 @@ import { SeedNodeAPI } from '.';
 import { allowOnlyOneAtATime } from '../../utils/Promise';
 import { APPLICATION_JSON } from '../../../types/MIME';
 import { isLinux } from '../../../OS';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 
 /**
  * Fetch all snodes from seed nodes.

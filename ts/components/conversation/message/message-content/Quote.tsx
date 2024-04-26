@@ -14,7 +14,7 @@ import {
 } from '../../../../state/selectors/selectedConversation';
 import { ContactName } from '../../ContactName';
 import { MessageBody } from './MessageBody';
-import { MIMEType } from '../../../../models/conversationTypes';
+import type { MIMEType } from '../../../../models/conversationTypes';
 
 export type QuotePropsWithoutListener = {
   attachment?: QuotedAttachmentType;

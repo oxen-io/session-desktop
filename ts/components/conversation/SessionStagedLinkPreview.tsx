@@ -1,8 +1,8 @@
 import React from 'react';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
-import { AbortSignal } from 'abort-controller';
-import { StagedLinkPreviewData } from './composition/CompositionBox';
+import type { AbortSignal } from 'abort-controller';
+import type { StagedLinkPreviewData } from './composition/CompositionBox';
 
 import { arrayBufferFromFile } from '../../types/Attachment';
 import { AttachmentUtil, LinkPreviewUtil } from '../../util';

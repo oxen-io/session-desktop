@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
-import { SettingsViewProps } from './SessionSettings';
+import type { SettingsViewProps } from './SessionSettings';
 
 type Props = Pick<SettingsViewProps, 'category'>;
 

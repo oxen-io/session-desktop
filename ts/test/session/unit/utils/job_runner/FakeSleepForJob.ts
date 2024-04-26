@@ -1,10 +1,11 @@
 import { isNumber } from 'lodash';
 import { v4 } from 'uuid';
 import { sleepFor } from '../../../../../session/utils/Promise';
-import {
+import type {
   AddJobCheckReturn,
   FakeSleepForMultiJobData,
-  FakeSleepJobData,
+  FakeSleepJobData} from '../../../../../session/utils/job_runners/PersistedJob';
+import {
   PersistedJob,
   RunJobResult,
 } from '../../../../../session/utils/job_runners/PersistedJob';

@@ -2,8 +2,9 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-mutable-exports  */
-import { init, I18n } from 'emoji-mart';
-import { FixedBaseEmoji, NativeEmojiData } from '../models/conversationTypes';
+import type { I18n } from 'emoji-mart';
+import { init } from 'emoji-mart';
+import type { FixedBaseEmoji, NativeEmojiData } from '../models/conversationTypes';
 import { loadEmojiPanelI18n } from './i18n';
 
 export type SizeClassType = 'default' | 'small' | 'medium' | 'large' | 'jumbo';

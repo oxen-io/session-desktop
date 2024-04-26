@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { RenderTextCallbackType } from '../../types/Util';
-import { SizeClassType } from '../../util/emoji';
+import type { RenderTextCallbackType } from '../../types/Util';
+import type { SizeClassType } from '../../util/emoji';
 import { AddNewLines } from '../conversation/AddNewLines';
 import { Emojify } from '../conversation/Emojify';
 import {

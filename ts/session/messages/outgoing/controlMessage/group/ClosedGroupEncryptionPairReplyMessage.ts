@@ -1,4 +1,4 @@
-import { SignalService } from '../../../../../protobuf';
+import type { SignalService } from '../../../../../protobuf';
 import { fromHexToArray } from '../../../../utils/String';
 import { ClosedGroupEncryptionPairMessage } from './ClosedGroupEncryptionPairMessage';
 

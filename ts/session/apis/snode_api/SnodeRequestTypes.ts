@@ -1,5 +1,5 @@
-import { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
-import { SnodeNamespaces } from './namespaces';
+import type { SharedConfigMessage } from '../../messages/outgoing/controlMessage/SharedConfigMessage';
+import type { SnodeNamespaces } from './namespaces';
 
 export type SwarmForSubRequest = { method: 'get_swarm'; params: { pubkey: string } };
 

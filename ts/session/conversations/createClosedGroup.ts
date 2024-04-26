@@ -1,17 +1,14 @@
 import _ from 'lodash';
 import { ClosedGroup, getMessageQueue } from '..';
-import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { addKeyPairToCacheAndDBIfNeeded } from '../../receiver/closedGroups';
-import { ECKeyPair } from '../../receiver/keypairs';
+import type { ECKeyPair } from '../../receiver/keypairs';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { getSwarmPollingInstance } from '../apis/snode_api';
 import { SnodeNamespaces } from '../apis/snode_api/namespaces';
 import { generateClosedGroupPublicKey, generateCurve25519KeyPairWithoutPrefix } from '../crypto';
-import {
-  ClosedGroupNewMessage,
-  ClosedGroupNewMessageParams,
-} from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
+import type { ClosedGroupNewMessageParams } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
+import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
 import { PubKey } from '../types';
 import { UserUtils } from '../utils';
 import { forceSyncConfigurationNowIfNeeded } from '../utils/sync/syncUtils';
@@ -34,10 +31,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
   }
 
   // Create the group
-  const convo = await getConversationController().getOrCreateAndWait(
-    groupPublicKey,
-    ConversationTypeEnum.GROUP
-  );
+  const convo = await getConversationController().getOrCreateAndWait(groupPublicKey, 'group');
   await convo.setIsApproved(true, false);
 
   // Ensure the current user is a member

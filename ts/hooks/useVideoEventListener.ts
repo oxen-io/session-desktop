@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import useMountedState from 'react-use/lib/useMountedState';
+import type {
+  CallManagerOptionsType,
+  InputItem} from '../session/utils/calling/CallManager';
 import {
   addVideoEventsListener,
-  CallManagerOptionsType,
   DEVICE_DISABLED_DEVICE_ID,
-  InputItem,
   removeVideoEventsListener,
 } from '../session/utils/calling/CallManager';
 import { getCallIsInFullScreen, getHasOngoingCallWithPubkey } from '../state/selectors/call';

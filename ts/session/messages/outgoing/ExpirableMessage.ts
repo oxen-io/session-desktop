@@ -1,8 +1,8 @@
 import { SignalService } from '../../../protobuf';
 import { DURATION, TTL_DEFAULT } from '../../constants';
-import { DisappearingMessageType } from '../../../models/conversationTypes';
+import type { DisappearingMessageType } from '../../../models/conversationTypes';
 import { ContentMessage } from './ContentMessage';
-import { MessageParams } from './Message';
+import type { MessageParams } from './Message';
 
 export interface ExpirableMessageParams extends MessageParams {
   expirationType: DisappearingMessageType | null;

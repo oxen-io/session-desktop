@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { ConversationTypeEnum } from '../../models/conversationTypes';
+import type { ConversationTypeEnum } from '../../models/conversationTypes';
 import { TypingAnimation } from './TypingAnimation';
 
 interface TypingBubbleProps {
@@ -22,7 +22,7 @@ const TypingBubbleContainer = styled.div<Pick<TypingBubbleProps, 'isTyping'>>`
 `;
 
 export const TypingBubble = (props: TypingBubbleProps) => {
-  const isPrivate = props.conversationType === ConversationTypeEnum.PRIVATE;
+  const isPrivate = props.conversationType === 'private';
   if (!isPrivate || !props.isTyping) {
     return null;
   }

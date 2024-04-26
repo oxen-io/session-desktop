@@ -3,7 +3,6 @@ import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 
 import { useDispatch } from 'react-redux';
-import { ConversationTypeEnum } from '../../../models/conversationTypes';
 import { getConversationController } from '../../../session/conversations';
 import { PubKey } from '../../../session/types';
 import { ToastUtils, UserUtils } from '../../../session/utils';
@@ -59,7 +58,7 @@ export const OverlayMessage = () => {
   async function openConvoOnceResolved(resolvedSessionID: string) {
     const convo = await getConversationController().getOrCreateAndWait(
       resolvedSessionID,
-      ConversationTypeEnum.PRIVATE
+      'private'
     );
 
     // we now want to show a conversation we just started on the leftpane, even if we did not send a message to it yet

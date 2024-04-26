@@ -1,8 +1,8 @@
 import { compact } from 'lodash';
 import { SessionButtonColor } from '../../components/basic/SessionButton';
 import { Data } from '../../data/data';
-import { ConversationModel } from '../../models/conversation';
-import { MessageModel } from '../../models/message';
+import type { ConversationModel } from '../../models/conversation';
+import type { MessageModel } from '../../models/message';
 import { getMessageQueue } from '../../session';
 import { deleteSogsMessageByServerIds } from '../../session/apis/open_group_api/sogsv3/sogsV3DeleteMessages';
 import { SnodeAPI } from '../../session/apis/snode_api/SNodeAPI';

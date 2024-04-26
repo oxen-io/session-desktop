@@ -1,10 +1,13 @@
 import { isString } from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AutoSizer, Index, List, ListRowProps } from 'react-virtualized';
-import styled, { CSSProperties } from 'styled-components';
+import type { Index, ListRowProps } from 'react-virtualized';
+import { AutoSizer, List } from 'react-virtualized';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
+import type {
+  DirectContactsByNameType} from '../../../../state/selectors/conversations';
 import {
-  DirectContactsByNameType,
   getDirectContactsByName,
   getDirectContactsCount,
 } from '../../../../state/selectors/conversations';

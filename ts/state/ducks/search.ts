@@ -2,14 +2,10 @@
 import _, { isNaN } from 'lodash';
 
 import { Data } from '../../data/data';
-import { AdvancedSearchOptions, SearchOptions } from '../../types/Search'; // ok: .d.ts
+import type { AdvancedSearchOptions, SearchOptions } from '../../types/Search'; // ok: .d.ts
 import { cleanSearchTerm } from '../../util/cleanSearchTerm'; // ok: not importing anything else
 
-import {
-  ConversationTypeEnum,
-  ReduxConversationType,
-  MessageResultProps,
-} from '../../models/conversationTypes'; // ok: .d.ts
+import type { ReduxConversationType, MessageResultProps } from '../../models/conversationTypes';
 
 // State
 
@@ -217,7 +213,7 @@ async function queryConversationsAndContacts(providedQuery: string, options: Sea
       } else {
         conversations.push(conversation.id);
       }
-    } else if (conversation.type === ConversationTypeEnum.PRIVATE) {
+    } else if (conversation.type === 'private') {
       contacts.push(conversation.id);
     } else {
       conversations.push(conversation.id);

@@ -1,4 +1,5 @@
-import { BrowserWindow, dialog } from 'electron';
+import type { BrowserWindow} from 'electron';
+import { dialog } from 'electron';
 
 export type MessagesType = {
   [key: string]: string;

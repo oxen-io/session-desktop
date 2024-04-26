@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { SettingsKey } from '../../data/settings-key';
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 
 const getLinkPreviewEnabled = (state: StateType) =>
   state.settings.settingsBools[SettingsKey.settingsLinkPreview];

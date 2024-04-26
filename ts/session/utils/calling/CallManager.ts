@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { MessageUtils, ToastUtils, UserUtils } from '..';
 import { SignalService } from '../../../protobuf';
+import type { CallStatusEnum } from '../../../state/ducks/call';
 import {
-  CallStatusEnum,
   answerCall,
   callConnected,
   callReconnecting,
@@ -24,17 +24,18 @@ import { getMessageQueue } from '../..';
 import { getCallMediaPermissionsSettings } from '../../../components/settings/SessionSettings';
 import { Data } from '../../../data/data';
 import { approveConvoAndSendResponse } from '../../../interactions/conversationInteractions';
-import { READ_MESSAGE_STATE } from '../../../models/conversationTypes';
+import type { ReadyToDisappearMsgUpdate } from '../../../models/conversationTypes';
+
 import { PnServer } from '../../apis/push_notification_api';
 import { GetNetworkTime } from '../../apis/snode_api/getNetworkTime';
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
 import { DisappearingMessages } from '../../disappearing_messages';
-import { ReadyToDisappearMsgUpdate } from '../../../models/conversationTypes';
 import { MessageSender } from '../../sending';
 import { getIsRinging } from '../RingingManager';
 import { getBlackSilenceMediaStream } from './Silence';
 import { ed25519Str } from '../String';
+import { READ_MESSAGE_STATE } from '../../../models/constEnums';
 
 export type InputItem = { deviceId: string; label: string };
 

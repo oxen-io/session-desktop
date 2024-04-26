@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { useMessageReactsPropsById } from '../../../../hooks/useParamSelector';
-import { MessageRenderingProps } from '../../../../models/conversationTypes';
+import type { MessageRenderingProps, SortedReactionList } from '../../../../models/conversationTypes';
 import { REACT_LIMIT } from '../../../../session/constants';
 import { useSelectedIsGroupOrCommunity } from '../../../../state/selectors/selectedConversation';
-import { SortedReactionList } from '../../../../models/conversationTypes';
 import { nativeEmojiData } from '../../../../util/emoji';
 import { Flex } from '../../../basic/Flex';
 import { SessionIcon } from '../../../icon';
-import { Reaction, ReactionProps } from '../reactions/Reaction';
+import type { ReactionProps } from '../reactions/Reaction';
+import { Reaction } from '../reactions/Reaction';
 import { StyledPopupContainer } from '../reactions/ReactionPopup';
 
 export const popupXDefault = -81;

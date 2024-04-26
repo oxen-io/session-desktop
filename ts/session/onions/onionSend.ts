@@ -1,9 +1,9 @@
-import { AbortSignal } from 'abort-controller';
+import type { AbortSignal } from 'abort-controller';
 import { toNumber } from 'lodash';
 import pRetry from 'p-retry';
 
 import { OnionPaths } from '.';
-import { Snode } from '../../data/data';
+import type { Snode } from '../../data/data';
 import { fileServerPubKey, fileServerURL } from '../apis/file_server_api/FileServerApi';
 import { OpenGroupPollingUtils } from '../apis/open_group_api/opengroupV2/OpenGroupPollingUtils';
 import { invalidAuthRequiresBlinding } from '../apis/open_group_api/opengroupV2/OpenGroupServerPoller';
@@ -12,12 +12,13 @@ import {
   addJsonContentTypeToHeaders,
 } from '../apis/open_group_api/sogsv3/sogsV3SendMessage';
 import { pnServerPubkeyHex, pnServerUrl } from '../apis/push_notification_api/PnServer';
-import {
+import type {
   FinalDestNonSnodeOptions,
   FinalRelayOptions,
+  SnodeResponse} from '../apis/snode_api/onions';
+import {
   Onions,
   STATUS_NO_STATUS,
-  SnodeResponse,
   buildErrorMessageWithFailedCode,
 } from '../apis/snode_api/onions';
 import { PROTOCOLS } from '../constants';

@@ -6,10 +6,11 @@ import { blobToArrayBuffer } from 'blob-util';
 import loadImage from 'blueimp-load-image';
 import classNames from 'classnames';
 import styled from 'styled-components';
+import type {
+  SendMessageType,
+  StagedAttachmentType} from './composition/CompositionBox';
 import {
   CompositionBox,
-  SendMessageType,
-  StagedAttachmentType,
 } from './composition/CompositionBox';
 
 import { perfEnd, perfStart } from '../../session/utils/Performance';
@@ -29,13 +30,15 @@ import {
   resetSelectedMessageIds,
   updateMentionsMembers,
 } from '../../state/ducks/conversations';
-import { SortedMessageModelProps } from '../../models/conversationTypes';
-import { ReduxConversationType } from '../../models/conversationTypes';
+import type {
+  SortedMessageModelProps,
+  ReduxConversationType,
+  AttachmentTypeWithPath,
+} from '../../models/conversationTypes';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { addStagedAttachmentsInConversation } from '../../state/ducks/stagedAttachments';
 import { SessionTheme } from '../../themes/SessionTheme';
 import { MIME } from '../../types';
-import { AttachmentTypeWithPath } from '../../models/conversationTypes';
 import {
   THUMBNAIL_CONTENT_TYPE,
   getAudioDuration,
@@ -49,12 +52,13 @@ import { MessageView } from '../MainViewController';
 import { SplitViewContainer } from '../SplitViewContainer';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { InConversationCallContainer } from '../calling/InConversationCallContainer';
-import { LightboxGallery, MediaItemType } from '../lightbox/LightboxGallery';
+import type { MediaItemType } from '../lightbox/LightboxGallery';
+import { LightboxGallery } from '../lightbox/LightboxGallery';
 import { NoMessageInConversation } from './SubtleNotification';
 import { ConversationHeaderWithDetails } from './header/ConversationHeader';
 
 import { isAudio } from '../../types/MIME';
-import { HTMLDirection } from '../../util/i18n';
+import type { HTMLDirection } from '../../util/i18n';
 import { NoticeBanner } from '../NoticeBanner';
 import { SessionSpinner } from '../basic/SessionSpinner';
 import { RightPanel, StyledRightPanelContainer } from './right-panel/RightPanel';

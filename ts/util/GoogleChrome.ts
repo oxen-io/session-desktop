@@ -1,4 +1,4 @@
-import { MIMEType } from '../models/conversationTypes';
+import type { MIMEType } from '../models/conversationTypes';
 
 interface MIMETypeSupportMap {
   [key: string]: boolean;

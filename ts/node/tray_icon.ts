@@ -1,8 +1,9 @@
 import path from 'path';
 
-import { app, BrowserWindow, Menu, Tray } from 'electron';
+import type { BrowserWindow} from 'electron';
+import { app, Menu, Tray } from 'electron';
 import { getAppRootPath } from './getRootPath';
-import { LocaleMessagesType } from './locale';
+import type { LocaleMessagesType } from './locale';
 
 let trayContextMenu = null;
 let tray: Tray | null = null;

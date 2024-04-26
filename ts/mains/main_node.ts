@@ -4,13 +4,14 @@
 /* eslint-disable import/order */
 /* eslint-disable no-console */
 
+import type {
+  IpcMainEvent} from 'electron';
 import {
   app,
   BrowserWindow,
   dialog,
   protocol as electronProtocol,
   ipcMain as ipc,
-  IpcMainEvent,
   Menu,
   nativeTheme,
   screen,
@@ -25,7 +26,7 @@ import path, { join } from 'path';
 import { platform as osPlatform } from 'process';
 import url from 'url';
 
-import Logger from 'bunyan';
+import type Logger from 'bunyan';
 import _, { isEmpty } from 'lodash';
 import pify from 'pify';
 
@@ -158,7 +159,8 @@ if (windowFromUserConfig) {
 import { readFile } from 'fs-extra';
 import { getAppRootPath } from '../node/getRootPath';
 import { setLastestRelease } from '../node/latest_desktop_release';
-import { load as loadLocale, LocaleMessagesWithNameType } from '../node/locale';
+import type { LocaleMessagesWithNameType } from '../node/locale';
+import { load as loadLocale } from '../node/locale';
 import { isDevProd, isTestIntegration } from '../shared/env_vars';
 import { classicDark } from '../themes';
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import {
   ContactsConfigWrapperNode,
   ConvoInfoVolatileWrapperNode,
@@ -7,7 +7,8 @@ import {
   UserGroupsWrapperNode,
 } from 'libsession_util_nodejs';
 import { compact, isArray, isEmpty, isNil, isString, map, pick } from 'lodash';
-import { CONVERSATION_PRIORITIES, ConversationAttributes } from '../../models/conversationTypes';
+import type { ConversationAttributes } from '../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
 import { fromHexToArray } from '../../session/utils/String';
 import { CONFIG_DUMP_TABLE } from '../../types/sqlSharedTypes';
 import {

@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
-import {
+import type {
   BaseWrapperActionsCalls,
   ContactInfoSet,
   ContactsWrapperActionsCalls,
@@ -13,7 +13,7 @@ import { join } from 'path';
 
 import { getAppRootPath } from '../../../node/getRootPath';
 import { WorkerInterface } from '../../worker_interface';
-import { ConfigWrapperObjectTypes, LibSessionWorkerFunctions } from './libsession_worker_functions';
+import type { ConfigWrapperObjectTypes, LibSessionWorkerFunctions } from './libsession_worker_functions';
 
 let libsessionWorkerInterface: WorkerInterface | undefined;
 

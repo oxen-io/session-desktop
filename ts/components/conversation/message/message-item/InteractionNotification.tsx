@@ -3,11 +3,8 @@ import React from 'react';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import { useIsPrivate, useIsPublic } from '../../../../hooks/useParamSelector';
-import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
-} from '../../../../models/conversationTypes';
-import { PropsForInteractionNotification } from '../../../../models/conversationTypes';
+import type { PropsForInteractionNotification } from '../../../../models/conversationTypes';
+
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { Flex } from '../../../basic/Flex';
 import { ReadableMessage } from './ReadableMessage';
@@ -29,7 +26,7 @@ export const InteractionNotification = (props: PropsForInteractionNotification) 
     return null;
   }
 
-  if (interactionStatus !== ConversationInteractionStatus.Error) {
+  if (interactionStatus !== 'error') {
     // NOTE For now we only show interaction errors in the message history
     return null;
   }
@@ -37,10 +34,10 @@ export const InteractionNotification = (props: PropsForInteractionNotification) 
   let text = '';
 
   switch (interactionType) {
-    case ConversationInteractionType.Hide:
+    case 'hide':
       // this can't happen
       break;
-    case ConversationInteractionType.Leave:
+    case 'leave':
       text = isCommunity
         ? window.i18n('leaveCommunityFailedPleaseTryAgain')
         : isGroup

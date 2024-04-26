@@ -1,4 +1,4 @@
-import { LocalizerKeys } from './LocalizerKeys';
+import type { LocalizerKeys } from './LocalizerKeys';
 
 export type RenderTextCallbackType = (options: {
   text: string;

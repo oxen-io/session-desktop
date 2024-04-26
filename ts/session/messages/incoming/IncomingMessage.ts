@@ -1,5 +1,5 @@
 import Long from 'long';
-import { SignalService } from '../../../protobuf';
+import type { SignalService } from '../../../protobuf';
 
 type IncomingMessageAvailableTypes =
   | SignalService.DataMessage

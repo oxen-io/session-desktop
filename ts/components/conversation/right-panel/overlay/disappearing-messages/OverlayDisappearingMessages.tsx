@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useTimerOptionsByMode } from '../../../../../hooks/useParamSelector';
 import { setDisappearingMessagesByConvoId } from '../../../../../interactions/conversationInteractions';
 import { TimerOptions } from '../../../../../session/disappearing_messages/timerOptions';
-import { DisappearingMessageConversationModeType } from '../../../../../models/conversationTypes';
+import type { DisappearingMessageConversationModeType } from '../../../../../models/conversationTypes';
 import { closeRightPanel } from '../../../../../state/ducks/conversations';
 import { resetRightOverlayMode } from '../../../../../state/ducks/section';
 import {

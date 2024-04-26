@@ -1,10 +1,8 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { fillConvoAttributesWithDefaults } from '../../../../models/conversationAttributes';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
-} from '../../../../models/conversationTypes';
+import type { ConversationAttributes } from '../../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
 
 describe('fillConvoAttributesWithDefaults', () => {
   describe('members', () => {

@@ -1,7 +1,7 @@
 import { compact, flatten, identity, isEmpty, isFinite, pickBy, toNumber } from 'lodash';
 
 import { handleSwarmDataMessage } from './dataMessage';
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
 import { SignalService } from '../protobuf';
 import { KeyPrefixType, PubKey } from '../session/types';
@@ -13,13 +13,13 @@ import {
   deleteMessagesFromSwarmAndCompletelyLocally,
   deleteMessagesFromSwarmAndMarkAsDeletedLocally,
 } from '../interactions/conversations/unsendingInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationTypes';
+import type { ReadyToDisappearMsgUpdate } from '../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../models/constEnums';
 import { findCachedBlindedMatchOrLookupOnAllServers } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../session/conversations';
 import { concatUInt8Array, getSodiumRenderer } from '../session/crypto';
 import { removeMessagePadding } from '../session/crypto/BufferPadding';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { ReadyToDisappearMsgUpdate } from '../models/conversationTypes';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { GroupUtils, UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';
@@ -452,7 +452,7 @@ export async function innerHandleSwarmContentMessage({
      */
     const senderConversationModel = await getConversationController().getOrCreateAndWait(
       isPrivateConversationMessage ? envelope.source : envelope.senderIdentity,
-      ConversationTypeEnum.PRIVATE
+      'private'
     );
 
     // We need to make sure that we trigger the outdated client banner ui on the correct model for the conversation and not the author (for closed groups)
@@ -462,7 +462,7 @@ export async function innerHandleSwarmContentMessage({
     if (isPrivateConversationMessage && content.dataMessage?.syncTarget) {
       conversationModelForUIUpdate = await getConversationController().getOrCreateAndWait(
         content.dataMessage.syncTarget,
-        ConversationTypeEnum.PRIVATE
+        'private'
       );
     }
 
@@ -474,7 +474,7 @@ export async function innerHandleSwarmContentMessage({
       // this is a closed group message, we have a second conversation to make sure exists
       conversationModelForUIUpdate = await getConversationController().getOrCreateAndWait(
         envelope.source,
-        ConversationTypeEnum.GROUP
+        'group'
       );
     }
 
@@ -746,7 +746,7 @@ async function handleMessageRequestResponse(
 
   const conversationToApprove = await getConversationController().getOrCreateAndWait(
     unblindedConvoId,
-    ConversationTypeEnum.PRIVATE
+    'private'
   );
   let mostRecentActiveAt = Math.max(...compact(convosToMerge.map(m => m.get('active_at'))));
   if (!isFinite(mostRecentActiveAt) || mostRecentActiveAt <= 0) {

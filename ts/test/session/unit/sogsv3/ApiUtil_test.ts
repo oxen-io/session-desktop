@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai';
 import Sinon from 'sinon';
-import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationTypeEnum } from '../../../../models/conversationTypes';
+import type { OpenGroupV2Room } from '../../../../data/opengroups';
+import { OpenGroupData } from '../../../../data/opengroups';
 import {
   hasExistingOpenGroup,
   isSessionRunOpenGroup,
@@ -144,17 +144,17 @@ describe('APIUtils', () => {
 
         const convoOurIp = await getConversationController().getOrCreateAndWait(
           convoIdOurIp,
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convoOurIp.set({ active_at: Date.now() });
         const convoOurUrl = await getConversationController().getOrCreateAndWait(
           convoIdOurUrl,
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convoOurUrl.set({ active_at: Date.now() });
         const convoNotOur = await getConversationController().getOrCreateAndWait(
           convoIdNotOur,
-          ConversationTypeEnum.GROUP
+          'group'
         );
         convoNotOur.set({ active_at: Date.now() });
         await OpenGroupData.opengroupRoomsLoad();

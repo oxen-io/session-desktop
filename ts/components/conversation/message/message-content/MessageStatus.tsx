@@ -9,7 +9,8 @@ import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext
 import { getMostRecentOutgoingMessageId } from '../../../../state/selectors/conversations';
 import { useSelectedIsGroupOrCommunity } from '../../../../state/selectors/selectedConversation';
 import { SpacerXS } from '../../../basic/Text';
-import { SessionIcon, SessionIconType } from '../../../icon';
+import type { SessionIconType } from '../../../icon';
+import { SessionIcon } from '../../../icon';
 import { ExpireTimer } from '../../ExpireTimer';
 
 type Props = {

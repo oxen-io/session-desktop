@@ -1,13 +1,15 @@
 /* eslint-disable no-case-declarations */
-import { AbortSignal } from 'abort-controller';
+import type { AbortSignal } from 'abort-controller';
 import { flatten, isEmpty, isNumber, isObject } from 'lodash';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { assertUnreachable, roomHasBlindEnabled } from '../../../../types/sqlSharedTypes';
 import { Reactions } from '../../../../util/reactions';
-import { OnionSending, OnionV4JSONSnodeResponse } from '../../../onions/onionSend';
+import type { OnionV4JSONSnodeResponse } from '../../../onions/onionSend';
+import { OnionSending } from '../../../onions/onionSend';
+import type {
+  OpenGroupRequestHeaders} from '../opengroupV2/OpenGroupPollingUtils';
 import {
   OpenGroupPollingUtils,
-  OpenGroupRequestHeaders,
 } from '../opengroupV2/OpenGroupPollingUtils';
 import { addJsonContentTypeToHeaders } from './sogsV3SendMessage';
 

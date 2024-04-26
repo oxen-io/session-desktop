@@ -5,13 +5,13 @@ import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
-import { MessageModelType } from '../../../../models/conversationTypes';
+import type { MessageModelType, PropsForExpiringMessage } from '../../../../models/conversationTypes';
 import { getConversationController } from '../../../../session/conversations';
 import { messagesExpired } from '../../../../state/ducks/conversations';
-import { PropsForExpiringMessage } from '../../../../models/conversationTypes';
 import { getIncrement } from '../../../../util/timer';
 import { ExpireTimer } from '../../ExpireTimer';
-import { ReadableMessage, ReadableMessageProps } from './ReadableMessage';
+import type { ReadableMessageProps } from './ReadableMessage';
+import { ReadableMessage } from './ReadableMessage';
 
 const EXPIRATION_CHECK_MINIMUM = 2000;
 

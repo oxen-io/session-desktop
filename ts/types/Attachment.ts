@@ -7,7 +7,7 @@ import { ATTACHMENT_DEFAULT_MAX_SIDE } from '../util/attachmentsUtil';
 import { saveURLAsFile } from '../util/saveURLAsFile';
 import * as MIME from './MIME';
 import { THUMBNAIL_SIDE } from './attachments/VisualAttachment';
-import { AttachmentType, MIMEType } from '../models/conversationTypes';
+import type { AttachmentType, MIMEType } from '../models/conversationTypes';
 
 const MAX_WIDTH = THUMBNAIL_SIDE;
 const MAX_HEIGHT = THUMBNAIL_SIDE;

@@ -1,14 +1,15 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Sinon from 'sinon';
-import { UpdateExpiryOnNodeSubRequest } from '../../../../session/apis/snode_api/SnodeRequestTypes';
-import {
+import type { UpdateExpiryOnNodeSubRequest } from '../../../../session/apis/snode_api/SnodeRequestTypes';
+import type {
   ExpireMessageWithExpiryOnSnodeProps,
   ExpireRequestResponseResults,
+  verifyExpireMsgsResponseSignatureProps} from '../../../../session/apis/snode_api/expireRequest';
+import {
   buildExpireRequestSingleExpiry,
   processExpireRequestResponse,
   verifyExpireMsgsResponseSignature,
-  verifyExpireMsgsResponseSignatureProps,
 } from '../../../../session/apis/snode_api/expireRequest';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { UserUtils } from '../../../../session/utils';

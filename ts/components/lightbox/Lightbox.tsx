@@ -9,10 +9,11 @@ import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
 import { showLightBox } from '../../state/ducks/conversations';
 import { GoogleChrome } from '../../util';
 import { Flex } from '../basic/Flex';
-import { SessionIconButton, SessionIconSize, SessionIconType } from '../icon';
+import type { SessionIconSize, SessionIconType } from '../icon';
+import { SessionIconButton } from '../icon';
 import * as MIME from '../../types/MIME';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
-import { MIMEType } from '../../models/conversationTypes';
+import type { MIMEType } from '../../models/conversationTypes';
 
 const colorSVG = (url: string, color: string) => {
   return {

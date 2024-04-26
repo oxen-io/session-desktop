@@ -1,15 +1,16 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-case-declarations */
 import { isEmpty, isNull } from 'lodash';
+import type {
+  BaseConfigWrapperNode} from 'libsession_util_nodejs';
 import {
-  BaseConfigWrapperNode,
   ContactsConfigWrapperNode,
   ConvoInfoVolatileWrapperNode,
   UserConfigWrapperNode,
   UserGroupsWrapperNode,
 } from 'libsession_util_nodejs';
 // eslint-disable-next-line import/no-unresolved, import/extensions
-import { ConfigWrapperObjectTypes } from '../../browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../../browser/libsession_worker_functions';
 
 /* eslint-disable no-console */
 /* eslint-disable strict */

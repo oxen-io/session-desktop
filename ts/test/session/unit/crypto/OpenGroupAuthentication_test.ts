@@ -7,7 +7,7 @@ import { SogsBlinding } from '../../../../session/apis/open_group_api/sogsv3/sog
 import { concatUInt8Array, getSodiumRenderer } from '../../../../session/crypto';
 import { KeyPrefixType } from '../../../../session/types';
 import { StringUtils } from '../../../../session/utils';
-import { ByteKeyPair } from '../../../../session/utils/User';
+import type { ByteKeyPair } from '../../../../session/utils/User';
 
 chai.use(chaiBytes);
 

@@ -1,12 +1,12 @@
 import * as crypto from 'crypto';
 import _ from 'lodash';
 
-import { Attachment } from '../../types/Attachment';
+import type { Attachment } from '../../types/Attachment';
 
 import { encryptAttachment } from '../../util/crypto/attachmentsEncrypter';
 import { uploadFileToFsWithOnionV4 } from '../apis/file_server_api/FileServerApi';
 import { addAttachmentPadding } from '../crypto/BufferPadding';
-import {
+import type {
   AttachmentPointer,
   AttachmentPointerWithUrl,
   PreviewWithAttachmentUrl,

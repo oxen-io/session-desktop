@@ -1,12 +1,13 @@
-import { AbortSignal } from 'abort-controller';
+import type { AbortSignal } from 'abort-controller';
 import { APPLICATION_JSON, APPLICATION_OCTET_STREAM } from '../../../../types/MIME';
 import { OnionSending } from '../../../onions/onionSend';
 import { UserUtils } from '../../../utils';
-import { OpenGroupCapabilityRequest } from '../opengroupV2/ApiUtil';
+import type { OpenGroupCapabilityRequest } from '../opengroupV2/ApiUtil';
 import { OpenGroupMessageV2 } from '../opengroupV2/OpenGroupMessageV2';
+import type {
+  OpenGroupRequestHeaders} from '../opengroupV2/OpenGroupPollingUtils';
 import {
   OpenGroupPollingUtils,
-  OpenGroupRequestHeaders,
 } from '../opengroupV2/OpenGroupPollingUtils';
 import { batchGlobalIsSuccess, parseBatchGlobalStatusCode } from './sogsV3BatchPoll';
 

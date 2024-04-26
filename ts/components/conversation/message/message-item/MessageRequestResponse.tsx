@@ -1,6 +1,6 @@
 import React from 'react';
 import { useConversationUsername } from '../../../../hooks/useParamSelector';
-import { PropsForMessageRequestResponse } from '../../../../models/conversationTypes';
+import type { PropsForMessageRequestResponse } from '../../../../models/conversationTypes';
 import { UserUtils } from '../../../../session/utils';
 import { Flex } from '../../../basic/Flex';
 import { SpacerSM, Text } from '../../../basic/Text';

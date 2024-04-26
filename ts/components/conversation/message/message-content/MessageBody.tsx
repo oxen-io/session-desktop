@@ -3,8 +3,9 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { RenderTextCallbackType } from '../../../../types/Util';
-import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
+import type { RenderTextCallbackType } from '../../../../types/Util';
+import type { SizeClassType } from '../../../../util/emoji';
+import { getEmojiSizeClass } from '../../../../util/emoji';
 import { LinkPreviews } from '../../../../util/linkPreviews';
 import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
 import { AddMentions } from '../../AddMentions';

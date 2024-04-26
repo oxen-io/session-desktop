@@ -3,15 +3,19 @@ import { messagesExpired } from '../../state/ducks/conversations';
 import { initWallClockListener } from '../../util/wallClockListener';
 
 import { Data } from '../../data/data';
-import { ConversationModel } from '../../models/conversation';
-import {
-  READ_MESSAGE_STATE,
+import type { ConversationModel } from '../../models/conversation';
+import type {
   DisappearingMessageConversationModeType,
+  DisappearingMessageUpdate,
+  ReadyToDisappearMsgUpdate,
+  DisappearingMessageType,
 } from '../../models/conversationTypes';
-import { MessageModel } from '../../models/message';
+import { READ_MESSAGE_STATE } from '../../models/constEnums';
+import type { MessageModel } from '../../models/message';
 import { SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
-import { ExpiringDetails, expireMessagesOnSnode } from '../apis/snode_api/expireRequest';
+import type { ExpiringDetails } from '../apis/snode_api/expireRequest';
+import { expireMessagesOnSnode } from '../apis/snode_api/expireRequest';
 import { GetNetworkTime } from '../apis/snode_api/getNetworkTime';
 import { getConversationController } from '../conversations';
 import { isValidUnixTimestamp } from '../utils/Timestamps';
@@ -21,11 +25,6 @@ import {
   couldBeLegacyDisappearingMessageContent,
 } from './legacy';
 import { incomingExpirationTypeToDisappearingMessageType } from './types';
-import {
-  DisappearingMessageUpdate,
-  ReadyToDisappearMsgUpdate,
-} from '../../models/conversationTypes';
-import { DisappearingMessageType } from '../../models/conversationTypes';
 
 async function destroyMessagesAndUpdateRedux(
   messages: Array<{

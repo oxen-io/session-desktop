@@ -1,5 +1,6 @@
 import AbortController from 'abort-controller';
-import { OnionSending, OnionV4JSONSnodeResponse } from '../../onions/onionSend';
+import type { OnionV4JSONSnodeResponse } from '../../onions/onionSend';
+import { OnionSending } from '../../onions/onionSend';
 import {
   batchGlobalIsSuccess,
   parseBatchGlobalStatusCode,

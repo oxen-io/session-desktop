@@ -1,7 +1,8 @@
-import { Dispatch } from '@reduxjs/toolkit';
+import type { Dispatch } from '@reduxjs/toolkit';
 import { applyTheme } from '../state/ducks/theme';
 import { classicDark, classicLight, oceanDark, oceanLight } from '.';
-import { convertThemeStateToName, THEMES, ThemeStateType } from './constants/colors';
+import type { ThemeStateType } from './constants/colors';
+import { convertThemeStateToName, THEMES } from './constants/colors';
 import { loadThemeColors } from './variableColors';
 import { findPrimaryColorId, switchPrimaryColorTo } from './switchPrimaryColor';
 

@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-unresolved
 import {} from 'styled-components/cssprop';
 
-import { LocalizerType } from './types/Util';
+import type { LocalizerType } from './types/Util';
 
-import { ConversationCollection } from './models/conversation';
-import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
+import type { ConversationCollection } from './models/conversation';
+import type { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
 
 export interface LibTextsecure {
   messaging: boolean;

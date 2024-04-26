@@ -1,5 +1,6 @@
 import React from 'react';
-import { Slide, ToastContainer, ToastContainerProps } from 'react-toastify';
+import type { ToastContainerProps } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 
 // NOTE: https://styled-components.com/docs/faqs#how-can-i-override-styles-with-higher-specificity

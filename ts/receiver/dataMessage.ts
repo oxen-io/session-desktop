@@ -3,27 +3,29 @@ import { isEmpty, isFinite, noop, omit, toNumber } from 'lodash';
 
 import { SignalService } from '../protobuf';
 import { removeFromCache } from './cache';
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
 import { Data } from '../data/data';
-import { ConversationModel } from '../models/conversation';
+import type { ConversationModel } from '../models/conversation';
 import { getConversationController } from '../session/conversations';
 import { PubKey } from '../session/types';
 import { StringUtils, UserUtils } from '../session/utils';
 import { handleClosedGroupControlMessage } from './closedGroups';
 import { handleMessageJob, toRegularMessage } from './queuedJob';
 
-import { ConversationTypeEnum } from '../models/conversationTypes';
-import { MessageModel } from '../models/message';
+import type {
+  ConversationTypeEnum,
+  DisappearingMessageUpdate,
+  Reaction,
+} from '../models/conversationTypes';
+import type { MessageModel } from '../models/message';
 import {
   createSwarmMessageSentFromNotUs,
   createSwarmMessageSentFromUs,
 } from '../models/messageFactory';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageUpdate } from '../models/conversationTypes';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { isUsFromCache } from '../session/utils/User';
-import { Reaction } from '../models/conversationTypes';
 import { toLogFormat } from '../types/attachments/Errors';
 import { Reactions } from '../util/reactions';
 
@@ -207,11 +209,11 @@ export async function handleSwarmDataMessage({
 
   const isGroupMessage = !!envelope.senderIdentity;
   const isGroupV3Message = isGroupMessage && PubKey.isClosedGroupV3(envelope.source);
-  let typeOfConvo = ConversationTypeEnum.PRIVATE;
+  let typeOfConvo: ConversationTypeEnum = 'private';
   if (isGroupV3Message) {
-    typeOfConvo = ConversationTypeEnum.GROUPV3;
+    typeOfConvo = 'groupv3';
   } else if (isGroupMessage) {
-    typeOfConvo = ConversationTypeEnum.GROUP;
+    typeOfConvo = 'group';
   }
 
   window?.log?.info(

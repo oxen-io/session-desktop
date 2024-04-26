@@ -5,16 +5,14 @@ import { compact, isArray, isEmpty, isFinite, isNumber, isObject, pick } from 'l
 import { v4 } from 'uuid';
 
 import { OpenGroupData } from '../../../../data/opengroups';
-import { ConversationModel } from '../../../../models/conversation';
+import type { ConversationModel } from '../../../../models/conversation';
 import { handleOpenGroupV4Message } from '../../../../receiver/opengroup';
 import { callUtilsWorker } from '../../../../webworker/workers/browser/util_worker_interface';
 import { getConversationController } from '../../../conversations';
 import { PubKey } from '../../../types';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
-import {
-  OpenGroupMessageV4,
-  getRoomAndUpdateLastFetchTimestamp,
-} from '../opengroupV2/OpenGroupServerPoller';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupMessageV4 } from '../opengroupV2/OpenGroupServerPoller';
+import { getRoomAndUpdateLastFetchTimestamp } from '../opengroupV2/OpenGroupServerPoller';
 import { filterDuplicatesFromDbAndIncomingV4 } from '../opengroupV2/SogsFilterDuplicate';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
 import {
@@ -26,15 +24,18 @@ import {
 } from './knownBlindedkeys';
 import { SogsBlinding } from './sogsBlinding';
 import { handleCapabilities } from './sogsCapabilities';
-import { BatchSogsReponse, OpenGroupBatchRow, SubRequestMessagesType } from './sogsV3BatchPoll';
+import type {
+  BatchSogsReponse,
+  OpenGroupBatchRow,
+  SubRequestMessagesType,
+} from './sogsV3BatchPoll';
 
 import { Data } from '../../../../data/data';
-import { ConversationTypeEnum } from '../../../../models/conversationTypes';
 import { createSwarmMessageSentFromUs } from '../../../../models/messageFactory';
 import { SignalService } from '../../../../protobuf';
 import { innerHandleSwarmContentMessage } from '../../../../receiver/contentMessage';
 import { handleOutboxMessageModel } from '../../../../receiver/dataMessage';
-import { EnvelopePlus } from '../../../../receiver/types';
+import type { EnvelopePlus } from '../../../../receiver/types';
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { getSodiumRenderer } from '../../../crypto';
 import { removeMessagePadding } from '../../../crypto/BufferPadding';
@@ -424,7 +425,7 @@ async function handleInboxOutboxMessages(
         if (contentDecoded.dataMessage) {
           const outboxConversationModel = await getConversationController().getOrCreateAndWait(
             unblindedIDOrBlinded,
-            ConversationTypeEnum.PRIVATE
+            'private'
           );
           const serverConversationId =
             OpenGroupData.getV2OpenGroupRoomsByServerUrl(serverUrl)?.[0].conversationId;

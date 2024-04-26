@@ -10,8 +10,8 @@ import { PubKey } from '../../../../session/types';
 import { MessageUtils, UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 
-import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationTypeEnum } from '../../../../models/conversationTypes';
+import type { OpenGroupV2Room } from '../../../../data/opengroups';
+import { OpenGroupData } from '../../../../data/opengroups';
 import { SignalService } from '../../../../protobuf';
 import { getOpenGroupV2ConversationId } from '../../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { SnodeNamespaces } from '../../../../session/apis/snode_api/namespaces';
@@ -276,23 +276,14 @@ describe('Message Utils', () => {
 
     // open groups are actually removed when we leave them so this doesn't make much sense, but just in case we break something later
     it('filter out non active open groups', async () => {
-      await getConversationController().getOrCreateAndWait(
-        '05123456789',
-        ConversationTypeEnum.PRIVATE
-      );
-      await getConversationController().getOrCreateAndWait(
-        '0512345678',
-        ConversationTypeEnum.PRIVATE
-      );
+      await getConversationController().getOrCreateAndWait('05123456789', 'private');
+      await getConversationController().getOrCreateAndWait('0512345678', 'private');
 
       const convoId3 = getOpenGroupV2ConversationId('http://chat-dev2.lokinet.org', 'fish');
       const convoId4 = getOpenGroupV2ConversationId('http://chat-dev3.lokinet.org', 'fish2');
       const convoId5 = getOpenGroupV2ConversationId('http://chat-dev3.lokinet.org', 'fish3');
 
-      const convo3 = await getConversationController().getOrCreateAndWait(
-        convoId3,
-        ConversationTypeEnum.GROUP
-      );
+      const convo3 = await getConversationController().getOrCreateAndWait(convoId3, 'group');
       convo3.set({ active_at: Date.now() });
 
       stubOpenGroupData('getV2OpenGroupRoom')
@@ -304,23 +295,14 @@ describe('Message Utils', () => {
           serverPublicKey: 'serverPublicKey',
         } as OpenGroupV2Room);
 
-      const convo4 = await getConversationController().getOrCreateAndWait(
-        convoId4,
-        ConversationTypeEnum.GROUP
-      );
+      const convo4 = await getConversationController().getOrCreateAndWait(convoId4, 'group');
       convo4.set({ active_at: undefined });
 
       await OpenGroupData.opengroupRoomsLoad();
-      const convo5 = await getConversationController().getOrCreateAndWait(
-        convoId5,
-        ConversationTypeEnum.GROUP
-      );
+      const convo5 = await getConversationController().getOrCreateAndWait(convoId5, 'group');
       convo5.set({ active_at: 0 });
 
-      await getConversationController().getOrCreateAndWait(
-        '051234567',
-        ConversationTypeEnum.PRIVATE
-      );
+      await getConversationController().getOrCreateAndWait('051234567', 'private');
       const convos = getConversationController().getConversations();
 
       // convoID3 is active but 4 and 5 are not

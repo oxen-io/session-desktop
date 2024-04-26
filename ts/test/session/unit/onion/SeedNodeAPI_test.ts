@@ -9,8 +9,8 @@ import { Onions, SnodePool } from '../../../../session/apis/snode_api';
 import * as OnionPaths from '../../../../session/onions/onionPath';
 import { generateFakeSnodes, generateFakeSnodeWithEdKey } from '../../../test-utils/utils';
 import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
-import { SnodeFromSeed } from '../../../../session/apis/seed_node_api/SeedNodeAPI';
-import { Snode } from '../../../../data/data';
+import type { SnodeFromSeed } from '../../../../session/apis/seed_node_api/SeedNodeAPI';
+import type { Snode } from '../../../../data/data';
 
 chai.use(chaiAsPromised as any);
 chai.should();

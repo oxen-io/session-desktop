@@ -1,8 +1,9 @@
 import React from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import type { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { Flex } from '../../basic/Flex';
 import { SessionIconButton } from '../../icon';
-import { SubtitleStrings, SubtitleStringsType } from './ConversationHeaderTitle';
+import type { SubtitleStrings, SubtitleStringsType } from './ConversationHeaderTitle';
 
 function loadDataTestId(currentSubtitle: SubtitleStringsType) {
   if (currentSubtitle === 'disappearingMessages') {

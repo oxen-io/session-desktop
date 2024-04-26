@@ -1,7 +1,8 @@
 import { SignalService } from '../../../../../protobuf';
-import { ECKeyPair } from '../../../../../receiver/keypairs';
+import type { ECKeyPair } from '../../../../../receiver/keypairs';
 import { fromHexToArray } from '../../../../utils/String';
-import { ClosedGroupMessage, ClosedGroupMessageParams } from './ClosedGroupMessage';
+import type { ClosedGroupMessageParams } from './ClosedGroupMessage';
+import { ClosedGroupMessage } from './ClosedGroupMessage';
 
 export interface ClosedGroupNewMessageParams extends ClosedGroupMessageParams {
   name: string;

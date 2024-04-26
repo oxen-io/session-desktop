@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 import useKey from 'react-use/lib/useKey';
-import { ConversationTypeEnum } from '../../models/conversationTypes';
 import { getConversationController } from '../../session/conversations';
 import { ToastUtils } from '../../session/utils';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
-import { updateUserDetailsModal, UserDetailsModalState } from '../../state/ducks/modalDialog';
+import type { UserDetailsModalState } from '../../state/ducks/modalDialog';
+import { updateUserDetailsModal } from '../../state/ducks/modalDialog';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { SessionButton, SessionButtonType } from '../basic/SessionButton';
 import { SessionIdEditable } from '../basic/SessionIdEditable';
@@ -32,10 +32,7 @@ export const UserDetailsDialog = (props: UserDetailsModalState) => {
     }
     const convo = getConversationController().get(props.conversationId);
 
-    const conversation = await getConversationController().getOrCreateAndWait(
-      convo.id,
-      ConversationTypeEnum.PRIVATE
-    );
+    const conversation = await getConversationController().getOrCreateAndWait(convo.id, 'private');
 
     await openConversationWithMessages({ conversationKey: conversation.id, messageId: null });
 

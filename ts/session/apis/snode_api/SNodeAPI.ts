@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 import { compact, sample } from 'lodash';
 import pRetry from 'p-retry';
-import { Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
 import { getSodiumRenderer } from '../../crypto';
 import { StringUtils, UserUtils } from '../../utils';
 import { ed25519Str, fromBase64ToArray, fromHexToArray } from '../../utils/String';

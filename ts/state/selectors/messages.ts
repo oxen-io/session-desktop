@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
 import { UserUtils } from '../../session/utils';
-import {
+import type {
   MessageModelPropsWithConvoProps,
   PropsForAttachment,
   PropsForQuote,
+  ReduxConversationType,
+  LastMessageStatusType,
 } from '../../models/conversationTypes';
-import { ReduxConversationType } from '../../models/conversationTypes';
-import { LastMessageStatusType } from '../../models/conversationTypes';
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 import { getIsMessageSelected, getMessagePropsByMessageId } from './conversations';
 import { useSelectedIsPrivate } from './selectedConversation';
 

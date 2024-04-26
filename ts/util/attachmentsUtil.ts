@@ -3,12 +3,12 @@ import imageType from 'image-type';
 
 import { arrayBufferToBlob } from 'blob-util';
 import loadImage from 'blueimp-load-image';
-import { StagedAttachmentType } from '../components/conversation/composition/CompositionBox';
+import type { StagedAttachmentType } from '../components/conversation/composition/CompositionBox';
 import { SignalService } from '../protobuf';
 import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
 import { sendDataExtractionNotification } from '../session/messages/outgoing/controlMessage/DataExtractionNotificationMessage';
 import { save } from '../types/Attachment';
-import { AttachmentType } from '../models/conversationTypes';
+import type { AttachmentType } from '../models/conversationTypes';
 import { IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG, IMAGE_TIFF, IMAGE_UNKNOWN } from '../types/MIME';
 import { getAbsoluteAttachmentPath, processNewAttachment } from '../types/MessageAttachment';
 import { THUMBNAIL_SIDE } from '../types/attachments/VisualAttachment';

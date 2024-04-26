@@ -3,12 +3,12 @@ import { crypto_sign_curve25519_pk_to_ed25519 } from 'curve25519-js';
 import { cloneDeep, flatten, isEmpty, isEqual, isString, uniqBy } from 'lodash';
 
 import { getConversationController } from '../../../conversations';
-import { LibSodiumWrappers } from '../../../crypto';
+import type { LibSodiumWrappers } from '../../../crypto';
 import { KeyPrefixType, PubKey } from '../../../types';
 import { Data } from '../../../../data/data';
 import { combineKeys, generateBlindingFactor } from '../../../utils/SodiumUtils';
 import { OpenGroupData } from '../../../../data/opengroups';
-import { ConversationModel } from '../../../../models/conversation';
+import type { ConversationModel } from '../../../../models/conversation';
 import { UserUtils } from '../../../utils';
 import { SogsBlinding } from './sogsBlinding';
 import { fromHexToArray } from '../../../utils/String';

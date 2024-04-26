@@ -1,11 +1,12 @@
 import AbortController from 'abort-controller';
 import { getConversationController } from '../../../conversations';
-import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
+import type {
+  OpenGroupBatchRow} from './sogsV3BatchPoll';
 import {
   batchFirstSubIsSuccess,
   batchGlobalIsSuccess,
-  OpenGroupBatchRow,
   sogsBatchSend,
 } from './sogsV3BatchPoll';
 

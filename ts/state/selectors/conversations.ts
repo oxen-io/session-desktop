@@ -2,38 +2,39 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { filter, isEmpty, isFinite, isNumber, pick, sortBy, toNumber } from 'lodash';
 
-import {
+import type {
   ConversationLookupType,
   ConversationsStateType,
-  lookupQuote,
   MentionsMembersType,
 } from '../ducks/conversations';
-import { SortedMessageModelProps } from '../../models/conversationTypes';
-import {
+import { lookupQuote } from '../ducks/conversations';
+import type {
+  SortedMessageModelProps,
   MessageModelPropsWithConvoProps,
   MessageModelPropsWithoutConvoProps,
   PropsForQuote,
+  ReduxConversationType,
 } from '../../models/conversationTypes';
-import { ReduxConversationType, CONVERSATION_PRIORITIES } from '../../models/conversationTypes';
-import { StateType } from '../reducer';
+import { CONVERSATION_PRIORITIES } from '../../models/constEnums';
+import type { StateType } from '../reducer';
 
-import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
-import { MessageAttachmentSelectorProps } from '../../components/conversation/message/message-content/MessageAttachment';
-import { MessageContentSelectorProps } from '../../components/conversation/message/message-content/MessageContent';
-import { MessageContentWithStatusSelectorProps } from '../../components/conversation/message/message-content/MessageContentWithStatus';
-import { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
-import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
-import { LightBoxOptions } from '../../components/conversation/SessionConversation';
+import type { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
+import type { MessageAttachmentSelectorProps } from '../../components/conversation/message/message-content/MessageAttachment';
+import type { MessageContentSelectorProps } from '../../components/conversation/message/message-content/MessageContent';
+import type { MessageContentWithStatusSelectorProps } from '../../components/conversation/message/message-content/MessageContentWithStatus';
+import type { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
+import type { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
+import type { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
-import { LocalizerType } from '../../types/Util';
+import type { LocalizerType } from '../../types/Util';
 import { BlockedNumberController } from '../../util';
 import { Storage } from '../../util/storage';
 import { getIntl } from './user';
 
-import { MessageReactsSelectorProps } from '../../components/conversation/message/message-content/MessageReactions';
+import type { MessageReactsSelectorProps } from '../../components/conversation/message/message-content/MessageReactions';
 import { processQuoteAttachment } from '../../models/message';
 import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { PubKey } from '../../session/types';

@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { KeyboardEvent } from 'react';
+import type { KeyboardEvent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { SessionIcon, SessionIconProps } from './SessionIcon';
+import type { SessionIconProps } from './SessionIcon';
+import { SessionIcon } from './SessionIcon';
 
 interface SProps extends SessionIconProps {
   onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;

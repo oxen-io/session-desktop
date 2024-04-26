@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { OpenGroupData } from '../../../../data/opengroups';
-import { MessageRenderingProps } from '../../../../models/conversationTypes';
+import type { MessageRenderingProps } from '../../../../models/conversationTypes';
 import { findCachedBlindedMatchOrLookItUp } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../../../../session/conversations';
 import { getSodiumRenderer } from '../../../../session/crypto';

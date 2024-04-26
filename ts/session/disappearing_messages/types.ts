@@ -1,4 +1,4 @@
-import { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
+import type { DisappearingMessageConversationModeType } from '../../models/conversationTypes';
 import { SignalService } from '../../protobuf';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 

@@ -1,5 +1,6 @@
 import { SignalService } from '../../../../protobuf';
-import { VisibleMessage, VisibleMessageParams } from './VisibleMessage';
+import type { VisibleMessageParams } from './VisibleMessage';
+import { VisibleMessage } from './VisibleMessage';
 
 interface GroupInvitationMessageParams extends VisibleMessageParams {
   url: string;

@@ -12,7 +12,7 @@ import { StringUtils, UserUtils } from '../../../../session/utils';
 import { PubKey } from '../../../../session/types';
 import { fromHex, toHex } from '../../../../session/utils/String';
 import { addMessagePadding } from '../../../../session/crypto/BufferPadding';
-import { SessionKeyPair } from '../../../../receiver/keypairs';
+import type { SessionKeyPair } from '../../../../receiver/keypairs';
 
 export const TEST_identityKeyPair: SessionKeyPair = {
   pubKey: new Uint8Array([

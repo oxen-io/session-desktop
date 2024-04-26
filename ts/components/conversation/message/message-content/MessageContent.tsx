@@ -8,8 +8,8 @@ import styled from 'styled-components';
 import { useScrollToLoadedMessage } from '../../../../contexts/ScrollToLoadedMessage';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { IsMessageVisibleContext } from '../../../../contexts/isMessageVisibleContext';
-import { MessageModelType, MessageRenderingProps } from '../../../../models/conversationTypes';
-import { StateType } from '../../../../state/reducer';
+import type { MessageModelType, MessageRenderingProps } from '../../../../models/conversationTypes';
+import type { StateType } from '../../../../state/reducer';
 import {
   useHideAvatarInMsgList,
   useMessageIsDeleted,

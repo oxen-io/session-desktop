@@ -1,11 +1,13 @@
 import { isArray } from 'lodash';
-import { Snode } from '../../../data/data';
-import { processOnionRequestErrorAtDestination, SnodeResponse } from './onions';
+import type { Snode } from '../../../data/data';
+import type { SnodeResponse } from './onions';
+import { processOnionRequestErrorAtDestination } from './onions';
 import { snodeRpc } from './sessionRpc';
+import type {
+  NotEmptyArrayOfBatchResults,
+  SnodeApiSubRequests} from './SnodeRequestTypes';
 import {
   MAX_SUBREQUESTS_COUNT,
-  NotEmptyArrayOfBatchResults,
-  SnodeApiSubRequests,
 } from './SnodeRequestTypes';
 
 /**

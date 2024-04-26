@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop */
-import { ContactInfo } from 'libsession_util_nodejs';
+import type { ContactInfo } from 'libsession_util_nodejs';
 import { compact, difference, isEmpty, isNil, isNumber, toNumber } from 'lodash';
 import { ConfigDumpData } from '../data/configDump/configDump';
 import { Data } from '../data/data';
 import { SettingsKey } from '../data/settings-key';
 import { ConversationInteraction } from '../interactions';
 import { deleteAllMessagesByConvoIdNoConfirmation } from '../interactions/conversationInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../models/constEnums';
 import { SignalService } from '../protobuf';
 import { ClosedGroup } from '../session';
 import {
@@ -18,14 +18,16 @@ import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { getOpenGroupV2ConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { getConversationController } from '../session/conversations';
-import { IncomingMessage } from '../session/messages/incoming/IncomingMessage';
-import { Profile, ProfileManager } from '../session/profile_manager/ProfileManager';
+import type { IncomingMessage } from '../session/messages/incoming/IncomingMessage';
+import type { Profile } from '../session/profile_manager/ProfileManager';
+import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { PubKey } from '../session/types';
 import { StringUtils, UserUtils } from '../session/utils';
 import { toHex } from '../session/utils/String';
 import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
 import { FetchMsgExpirySwarm } from '../session/utils/job_runners/jobs/FetchMsgExpirySwarmJob'; // eslint-disable-next-line import/no-unresolved, import/extensions
-import { IncomingConfResult, LibSessionUtil } from '../session/utils/libsession/libsession_utils';
+import type { IncomingConfResult } from '../session/utils/libsession/libsession_utils';
+import { LibSessionUtil } from '../session/utils/libsession/libsession_utils';
 import { SessionUtilContact } from '../session/utils/libsession/libsession_utils_contacts';
 import { SessionUtilConvoInfoVolatile } from '../session/utils/libsession/libsession_utils_convo_info_volatile';
 import { SessionUtilUserGroups } from '../session/utils/libsession/libsession_utils_user_groups';
@@ -43,7 +45,7 @@ import {
 } from '../util/storage';
 
 // eslint-disable-next-line import/no-unresolved
-import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 import {
   ContactsWrapperActions,
   ConvoInfoVolatileWrapperActions,
@@ -53,9 +55,9 @@ import {
 } from '../webworker/workers/browser/libsession_worker_interface';
 import { removeFromCache } from './cache';
 import { addKeyPairToCacheAndDBIfNeeded } from './closedGroups';
-import { HexKeyPair } from './keypairs';
+import type { HexKeyPair } from './keypairs';
 import { queueAllCachedFromSource } from './receiver';
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
 function groupByVariant(
   incomingConfigs: Array<IncomingMessage<SignalService.ISharedConfigMessage>>
@@ -351,7 +353,7 @@ async function handleContactsUpdate(result: IncomingConfResult): Promise<Incomin
     }
     const contactConvo = await getConversationController().getOrCreateAndWait(
       wrapperConvo.id,
-      ConversationTypeEnum.PRIVATE
+      'private'
     );
     if (wrapperConvo.id && contactConvo) {
       let changes = false;
@@ -576,10 +578,7 @@ async function handleLegacyGroupUpdate(latestEnvelopeTimestamp: number) {
     );
 
     // let's just create the required convo here, as we update the fields right below
-    await getConversationController().getOrCreateAndWait(
-      toJoin.pubkeyHex,
-      ConversationTypeEnum.GROUP
-    );
+    await getConversationController().getOrCreateAndWait(toJoin.pubkeyHex, 'group');
   }
 
   for (let index = 0; index < allLegacyGroupsInWrapper.length; index++) {
@@ -1058,7 +1057,7 @@ const handleContactFromConfigLegacy = async (
     }
     const contactConvo = await getConversationController().getOrCreateAndWait(
       toHex(contactReceived.publicKey),
-      ConversationTypeEnum.PRIVATE
+      'private'
     );
     const profileInDataMessage: SignalService.DataMessage.ILokiProfile = {
       displayName: contactReceived.name,

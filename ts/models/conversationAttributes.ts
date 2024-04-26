@@ -1,20 +1,17 @@
 import { defaults } from 'lodash';
-import {
-  ConversationTypeEnum,
+import type {
   ConversationAttributes,
-  CONVERSATION_PRIORITIES,
   ConversationNotificationSettingType,
 } from './conversationTypes';
+import { ConversationTypeEnum } from './conversationTypes';
+import { CONVERSATION_PRIORITIES } from './constEnums';
 
 export function isOpenOrClosedGroup(conversationType: ConversationTypeEnum) {
-  return (
-    conversationType === ConversationTypeEnum.GROUP ||
-    conversationType === ConversationTypeEnum.GROUPV3
-  );
+  return conversationType === 'group' || conversationType === 'groupv3';
 }
 
 export function isDirectConversation(conversationType: ConversationTypeEnum) {
-  return conversationType === ConversationTypeEnum.PRIVATE;
+  return conversationType === 'private';
 }
 
 /**

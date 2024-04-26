@@ -2,14 +2,14 @@ import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
-import { MessageRenderingProps } from '../../../../models/conversationTypes';
+import type { MessageRenderingProps } from '../../../../models/conversationTypes';
 import {
   getMessageTextProps,
   isMessageSelectionMode,
 } from '../../../../state/selectors/conversations';
 import { SessionIcon } from '../../../icon';
 import { MessageBody } from './MessageBody';
-import { StateType } from '../../../../state/reducer';
+import type { StateType } from '../../../../state/reducer';
 
 type Props = {
   messageId: string;

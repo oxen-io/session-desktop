@@ -13,7 +13,7 @@ import { SessionRegistrationView } from '../components/registration/SessionRegis
 import { Data } from '../data/data';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
-import { MessageModel } from '../models/message';
+import type { MessageModel } from '../models/message';
 import { deleteAllLogs } from '../node/logs';
 import { queueAllCached } from '../receiver/receiver';
 import { loadKnownBlindedKeys } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';

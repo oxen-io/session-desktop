@@ -1,5 +1,5 @@
 import { toNumber } from 'lodash';
-import { EnvelopePlus } from './types';
+import type { EnvelopePlus } from './types';
 
 export function getEnvelopeId(envelope: EnvelopePlus) {
   if (envelope.source) {

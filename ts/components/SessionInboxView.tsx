@@ -27,7 +27,7 @@ import { initialSectionState } from '../state/ducks/section';
 import { getEmptyStagedAttachmentsState } from '../state/ducks/stagedAttachments';
 import { initialThemeState } from '../state/ducks/theme';
 import { initialUserConfigState } from '../state/ducks/userConfig';
-import { StateType } from '../state/reducer';
+import type { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
 import { SettingsKey } from '../data/settings-key';

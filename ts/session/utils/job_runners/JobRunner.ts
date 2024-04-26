@@ -3,16 +3,17 @@ import { Data } from '../../../data/data';
 import { Storage } from '../../../util/storage';
 import { timeout } from '../Promise';
 import { persistedJobFromData } from './JobDeserialization';
-import {
+import type {
   AvatarDownloadPersistedData,
   ConfigurationSyncPersistedData,
   FetchMsgExpirySwarmPersistedData,
   PersistedJob,
-  RunJobResult,
   TypeOfPersistedData,
-  UpdateMsgExpirySwarmPersistedData,
+  UpdateMsgExpirySwarmPersistedData} from './PersistedJob';
+import {
+  RunJobResult,
 } from './PersistedJob';
-import { JobRunnerType } from './jobs/JobRunnerType';
+import type { JobRunnerType } from './jobs/JobRunnerType';
 
 /**
  * 'job_in_progress' if there is already a job in progress

@@ -1,5 +1,6 @@
 import { from_hex } from 'libsodium-wrappers-sumo';
-import { concatUInt8Array, LibSodiumWrappers } from '../crypto';
+import type { LibSodiumWrappers } from '../crypto';
+import { concatUInt8Array } from '../crypto';
 
 export function generateBlindingFactor(serverPk: string, sodium: LibSodiumWrappers) {
   const hexServerPk = from_hex(serverPk);

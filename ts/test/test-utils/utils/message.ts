@@ -2,20 +2,22 @@ import { isEmpty } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { TestUtils } from '..';
 import { MessageModel } from '../../../models/message';
-import { OpenGroupRequestCommonType } from '../../../session/apis/open_group_api/opengroupV2/ApiUtil';
+import type { OpenGroupRequestCommonType } from '../../../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { OpenGroupMessageV2 } from '../../../session/apis/open_group_api/opengroupV2/OpenGroupMessageV2';
-import {
+import type {
   OpenGroupMessageV4,
   OpenGroupReactionMessageV4,
 } from '../../../session/apis/open_group_api/opengroupV2/OpenGroupServerPoller';
-import { ExpirationTimerUpdate } from '../../../models/conversationTypes';
-import { DisappearingMessageType } from '../../../models/conversationTypes';
+import type {
+  ExpirationTimerUpdate,
+  DisappearingMessageType,
+  OpenGroupReaction,
+} from '../../../models/conversationTypes';
 import { ExpirationTimerUpdateMessage } from '../../../session/messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
 import { ClosedGroupVisibleMessage } from '../../../session/messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
 import { OpenGroupVisibleMessage } from '../../../session/messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
 import { VisibleMessage } from '../../../session/messages/outgoing/visibleMessage/VisibleMessage';
 import { PubKey } from '../../../session/types';
-import { OpenGroupReaction } from '../../../models/conversationTypes';
 import { generateFakePubKey } from './pubkey';
 
 export function generateVisibleMessage({

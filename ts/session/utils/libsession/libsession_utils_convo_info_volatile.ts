@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
-import { BaseConvoInfoVolatile, ConvoVolatileType } from 'libsession_util_nodejs';
+import type { BaseConvoInfoVolatile, ConvoVolatileType } from 'libsession_util_nodejs';
 import { isEmpty, isFinite } from 'lodash';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
-import { ConversationModel } from '../../../models/conversation';
+import type { ConversationModel } from '../../../models/conversation';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
 import {
   ConvoInfoVolatileWrapperActions,

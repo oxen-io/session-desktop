@@ -1,4 +1,4 @@
-import { StateType } from '../reducer';
+import type { StateType } from '../reducer';
 
 export const getAudioAutoplay = (state: StateType): boolean => state.userConfig.audioAutoplay;
 

@@ -1,7 +1,8 @@
 import _, { shuffle } from 'lodash';
 import pRetry from 'p-retry';
 
-import { Data, Snode } from '../../../data/data';
+import type { Snode } from '../../../data/data';
+import { Data } from '../../../data/data';
 
 import { OnionPaths } from '../../onions';
 import { Onions, SnodePool } from '.';

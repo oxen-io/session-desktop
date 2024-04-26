@@ -6,14 +6,9 @@
  * These .d.ts must not import even indirectly anything else than .d.ts files to avoid the issue above.
  *
  *
- *
- * Also, we share some enums accross the app. Typescript doesn't allow enums in .d.ts except if they are const enums.
- * They come with their own set of issues, but none of them have any importance for session-desktop.
- * For more details, see https://www.typescriptlang.org/docs/handbook/enums.html#const-enums
- *
  */
 
-import { Emoji, EmojiMartData } from '@emoji-mart/data'; // ok ?
+import type { Emoji, EmojiMartData } from '@emoji-mart/data'; // ok ?
 
 // ################################################################## //
 //                                                                    //
@@ -33,11 +28,7 @@ import { Emoji, EmojiMartData } from '@emoji-mart/data'; // ok ?
  * When we do get rid of them, we will be able to remove any GROUP conversation with prefix 05 (as they are old closed groups) and update the remaining GROUP to be COMMUNITY instead
  */
 
-export const enum ConversationTypeEnum {
-  GROUP = 'group',
-  GROUPV3 = 'groupv3',
-  PRIVATE = 'private',
-}
+export type ConversationTypeEnum = 'group' | 'groupv3' | 'private';
 
 export type ConversationNotificationSettingType = 'all' | 'disabled' | 'mentions_only';
 
@@ -55,7 +46,7 @@ export type ConversationAttributesWithNotSavedOnes = ConversationAttributes &
 
 export type ConversationAttributes = {
   id: string;
-  type: ConversationTypeEnum.PRIVATE | ConversationTypeEnum.GROUPV3 | ConversationTypeEnum.GROUP;
+  type: 'private' | 'groupv3' | 'group';
 
   // 0 means inactive (undefined and null too but we try to get rid of them and only have 0 = inactive)
   active_at: number; // this field is the one used to sort conversations in the left pane from most recent
@@ -119,41 +110,12 @@ export type ConversationAttributes = {
   /** to warn the user that the person he is talking to is using an old client which might cause issues */
   hasOutdatedClient?: string;
 };
-/**
- * Priorities have a weird behavior.
- * * 0 always means unpinned and not hidden.
- * * -1 always means hidden.
- * * anything over 0 means pinned with the higher priority the better. (No sorting currently implemented)
- *
- * When our local user pins a conversation we should use 1 as the priority.
- * When we get an update from the libsession util wrapper, we should trust the value and set it locally as is.
- * So if we get 100 as priority, we set the conversation priority to 100.
- * If we get -20 as priority we set it as is, even if our current client does not understand what that means.
- *
- */
 
-export const enum CONVERSATION_PRIORITIES {
-  default = 0,
-  hidden = -1,
-  pinned = 1,
-}
-
-export const enum READ_MESSAGE_STATE {
-  unread = 1,
-  read = 0,
-}
 export type LastMessageStatusType = 'sending' | 'sent' | 'read' | 'error' | undefined;
-export const enum ConversationInteractionStatus {
-  Start = 'start',
-  Loading = 'loading',
-  Error = 'error',
-  Complete = 'complete',
-}
+export type ConversationInteractionStatus = 'start' | 'loading' | 'error' | 'complete';
 
-export const enum ConversationInteractionType {
-  Hide = 'hide',
-  Leave = 'leave',
-}
+export type ConversationInteractionType = 'hide' | 'leave';
+
 export type DisappearingMessageConversationModeType =
   | 'off'
   | 'deleteAfterRead'
@@ -348,10 +310,7 @@ export type MessageRequestResponseMsg = {
   isApproved: boolean;
 };
 
-export const enum MessageDirection {
-  outgoing = 'outgoing',
-  incoming = 'incoming',
-}
+export type MessageDirection = 'outgoing' | 'incoming';
 
 export type PropsForDataExtractionNotification = DataExtractionNotificationMsg & {
   name: string;

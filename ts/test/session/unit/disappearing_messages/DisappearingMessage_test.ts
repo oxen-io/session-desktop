@@ -2,14 +2,13 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Sinon from 'sinon';
 import { Conversation, ConversationModel } from '../../../../models/conversation';
-import {
+import type {
   ConversationAttributes,
-  ConversationTypeEnum,
   DisappearingMessageConversationModeType,
+  DisappearingMessageType,
 } from '../../../../models/conversationTypes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { DisappearingMessages } from '../../../../session/disappearing_messages';
-import { DisappearingMessageType } from '../../../../models/conversationTypes';
 import { UserUtils } from '../../../../session/utils';
 import { isValidUnixTimestamp } from '../../../../session/utils/Timestamps';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';
@@ -31,7 +30,7 @@ describe('DisappearingMessage', () => {
   const ourNumber = TestUtils.generateFakePubKeyStr();
   const conversationArgs = {
     id: testPubkey,
-    type: ConversationTypeEnum.PRIVATE,
+    type: 'private',
     isApproved: true,
     active_at: 123,
     didApproveMe: true,
@@ -174,7 +173,7 @@ describe('DisappearingMessage', () => {
     it("if it's a Group Conversation and expireTimer > 0 then the message's expirationType is always deleteAfterSend", async () => {
       const ourConversation = new ConversationModel({
         ...conversationArgs,
-        type: ConversationTypeEnum.GROUP,
+        type: 'group',
         // TODO update to 03 prefix when we release new groups
         id: '05123456564',
       });
@@ -236,7 +235,7 @@ describe('DisappearingMessage', () => {
     it("if it's a Group Conversation and expireTimer > 0 then the conversation mode is always deleteAfterSend", async () => {
       const ourConversation = new ConversationModel({
         ...conversationArgs,
-        type: ConversationTypeEnum.GROUP,
+        type: 'group',
         // TODO update to 03 prefix when we release new groups
         id: '05123456564',
       });

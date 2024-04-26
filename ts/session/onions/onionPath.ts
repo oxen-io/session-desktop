@@ -5,7 +5,8 @@ import pRetry from 'p-retry';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
 
-import { Data, Snode } from '../../data/data';
+import type { Snode } from '../../data/data';
+import { Data } from '../../data/data';
 import * as SnodePool from '../apis/snode_api/snodePool';
 import { UserUtils } from '../utils';
 import { Onions, snodeHttpsAgent } from '../apis/snode_api/onions';

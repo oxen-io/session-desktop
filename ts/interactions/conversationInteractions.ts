@@ -1,12 +1,11 @@
 import { isNil } from 'lodash';
-import {
+import type {
   ConversationNotificationSettingType,
-  ConversationTypeEnum,
+  DisappearingMessageConversationModeType,
   ConversationInteractionType,
   ConversationInteractionStatus,
-  READ_MESSAGE_STATE,
-  DisappearingMessageConversationModeType,
 } from '../models/conversationTypes';
+
 import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
 
 import { SessionButtonColor } from '../components/basic/SessionButton';
@@ -48,6 +47,7 @@ import { encryptProfile } from '../util/crypto/profileEncrypter';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { Storage, setLastProfileUpdateTimestamp } from '../util/storage';
 import { UserGroupsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
+import { READ_MESSAGE_STATE } from '../models/constEnums';
 
 export async function copyPublicKeyByConvoId(convoId: string) {
   if (OpenGroupUtils.isOpenGroupV2(convoId)) {
@@ -203,7 +203,7 @@ export async function showUpdateGroupNameByConvoId(conversationId: string) {
     await Promise.all(
       conversation
         .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
+        .map(m => getConversationController().getOrCreateAndWait(m, 'private'))
     );
   }
   window.inboxStore?.dispatch(updateGroupNameModal({ conversationId }));
@@ -216,7 +216,7 @@ export async function showUpdateGroupMembersByConvoId(conversationId: string) {
     await Promise.all(
       conversation
         .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
+        .map(m => getConversationController().getOrCreateAndWait(m, 'private'))
     );
   }
   window.inboxStore?.dispatch(updateGroupMembersModal({ conversationId }));
@@ -241,8 +241,8 @@ export function showLeavePrivateConversationbyConvoId(
     try {
       await updateConversationInteractionState({
         conversationId,
-        type: isMe ? ConversationInteractionType.Hide : ConversationInteractionType.Leave,
-        status: ConversationInteractionStatus.Start,
+        type: isMe ? 'hide' : 'leave',
+        status: 'start',
       });
       onClickClose();
       await getConversationController().delete1o1(conversationId, {
@@ -255,9 +255,7 @@ export function showLeavePrivateConversationbyConvoId(
       window.log.warn(`showLeavePrivateConversationbyConvoId error: ${err}`);
       await saveConversationInteractionErrorAsMessage({
         conversationId,
-        interactionType: isMe
-          ? ConversationInteractionType.Hide
-          : ConversationInteractionType.Leave,
+        interactionType: isMe ? 'hide' : 'leave',
       });
     }
   };
@@ -298,8 +296,8 @@ async function leaveGroupOrCommunityByConvoId(
     // that's because communities can be left always, whereas for groups we need to send a leave message (and so have some encryption keypairs)
     await updateConversationInteractionState({
       conversationId,
-      type: ConversationInteractionType.Leave,
-      status: ConversationInteractionStatus.Start,
+      type: 'leave',
+      status: 'start',
     });
     await getConversationController().deleteClosedGroup(conversationId, {
       fromSyncMessage: false,
@@ -311,7 +309,7 @@ async function leaveGroupOrCommunityByConvoId(
     window.log.warn(`showLeaveGroupByConvoId error: ${err}`);
     await saveConversationInteractionErrorAsMessage({
       conversationId,
-      interactionType: ConversationInteractionType.Leave,
+      interactionType: 'leave',
     });
   }
 }
@@ -333,8 +331,8 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
 
   if (
     !isPublic &&
-    lastMessageInteractionType === ConversationInteractionType.Leave &&
-    lastMessageInteractionStatus === ConversationInteractionStatus.Error
+    lastMessageInteractionType === 'leave' &&
+    lastMessageInteractionStatus === 'error'
   ) {
     await leaveGroupOrCommunityByConvoId(conversationId, isPublic, true);
     return;
@@ -817,7 +815,7 @@ async function saveConversationInteractionErrorAsMessage({
     return;
   }
 
-  const interactionStatus = ConversationInteractionStatus.Error;
+  const interactionStatus = 'error';
 
   await updateConversationInteractionState({
     conversationId,

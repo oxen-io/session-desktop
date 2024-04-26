@@ -6,7 +6,7 @@ import { Lightbox } from './Lightbox';
 
 import { showLightBox } from '../../state/ducks/conversations';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
-import { AttachmentTypeWithPath, MIMEType } from '../../models/conversationTypes';
+import type { AttachmentTypeWithPath, MIMEType } from '../../models/conversationTypes';
 import { saveAttachmentToDisk } from '../../util/attachmentsUtil';
 
 export interface MediaItemType {

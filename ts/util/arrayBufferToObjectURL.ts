@@ -1,5 +1,5 @@
 import { isArrayBuffer } from 'lodash';
-import { MIMEType } from '../models/conversationTypes';
+import type { MIMEType } from '../models/conversationTypes';
 
 export const arrayBufferToObjectURL = ({
   data,

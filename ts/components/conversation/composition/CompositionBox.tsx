@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import { AbortController } from 'abort-controller';
-import { Mention, MentionsInput, SuggestionDataItem } from 'react-mentions';
+import type { SuggestionDataItem } from 'react-mentions';
+import { Mention, MentionsInput } from 'react-mentions';
 
 import autoBind from 'auto-bind';
 import * as MIME from '../../../types/MIME';
@@ -16,9 +17,13 @@ import { SettingsKey } from '../../../data/settings-key';
 import { showLinkSharingConfirmationModalDialog } from '../../../interactions/conversationInteractions';
 import { getConversationController } from '../../../session/conversations';
 import { ToastUtils } from '../../../session/utils';
-import { ReduxConversationType } from '../../../models/conversationTypes';
+import type {
+  ReduxConversationType,
+  AttachmentType,
+  FixedBaseEmoji,
+} from '../../../models/conversationTypes';
 import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
-import { StateType } from '../../../state/reducer';
+import type { StateType } from '../../../state/reducer';
 import {
   getMentionsInput,
   getQuotedMessage,
@@ -28,15 +33,13 @@ import {
   getSelectedCanWrite,
   getSelectedConversationKey,
 } from '../../../state/selectors/selectedConversation';
-import { AttachmentType } from '../../../models/conversationTypes';
 import { processNewAttachment } from '../../../types/MessageAttachment';
-import { FixedBaseEmoji } from '../../../models/conversationTypes';
 import { AttachmentUtil } from '../../../util';
-import {
+import type {
   StagedAttachmentImportedType,
   StagedPreviewImportedType,
 } from '../../../util/attachmentsUtil';
-import { HTMLDirection } from '../../../util/i18n';
+import type { HTMLDirection } from '../../../util/i18n';
 import { LinkPreviews } from '../../../util/linkPreviews';
 import { CaptionEditor } from '../../CaptionEditor';
 import { Flex } from '../../basic/Flex';

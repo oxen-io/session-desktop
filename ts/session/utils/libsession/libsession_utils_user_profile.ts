@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import { UserUtils } from '..';
 import { SettingsKey } from '../../../data/settings-key';
-import { CONVERSATION_PRIORITIES } from '../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../models/constEnums';
 import { Storage } from '../../../util/storage';
 import { UserConfigWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
 import { getConversationController } from '../../conversations';

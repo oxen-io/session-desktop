@@ -3,14 +3,15 @@
  */
 
 import { compact, uniq } from 'lodash';
-import {
-  CONFIG_DUMP_TABLE,
+import type {
   ConfigDumpDataNode,
   ConfigDumpRow,
-  ConfigDumpRowWithoutData,
+  ConfigDumpRowWithoutData} from '../../types/sqlSharedTypes';
+import {
+  CONFIG_DUMP_TABLE,
 } from '../../types/sqlSharedTypes';
 // eslint-disable-next-line import/no-unresolved, import/extensions
-import { ConfigWrapperObjectTypes } from '../../webworker/workers/browser/libsession_worker_functions';
+import type { ConfigWrapperObjectTypes } from '../../webworker/workers/browser/libsession_worker_functions';
 import { assertGlobalInstance } from '../sqlInstance';
 
 function parseRow(

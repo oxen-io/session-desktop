@@ -1,10 +1,7 @@
 import { assert } from 'chai';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationTypeEnum,
-} from '../../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../../models/constEnums';
 
-import { ConversationLookupType } from '../../../../state/ducks/conversations';
+import type { ConversationLookupType } from '../../../../state/ducks/conversations';
 import {
   _getConversationComparator,
   _getSortedConversations,
@@ -19,7 +16,7 @@ describe('state/selectors/conversations', () => {
           id: 'id1',
           activeAt: 0,
           displayNameInProfile: 'No timestamp',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -43,7 +40,7 @@ describe('state/selectors/conversations', () => {
           id: 'id2',
           activeAt: 20,
           displayNameInProfile: 'B',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -66,7 +63,7 @@ describe('state/selectors/conversations', () => {
           id: 'id3',
           activeAt: 20,
           displayNameInProfile: 'C',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -89,7 +86,7 @@ describe('state/selectors/conversations', () => {
           id: 'id4',
           activeAt: 20,
           displayNameInProfile: 'Á',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -112,7 +109,7 @@ describe('state/selectors/conversations', () => {
           id: 'id5',
           activeAt: 30,
           displayNameInProfile: 'First!',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -152,7 +149,7 @@ describe('state/selectors/conversations', () => {
           activeAt: 0,
           displayNameInProfile: 'No timestamp',
 
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -177,7 +174,7 @@ describe('state/selectors/conversations', () => {
           activeAt: 20,
           displayNameInProfile: 'B',
 
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -202,7 +199,7 @@ describe('state/selectors/conversations', () => {
           id: 'id3',
           activeAt: 20,
 
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -227,7 +224,7 @@ describe('state/selectors/conversations', () => {
           id: 'id4',
           activeAt: 20,
           displayNameInProfile: 'Á',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,
@@ -251,7 +248,7 @@ describe('state/selectors/conversations', () => {
           id: 'id5',
           activeAt: 30,
           displayNameInProfile: 'First!',
-          type: ConversationTypeEnum.PRIVATE,
+          type: 'private',
           isMe: false,
           unreadCount: 1,
           mentionedUs: false,

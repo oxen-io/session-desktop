@@ -1,7 +1,7 @@
 import { debounce, last } from 'lodash';
 import { SettingsKey } from '../data/settings-key';
 import { getStatus } from '../notifications';
-import { UserSetting } from '../notifications/getStatus';
+import type { UserSetting } from '../notifications/getStatus';
 import { isMacOS } from '../OS';
 import { isAudioNotificationSupported } from '../types/Settings';
 import { isWindowFocused } from './focusListener';

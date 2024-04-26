@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import * as BetterSqlite3 from '@signalapp/better-sqlite3';
-import {
+import type * as BetterSqlite3 from '@signalapp/better-sqlite3';
+import type {
   ContactInfoSet,
   ContactsConfigWrapperNode,
   ConvoInfoVolatileWrapperNode,
@@ -11,11 +11,12 @@ import {
 import { isEmpty, isEqual, isFinite, isNumber } from 'lodash';
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { MESSAGES_TABLE, toSqliteBoolean } from '../../database_utility';
-import { CONVERSATION_PRIORITIES, ConversationAttributes } from '../../../models/conversationTypes';
+import type { ConversationAttributes } from '../../../models/conversationTypes';
+import { CONVERSATION_PRIORITIES } from '../../../models/constEnums';
 import { maybeArrayJSONtoArray } from '../../../types/sqlSharedTypes';
 import { checkTargetMigration, hasDebugEnvVariable } from '../utils';
 import { sqlNode } from '../../sql';
-import { HexKeyPair } from '../../../receiver/keypairs';
+import type { HexKeyPair } from '../../../receiver/keypairs';
 import { fromHexToArray } from '../../../session/utils/String';
 
 const targetVersion = 31;

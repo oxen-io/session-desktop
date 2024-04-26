@@ -1,13 +1,15 @@
 import autoBind from 'auto-bind';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AutoSizer, List, ListRowProps } from 'react-virtualized';
+import type { ListRowProps } from 'react-virtualized';
+import { AutoSizer, List } from 'react-virtualized';
 import styled from 'styled-components';
 import { SearchResults } from '../search/SearchResults';
 import { LeftPaneSectionHeader } from './LeftPaneSectionHeader';
 import { MessageRequestsBanner } from './MessageRequestsBanner';
 
-import { LeftOverlayMode, setLeftOverlayMode } from '../../state/ducks/section';
+import type { LeftOverlayMode} from '../../state/ducks/section';
+import { setLeftOverlayMode } from '../../state/ducks/section';
 import { getLeftOverlayMode } from '../../state/selectors/section';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 import { SessionSearchInput } from '../SessionSearchInput';

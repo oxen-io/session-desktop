@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Image } from './Image';
 
 import { SessionSpinner } from '../basic/SessionSpinner';
-import { StagedLinkPreviewImage } from './composition/CompositionBox';
+import type { StagedLinkPreviewImage } from './composition/CompositionBox';
 import { isImage } from '../../types/MIME';
 import { fromArrayBufferToBase64 } from '../../session/utils/String';
 import { Flex } from '../basic/Flex';

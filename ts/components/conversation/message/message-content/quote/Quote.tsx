@@ -1,4 +1,5 @@
-import React, { MouseEvent, useState } from 'react';
+import type { MouseEvent} from 'react';
+import React, { useState } from 'react';
 
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
@@ -6,7 +7,7 @@ import { useIsMessageSelectionMode } from '../../../../../state/selectors/select
 import { QuoteAuthor } from './QuoteAuthor';
 import { QuoteIconContainer } from './QuoteIconContainer';
 import { QuoteText } from './QuoteText';
-import { QuoteProps } from '../../../../../models/conversationTypes';
+import type { QuoteProps } from '../../../../../models/conversationTypes';
 
 const StyledQuoteContainer = styled.div`
   min-width: 300px; // if the quoted content is small it doesn't look very good so we set a minimum

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { PropsForExpirationTimer } from '../../models/conversationTypes';
+import type { PropsForExpirationTimer } from '../../models/conversationTypes';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 
 import { isLegacyDisappearingModeEnabled } from '../../session/disappearing_messages/legacy';
