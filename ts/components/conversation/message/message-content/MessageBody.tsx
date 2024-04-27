@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { RenderTextCallbackType } from '../../../../types/Util';
 import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
 import { LinkPreviews } from '../../../../util/linkPreviews';
-import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
+import { showLinkVisitWarningDialog } from '../../../dialog/OpenExternalLinkDialog';
 import { AddMentions } from '../../AddMentions';
 import { AddNewLines } from '../../AddNewLines';
 import { Emojify } from '../../Emojify';

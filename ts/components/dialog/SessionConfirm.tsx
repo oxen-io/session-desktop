@@ -1,10 +1,8 @@
-import { shell } from 'electron';
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { useLastMessage } from '../../hooks/useParamSelector';
-import { MessageInteraction } from '../../interactions';
 import {
   ConversationInteractionStatus,
   updateConversationInteractionState,
@@ -216,29 +214,5 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
         )}
       </div>
     </SessionWrapperModal>
-  );
-};
-
-export const showLinkVisitWarningDialog = (urlToOpen: string, dispatch: Dispatch<any>) => {
-  function onClickOk() {
-    void shell.openExternal(urlToOpen);
-  }
-
-  dispatch(
-    updateConfirmModal({
-      title: window.i18n('linkVisitWarningTitle'),
-      message: window.i18n('linkVisitWarningMessage', [urlToOpen]),
-      okText: window.i18n('open'),
-      okTheme: SessionButtonColor.Primary,
-      cancelText: window.i18n('editMenuCopy'),
-      showExitIcon: true,
-      onClickOk,
-      onClickClose: () => {
-        dispatch(updateConfirmModal(null));
-      },
-      onClickCancel: () => {
-        MessageInteraction.copyBodyToClipboard(urlToOpen);
-      },
-    })
   );
 };

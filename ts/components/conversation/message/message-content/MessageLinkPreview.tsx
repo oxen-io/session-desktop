@@ -9,7 +9,7 @@ import {
 } from '../../../../state/selectors';
 import { useIsMessageSelectionMode } from '../../../../state/selectors/selectedConversation';
 import { isImageAttachment } from '../../../../types/Attachment';
-import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
+import { showLinkVisitWarningDialog } from '../../../dialog/OpenExternalLinkDialog';
 import { SessionIcon } from '../../../icon';
 import { Image } from '../../Image';
 

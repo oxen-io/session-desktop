@@ -18,6 +18,7 @@ import {
   getUpdateGroupMembersModal,
   getUpdateGroupNameModal,
   getUserDetailsModal,
+  getOpenExternalLinkModalState,
 } from '../../state/selectors/modal';
 import { InviteContactsDialog } from './InviteContactsDialog';
 import { DeleteAccountModal } from './DeleteAccountModal';
@@ -36,6 +37,7 @@ import { BanOrUnBanUserDialog } from './BanOrUnbanUserDialog';
 import { ReactListModal } from './ReactListModal';
 import { ReactClearAllModal } from './ReactClearAllModal';
 import { EditProfilePictureModal } from './EditProfilePictureModal';
+import { SessionOpenExternalLinkDialog } from './OpenExternalLinkDialog';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
@@ -55,6 +57,7 @@ export const ModalContainer = () => {
   const reactListModalState = useSelector(getReactListDialog);
   const reactClearAllModalState = useSelector(getReactClearAllDialog);
   const editProfilePictureModalState = useSelector(getEditProfilePictureModalState);
+  const openExternalLinkModalState = useSelector(getOpenExternalLinkModalState);
 
   return (
     <>
@@ -74,6 +77,7 @@ export const ModalContainer = () => {
       {sessionPasswordModalState && <SessionPasswordDialog {...sessionPasswordModalState} />}
       {deleteAccountModalState && <DeleteAccountModal {...deleteAccountModalState} />}
       {confirmModalState && <SessionConfirm {...confirmModalState} />}
+      {openExternalLinkModalState && <SessionOpenExternalLinkDialog {...openExternalLinkModalState} />}
       {reactListModalState && <ReactListModal {...reactListModalState} />}
       {reactClearAllModalState && <ReactClearAllModal {...reactClearAllModalState} />}
       {editProfilePictureModalState && (

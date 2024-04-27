@@ -22,6 +22,7 @@ export type EditProfileModalState = object | null;
 export type OnionPathModalState = EditProfileModalState;
 export type RecoveryPhraseModalState = EditProfileModalState;
 export type DeleteAccountModalState = EditProfileModalState;
+export type OpenExternalLinkModalState = { urlToOpen: string } | null;
 
 export type SessionPasswordModalState = { passwordAction: PasswordAction; onOk: Noop } | null;
 
@@ -56,6 +57,7 @@ export type ModalState = {
   reactListModalState: ReactModalsState;
   reactClearAllModalState: ReactModalsState;
   editProfilePictureModalState: EditProfilePictureModalState;
+  openExternalLinkModalState: OpenExternalLinkModalState;
 };
 
 export const initialModalState: ModalState = {
@@ -76,6 +78,7 @@ export const initialModalState: ModalState = {
   reactListModalState: null,
   reactClearAllModalState: null,
   editProfilePictureModalState: null,
+  openExternalLinkModalState: null,
 };
 
 const ModalSlice = createSlice({
@@ -133,6 +136,9 @@ const ModalSlice = createSlice({
     updateEditProfilePictureModel(state, action: PayloadAction<EditProfilePictureModalState>) {
       return { ...state, editProfilePictureModalState: action.payload };
     },
+    setOpenExternalLinkModal(state, action: PayloadAction<OpenExternalLinkModalState>) {
+      return { ...state, openExternalLinkModalState: action.payload };
+    },
   },
 });
 
@@ -155,5 +161,6 @@ export const {
   updateReactListModal,
   updateReactClearAllModal,
   updateEditProfilePictureModel,
+  setOpenExternalLinkModal,
 } = actions;
 export const modalReducer = reducer;
