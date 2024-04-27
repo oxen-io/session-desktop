@@ -9,7 +9,7 @@ import {
 } from '../../../../state/selectors';
 import { useIsMessageSelectionMode } from '../../../../state/selectors/selectedConversation';
 import { isImageAttachment } from '../../../../types/Attachment';
-import { showLinkVisitWarningDialog } from '../../../dialog/OpenExternalLinkDialog';
+import { promptToOpenExternalLink } from '../../../dialog/OpenExternalLinkDialog';
 import { SessionIcon } from '../../../icon';
 import { Image } from '../../Image';
 
@@ -57,7 +57,7 @@ export const MessageLinkPreview = (props: Props) => {
       return;
     }
     if (previews?.length && previews[0].url) {
-      showLinkVisitWarningDialog(previews[0].url, dispatch);
+      promptToOpenExternalLink(previews[0].url, dispatch);
     }
   }
 

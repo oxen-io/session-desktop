@@ -77,7 +77,9 @@ export const ModalContainer = () => {
       {sessionPasswordModalState && <SessionPasswordDialog {...sessionPasswordModalState} />}
       {deleteAccountModalState && <DeleteAccountModal {...deleteAccountModalState} />}
       {confirmModalState && <SessionConfirm {...confirmModalState} />}
-      {openExternalLinkModalState && <SessionOpenExternalLinkDialog {...openExternalLinkModalState} />}
+      {openExternalLinkModalState && (
+        <SessionOpenExternalLinkDialog {...openExternalLinkModalState} />
+      )}
       {reactListModalState && <ReactListModal {...reactListModalState} />}
       {reactClearAllModalState && <ReactClearAllModal {...reactClearAllModalState} />}
       {editProfilePictureModalState && (

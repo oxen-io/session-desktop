@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { RenderTextCallbackType } from '../../../../types/Util';
 import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
 import { LinkPreviews } from '../../../../util/linkPreviews';
-import { showLinkVisitWarningDialog } from '../../../dialog/OpenExternalLinkDialog';
+import { promptToOpenExternalLink } from '../../../dialog/OpenExternalLinkDialog';
 import { AddMentions } from '../../AddMentions';
 import { AddNewLines } from '../../AddNewLines';
 import { Emojify } from '../../Emojify';
@@ -128,7 +128,7 @@ const Linkify = (props: LinkifyProps): JSX.Element => {
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
-            showLinkVisitWarningDialog(url, dispatch);
+            promptToOpenExternalLink(url, dispatch);
           }}
         >
           {originalText}
