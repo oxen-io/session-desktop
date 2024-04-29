@@ -49,6 +49,8 @@ import { switchThemeTo } from '../../themes/switchTheme';
 import { ReleasedFeatures } from '../../util/releaseFeature';
 import { getOppositeTheme } from '../../util/theme';
 import { SessionNotificationCount } from '../icon/SessionNotificationCount';
+import styled from 'styled-components';
+import { UpdateStatus } from './UpdateStatus';
 
 const Section = (props: { type: SectionType }) => {
   const ourNumber = useSelector(getOurNumber);
@@ -120,6 +122,10 @@ const Section = (props: { type: SectionType }) => {
           isSelected={isSelected}
         />
       );
+    case SectionType.AppUpdateStatus:
+      return (
+        <UpdateStatus />
+      );
     case SectionType.PathIndicator:
       return (
         <ActionPanelOnionStatusLight
@@ -141,6 +147,10 @@ const Section = (props: { type: SectionType }) => {
       );
   }
 };
+
+const SpacerFlex = styled.div`
+  flex: 1;
+`
 
 const cleanUpMediasInterval = DURATION.MINUTES * 60;
 
@@ -321,6 +331,8 @@ export const ActionsPanel = () => {
         <Section type={SectionType.Profile} />
         <Section type={SectionType.Message} />
         <Section type={SectionType.Settings} />
+        <SpacerFlex />
+        <Section type={SectionType.AppUpdateStatus} />
         <Section type={SectionType.PathIndicator} />
         <Section type={SectionType.ColorMode} />
       </LeftPaneSectionContainer>

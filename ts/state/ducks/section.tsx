@@ -15,6 +15,7 @@ export enum SectionType {
   Settings,
   ColorMode,
   PathIndicator,
+  AppUpdateStatus,
 }
 
 type FocusSectionActionType = {

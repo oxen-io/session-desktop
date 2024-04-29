@@ -151,6 +151,10 @@ async function checkForUpdates(
       }
 
       await autoUpdater.downloadUpdate();
+
+      autoUpdater.on('download-progress', downloadProgress => {
+        downloadProgress.transferred / downloadProgress.total
+      })
     } catch (error) {
       const mainWindow = getMainWindow();
       if (!mainWindow) {
