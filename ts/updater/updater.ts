@@ -2,26 +2,26 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
-import { autoUpdater, UpdateInfo } from 'electron-updater';
+import {
+  autoUpdater,
+  CancellationToken,
+  DOWNLOAD_PROGRESS,
+  UPDATE_DOWNLOADED,
+  UpdateInfo,
+} from 'electron-updater';
 import * as fs from 'fs-extra';
 import { gt as isVersionGreaterThan, parse as parseVersion } from 'semver';
 
 import { windowMarkShouldQuit } from '../node/window_state';
 
 import { getLastestRelease } from '../node/latest_desktop_release';
-import {
-  getPrintableError,
-  LoggerType,
-  MessagesType,
-  showCannotUpdateDialog,
-  showDownloadUpdateDialog,
-  showUpdateDialog,
-} from './common';
+import { getPrintableError, LoggerType, MessagesType, showCannotUpdateDialog } from './common';
 
 let isUpdating = false;
-let downloadIgnored = false;
+let downloadPrompted = false;
 let interval: NodeJS.Timeout | undefined;
 let stopped = false;
+let cancellationToken: CancellationToken | undefined;
 // eslint:disable: no-console
 
 export async function start(
@@ -78,10 +78,9 @@ async function checkForUpdates(
   logger: LoggerType
 ) {
   logger.info('[updater] checkForUpdates');
-  if (stopped || isUpdating || downloadIgnored) {
+  if (stopped || isUpdating || downloadPrompted) {
     return;
   }
-
   const canUpdate = await canAutoUpdate();
   logger.info('[updater] canUpdate', canUpdate);
   if (!canUpdate) {
@@ -137,48 +136,21 @@ async function checkForUpdates(
 
       const mainWindow = getMainWindow();
       if (!mainWindow) {
-        console.error('cannot showDownloadUpdateDialog, mainWindow is unset');
+        console.error('cannot prompt download, mainWindow is unset');
         return;
       }
-      logger.info('[updater] showing download dialog...');
-      const shouldDownload = await showDownloadUpdateDialog(mainWindow, messages);
-      logger.info('[updater] shouldDownload:', shouldDownload);
-
-      if (!shouldDownload) {
-        downloadIgnored = true;
-
-        return;
-      }
-
-      await autoUpdater.downloadUpdate();
-
-      autoUpdater.on('download-progress', downloadProgress => {
-        downloadProgress.transferred / downloadProgress.total
-      })
+      mainWindow.webContents.send('update-available');
+      logger.info('[updater] prompting download...');
+      downloadPrompted = true;
     } catch (error) {
       const mainWindow = getMainWindow();
       if (!mainWindow) {
-        console.error('cannot showDownloadUpdateDialog, mainWindow is unset');
+        logger.error('[updater] cannot showCannotUpdateDialog, mainWindow is unset');
         return;
       }
       await showCannotUpdateDialog(mainWindow, messages);
       throw error;
     }
-    const window = getMainWindow();
-    if (!window) {
-      console.error('cannot showDownloadUpdateDialog, mainWindow is unset');
-      return;
-    }
-    // Update downloaded successfully, we should ask the user to update
-    logger.info('[updater] showing update dialog...');
-    const shouldUpdate = await showUpdateDialog(window, messages);
-    if (!shouldUpdate) {
-      return;
-    }
-
-    logger.info('[updater] calling quitAndInstall...');
-    windowMarkShouldQuit();
-    autoUpdater.quitAndInstall();
   } finally {
     isUpdating = false;
   }
@@ -221,4 +193,52 @@ async function canAutoUpdate(): Promise<boolean> {
       resolve(false);
     }
   });
+}
+
+export async function cancelUpdate(getMainWindow: () => BrowserWindow | null, logger: LoggerType) {
+  if (cancellationToken && !cancellationToken.cancelled) {
+    cancellationToken.cancel();
+  }
+  const mainWindow = getMainWindow();
+  if (!mainWindow) {
+    logger.error('[updater] cannot set updater state, mainWindow is unset');
+    return;
+  }
+  mainWindow.webContents.send('update-available');
+  mainWindow.webContents.send('update-download-progress', 0);
+}
+
+export async function acceptDownload(
+  getMainWindow: () => BrowserWindow | null,
+  logger: LoggerType
+) {
+  logger.info('[updater] shouldDownload');
+
+  const mainWindow = getMainWindow();
+  if (!mainWindow) {
+    console.error('cannot accept download update, mainWindow is unset');
+    return;
+  }
+
+  autoUpdater.on(DOWNLOAD_PROGRESS, eventDownloadProgress => {
+    const progress = eventDownloadProgress.transferred / eventDownloadProgress.total;
+    if (progress > 0) {
+      mainWindow.webContents.send('update-download-progress', progress);
+    }
+  });
+
+  autoUpdater.on(UPDATE_DOWNLOADED, () => {
+    mainWindow.webContents.send('update-downloaded');
+  });
+
+  cancellationToken = new CancellationToken();
+  void autoUpdater.downloadUpdate(cancellationToken);
+
+  mainWindow.webContents.send('update-downloading');
+}
+
+export async function installUpdateAndRestart(logger: LoggerType) {
+  logger.info('[updater] calling quitAndInstall...');
+  windowMarkShouldQuit();
+  autoUpdater.quitAndInstall();
 }

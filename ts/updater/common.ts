@@ -15,47 +15,6 @@ export type LoggerType = {
   trace: LogFunction;
 };
 
-export async function showDownloadUpdateDialog(
-  mainWindow: BrowserWindow,
-  messages: MessagesType
-): Promise<boolean> {
-  const DOWNLOAD_BUTTON = 0;
-  const LATER_BUTTON = 1;
-  const options = {
-    type: 'info' as const,
-    buttons: [messages.autoUpdateDownloadButtonLabel, messages.autoUpdateLaterButtonLabel],
-    title: messages.autoUpdateNewVersionTitle,
-    message: messages.autoUpdateNewVersionMessage,
-    detail: messages.autoUpdateDownloadInstructions,
-    defaultId: LATER_BUTTON,
-    cancelId: DOWNLOAD_BUTTON,
-  };
-
-  const ret = await dialog.showMessageBox(mainWindow, options);
-
-  return ret.response === DOWNLOAD_BUTTON;
-}
-
-export async function showUpdateDialog(
-  mainWindow: BrowserWindow,
-  messages: MessagesType
-): Promise<boolean> {
-  const RESTART_BUTTON = 0;
-  const LATER_BUTTON = 1;
-  const options = {
-    type: 'info' as const,
-    buttons: [messages.autoUpdateRestartButtonLabel, messages.autoUpdateLaterButtonLabel],
-    title: messages.autoUpdateNewVersionTitle,
-    message: messages.autoUpdateDownloadedMessage,
-    detail: messages.autoUpdateNewVersionInstructions,
-    defaultId: LATER_BUTTON,
-    cancelId: RESTART_BUTTON,
-  };
-  const ret = await dialog.showMessageBox(mainWindow, options);
-
-  return ret.response === RESTART_BUTTON;
-}
-
 export async function showCannotUpdateDialog(mainWindow: BrowserWindow, messages: MessagesType) {
   const options = {
     type: 'error' as const,

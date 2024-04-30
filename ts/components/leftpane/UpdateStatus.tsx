@@ -1,12 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { useSelector } from 'react-redux';
 import { SessionIconButton } from '../icon';
+import {
+  getAppUpdateDownloadProgress,
+  getAppUpdatesStatus,
+} from '../../state/selectors/appUpdates';
 
 const StyledActionsPanelItem = styled.div`
   position: relative;
   padding: 30px 20px;
-  
+  height: 75px;
+
   & > * {
     position: absolute;
     top: 50%;
@@ -26,21 +32,34 @@ const StyledActionsPanelItem = styled.div`
   }
 `;
 
-const StyledButtonContainer = styled.div`
-  
-`
+const StyledButtonContainer = styled.div``;
 
-const StyledProgressPie = styled.span<{ progressPercentage: number, insetPercentage: number }>`
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg) translate(-50%, -50%);
+  }
+  to {
+    transform: rotate(360deg) translate(-50%, -50%);
+  }
+`;
+
+const StyledProgressPie = styled.span<{ progressPercentage: number; insetPercentage: number }>`
   position: absolute;
   display: block;
   border-radius: 50%;
-  background-image: conic-gradient(white 0% ${props => props.progressPercentage}%, transparent 0% 0%);
+  background-image: conic-gradient(
+    white 0% ${props => props.progressPercentage}%,
+    transparent 0% 0%
+  );
   position: relative;
   mask:
-    radial-gradient(farthest-side, #000 calc(100% - 0.5px), #0000) center / ${props => props.insetPercentage}% ${props => props.insetPercentage}% no-repeat,
+    radial-gradient(farthest-side, #000 calc(100% - 0.5px), #0000) center /
+      ${props => props.insetPercentage}% ${props => props.insetPercentage}% no-repeat,
     linear-gradient(#000 0 0);
   mask-composite: destination-out;
-`
+  animation: ${rotate} 1s linear infinite;
+  transform-origin: top left;
+`;
 
 const StyledTooltip = styled.div<{
   visible: boolean;
@@ -74,63 +93,91 @@ const StyledTooltip = styled.div<{
     top: 50%;
     transform: translateY(-50%);
   }
-`
+`;
 
 export const UpdateStatus = () => {
-  const [tooltip, setTooltip] = React.useState<{ visible: boolean, top: number, left: number }>({ visible: false, top: 0, left: 0 })
-  const [progress] = React.useState(1)
-  const readyToUpdate = progress === 1
+  const [tooltip, setTooltip] = React.useState<{ visible: boolean; top: number; left: number }>({
+    visible: false,
+    top: 0,
+    left: 0,
+  });
+  const progress = useSelector(getAppUpdateDownloadProgress);
+  const updateStatus = useSelector(getAppUpdatesStatus);
 
-  const progressPercentageNormalized = React.useMemo(() => Math.floor(progress * 100), [progress])
+  const progressPercentageNormalized = React.useMemo(() => Math.floor(progress * 100), [progress]);
 
   const handlePointerOver = React.useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const { top, left, width, height } = e.currentTarget.getBoundingClientRect()
-    setTooltip({ 
-      visible: true, 
+    const { top, left, width, height } = e.currentTarget.getBoundingClientRect();
+    setTooltip({
+      visible: true,
       top: top + height / 2,
       left: left + width + 10,
-    })
-  }, [])
+    });
+  }, []);
 
   const handlePointerOut = React.useCallback(() => {
-    setTooltip({ visible: false, top: tooltip.top, left: tooltip.left })
-  }, [tooltip])
+    setTooltip({ visible: false, top: tooltip.top, left: tooltip.left });
+  }, [tooltip]);
+
+  const tooltipText = React.useMemo(() => {
+    if (updateStatus === 'UPDATE_DOWNLOADED') {
+      return window.i18n('updateDownloadedRestart');
+    }
+    if (updateStatus === 'UPDATE_DOWNLOADING') {
+      return window.i18n('updateDownloadProgress', [String(progressPercentageNormalized)]);
+    }
+    if (updateStatus === 'UPDATE_AVAILABLE') {
+      return window.i18n('autoUpdateNewVersionMessage');
+    }
+    return '';
+  }, [updateStatus, progressPercentageNormalized]);
+
+  if (updateStatus === 'NO_UPDATE_AVAILABLE') {
+    return null;
+  }
+
+  const handleClick = () => {
+    if (updateStatus === 'UPDATE_DOWNLOADED') {
+      window.autoupdaterInstallAndRestart();
+    }
+    if (updateStatus === 'UPDATE_AVAILABLE') {
+      window.autoupdaterAcceptDownload();
+    }
+    if (updateStatus === 'UPDATE_DOWNLOADING') {
+      window.autoupdaterCancelDownload();
+    }
+  };
 
   return (
     <StyledActionsPanelItem>
-      <StyledProgressPie 
-        progressPercentage={progress * 100} 
-        insetPercentage={80} 
-      />
+      {(updateStatus === 'UPDATE_DOWNLOADING' || updateStatus === 'UPDATE_DOWNLOADED') && (
+        <StyledProgressPie
+          progressPercentage={
+            updateStatus === 'UPDATE_DOWNLOADED' ? 100 : Math.max(0.03, progress) * 100
+          }
+          insetPercentage={80}
+        />
+      )}
       <StyledButtonContainer
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
+        onClick={handleClick}
       >
-        {readyToUpdate ? (
+        {updateStatus === 'UPDATE_AVAILABLE' || updateStatus === 'UPDATE_DOWNLOADED' ? (
           <SessionIconButton
-            iconSize='small'
-            iconType='save'
+            iconSize={updateStatus === 'UPDATE_AVAILABLE' ? 'medium' : 'small'}
+            iconType="save"
           />
         ) : (
-          <SessionIconButton
-            iconSize='small'
-            iconType='close'
-          />
+          <SessionIconButton iconSize="small" iconType="close" />
         )}
       </StyledButtonContainer>
       {ReactDOM.createPortal(
-        <StyledTooltip 
-          visible={tooltip.visible} 
-          top={tooltip.top} 
-          left={tooltip.left}
-        >
-          {readyToUpdate
-            ? window.i18n('updateDownloadedRestart')
-            : window.i18n('updateDownloadProgress', [String(progressPercentageNormalized)]) 
-          }
+        <StyledTooltip visible={tooltip.visible} top={tooltip.top} left={tooltip.left}>
+          {tooltipText}
         </StyledTooltip>,
         document.body.querySelector('#root') as Element
       )}
     </StyledActionsPanelItem>
   );
-}
+};
