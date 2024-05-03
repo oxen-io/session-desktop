@@ -42,16 +42,17 @@ Building on Windows is a pain, but is possible see our CI/Windows build machine 
 2.  Depending on your distro, you might need to install `hunspell` and `hunspell-<lan>` (e.g. `hunspell-en-au`)
 
 In Ubuntu, you may also need to install
+
 ```
 sudo apt install cmake
 npm install cmake-js
 ```
 
 In Fedora, you may also need to install
+
 ```
 sudo dnf install make automake gcc gcc-c++ kernel-devel
 ```
-
 
 ### All platforms
 
@@ -60,11 +61,11 @@ Now, run these commands in your preferred terminal in a good directory for devel
 ```
 git clone https://github.com/oxen-io/session-desktop.git
 cd session-desktop
-npm install --global yarn      # (only if you don’t already have `yarn`)
-yarn install --frozen-lockfile # Install and build dependencies (this will take a while)
-yarn build-everything
-yarn test                      # A good idea to make sure tests run first
-yarn start-prod                # Start Session!
+npm install --global pnpm      # (only if you don’t already have `pnpm`)
+pnpm install --frozen-lockfile # Install and build dependencies (this will take a while)
+pnpm build-everything
+pnpm test                      # A good idea to make sure tests run first
+pnpm start-prod                # Start Session!
 ```
 
 You'll need to restart the application regularly to see your changes, as there
@@ -74,9 +75,9 @@ is no automatic restart mechanism. Alternatively, keep the developer tools open
 (Windows & Linux).
 
 ```
-yarn build-everything:watch # runs until you stop it, re-generating built assets on file changes
-# Once this command is waiting for changes, you will need to run in another terminal `yarn worker:utils && yarn worker:libsession` to fix the "exports undefined" error on start.
-# If you do change the sass while this command is running, it won't pick it up. You need to either run `yarn sass` or have `yarn sass:watch` running in a separate terminal.
+pnpm build-everything:watch # runs until you stop it, re-generating built assets on file changes
+# Once this command is waiting for changes, you will need to run in another terminal `pnpm worker:utils && pnpm worker:libsession` to fix the "exports undefined" error on start.
+# If you do change the sass while this command is running, it won't pick it up. You need to either run `pnpm sass` or have `pnpm sass:watch` running in a separate terminal.
 ```
 
 ## Multiple instances
@@ -90,15 +91,15 @@ directory from `%appData%/Session` to `%appData%/Session-{environment}-{instance
 There are a few scripts which you can use:
 
 ```
-yarn start-prod - Start production but in development mode
-MULTI=1 yarn start-prod - Start another instance of production
+pnpm start-prod - Start production but in development mode
+MULTI=1 pnpm start-prod - Start another instance of production
 ```
 
 For more than 2 clients, you may run the above command with `NODE_APP_INSTANCE` set before them.
 For example, running:
 
 ```
-NODE_APP_INSTANCE=alice yarn start-prod
+NODE_APP_INSTANCE=alice pnpm start-prod
 ```
 
 Will run the development environment with the `alice` instance and thus create a separate storage profile.
@@ -129,7 +130,7 @@ Please write tests! Our testing framework is
 [mocha](http://mochajs.org/) and our assertion library is
 [chai](http://chaijs.com/api/assert/).
 
-The easiest way to run all tests at once is `yarn test`.
+The easiest way to run all tests at once is `pnpm test`.
 
 ## Committing your changes
 
@@ -145,7 +146,7 @@ Commit messages will be checked using [husky](https://typicode.github.io/husky/#
 
 So you wanna make a pull request? Please observe the following guidelines.
 
-- First, make sure that your `yarn ready` run passes - it's very similar to what our
+- First, make sure that your `pnpm ready` run passes - it's very similar to what our
   Continuous Integration servers do to test the app.
 - Never use plain strings right in the source code - pull them from `messages.json`!
   You **only** need to modify the default locale
@@ -181,15 +182,15 @@ So you wanna make a pull request? Please observe the following guidelines.
       choices that may be helpful to someone reviewing or auditing the commit
       history in the future. When in doubt, err on the side of a longer
       commit message.
-Above all, spend some time with the repository. Follow the pull request template added to
-your pull request description automatically. Take a look at recent approved pull requests,
-see how they did things.
+      Above all, spend some time with the repository. Follow the pull request template added to
+      your pull request description automatically. Take a look at recent approved pull requests,
+      see how they did things.
 
 ## Production Builds
 
 You can build a production binary by running the following:
 
 ```
-yarn build-everything
-yarn build-release
+pnpm build-everything
+pnpm build-release
 ```

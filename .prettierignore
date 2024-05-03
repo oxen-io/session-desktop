@@ -20,7 +20,7 @@ mnemonic_languages/**
 .vscode/
 .vscrof/
 
-# Managed by package manager (`yarn`/`npm`):
+# Managed by package manager (`pnpm`/`npm`):
 /package.json
 
 # Coverage

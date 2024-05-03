@@ -32,7 +32,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           source ./build/setup-mac-certificate.sh
-          $(yarn bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=always
+          $(pnpm bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=always
         env:
           MAC_CERTIFICATE: ${{ secrets.MAC_CERTIFICATE }}
           MAC_CERTIFICATE_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
@@ -44,4 +44,4 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y rpm
-          yarn build-release-publish
+          pnpm build-release-publish

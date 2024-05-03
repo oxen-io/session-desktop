@@ -1,6 +1,6 @@
 # Building
 
-This document alongside [Releasing.md](RELEASING.md) primarily cover our internal build process for release builds, if you are an external contributor please refer to [Contributing.md](CONTRIBUTING.md) for building instructions. 
+This document alongside [Releasing.md](RELEASING.md) primarily cover our internal build process for release builds, if you are an external contributor please refer to [Contributing.md](CONTRIBUTING.md) for building instructions.
 
 ## Automated
 
@@ -66,10 +66,10 @@ git lfs install
 # install nvm by following their github README
 nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
-npm install -g yarn # install yarn globally for this node version
-yarn install --frozen-lockfile # install all dependencies of this project
-yarn build-everything # transpile and assemble files
-yarn start-prod # start the app on production mode (currently this is the only one supported)
+npm install -g pnpm # install pnpm globally for this node version
+pnpm install --frozen-lockfile # install all dependencies of this project
+pnpm build-everything # transpile and assemble files
+pnpm start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>
@@ -116,10 +116,10 @@ git lfs install # once git lfs is installed, you have to run this command too
 
 nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
-npm install -g yarn # install yarn globally for this node version
-yarn install --frozen-lockfile # install all dependencies of this project
-yarn build-everything # transpile and assemble files
-yarn start-prod # start the app on production mode (currently this is the only one supported)
+npm install -g pnpm # install pnpm globally for this node version
+pnpm install --frozen-lockfile # install all dependencies of this project
+pnpm build-everything # transpile and assemble files
+pnpm start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>
@@ -139,10 +139,10 @@ sudo apt install rpm  # Ubuntu/Debian
 Run the following to build the binaries for your specific system OS.
 
 ```
-npm install yarn --no-save
-yarn install --frozen-lockfile
-yarn build-everything
-yarn build-release
+npm install pnpm --no-save
+pnpm install --frozen-lockfile
+pnpm build-everything
+pnpm build-release
 ```
 
 The binaries will be placed inside the `release/` folder.

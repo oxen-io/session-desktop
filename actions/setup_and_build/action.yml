@@ -3,39 +3,47 @@ description: 'Setup and build Session Desktop'
 runs:
   using: 'composite'
   steps:
-    - name: Install node
-      uses: actions/setup-node@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v4
       with:
-        node-version-file: '.nvmrc'
+        node-version: 18.15.0
+
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 9
 
     - uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    - name: Cache Desktop node_modules
-      id: cache-desktop-modules
-      uses: actions/cache@v3
-      if: runner.os != 'Windows'
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-${{ hashFiles('package.json', 'yarn.lock', 'patches/**') }}
+    # - name: Cache Desktop node_modules
+    #   id: cache-desktop-modules
+    #   uses: actions/cache@v3
+    #   if: runner.os != 'Windows'
+    #   with:
+    #     path: node_modules
+    #     key: ${{ runner.os }}-${{ hashFiles('package.json', 'pnpm-lock.yaml', 'patches/**') }}
 
     # Not having this will break the windows build because the PATH won't be set by msbuild.
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@v2
       if: runner.os == 'Windows'
 
     - name: Setup node for windows
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        yarn global add node-gyp@latest
+        pnpm add -g node-gyp@latest
+
+    # - name: Install dependencies
+    #   shell: bash
+    #   if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+    #   run: pnpm install --frozen-lockfile
 
     - name: Install dependencies
       shell: bash
-      if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-      run: yarn install --frozen-lockfile --network-timeout 600000
+      run: pnpm install --frozen-lockfile
 
     - name: Generate and concat files
       shell: bash
-      run: yarn build-everything
+      run: pnpm build-everything
