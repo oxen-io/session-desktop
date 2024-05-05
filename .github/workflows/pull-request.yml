@@ -20,20 +20,21 @@ jobs:
       matrix:
         os: [windows-2022, macos-11, ubuntu-20.04]
     env:
-      SIGNAL_ENV: production
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - run: git config --global core.autocrlf false
 
       - name: Checkout git repo
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - uses: ./actions/setup_and_build
 
       - name: Lint Files
         # no need to lint files on all platforms. Just do it once on the quicker one
         if: runner.os == 'Linux'
-        run: pnpm lint-full
+        run: pnpm run --filter session-desktop lint-full
 
       - name: Unit Test
-        run: pnpm test
+        run: pnpm run --filter session-desktop test

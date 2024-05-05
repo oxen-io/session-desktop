@@ -2,29 +2,23 @@
 # supports `.gitignore`: https://github.com/prettier/prettier/issues/2294
 
 # Generated files
-config/local-*.json
-config/local.json
-dist/**
-stylesheets/*.css
+**/config/local-*.json
+**/config/local.json
+**/dist/**
+**/stylesheets/*
 
-test/ts/**/*.js
 ts/**/*.js
 ts/protobuf/*.d.ts
-ts/protobuf/*.js
 ts/util/lint/exceptions.json
-ts/test/automation/notes
 
 # Third-party files
-node_modules/**
-mnemonic_languages/**
-.vscode/
-.vscrof/
+**/node_modules/**
+**/mnemonic_languages/**
+**/.vscode/
+**/.vscrof/
 
 # Managed by package manager (`pnpm`/`npm`):
-/package.json
+**/package.json
 
-# Coverage
-release/**
-.nyc_output/
-coverage/
-stylesheets/dist/**
+
+**/release/**

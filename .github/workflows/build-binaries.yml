@@ -22,25 +22,26 @@ jobs:
       matrix:
         os: [windows-2022, macos-11, ubuntu-20.04]
     env:
-      SIGNAL_ENV: production
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - run: git config --global core.autocrlf false
 
       - name: Checkout git repo
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - uses: ./actions/setup_and_build
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'
-        run: node_modules\.bin\electron-builder --config.extraMetadata.environment=%SIGNAL_ENV% --publish=never --config.directories.output=release
+        run: pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release
 
       - name: Build mac production binaries
         if: runner.os == 'macOS'
         run: |
-          source ./build/setup-mac-certificate.sh
-          $(pnpm bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          source ./packages/session-desktop/build/setup-mac-certificate.sh
+          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
         env:
           MAC_CERTIFICATE: ${{ secrets.MAC_CERTIFICATE }}
           MAC_CERTIFICATE_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
@@ -50,24 +51,46 @@ jobs:
 
       - name: Build linux production binaries
         if: runner.os == 'Linux'
+        # yes, we really have to make those two builds separately (we could break them down and run them in parallel eventually)
         run: |
           sudo apt-get install -y rpm
-          pnpm build-release
+          pnpm --filter session-desktop sedtoDeb
+          pnpm --filter session-desktop build-everything
+          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          pnpm --filter session-desktop sedtoAppImage
+          pnpm --filter session-desktop build-everything
+          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          pnpm --filter session-desktop sedtoDeb
+
+      - name: Remaining files before1
+        run: ls .
+        shell: bash
+        working-directory: ./
+
+      - name: Remaining files before2
+        run: ls .
+        shell: bash
+        working-directory: ./packages/
+
+      - name: Remaining files before3
+        run: ls .
+        shell: bash
+        working-directory: ./packages/session-desktop/
 
       - name: Remove unpacked files
         run: |
           ls -d -- */ | xargs -I{} echo "Removing {}"
           ls -d -- */ | xargs -I{} rm -rf {}
         shell: bash
-        working-directory: ./release/
+        working-directory: ./packages/session-desktop/release/
 
       - name: Remaining files
         run: ls .
         shell: bash
-        working-directory: ./release/
+        working-directory: ./packages/session-desktop/release/
 
       - name: Upload Production Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: ${{ runner.OS }}-production
-          path: release
+          path: packages/session-desktop/release

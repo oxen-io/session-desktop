@@ -68,8 +68,8 @@ nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g pnpm # install pnpm globally for this node version
 pnpm install --frozen-lockfile # install all dependencies of this project
-pnpm build-everything # transpile and assemble files
-pnpm start-prod # start the app on production mode (currently this is the only one supported)
+pnpm --filter session-desktop build-everything # transpile and assemble files
+pnpm --filter session-desktop start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>
@@ -118,31 +118,19 @@ nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g pnpm # install pnpm globally for this node version
 pnpm install --frozen-lockfile # install all dependencies of this project
-pnpm build-everything # transpile and assemble files
-pnpm start-prod # start the app on production mode (currently this is the only one supported)
+pnpm --filter session-desktop build-everything # transpile and assemble files
+pnpm --filter session-desktop start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>
 
 ### Commands
 
-The `rpm` package is required for running the build-release script. Run the appropriate command to install the `rpm` package:
+The `rpm` package is required to build the linux binaries. Run the appropriate command to install the `rpm` package:
 
 ```sh
 sudo pacman -S rpm    # Arch
-```
-
-```sh
 sudo apt install rpm  # Ubuntu/Debian
 ```
 
-Run the following to build the binaries for your specific system OS.
-
-```
-npm install pnpm --no-save
-pnpm install --frozen-lockfile
-pnpm build-everything
-pnpm build-release
-```
-
-The binaries will be placed inside the `release/` folder.
+Once rpm is installed, run the steps in CONTRIBUTING.md to build the binaries for your specific system OS.

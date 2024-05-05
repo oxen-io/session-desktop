@@ -35,6 +35,13 @@ runs:
       run: |
         pnpm add -g node-gyp@latest
 
+    - name: patch pnpm
+      if: runner.os == 'Windows'
+
+      run: |
+        find .  C:/Users/runneradmin/setup-pnpm/node_modules/pnpm -type d && sed -i 's/\/usr\/bin\/env node/node/g' C:/Users/runneradmin/setup-pnpm/node_modules/pnpm/bin/pnpm.cjs
+      shell: bash
+
     # - name: Install dependencies
     #   shell: bash
     #   if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
@@ -46,4 +53,4 @@ runs:
 
     - name: Generate and concat files
       shell: bash
-      run: pnpm build-everything
+      run: pnpm run --filter session-desktop build-everything

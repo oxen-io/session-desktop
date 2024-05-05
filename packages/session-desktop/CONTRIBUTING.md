@@ -62,10 +62,10 @@ Now, run these commands in your preferred terminal in a good directory for devel
 git clone https://github.com/oxen-io/session-desktop.git
 cd session-desktop
 npm install --global pnpm      # (only if you don’t already have `pnpm`)
-pnpm install --frozen-lockfile # Install and build dependencies (this will take a while)
-pnpm build-everything
-pnpm test                      # A good idea to make sure tests run first
-pnpm start-prod                # Start Session!
+pnpm --filter session-desktop install --frozen-lockfile # Install and build dependencies (this will take a while)
+pnpm --filter session-desktop build-everything
+pnpm --filter session-desktop test                      # A good idea to make sure tests run first
+pnpm --filter session-desktop start-prod                # Start Session!
 ```
 
 You'll need to restart the application regularly to see your changes, as there
@@ -75,9 +75,9 @@ is no automatic restart mechanism. Alternatively, keep the developer tools open
 (Windows & Linux).
 
 ```
-pnpm build-everything:watch # runs until you stop it, re-generating built assets on file changes
-# Once this command is waiting for changes, you will need to run in another terminal `pnpm worker:utils && pnpm worker:libsession` to fix the "exports undefined" error on start.
-# If you do change the sass while this command is running, it won't pick it up. You need to either run `pnpm sass` or have `pnpm sass:watch` running in a separate terminal.
+pnpm --filter session-desktop build-everything:watch # runs until you stop it, re-generating built assets on file changes
+# Once this command is waiting for changes, you will need to run in another terminal `pnpm --filter=session-desktop build:workers` to fix the "exports undefined" error on start.
+# If you do change the sass while this command is running, it won't pick it up. You need to either run `pnpm --filter session-desktop sass` or have `pnpm --filter session-desktop sass:watch` running in a separate terminal.
 ```
 
 ## Multiple instances
@@ -91,15 +91,15 @@ directory from `%appData%/Session` to `%appData%/Session-{environment}-{instance
 There are a few scripts which you can use:
 
 ```
-pnpm start-prod - Start production but in development mode
-MULTI=1 pnpm start-prod - Start another instance of production
+pnpm --filter session-desktop start-prod - Start production but in development mode
+MULTI=1 pnpm --filter session-desktop start-prod - Start another instance of production
 ```
 
 For more than 2 clients, you may run the above command with `NODE_APP_INSTANCE` set before them.
 For example, running:
 
 ```
-NODE_APP_INSTANCE=alice pnpm start-prod
+NODE_APP_INSTANCE=alice pnpm --filter session-desktop start-prod
 ```
 
 Will run the development environment with the `alice` instance and thus create a separate storage profile.
@@ -130,7 +130,7 @@ Please write tests! Our testing framework is
 [mocha](http://mochajs.org/) and our assertion library is
 [chai](http://chaijs.com/api/assert/).
 
-The easiest way to run all tests at once is `pnpm test`.
+The easiest way to run all tests at once is `pnpm --filter session-desktop test`.
 
 ## Committing your changes
 
@@ -146,7 +146,7 @@ Commit messages will be checked using [husky](https://typicode.github.io/husky/#
 
 So you wanna make a pull request? Please observe the following guidelines.
 
-- First, make sure that your `pnpm ready` run passes - it's very similar to what our
+- First, make sure that your `pnpm --filter session-desktop ready` run passes - it's very similar to what our
   Continuous Integration servers do to test the app.
 - Never use plain strings right in the source code - pull them from `messages.json`!
   You **only** need to modify the default locale
@@ -188,9 +188,22 @@ So you wanna make a pull request? Please observe the following guidelines.
 
 ## Production Builds
 
-You can build a production binary by running the following:
+You can build a production binary (unsigned) by running the following:
+
+for Windows or macOS
 
 ```
-pnpm build-everything
-pnpm build-release
+pnpm --filter session-desktop build-everything && pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release
+```
+
+for Linux (deb/rpm/freebsd)
+
+```
+pnpm --filter session-desktop sedtoDeb; pnpm --filter session-desktop build-everything && pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release
+```
+
+for Linux (appImage)
+
+```
+pnpm --filter session-desktop sedtoAppImage; pnpm --filter session-desktop build-everything && pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release && pnpm --filter session-desktop sedtoDeb
 ```

@@ -97,7 +97,7 @@ export const UserConfigWrapperActions: UserConfigWrapperActionsCalls = {
   push: async () => GenericWrapperActions.push('UserConfig'),
   storageNamespace: async () => GenericWrapperActions.storageNamespace('UserConfig'),
   currentHashes: async () => GenericWrapperActions.currentHashes('UserConfig'),
-  free: async () => { },
+  free: async () => {},
 
   /** UserConfig wrapper specific actions */
   getUserInfo: async () =>
@@ -146,7 +146,7 @@ export const ContactsWrapperActions: ContactsWrapperActionsCalls = {
   push: async () => GenericWrapperActions.push('ContactsConfig'),
   storageNamespace: async () => GenericWrapperActions.storageNamespace('ContactsConfig'),
   currentHashes: async () => GenericWrapperActions.currentHashes('ContactsConfig'),
-  free: async () => { },
+  free: async () => {},
 
   /** ContactsConfig wrapper specific actions */
   get: async (pubkeyHex: string) =>
@@ -183,7 +183,7 @@ export const UserGroupsWrapperActions: UserGroupsWrapperActionsCalls = {
   push: async () => GenericWrapperActions.push('UserGroupsConfig'),
   storageNamespace: async () => GenericWrapperActions.storageNamespace('UserGroupsConfig'),
   currentHashes: async () => GenericWrapperActions.currentHashes('UserGroupsConfig'),
-  free: async () => { },
+  free: async () => {},
 
   /** UserGroups wrapper specific actions */
 
@@ -257,7 +257,7 @@ export const ConvoInfoVolatileWrapperActions: ConvoInfoVolatileWrapperActionsCal
   push: async () => GenericWrapperActions.push('ConvoInfoVolatileConfig'),
   storageNamespace: async () => GenericWrapperActions.storageNamespace('ConvoInfoVolatileConfig'),
   currentHashes: async () => GenericWrapperActions.currentHashes('ConvoInfoVolatileConfig'),
-  free: async () => { },
+  free: async () => {},
 
   /** ConvoInfoVolatile wrapper specific actions */
   // 1o1
