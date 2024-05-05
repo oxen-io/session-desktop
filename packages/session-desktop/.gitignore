@@ -9,17 +9,13 @@ config/local-*.json
 *.provisionprofile
 release/
 /dev-app-update.yml
-*.sublime*
 sql/
 
 # React / TypeScript
 ts/**/*.js
 ts/protobuf/*.d.ts
-ts/**/*.js.map
-test/ts/**/*.js.map
 test/ts/**/*.js
-ts/test/automation/**/*.js
-ts/test/automation/**/*.js.map
+**/*.js.map
 
 
 # Swapfiles
@@ -38,20 +34,12 @@ yarn-error.log
 .vscode/
 .vscrof/
 
-
-playwright.config.js
-*.js.map
 ts/node/**/*.d.ts
-ts/node/**/*.d.ts.map
 
-test-results/
-
-.nyc_output
-coverage/
 stylesheets/dist/
 
 *.LICENSE.txt
-ts/webworker/workers/node/**/*.node
+**/*.node
 
 .yarn/**/*.mjs
 .yarn/**/*.cjs
