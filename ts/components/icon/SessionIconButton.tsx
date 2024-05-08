@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { SessionIcon, SessionIconProps } from './SessionIcon';
 
 interface SProps extends SessionIconProps {
+  onPointerOver?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
+  onPointerOut?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   isSelected?: boolean;
   isHidden?: boolean;
@@ -85,6 +87,8 @@ const SessionIconButtonInner = React.forwardRef<HTMLButtonElement, SProps>((prop
       tabIndex={tabIndex}
       onKeyPress={keyPressHandler}
       data-testid={dataTestId}
+      onPointerOver={props.onPointerOver}
+      onPointerOut={props.onPointerOut}
     >
       <SessionIcon
         iconType={iconType}

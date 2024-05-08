@@ -8,12 +8,14 @@ import {
   getAppUpdatesStatus,
 } from '../../state/selectors/appUpdates';
 
-const StyledActionsPanelItem = styled.div`
+const StyledActionsPanelItem = styled.div<{ hover: boolean }>`
   position: relative;
   padding: 30px 20px;
   height: 75px;
 
-  & > * {
+  --update-button-color: ${props => (props.hover ? '#00F782' : 'var(--text-primary-color)')};
+
+  & > span {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -22,17 +24,19 @@ const StyledActionsPanelItem = styled.div`
     height: 32px;
   }
 
-  & button {
+  & > button {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
     padding: 0 !important;
-    width: 100%;
-    height: 100%;
     align-items: center;
     justify-content: center;
+    border-radius: 999px;
   }
 `;
-
-const StyledButtonContainer = styled.div``;
 
 const rotate = keyframes`
   from {
@@ -43,14 +47,26 @@ const rotate = keyframes`
   }
 `;
 
-const StyledProgressPie = styled.span<{ progressPercentage: number; insetPercentage: number }>`
+const StyledProgressPie = styled.span<{
+  progressPercentage: number;
+  insetPercentage: number;
+  hoverable: boolean;
+}>`
   position: absolute;
   display: block;
   border-radius: 50%;
-  background-image: conic-gradient(
-    white 0% ${props => props.progressPercentage}%,
-    transparent 0% 0%
-  );
+  ${props =>
+    props.hoverable
+      ? `
+    background-color: var(--update-button-color);
+    transition: var(--default-duration);
+  `
+      : `
+    background-image: conic-gradient(
+      var(--text-primary-color) 0% ${props.progressPercentage}%,
+      transparent 0% 0%
+    );
+  `}
   position: relative;
   mask:
     radial-gradient(farthest-side, #000 calc(100% - 0.5px), #0000) center /
@@ -96,6 +112,7 @@ const StyledTooltip = styled.div<{
 `;
 
 export const UpdateStatus = () => {
+  const [hover, setHover] = React.useState(false);
   const [tooltip, setTooltip] = React.useState<{ visible: boolean; top: number; left: number }>({
     visible: false,
     top: 0,
@@ -103,11 +120,22 @@ export const UpdateStatus = () => {
   });
   const progress = useSelector(getAppUpdateDownloadProgress);
   const updateStatus = useSelector(getAppUpdatesStatus);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const initialPrompted = React.useRef(false);
+  const initialPromptedTimer = React.useRef(false);
 
   const progressPercentageNormalized = React.useMemo(() => Math.floor(progress * 100), [progress]);
 
-  const handlePointerOver = React.useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const { top, left, width, height } = e.currentTarget.getBoundingClientRect();
+  const handlePointerOver = React.useCallback(() => {
+    if (!buttonRef.current) {
+      return;
+    }
+    if (initialPromptedTimer.current === true) {
+      initialPromptedTimer.current = false;
+    }
+
+    setHover(true);
+    const { top, left, width, height } = buttonRef.current.getBoundingClientRect();
     setTooltip({
       visible: true,
       top: top + height / 2,
@@ -116,6 +144,7 @@ export const UpdateStatus = () => {
   }, []);
 
   const handlePointerOut = React.useCallback(() => {
+    setHover(false);
     setTooltip({ visible: false, top: tooltip.top, left: tooltip.left });
   }, [tooltip]);
 
@@ -131,6 +160,21 @@ export const UpdateStatus = () => {
     }
     return '';
   }, [updateStatus, progressPercentageNormalized]);
+
+  React.useEffect(() => {
+    if (updateStatus === 'UPDATE_AVAILABLE' && buttonRef.current && !initialPrompted.current) {
+      const { top, left, width, height } = buttonRef.current.getBoundingClientRect();
+      const position = { top: top + height / 2, left: left + width + 10 };
+      initialPrompted.current = true;
+      setTooltip({ visible: true, ...position });
+      initialPromptedTimer.current = true;
+      setTimeout(() => {
+        if (initialPromptedTimer.current === true) {
+          setTooltip({ visible: false, ...position });
+        }
+      }, 5 * 1000);
+    }
+  }, [updateStatus, buttonRef]);
 
   if (updateStatus === 'NO_UPDATE_AVAILABLE') {
     return null;
@@ -148,30 +192,40 @@ export const UpdateStatus = () => {
     }
   };
 
+  const pointerHandlers = {
+    onPointerOver: handlePointerOver,
+    onPointerOut: handlePointerOut,
+    onClick: handleClick,
+  };
+
   return (
-    <StyledActionsPanelItem>
+    <StyledActionsPanelItem hover={hover}>
       {(updateStatus === 'UPDATE_DOWNLOADING' || updateStatus === 'UPDATE_DOWNLOADED') && (
         <StyledProgressPie
           progressPercentage={
             updateStatus === 'UPDATE_DOWNLOADED' ? 100 : Math.max(0.03, progress) * 100
           }
           insetPercentage={80}
+          hoverable={updateStatus === 'UPDATE_DOWNLOADED'}
         />
       )}
-      <StyledButtonContainer
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        onClick={handleClick}
-      >
-        {updateStatus === 'UPDATE_AVAILABLE' || updateStatus === 'UPDATE_DOWNLOADED' ? (
-          <SessionIconButton
-            iconSize={updateStatus === 'UPDATE_AVAILABLE' ? 'medium' : 'small'}
-            iconType="save"
-          />
-        ) : (
-          <SessionIconButton iconSize="small" iconType="close" />
-        )}
-      </StyledButtonContainer>
+      {updateStatus === 'UPDATE_AVAILABLE' || updateStatus === 'UPDATE_DOWNLOADED' ? (
+        <SessionIconButton
+          iconSize={updateStatus === 'UPDATE_AVAILABLE' ? 'huge' : 'small'}
+          iconType="save"
+          iconColor={
+            updateStatus === 'UPDATE_AVAILABLE'
+              ? '#00F782'
+              : updateStatus === 'UPDATE_DOWNLOADED'
+                ? 'var(--update-button-color)'
+                : undefined
+          }
+          {...pointerHandlers}
+          ref={buttonRef}
+        />
+      ) : (
+        <SessionIconButton iconSize="small" iconType="close" {...pointerHandlers} ref={buttonRef} />
+      )}
       {ReactDOM.createPortal(
         <StyledTooltip visible={tooltip.visible} top={tooltip.top} left={tooltip.left}>
           {tooltipText}

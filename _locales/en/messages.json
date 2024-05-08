@@ -581,5 +581,5 @@
   "unknownError": "Unknown Error",
   "displayNameErrorNew": "We were unable to load your display name. Please enter a new display name to continue.",
   "updateDownloadProgress": "Downloading update: $progress$%",
-  "updateDownloadedRestart": "Update installed, click to restart"
+  "updateDownloadedRestart": "Update downloaded. Click to install"
 }
