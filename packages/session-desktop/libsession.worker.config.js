@@ -43,4 +43,5 @@ module.exports = {
   optimization: {
     minimize: isProd,
   },
+  watch: true,
 };

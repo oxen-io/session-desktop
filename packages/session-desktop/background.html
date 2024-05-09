@@ -11,9 +11,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none';
+      content="default-src 'self';
             child-src 'self';
-            connect-src 'self' https: wss: blob: data:;
+            connect-src * http https: wss: blob: data:;
             font-src 'self';
             form-action 'self';
             frame-src 'none';

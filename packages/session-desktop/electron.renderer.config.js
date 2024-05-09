@@ -52,4 +52,5 @@ module.exports = {
     minimize: false,
   },
   plugins: [new LodashModuleReplacementPlugin()],
+  watch: true,
 };

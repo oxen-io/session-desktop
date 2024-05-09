@@ -31,4 +31,5 @@ module.exports = {
   optimization: {
     minimize: true,
   },
+  watch: true,
 };

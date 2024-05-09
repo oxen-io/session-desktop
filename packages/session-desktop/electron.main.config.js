@@ -38,4 +38,5 @@ module.exports = {
     minimize: false,
   },
   plugins: [new webpack.DefinePlugin({ CONFIG: JSON.stringify(require('config')) })],
+  watch: true,
 };

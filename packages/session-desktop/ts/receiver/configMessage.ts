@@ -907,7 +907,7 @@ async function handleConfigMessagesViaLibSession(
       configMessages.map(m => ({
         variant: LibSessionUtil.kindToVariant(m.message.kind),
         hash: m.messageHash,
-        seqno: (m.message.seqno as Long).toNumber(),
+        seqno: isNumber(m.message.seqno) ? m.message.seqno : m.message.seqno.toNumber(),
       }))
     )}`
   );

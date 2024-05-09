@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { Protocol, ProtocolRequest } from 'electron';
+import { getAppRootPath } from './getRootPath';
 
 function eliminateAllAfterCharacter(str: string, character: string) {
   const index = str.indexOf(character);
@@ -32,6 +33,7 @@ function createFileHandler({
   userDataPath: string;
 }) {
   return (request: ProtocolRequest, callback: any) => {
+    const appRootPath = getAppRootPath();
     // normalize() is primarily useful here for switching / to \ on windows
     const target = path.normalize(urlToPath(request.url, { isWindows }));
     // here we attempt to follow symlinks to the ultimate final path, reflective of what
@@ -40,6 +42,7 @@ function createFileHandler({
     const realPath = fs.existsSync(target) ? fs.realpathSync(target) : target;
     // finally we do case-insensitive checks on windows
     const properCasing = isWindows ? realPath.toLowerCase() : realPath;
+    console.warn('realPath', realPath);
 
     if (!path.isAbsolute(realPath)) {
       console.log(`Warning: denying request to non-absolute path '${realPath}'`);
@@ -48,7 +51,8 @@ function createFileHandler({
 
     if (
       !properCasing.startsWith(isWindows ? userDataPath.toLowerCase() : userDataPath) &&
-      !properCasing.startsWith(isWindows ? installPath.toLowerCase() : installPath)
+      !properCasing.startsWith(isWindows ? installPath.toLowerCase() : installPath) &&
+      !properCasing.startsWith(isWindows ? appRootPath.toLowerCase() : appRootPath)
     ) {
       console.log(
         `Warning: denying request to path '${realPath}' (userDataPath: '${userDataPath}', installPath: '${installPath}')`
