@@ -253,7 +253,7 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     timeout: 5000,
     body: JSON.stringify(body),
     headers: {
-      // 'User-Agent': 'WhatsApp',Content-Security-Policy
+      // 'User-Agent': 'WhatsApp'
       'Accept-Language': 'en-us',
     },
     agent: sslAgent,
@@ -262,7 +262,6 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     `insecureNodeFetch => plaintext for getSnodesFromSeedUrl  ${url}`,
     fetchOptions
   );
-
 
   const response = await window.fetch(url, {
     method: fetchOptions.method,

@@ -1,9 +1,9 @@
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   devtool: 'source-map',
 
   optimization: {
     minimize: false,
   },
-  watch: true,
+  watch: false,
 };

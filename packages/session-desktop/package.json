@@ -23,7 +23,7 @@
     "build-everything:watch": "pnpm session clean && pnpm session protobuf && pnpm session update-git-info && ppnpm sessionnpm sass && pnpm session build:workers",
     "watch:tsc": "tsc -w",
     "build:workers": "concurrently --kill-others-on-fail -s=all 'npm:build*-w'",
-    "build:workers:watch": "concurrently --kill-others-on-fail -s=all 'npm:build*-w --watch'",
+    "watch:workers": "concurrently --kill-others-on-fail -s=all 'npm:build*-w  -- --watch'",
     "build:util-worker-w": "webpack --config=./utils.worker.config.js",
     "build:libsession-worker-w": "rimraf 'ts/webworker/workers/node/libsession/*.node' && webpack  --config=./libsession.worker.config.js",
     "build:electron-main-w": "webpack --config=./electron.main.config.js",
