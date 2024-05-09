@@ -1,4 +1,36 @@
 **/node_modules/
-squashfs-root/
 **/*.bundled.js
+**/.DS_Store
+**/.eslintcache
+**/.sass-cache
+**/dist
+
+# Swap files
+**/*.swp
+
+**/*.tsbuildinfo
+**/yarn-error.log
+
+# Ctags
+tags
+
+# config is not tracked, but built during release
 packages/session-desktop/config/production.json
+
+# folder created temporaly when we make a release during dev
+packages/session-desktop/release
+
+# react/typescript
+packages/session-desktop/ts/**/*.js
+packages/session-desktop/ts/protobuf/*.d.ts
+packages/session-desktop/test/ts/**/*.js
+packages/session-desktop/**/*.js.map
+
+# vscode files
+**/.vscode/
+**/.vscrof/
+
+**/*.LICENSE.txt
+
+# node native modules are not tracked (but compiled for each clients)
+**/*.node
