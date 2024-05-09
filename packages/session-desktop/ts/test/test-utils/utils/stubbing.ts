@@ -4,6 +4,7 @@ import Sinon from 'sinon';
 import { ConfigDumpData } from '../../../data/configDump/configDump';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
+import { DataItems } from '../../../data/dataItems';
 
 import * as libsessionWorker from '../../../webworker/workers/browser/libsession_worker_interface';
 import * as utilWorker from '../../../webworker/workers/browser/util_worker_interface';
@@ -14,6 +15,7 @@ const globalAny: any = global;
 //  which doesn't play well with sinon or ImportMock
 
 type DataFunction = typeof Data;
+type DataItemsFunction = typeof DataItems;
 type OpenGroupDataFunction = typeof OpenGroupData;
 type ConfigDumpDataFunction = typeof ConfigDumpData;
 
@@ -31,6 +33,10 @@ export type TypedStub<T extends Record<string, unknown>, K extends keyof T> = T[
  */
 export function stubData<K extends keyof DataFunction>(fn: K): sinon.SinonStub {
   return Sinon.stub(Data, fn);
+}
+
+export function stubDataItems<K extends keyof DataItemsFunction>(fn: K): sinon.SinonStub {
+  return Sinon.stub(DataItems, fn);
 }
 
 export function stubOpenGroupData<K extends keyof OpenGroupDataFunction>(fn: K): sinon.SinonStub {

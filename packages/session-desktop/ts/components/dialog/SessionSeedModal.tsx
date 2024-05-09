@@ -13,7 +13,7 @@ import { recoveryPhraseModal } from '../../state/ducks/modalDialog';
 import { SpacerSM } from '../basic/Text';
 
 import { saveQRCode } from '../../util/saveQRCode';
-import { getCurrentRecoveryPhrase } from '../../util/storage';
+import { getCurrentRecoveryPhrase } from '../../util/storageUtils';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 

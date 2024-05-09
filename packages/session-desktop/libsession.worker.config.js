@@ -8,6 +8,8 @@ module.exports = {
   node: {
     __dirname: false,
   },
+  mode: 'production',
+
   module: {
     rules: [
       {
@@ -18,6 +20,9 @@ module.exports = {
       {
         test: /\.node$/,
         loader: 'node-loader',
+        options: {
+          name: '[path][name].[ext]',
+        },
       },
     ],
   },

@@ -29,7 +29,7 @@ import { BlockedNumberController } from '../util';
 import { initialiseEmojiData } from '../util/emoji';
 import { Notifications } from '../util/notifications';
 import { Registration } from '../util/registration';
-import { Storage, isSignInByLinking } from '../util/storage';
+import { isSignInByLinking } from '../util/storageUtils';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
 
 // Globally disable drag and drop
@@ -96,7 +96,7 @@ window.Whisper = window.Whisper || {};
 window.Whisper.events = WhisperEvents;
 window.log.info('Storage fetch');
 
-void Storage.fetch();
+void window.Storage.fetch();
 
 function mapOldThemeToNew(theme: string) {
   switch (theme) {
@@ -147,7 +147,7 @@ async function startJobRunners() {
 //   than the first time. And storage.fetch() will cause onready() to fire.
 let first = true;
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-Storage.onready(async () => {
+window.Storage.onready(async () => {
   if (!first) {
     return;
   }
@@ -158,30 +158,30 @@ Storage.onready(async () => {
   // Ensure accounts created prior to 1.0.0-beta8 do have their
   // 'primaryDevicePubKey' defined.
 
-  if (Registration.isDone() && !Storage.get('primaryDevicePubKey')) {
-    await Storage.put('primaryDevicePubKey', getOurPubKeyStrFromCache());
+  if (Registration.isDone() && !window.Storage.get('primaryDevicePubKey')) {
+    await window.Storage.put('primaryDevicePubKey', getOurPubKeyStrFromCache());
   }
 
   // These make key operations available to IPC handlers created in preload.js
   window.Events = {
-    getPrimaryColorSetting: () => Storage.get('primary-color-setting', 'green'),
+    getPrimaryColorSetting: () => window.Storage.get('primary-color-setting', 'green'),
     setPrimaryColorSetting: async (value: any) => {
-      await Storage.put('primary-color-setting', value);
+      await window.Storage.put('primary-color-setting', value);
     },
-    getThemeSetting: () => Storage.get('theme-setting', 'classic-dark'),
+    getThemeSetting: () => window.Storage.get('theme-setting', 'classic-dark'),
     setThemeSetting: async (value: any) => {
-      await Storage.put('theme-setting', value);
+      await window.Storage.put('theme-setting', value);
     },
-    getHideMenuBar: () => Storage.get('hide-menu-bar'),
+    getHideMenuBar: () => window.Storage.get('hide-menu-bar'),
     setHideMenuBar: async (value: boolean) => {
-      await Storage.put('hide-menu-bar', value);
+      await window.Storage.put('hide-menu-bar', value);
       window.setAutoHideMenuBar(false);
       window.setMenuBarVisibility(!value);
     },
 
-    getSpellCheck: () => Storage.get('spell-check', true),
+    getSpellCheck: () => window.Storage.get('spell-check', true),
     setSpellCheck: async (value: boolean) => {
-      await Storage.put('spell-check', value);
+      await window.Storage.put('spell-check', value);
     },
 
     shutdown: async () => {
@@ -196,9 +196,9 @@ Storage.onready(async () => {
   };
 
   const currentVersion = window.getVersion();
-  const lastVersion = Storage.get('version');
+  const lastVersion = window.Storage.get('version');
   newVersion = !lastVersion || currentVersion !== lastVersion;
-  await Storage.put('version', currentVersion);
+  await window.Storage.put('version', currentVersion);
 
   if (newVersion) {
     window.log.info(`New version detected: ${currentVersion}; previous: ${lastVersion}`);
@@ -303,7 +303,7 @@ async function start() {
 
   function openInbox() {
     switchBodyToRtlIfNeeded();
-    const hideMenuBar = Storage.get('hide-menu-bar', true) as boolean;
+    const hideMenuBar = window.Storage.get('hide-menu-bar', true) as boolean;
     window.setAutoHideMenuBar(hideMenuBar);
     window.setMenuBarVisibility(!hideMenuBar);
     // eslint-disable-next-line more/no-then
@@ -335,11 +335,6 @@ async function start() {
   window.addEventListener('unload', () => {
     Notifications.fastClear();
   });
-
-  // Set user's launch count.
-  const prevLaunchCount = window.getSettingValue('launch-count');
-
-  const launchCount = !prevLaunchCount ? 1 : prevLaunchCount + 1;
 
   window.setTheme = async newTheme => {
     await window.Events.setThemeSetting(newTheme);
@@ -409,14 +404,6 @@ async function start() {
       openInbox();
     }
   };
-  await window.setSettingValue('launch-count', launchCount);
-
-  // On first launch
-  if (launchCount === 1) {
-    // Initialise default settings
-    await window.setSettingValue('hide-menu-bar', true);
-    await window.setSettingValue(SettingsKey.settingsLinkPreview, false);
-  }
 
   WhisperEvents.on('openInbox', () => {
     openInbox();

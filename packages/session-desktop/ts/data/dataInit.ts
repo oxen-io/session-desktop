@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { channels } from './channels';
+import { addChannel, getChannels } from './channels';
 import { ConfigDumpData } from './configDump/configDump';
 
 const channelsToMakeForOpengroupV2 = [
@@ -143,7 +143,7 @@ function getJob(id: number) {
 }
 
 function makeChannel(fnName: string) {
-  channels[fnName] = async (...args: any) => {
+  addChannel(fnName, async (...args: any) => {
     const jobId = makeJob(fnName);
 
     return new Promise((resolve, reject) => {
@@ -160,7 +160,7 @@ function makeChannel(fnName: string) {
         DATABASE_UPDATE_TIMEOUT
       );
     });
-  };
+  });
 }
 
 export async function callChannel(name: string): Promise<any> {
@@ -182,6 +182,7 @@ export async function callChannel(name: string): Promise<any> {
 }
 
 export function initData() {
+  console.warn('initData()');
   // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
   //   any warnings that might be sent to the console in that case.
   ipcRenderer.setMaxListeners(0);
@@ -206,6 +207,7 @@ export function initData() {
 
     return resolve(result);
   });
+  return getChannels();
 }
 
 function updateJob(id: number, data: any) {

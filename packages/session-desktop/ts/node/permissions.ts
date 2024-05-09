@@ -43,4 +43,6 @@ export function installPermissionsHandler({ userConfig }: { userConfig: UserConf
   session.defaultSession.setPermissionRequestHandler(null);
 
   session.defaultSession.setPermissionRequestHandler(createPermissionHandler(userConfig));
+
+ 
 }

@@ -9,7 +9,7 @@
     ],
     "jsx": "react", // Specify JSX code generation: 'preserve', 'react-native', or 'react'.
     // "noEmitHelpers": false,
-    "rootDir": "./", // Specify the root directory of input files. Use to control the output directory structure with --outDir
+    "rootDir": "./packages/session-desktop", // Specify the root directory of input files. Use to control the output directory structure with --outDir
     "removeComments": true, // Do not emit comments to output.
     // "noEmit": true,                        // Do not emit outputs.
     "importHelpers": false, // Import emit helpers from 'tslib'.

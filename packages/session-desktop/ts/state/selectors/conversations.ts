@@ -29,7 +29,6 @@ import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { LocalizerType } from '../../types/Util';
 import { BlockedNumberController } from '../../util';
-import { Storage } from '../../util/storage';
 import { getIntl } from './user';
 
 import { MessageReactsSelectorProps } from '../../components/conversation/message/message-content/MessageReactions';
@@ -56,7 +55,7 @@ const getConversationQuotes = (state: StateType): QuoteLookupType | undefined =>
 export const getOurPrimaryConversation = createSelector(
   getConversations,
   (state: ConversationsStateType): ReduxConversationType =>
-    state.conversationLookup[Storage.get('primaryDevicePubKey') as string]
+    state.conversationLookup[window.Storage.get('primaryDevicePubKey') as string]
 );
 
 const getMessagesOfSelectedConversation = (

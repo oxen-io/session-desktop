@@ -1,7 +1,6 @@
 import { cloneDeep, isNumber, uniq } from 'lodash';
 import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { isOpenGroupV2 } from '../session/apis/open_group_api/utils/OpenGroupUtils';
-import { channels } from './channels';
 
 export type OpenGroupV2RoomWithImageID = {
   serverUrl: string;
@@ -75,7 +74,7 @@ function getAllV2OpenGroupRoomsMap(): Map<string, OpenGroupV2Room> | undefined {
 
 // this is just to make testing and stubbing easier
 async function getAllV2OpenGroupRooms(): Promise<Array<OpenGroupV2Room> | undefined> {
-  return channels.getAllV2OpenGroupRooms();
+  return window.Data.getAllV2OpenGroupRooms();
 }
 
 // avoid doing fetches and write too often from the db by using a cache on the renderer side.
@@ -145,14 +144,14 @@ async function saveV2OpenGroupRoom(room: OpenGroupV2Room): Promise<void> {
     undefined;
 
   if (!found) {
-    await channels.saveV2OpenGroupRoom(room);
+    await window.Data.saveV2OpenGroupRoom(room);
     throwIfNotLoaded().push(cloneDeep(room));
     return;
   }
 
   // because isEqual is funky with pointer being changed, we have to do this for now
   if (JSON.stringify(room) !== JSON.stringify(found)) {
-    await channels.saveV2OpenGroupRoom(room);
+    await window.Data.saveV2OpenGroupRoom(room);
     const foundIndex =
       room.conversationId &&
       throwIfNotLoaded().findIndex(m => m.conversationId === room.conversationId);
@@ -163,7 +162,7 @@ async function saveV2OpenGroupRoom(room: OpenGroupV2Room): Promise<void> {
 }
 
 async function removeV2OpenGroupRoom(conversationId: string): Promise<void> {
-  await channels.removeV2OpenGroupRoom(conversationId);
+  await window.Data.removeV2OpenGroupRoom(conversationId);
   const foundIndex =
     conversationId && throwIfNotLoaded().findIndex(m => m.conversationId === conversationId);
   if (isNumber(foundIndex) && foundIndex > -1) {

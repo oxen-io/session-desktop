@@ -7,13 +7,7 @@ import { trigger } from '../shims/events';
 import { actions as userActions } from '../state/ducks/user';
 import { mnDecode, mnEncode } from '../session/crypto/mnemonic';
 import { SettingsKey } from '../data/settings-key';
-import {
-  saveRecoveryPhrase,
-  setLastProfileUpdateTimestamp,
-  setLocalPubKey,
-  setSignInByLinking,
-  Storage,
-} from './storage';
+import { saveRecoveryPhrase, setLocalPubKey, setSignInByLinking } from './storageUtils';
 import { Registration } from './registration';
 import { ConversationTypeEnum } from '../models/conversationAttributes';
 import { SessionKeyPair } from '../receiver/keypairs';
@@ -121,7 +115,6 @@ export async function registerSingleDevice(
 
   await createAccount(identityKeyPair);
   await saveRecoveryPhrase(generatedMnemonic);
-  await setLastProfileUpdateTimestamp(Date.now());
 
   const pubKeyString = toHex(identityKeyPair.pubKey);
   await registrationDone(pubKeyString, profileName);
@@ -143,34 +136,36 @@ async function createAccount(identityKeyPair: SessionKeyPair) {
   password = password.substring(0, password.length - 2);
 
   await Promise.all([
-    Storage.remove('identityKey'),
-    Storage.remove('signaling_key'),
-    Storage.remove('password'),
-    Storage.remove('registrationId'),
-    Storage.remove('number_id'),
-    Storage.remove('device_name'),
-    Storage.remove('userAgent'),
-    Storage.remove(SettingsKey.settingsReadReceipt),
-    Storage.remove(SettingsKey.settingsTypingIndicator),
-    Storage.remove('regionCode'),
-    Storage.remove('local_attachment_encrypted_key'),
+    window.Storage.remove('identityKey'),
+    window.Storage.remove('signaling_key'),
+    window.Storage.remove('password'),
+    window.Storage.remove('registrationId'),
+    window.Storage.remove('number_id'),
+    window.Storage.remove('device_name'),
+    window.Storage.remove('userAgent'),
+    window.Storage.remove(SettingsKey.settingsReadReceipt),
+    window.Storage.remove(SettingsKey.settingsTypingIndicator),
+    window.Storage.remove('regionCode'),
+    window.Storage.remove('local_attachment_encrypted_key'),
   ]);
 
   // update our own identity key, which may have changed
   // if we're relinking after a reinstall on the master device
   const pubKeyString = toHex(identityKeyPair.pubKey);
 
-  await Storage.put('identityKey', identityKeyPair);
-  await Storage.put('password', password);
+  await window.Storage.put('identityKey', identityKeyPair);
+  await window.Storage.put('password', password);
+  await window.setSettingValue('hide-menu-bar', true);
+  await window.setSettingValue(SettingsKey.settingsLinkPreview, false);
 
   // disable read-receipt by default
-  await Storage.put(SettingsKey.settingsReadReceipt, false);
+  await window.Storage.put(SettingsKey.settingsReadReceipt, false);
 
   // Enable typing indicators by default
-  await Storage.put(SettingsKey.settingsTypingIndicator, false);
+  await window.Storage.put(SettingsKey.settingsTypingIndicator, false);
 
   // opengroups pruning in ON by default on new accounts, but you can change that from the settings
-  await Storage.put(SettingsKey.settingsOpengroupPruning, true);
+  await window.Storage.put(SettingsKey.settingsOpengroupPruning, true);
   await window.setOpengroupPruning(true);
 
   await setLocalPubKey(pubKeyString);
@@ -185,7 +180,7 @@ async function registrationDone(ourPubkey: string, displayName: string) {
   window?.log?.info(`registration done with user provided displayName "${displayName}"`);
 
   // initializeLibSessionUtilWrappers needs our publicKey to be set
-  await Storage.put('primaryDevicePubKey', ourPubkey);
+  await window.Storage.put('primaryDevicePubKey', ourPubkey);
   await Registration.markDone();
 
   try {

@@ -14,6 +14,7 @@ import {
   Menu,
   nativeTheme,
   screen,
+  // session,
   shell,
   systemPreferences,
 } from 'electron';
@@ -175,6 +176,15 @@ function assertLogger(): Logger {
 }
 
 function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
+  let commitHash = 'unknown'; // FIXME audric
+  try {
+    debugger
+    commitHash = config.get('commitHash');
+  } catch (e) {
+    console.warn('config.get failed with', e.message);
+    debugger;
+  }
+
   const urlObject: url.UrlObject = {
     pathname: join(...pathSegments),
     protocol: 'file:',
@@ -183,7 +193,7 @@ function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
       name: packageJson.productName,
       locale: locale.name,
       version: app.getVersion(),
-      commitHash: config.get('commitHash'),
+      commitHash,
       environment: (config as any).environment,
       node_version: process.versions.node,
       hostname: os.hostname(),
@@ -234,10 +244,10 @@ function getWindowSize() {
 }
 
 function isVisible(window: { x: number; y: number; width: number }, bounds: any) {
-  const boundsX = _.get(bounds, 'x') || 0;
-  const boundsY = _.get(bounds, 'y') || 0;
-  const boundsWidth = _.get(bounds, 'width') || getDefaultWindowSize().defaultWidth;
-  const boundsHeight = _.get(bounds, 'height') || getDefaultWindowSize().defaultHeight;
+  const boundsX = bounds?.x || 0;
+  const boundsY = bounds?.y || 0;
+  const boundsWidth = bounds?.width || getDefaultWindowSize().defaultWidth;
+  const boundsHeight = bounds?.height || getDefaultWindowSize().defaultHeight;
   const BOUNDS_BUFFER = 100;
 
   // requiring BOUNDS_BUFFER pixels on the left or right side
@@ -287,6 +297,7 @@ async function createWindow() {
   }
 
   const windowOptions = {
+    // : Electron.BrowserWindowConstructorOptions = {
     show: true,
     minWidth,
     minHeight,
@@ -298,7 +309,7 @@ async function createWindow() {
       enableRemoteModule: true,
       nodeIntegrationInWorker: true,
       contextIsolation: false,
-      preload: path.join(getAppRootPath(), 'preload.js'),
+      preload: path.join(getAppRootPath(), 'preload.bundled.js'),
       nativeWindowOpen: true,
       spellcheck: await getSpellCheckSetting(),
     },
@@ -327,7 +338,7 @@ async function createWindow() {
       return false;
     }
 
-    return isVisible(windowOptions, _.get(display, 'bounds'));
+    return isVisible(windowOptions, display?.bounds);
   });
   if (!visibleOnAnyScreen) {
     console.log('Location reset needed');
@@ -747,6 +758,15 @@ app.on('ready', async () => {
   });
 
   installPermissionsHandler({ userConfig });
+
+  app.on('certificate-error', (event, _webContents, _url, _error, _certificate, callback) => {
+    console.warn('make this for seed nodes only?');
+
+    // Prevent having error
+    event.preventDefault();
+    // and continue
+    callback(true);
+  });
 
   await initializeLogger();
   logger = getLogger();

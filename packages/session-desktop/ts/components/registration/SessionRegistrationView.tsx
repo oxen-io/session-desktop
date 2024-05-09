@@ -6,7 +6,7 @@ import { SessionIcon } from '../icon';
 import { SessionToastContainer } from '../SessionToastContainer';
 import { SessionTheme } from '../../themes/SessionTheme';
 import { Flex } from '../basic/Flex';
-import { setSignInByLinking } from '../../util/storage';
+import { setSignInByLinking } from '../../util/storageUtils';
 
 export const SessionRegistrationView = () => {
   React.useEffect(() => {

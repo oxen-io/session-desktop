@@ -2,8 +2,14 @@ import { ipcRenderer } from 'electron';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
-import { useMessageStatus } from '../../../../state/selectors';
+import {
+  useMessageDirection,
+  useMessageExpirationDurationMs,
+  useMessageExpirationTimestamp,
+  useMessageIsExpired,
+  useMessageIsUnread,
+  useMessageStatus,
+} from '../../../../state/selectors';
 
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { getMostRecentOutgoingMessageId } from '../../../../state/selectors/conversations';
@@ -34,15 +40,19 @@ export const MessageStatus = ({ messageId, dataTestId }: Props) => {
   const isDetailView = useIsDetailMessageView();
 
   const status = useMessageStatus(messageId);
-  const selected = useMessageExpirationPropsById(messageId);
 
-  if (!messageId || !selected || isDetailView) {
+  const direction = useMessageDirection(messageId);
+  const expirationDurationMs = useMessageExpirationDurationMs(messageId);
+  const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const isUnread = useMessageIsUnread(messageId);
+
+  if (!messageId || !messageId || isDetailView) {
     return null;
   }
-  const isIncoming = selected.direction === 'incoming';
+  const isIncoming = direction === 'incoming';
 
   if (isIncoming) {
-    if (selected.isUnread || !selected.expirationDurationMs || !selected.expirationTimestamp) {
+    if (isUnread || !expirationDurationMs || !expirationTimestamp) {
       return null; // incoming and not expiring, this is case (3) above
     }
     // incoming and  expiring, this is case (1) above
@@ -116,10 +126,11 @@ function IconNormal({
 }
 
 function useIsExpiring(messageId: string) {
-  const selected = useMessageExpirationPropsById(messageId);
-  return (
-    selected && selected.expirationDurationMs && selected.expirationTimestamp && !selected.isExpired
-  );
+  const expirationDurationMs = useMessageExpirationDurationMs(messageId);
+  const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const messageIsExpired = useMessageIsExpired(messageId);
+
+  return messageId && expirationDurationMs && expirationTimestamp && !messageIsExpired;
 }
 
 function useIsMostRecentOutgoingMessage(messageId: string) {
@@ -127,20 +138,18 @@ function useIsMostRecentOutgoingMessage(messageId: string) {
   return mostRecentOutgoingMessageId === messageId;
 }
 
-function MessageStatusExpireTimer(props: Pick<Props, 'messageId'>) {
-  const selected = useMessageExpirationPropsById(props.messageId);
-  if (
-    !selected ||
-    !selected.expirationDurationMs ||
-    !selected.expirationTimestamp ||
-    selected.isExpired
-  ) {
+function MessageStatusExpireTimer({ messageId }: Pick<Props, 'messageId'>) {
+  const expirationDurationMs = useMessageExpirationDurationMs(messageId);
+  const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const messageIsExpired = useMessageIsExpired(messageId);
+
+  if (!messageId || !expirationDurationMs || !expirationTimestamp || messageIsExpired) {
     return null;
   }
   return (
     <ExpireTimer
-      expirationDurationMs={selected.expirationDurationMs}
-      expirationTimestamp={selected.expirationTimestamp}
+      expirationDurationMs={expirationDurationMs}
+      expirationTimestamp={expirationTimestamp}
     />
   );
 }

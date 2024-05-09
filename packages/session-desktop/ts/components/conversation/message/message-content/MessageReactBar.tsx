@@ -1,14 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import useBoolean from 'react-use/lib/useBoolean';
 import useInterval from 'react-use/lib/useInterval';
-import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { DURATION } from '../../../../session/constants';
+import {
+  useMessageExpirationDurationMs,
+  useMessageExpirationTimestamp,
+  useMessageIsExpired,
+} from '../../../../state/selectors';
 import { nativeEmojiData } from '../../../../util/emoji';
-import { getRecentReactions } from '../../../../util/storage';
+import { getRecentReactions } from '../../../../util/storageUtils';
 import { SpacerSM } from '../../../basic/Text';
 import { SessionIcon, SessionIconButton } from '../../../icon';
 
@@ -81,19 +84,15 @@ const StyledExpiresIn = styled.div`
 `;
 
 function useIsRenderedExpiresInItem(messageId: string) {
-  const expiryDetails = useMessageExpirationPropsById(messageId);
+  const expirationDurationMs = useMessageExpirationDurationMs(messageId);
+  const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const messageIsExpired = useMessageIsExpired(messageId);
 
-  if (
-    !expiryDetails ||
-    isEmpty(expiryDetails) ||
-    !expiryDetails.expirationDurationMs ||
-    expiryDetails.isExpired ||
-    !expiryDetails.expirationTimestamp
-  ) {
+  if (!messageId || !expirationDurationMs || messageIsExpired || !expirationTimestamp) {
     return null;
   }
 
-  return expiryDetails.expirationTimestamp;
+  return expirationTimestamp;
 }
 
 function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {

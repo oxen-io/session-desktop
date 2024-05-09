@@ -13,14 +13,14 @@ import {
   sessionGenerateKeyPair,
   signInByLinkingDevice,
 } from '../../util/accountManager';
-import { Storage, setSignInByLinking, setSignWithRecoveryPhrase } from '../../util/storage';
+import { setSignInByLinking, setSignWithRecoveryPhrase } from '../../util/storageUtils';
 import { SignInMode, SignInTab } from './SignInTab';
 import { SignUpMode, SignUpTab } from './SignUpTab';
 
 export async function resetRegistration() {
   await Data.removeAll();
-  Storage.reset();
-  await Storage.fetch();
+  window.Storage.reset();
+  await window.Storage.fetch();
   getConversationController().reset();
   await getConversationController().load();
 }
@@ -57,7 +57,7 @@ export async function signUp(signUpDetails: {
   try {
     await resetRegistration();
     await registerSingleDevice(generatedRecoveryPhrase, 'english', trimName);
-    await Storage.put(SettingsKey.hasSyncedInitialConfigurationItem, Date.now());
+    await window.Storage.put(SettingsKey.hasSyncedInitialConfigurationItem, Date.now());
     await setSignWithRecoveryPhrase(false);
     trigger('openInbox');
   } catch (e) {

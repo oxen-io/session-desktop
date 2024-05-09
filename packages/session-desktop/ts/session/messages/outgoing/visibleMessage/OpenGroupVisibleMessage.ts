@@ -1,6 +1,5 @@
 import { SettingsKey } from '../../../../data/settings-key';
 import { SignalService } from '../../../../protobuf';
-import { Storage } from '../../../../util/storage';
 import { VisibleMessage, VisibleMessageParams } from './VisibleMessage';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -19,7 +18,9 @@ export class OpenGroupVisibleMessage extends VisibleMessage {
       expireTimer: null,
     });
     // they are the opposite of each others
-    this.blocksCommunityMessageRequests = !Storage.get(SettingsKey.hasBlindedMsgRequestsEnabled);
+    this.blocksCommunityMessageRequests = !window.Storage.get(
+      SettingsKey.hasBlindedMsgRequestsEnabled
+    );
   }
 
   public dataProto(): SignalService.DataMessage {

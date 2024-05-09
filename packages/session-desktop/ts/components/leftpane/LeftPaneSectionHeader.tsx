@@ -6,7 +6,7 @@ import { SectionType } from '../../state/ducks/section';
 import { disableRecoveryPhrasePrompt } from '../../state/ducks/userConfig';
 import { getFocusedSection, getIsMessageRequestOverlayShown } from '../../state/selectors/section';
 import { getShowRecoveryPhrasePrompt } from '../../state/selectors/userConfig';
-import { isSignWithRecoveryPhrase } from '../../util/storage';
+import { isSignWithRecoveryPhrase } from '../../util/storageUtils';
 import { Flex } from '../basic/Flex';
 import { SessionButton } from '../basic/SessionButton';
 import { MenuButton } from '../buttons';

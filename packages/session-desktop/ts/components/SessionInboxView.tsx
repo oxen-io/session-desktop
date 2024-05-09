@@ -1,5 +1,4 @@
 import { fromPairs, map } from 'lodash';
-import moment from 'moment';
 import React from 'react';
 import { Provider } from 'react-redux';
 import useMount from 'react-use/lib/useMount';
@@ -34,9 +33,9 @@ import { SettingsKey } from '../data/settings-key';
 import { getSettingsInitialState, updateAllOnStorageReady } from '../state/ducks/settings';
 import { initialSogsRoomInfoState } from '../state/ducks/sogsRoomInfo';
 import { useHasDeviceOutdatedSyncing } from '../state/selectors/settings';
-import { Storage } from '../util/storage';
 import { NoticeBanner } from './NoticeBanner';
 import { Flex } from './basic/Flex';
+import { getBoolOrFalse } from '../util/storageUtils';
 
 function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
   // Yep, we can't index into item without knowing what it is. True. But we want to.
@@ -49,7 +48,7 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
 // does not recognize it with what moment knows which is the closest.
 // i.e. es-419 will return 'es'.
 // We just need to use what we got from moment in getLocale on the updateLocale below
-moment.locale((window.i18n as any).getLocale());
+// moment.locale((window.i18n as any).getLocale());
 
 const StyledGutter = styled.div`
   width: 380px !important;
@@ -94,13 +93,11 @@ function setupLeftPane(forceUpdateInboxComponent: () => void) {
 
   window.inboxStore.dispatch(
     updateAllOnStorageReady({
-      hasBlindedMsgRequestsEnabled: Storage.getBoolOrFalse(
-        SettingsKey.hasBlindedMsgRequestsEnabled
-      ),
-      someDeviceOutdatedSyncing: Storage.getBoolOrFalse(SettingsKey.someDeviceOutdatedSyncing),
-      settingsLinkPreview: Storage.getBoolOrFalse(SettingsKey.settingsLinkPreview),
-      hasFollowSystemThemeEnabled: Storage.getBoolOrFalse(SettingsKey.hasFollowSystemThemeEnabled),
-      hasShiftSendEnabled: Storage.getBoolOrFalse(SettingsKey.hasShiftSendEnabled),
+      hasBlindedMsgRequestsEnabled: getBoolOrFalse(SettingsKey.hasBlindedMsgRequestsEnabled),
+      someDeviceOutdatedSyncing: getBoolOrFalse(SettingsKey.someDeviceOutdatedSyncing),
+      settingsLinkPreview: getBoolOrFalse(SettingsKey.settingsLinkPreview),
+      hasFollowSystemThemeEnabled: getBoolOrFalse(SettingsKey.hasFollowSystemThemeEnabled),
+      hasShiftSendEnabled: getBoolOrFalse(SettingsKey.hasShiftSendEnabled),
     })
   );
   forceUpdateInboxComponent();
@@ -110,7 +107,7 @@ const SomeDeviceOutdatedSyncingNotice = () => {
   const outdatedBannerShouldBeShown = useHasDeviceOutdatedSyncing();
 
   const dismiss = () => {
-    void Storage.put(SettingsKey.someDeviceOutdatedSyncing, false);
+    void window.Storage.put(SettingsKey.someDeviceOutdatedSyncing, false);
   };
 
   if (!outdatedBannerShouldBeShown) {

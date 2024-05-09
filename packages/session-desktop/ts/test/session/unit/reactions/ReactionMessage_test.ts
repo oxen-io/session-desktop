@@ -7,7 +7,7 @@ import chaiAsPromised from 'chai-as-promised';
 
 import { Reactions } from '../../../../util/reactions';
 import { Data } from '../../../../data/data';
-import * as Storage from '../../../../util/storage';
+import * as Storage from '../../../../util/storageUtils';
 import { generateFakeIncomingPrivateMessage, stubWindowLog } from '../../../test-utils/utils';
 import { DEFAULT_RECENT_REACTS } from '../../../../session/constants';
 

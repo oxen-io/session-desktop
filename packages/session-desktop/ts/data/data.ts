@@ -6,13 +6,11 @@ import { ConversationModel } from '../models/conversation';
 import { ConversationAttributes } from '../models/conversationAttributes';
 import { MessageCollection, MessageModel } from '../models/message';
 import { MessageAttributes, MessageDirection } from '../models/messageType';
-import { StorageItem } from '../node/storage_item';
 import { HexKeyPair } from '../receiver/keypairs';
 import { Quote } from '../receiver/types';
 import { getSodiumRenderer } from '../session/crypto';
 import { DisappearingMessages } from '../session/disappearing_messages';
 import { PubKey } from '../session/types';
-import { fromArrayBufferToBase64, fromBase64ToArrayBuffer } from '../session/utils/String';
 import {
   AsyncWrapper,
   MsgDuplicateSearchOpenGroup,
@@ -20,11 +18,10 @@ import {
   UnprocessedDataNode,
   UpdateLastHashType,
 } from '../types/sqlSharedTypes';
-import { Storage } from '../util/storage';
-import { channels } from './channels';
 import * as dataInit from './dataInit';
 import { cleanData } from './dataUtils';
 import { SNODE_POOL_ITEM_ID } from './settings-key';
+import { DataItems } from './dataItems';
 
 const ERASE_SQL_KEY = 'erase-sql-key';
 const ERASE_ATTACHMENTS_KEY = 'erase-attachments';
@@ -61,56 +58,56 @@ async function shutdown(): Promise<void> {
 }
 // Note: will need to restart the app after calling this, to set up afresh
 async function close(): Promise<void> {
-  await channels.close();
+  await window.Data.close();
 }
 
 // Note: will need to restart the app after calling this, to set up afresh
 async function removeDB(): Promise<void> {
-  await channels.removeDB();
+  await window.Data.removeDB();
 }
 
 // Password hash
 
 async function getPasswordHash(): Promise<string | null> {
-  return channels.getPasswordHash();
+  return window.Data.getPasswordHash();
 }
 
 // Guard Nodes
 async function getGuardNodes(): Promise<Array<GuardNode>> {
-  return channels.getGuardNodes();
+  return window.Data.getGuardNodes();
 }
 async function updateGuardNodes(nodes: Array<string>): Promise<void> {
-  return channels.updateGuardNodes(nodes);
+  return window.Data.updateGuardNodes(nodes);
 }
 
 async function generateAttachmentKeyIfEmpty() {
-  const existingKey = await getItemById('local_attachment_encrypted_key');
+  const existingKey = await DataItems.getItemById('local_attachment_encrypted_key');
   if (!existingKey) {
     const sodium = await getSodiumRenderer();
     const encryptingKey = sodium.to_hex(sodium.randombytes_buf(32));
-    await createOrUpdateItem({
+    await DataItems.createOrUpdateItem({
       id: 'local_attachment_encrypted_key',
       value: encryptingKey,
     });
     // be sure to write the new key to the cache. so we can access it straight away
-    await Storage.put('local_attachment_encrypted_key', encryptingKey);
+    await window.Storage.put('local_attachment_encrypted_key', encryptingKey);
   }
 }
 
 // Swarm nodes
 async function getSwarmNodesForPubkey(pubkey: string): Promise<Array<string>> {
-  return channels.getSwarmNodesForPubkey(pubkey);
+  return window.Data.getSwarmNodesForPubkey(pubkey);
 }
 
 async function updateSwarmNodesForPubkey(
   pubkey: string,
   snodeEdKeys: Array<string>
 ): Promise<void> {
-  await channels.updateSwarmNodesForPubkey(pubkey, snodeEdKeys);
+  await window.Data.updateSwarmNodesForPubkey(pubkey, snodeEdKeys);
 }
 
 async function clearOutAllSnodesNotInPool(edKeysOfSnodePool: Array<string>): Promise<void> {
-  await channels.clearOutAllSnodesNotInPool(edKeysOfSnodePool);
+  await window.Data.clearOutAllSnodesNotInPool(edKeysOfSnodePool);
 }
 
 // Closed group
@@ -122,24 +119,24 @@ async function getAllEncryptionKeyPairsForGroup(
   groupPublicKey: string | PubKey
 ): Promise<Array<HexKeyPair> | undefined> {
   const pubkey = (groupPublicKey as PubKey).key || (groupPublicKey as string);
-  return channels.getAllEncryptionKeyPairsForGroup(pubkey);
+  return window.Data.getAllEncryptionKeyPairsForGroup(pubkey);
 }
 
 async function getLatestClosedGroupEncryptionKeyPair(
   groupPublicKey: string
 ): Promise<HexKeyPair | undefined> {
-  return channels.getLatestClosedGroupEncryptionKeyPair(groupPublicKey);
+  return window.Data.getLatestClosedGroupEncryptionKeyPair(groupPublicKey);
 }
 
 async function addClosedGroupEncryptionKeyPair(
   groupPublicKey: string,
   keypair: HexKeyPair
 ): Promise<void> {
-  await channels.addClosedGroupEncryptionKeyPair(groupPublicKey, keypair);
+  await window.Data.addClosedGroupEncryptionKeyPair(groupPublicKey, keypair);
 }
 
 async function removeAllClosedGroupEncryptionKeyPairs(groupPublicKey: string): Promise<void> {
-  return channels.removeAllClosedGroupEncryptionKeyPairs(groupPublicKey);
+  return window.Data.removeAllClosedGroupEncryptionKeyPairs(groupPublicKey);
 }
 
 // Conversation
@@ -153,15 +150,15 @@ async function saveConversation(data: ConversationAttributes): Promise<SaveConve
     cleaned.active_at = Date.now();
   }
 
-  return channels.saveConversation(cleaned);
+  return window.Data.saveConversation(cleaned);
 }
 
 async function fetchConvoMemoryDetails(convoId: string): Promise<SaveConversationReturn> {
-  return channels.fetchConvoMemoryDetails(convoId);
+  return window.Data.fetchConvoMemoryDetails(convoId);
 }
 
 async function getConversationById(id: string): Promise<ConversationModel | undefined> {
-  const data = await channels.getConversationById(id);
+  const data = await window.Data.getConversationById(id);
   if (data) {
     return new ConversationModel(data);
   }
@@ -174,14 +171,14 @@ async function removeConversation(id: string): Promise<void> {
   // Note: It's important to have a fully database-hydrated model to delete here because
   //   it needs to delete all associated on-disk files along with the database delete.
   if (existing) {
-    await channels.removeConversation(id);
+    await window.Data.removeConversation(id);
     await existing.cleanup();
   }
 }
 
 async function getAllConversations(): Promise<Array<ConversationModel>> {
   const conversationsAttrs =
-    (await channels.getAllConversations()) as Array<ConversationAttributes>;
+    (await window.Data.getAllConversations()) as Array<ConversationAttributes>;
 
   return conversationsAttrs.map(attr => new ConversationModel(attr));
 }
@@ -190,16 +187,16 @@ async function getAllConversations(): Promise<Array<ConversationModel>> {
  * This returns at most MAX_PUBKEYS_MEMBERS members, the last MAX_PUBKEYS_MEMBERS members who wrote in the chat
  */
 async function getPubkeysInPublicConversation(id: string): Promise<Array<string>> {
-  return channels.getPubkeysInPublicConversation(id);
+  return window.Data.getPubkeysInPublicConversation(id);
 }
 
 async function searchConversations(query: string): Promise<Array<any>> {
-  const conversations = await channels.searchConversations(query);
+  const conversations = await window.Data.searchConversations(query);
   return conversations;
 }
 
 async function searchMessages(query: string, limit: number): Promise<Array<MessageResultProps>> {
-  const messages = (await channels.searchMessages(query, limit)) as Array<MessageResultProps>;
+  const messages = (await window.Data.searchMessages(query, limit)) as Array<MessageResultProps>;
   return _.uniqWith(messages, (left: { id: string }, right: { id: string }) => {
     return left.id === right.id;
   });
@@ -213,7 +210,7 @@ async function searchMessagesInConversation(
   conversationId: string,
   limit: number
 ): Promise<Array<MessageAttributes>> {
-  const messages = (await channels.searchMessagesInConversation(
+  const messages = (await window.Data.searchMessagesInConversation(
     query,
     conversationId,
     limit
@@ -224,11 +221,11 @@ async function searchMessagesInConversation(
 // Message
 
 async function cleanSeenMessages(): Promise<void> {
-  await channels.cleanSeenMessages();
+  await window.Data.cleanSeenMessages();
 }
 
 async function cleanLastHashes(): Promise<void> {
-  await channels.cleanLastHashes();
+  await window.Data.cleanLastHashes();
 }
 
 async function saveSeenMessageHashes(
@@ -237,22 +234,22 @@ async function saveSeenMessageHashes(
     hash: string;
   }>
 ): Promise<void> {
-  await channels.saveSeenMessageHashes(cleanData(data));
+  await window.Data.saveSeenMessageHashes(cleanData(data));
 }
 
 async function updateLastHash(data: UpdateLastHashType): Promise<void> {
-  await channels.updateLastHash(cleanData(data));
+  await window.Data.updateLastHash(cleanData(data));
 }
 
 async function saveMessage(data: MessageAttributes): Promise<string> {
   const cleanedData = cleanData(data);
-  const id = await channels.saveMessage(cleanedData);
+  const id = await window.Data.saveMessage(cleanedData);
   DisappearingMessages.updateExpiringMessagesCheck();
   return id;
 }
 
 async function saveMessages(arrayOfMessages: Array<MessageAttributes>): Promise<void> {
-  await channels.saveMessages(cleanData(arrayOfMessages));
+  await window.Data.saveMessages(cleanData(arrayOfMessages));
 }
 
 /**
@@ -265,7 +262,7 @@ async function cleanUpExpirationTimerUpdateHistory(
   conversationId: string,
   isPrivate: boolean
 ): Promise<Array<string>> {
-  return channels.cleanUpExpirationTimerUpdateHistory(conversationId, isPrivate);
+  return window.Data.cleanUpExpirationTimerUpdateHistory(conversationId, isPrivate);
 }
 
 async function removeMessage(id: string): Promise<void> {
@@ -274,7 +271,7 @@ async function removeMessage(id: string): Promise<void> {
   // Note: It's important to have a fully database-hydrated model to delete here because
   //   it needs to delete all associated on-disk files along with the database delete.
   if (message) {
-    await channels.removeMessage(id);
+    await window.Data.removeMessage(id);
     await message.cleanup();
   }
 }
@@ -285,21 +282,21 @@ async function removeMessage(id: string): Promise<void> {
  *
  */
 async function removeMessagesByIds(ids: Array<string>): Promise<void> {
-  await channels.removeMessagesByIds(ids);
+  await window.Data.removeMessagesByIds(ids);
 }
 
 async function getMessageIdsFromServerIds(
   serverIds: Array<string> | Array<number>,
   conversationId: string
 ): Promise<Array<string> | undefined> {
-  return channels.getMessageIdsFromServerIds(serverIds, conversationId);
+  return window.Data.getMessageIdsFromServerIds(serverIds, conversationId);
 }
 
 async function getMessageById(
   id: string,
   skipTimerInit: boolean = false
 ): Promise<MessageModel | null> {
-  const message = await channels.getMessageById(id);
+  const message = await window.Data.getMessageById(id);
   if (!message) {
     return null;
   }
@@ -311,7 +308,7 @@ async function getMessageById(
 }
 
 async function getMessagesById(ids: Array<string>): Promise<Array<MessageModel>> {
-  const messages = await channels.getMessagesById(ids);
+  const messages = await window.Data.getMessagesById(ids);
   if (!messages || isEmpty(messages)) {
     return [];
   }
@@ -323,7 +320,7 @@ async function getMessageByServerId(
   serverId: number,
   skipTimerInit: boolean = false
 ): Promise<MessageModel | null> {
-  const message = await channels.getMessageByServerId(conversationId, serverId);
+  const message = await window.Data.getMessageByServerId(conversationId, serverId);
   if (!message) {
     return null;
   }
@@ -337,7 +334,8 @@ async function getMessageByServerId(
 async function filterAlreadyFetchedOpengroupMessage(
   msgDetails: MsgDuplicateSearchOpenGroup
 ): Promise<MsgDuplicateSearchOpenGroup> {
-  const msgDetailsNotAlreadyThere = await channels.filterAlreadyFetchedOpengroupMessage(msgDetails);
+  const msgDetailsNotAlreadyThere =
+    await window.Data.filterAlreadyFetchedOpengroupMessage(msgDetails);
   return msgDetailsNotAlreadyThere || [];
 }
 
@@ -352,7 +350,7 @@ async function getMessagesBySenderAndSentAt(
     timestamp: number;
   }>
 ): Promise<MessageCollection | null> {
-  const messages = await channels.getMessagesBySenderAndSentAt(propsList);
+  const messages = await window.Data.getMessagesBySenderAndSentAt(propsList);
 
   if (!messages || !messages.length) {
     return null;
@@ -365,7 +363,7 @@ async function getUnreadByConversation(
   conversationId: string,
   sentBeforeTimestamp: number
 ): Promise<MessageCollection> {
-  const messages = await channels.getUnreadByConversation(conversationId, sentBeforeTimestamp);
+  const messages = await window.Data.getUnreadByConversation(conversationId, sentBeforeTimestamp);
   return new MessageCollection(messages);
 }
 
@@ -373,7 +371,7 @@ async function getUnreadDisappearingByConversation(
   conversationId: string,
   sentBeforeTimestamp: number
 ): Promise<Array<MessageModel>> {
-  const messages = await channels.getUnreadDisappearingByConversation(
+  const messages = await window.Data.getUnreadDisappearingByConversation(
     conversationId,
     sentBeforeTimestamp
   );
@@ -384,7 +382,7 @@ async function markAllAsReadByConversationNoExpiration(
   conversationId: string,
   returnMessagesUpdated: boolean // for performance reason we do not return them because usually they are not needed
 ): Promise<Array<number>> {
-  const messagesIds = await channels.markAllAsReadByConversationNoExpiration(
+  const messagesIds = await window.Data.markAllAsReadByConversationNoExpiration(
     conversationId,
     returnMessagesUpdated
   );
@@ -393,7 +391,7 @@ async function markAllAsReadByConversationNoExpiration(
 
 // might throw
 async function getUnreadCountByConversation(conversationId: string): Promise<number> {
-  return channels.getUnreadCountByConversation(conversationId);
+  return window.Data.getUnreadCountByConversation(conversationId);
 }
 
 /**
@@ -405,7 +403,7 @@ async function getMessageCountByType(
   conversationId: string,
   type?: MessageDirection
 ): Promise<number> {
-  return channels.getMessageCountByType(conversationId, type);
+  return window.Data.getMessageCountByType(conversationId, type);
 }
 
 async function getMessagesByConversation(
@@ -416,7 +414,7 @@ async function getMessagesByConversation(
     messageId = null,
   }: { skipTimerInit?: false; returnQuotes?: boolean; messageId: string | null }
 ): Promise<{ messages: MessageCollection; quotes: Array<Quote> }> {
-  const { messages, quotes } = await channels.getMessagesByConversation(conversationId, {
+  const { messages, quotes } = await window.Data.getMessagesByConversation(conversationId, {
     messageId,
     returnQuotes,
   });
@@ -450,7 +448,7 @@ async function getLastMessagesByConversation(
   limit: number,
   skipTimerInit: boolean
 ): Promise<MessageCollection> {
-  const messages = await channels.getLastMessagesByConversation(conversationId, limit);
+  const messages = await window.Data.getLastMessagesByConversation(conversationId, limit);
   if (skipTimerInit) {
     // eslint-disable-next-line no-restricted-syntax
     for (const message of messages) {
@@ -466,7 +464,7 @@ async function getLastMessageIdInConversation(conversationId: string) {
 }
 
 async function getLastMessageInConversation(conversationId: string) {
-  const messages = await channels.getLastMessagesByConversation(conversationId, 1);
+  const messages = await window.Data.getLastMessagesByConversation(conversationId, 1);
   // eslint-disable-next-line no-restricted-syntax
   for (const message of messages) {
     message.skipTimerInit = true;
@@ -477,7 +475,7 @@ async function getLastMessageInConversation(conversationId: string) {
 }
 
 async function getOldestMessageInConversation(conversationId: string) {
-  const messages = await channels.getOldestMessageInConversation(conversationId);
+  const messages = await window.Data.getOldestMessageInConversation(conversationId);
   // eslint-disable-next-line no-restricted-syntax
   for (const message of messages) {
     message.skipTimerInit = true;
@@ -491,34 +489,34 @@ async function getOldestMessageInConversation(conversationId: string) {
  * @returns Returns count of all messages in the database
  */
 async function getMessageCount() {
-  return channels.getMessageCount();
+  return window.Data.getMessageCount();
 }
 
 async function getFirstUnreadMessageIdInConversation(
   conversationId: string
 ): Promise<string | undefined> {
-  return channels.getFirstUnreadMessageIdInConversation(conversationId);
+  return window.Data.getFirstUnreadMessageIdInConversation(conversationId);
 }
 
 async function getFirstUnreadMessageWithMention(
   conversationId: string
 ): Promise<string | undefined> {
-  return channels.getFirstUnreadMessageWithMention(conversationId);
+  return window.Data.getFirstUnreadMessageWithMention(conversationId);
 }
 
 async function hasConversationOutgoingMessage(conversationId: string): Promise<boolean> {
-  return channels.hasConversationOutgoingMessage(conversationId);
+  return window.Data.hasConversationOutgoingMessage(conversationId);
 }
 async function getLastHashBySnode(
   convoId: string,
   snode: string,
   namespace: number
 ): Promise<string> {
-  return channels.getLastHashBySnode(convoId, snode, namespace);
+  return window.Data.getLastHashBySnode(convoId, snode, namespace);
 }
 
 async function getSeenMessagesByHashList(hashes: Array<string>): Promise<any> {
-  return channels.getSeenMessagesByHashList(hashes);
+  return window.Data.getSeenMessagesByHashList(hashes);
 }
 
 async function removeAllMessagesInConversation(conversationId: string): Promise<void> {
@@ -557,7 +555,7 @@ async function removeAllMessagesInConversation(conversationId: string): Promise<
     start = Date.now();
 
     // eslint-disable-next-line no-await-in-loop
-    await channels.removeMessagesByIds(ids);
+    await window.Data.removeMessagesByIds(ids);
     window.log.info(
       `removeAllMessagesInConversation: removeMessagesByIds ${conversationId} took ${
         Date.now() - start
@@ -565,7 +563,7 @@ async function removeAllMessagesInConversation(conversationId: string): Promise<
     );
   } while (messages.length);
 
-  await channels.removeAllMessagesInConversation(conversationId);
+  await window.Data.removeAllMessagesInConversation(conversationId);
   window.log.info(
     `removeAllMessagesInConversation: complete time ${conversationId} took ${
       Date.now() - startFunction
@@ -574,93 +572,93 @@ async function removeAllMessagesInConversation(conversationId: string): Promise<
 }
 
 async function getMessagesBySentAt(sentAt: number): Promise<MessageCollection> {
-  const messages = await channels.getMessagesBySentAt(sentAt);
+  const messages = await window.Data.getMessagesBySentAt(sentAt);
   return new MessageCollection(messages);
 }
 
 async function getExpiredMessages(): Promise<MessageCollection> {
-  const messages = await channels.getExpiredMessages();
+  const messages = await window.Data.getExpiredMessages();
   return new MessageCollection(messages);
 }
 
 async function getOutgoingWithoutExpiresAt(): Promise<MessageCollection> {
-  const messages = await channels.getOutgoingWithoutExpiresAt();
+  const messages = await window.Data.getOutgoingWithoutExpiresAt();
   return new MessageCollection(messages);
 }
 
 async function getNextExpiringMessage(): Promise<MessageCollection> {
-  const messages = await channels.getNextExpiringMessage();
+  const messages = await window.Data.getNextExpiringMessage();
   return new MessageCollection(messages);
 }
 
 // Unprocessed
 
 const getUnprocessedCount: AsyncWrapper<UnprocessedDataNode['getUnprocessedCount']> = () => {
-  return channels.getUnprocessedCount();
+  return window.Data.getUnprocessedCount();
 };
 
 const getAllUnprocessed: AsyncWrapper<UnprocessedDataNode['getAllUnprocessed']> = () => {
-  return channels.getAllUnprocessed();
+  return window.Data.getAllUnprocessed();
 };
 
 const getUnprocessedById: AsyncWrapper<UnprocessedDataNode['getUnprocessedById']> = id => {
-  return channels.getUnprocessedById(id);
+  return window.Data.getUnprocessedById(id);
 };
 
 const saveUnprocessed: AsyncWrapper<UnprocessedDataNode['saveUnprocessed']> = data => {
-  return channels.saveUnprocessed(cleanData(data));
+  return window.Data.saveUnprocessed(cleanData(data));
 };
 
 const updateUnprocessedAttempts: AsyncWrapper<UnprocessedDataNode['updateUnprocessedAttempts']> = (
   id,
   attempts
 ) => {
-  return channels.updateUnprocessedAttempts(id, attempts);
+  return window.Data.updateUnprocessedAttempts(id, attempts);
 };
 const updateUnprocessedWithData: AsyncWrapper<UnprocessedDataNode['updateUnprocessedWithData']> = (
   id,
   data
 ) => {
-  return channels.updateUnprocessedWithData(id, cleanData(data));
+  return window.Data.updateUnprocessedWithData(id, cleanData(data));
 };
 
 const removeUnprocessed: AsyncWrapper<UnprocessedDataNode['removeUnprocessed']> = id => {
-  return channels.removeUnprocessed(id);
+  return window.Data.removeUnprocessed(id);
 };
 
 const removeAllUnprocessed: AsyncWrapper<UnprocessedDataNode['removeAllUnprocessed']> = () => {
-  return channels.removeAllUnprocessed();
+  return window.Data.removeAllUnprocessed();
 };
 
 // Attachment downloads
 
 async function getNextAttachmentDownloadJobs(limit: number): Promise<any> {
-  return channels.getNextAttachmentDownloadJobs(limit);
+  return window.Data.getNextAttachmentDownloadJobs(limit);
 }
 async function saveAttachmentDownloadJob(job: any): Promise<void> {
-  await channels.saveAttachmentDownloadJob(job);
+  await window.Data.saveAttachmentDownloadJob(job);
 }
 async function setAttachmentDownloadJobPending(id: string, pending: boolean): Promise<void> {
-  await channels.setAttachmentDownloadJobPending(id, pending ? 1 : 0);
+  await window.Data.setAttachmentDownloadJobPending(id, pending ? 1 : 0);
 }
 async function resetAttachmentDownloadPending(): Promise<void> {
-  await channels.resetAttachmentDownloadPending();
+  await window.Data.resetAttachmentDownloadPending();
 }
 async function removeAttachmentDownloadJob(id: string): Promise<void> {
-  await channels.removeAttachmentDownloadJob(id);
+  await window.Data.removeAttachmentDownloadJob(id);
 }
 async function removeAllAttachmentDownloadJobs(): Promise<void> {
-  await channels.removeAllAttachmentDownloadJobs();
+  await window.Data.removeAllAttachmentDownloadJobs();
 }
 
 // Other
 
 async function removeAll(): Promise<void> {
-  await channels.removeAll();
+  await window.Data.removeAll();
 }
 
 async function removeAllConversations(): Promise<void> {
-  await channels.removeAllConversations();
+  await window.Data.removeAllConversations();
 }
 
 async function cleanupOrphanedAttachments(): Promise<void> {
@@ -681,14 +679,14 @@ async function getMessagesWithVisualMediaAttachments(
   conversationId: string,
   limit?: number
 ): Promise<Array<MessageAttributes>> {
-  return channels.getMessagesWithVisualMediaAttachments(conversationId, limit);
+  return window.Data.getMessagesWithVisualMediaAttachments(conversationId, limit);
 }
 
 async function getMessagesWithFileAttachments(
   conversationId: string,
   limit: number
 ): Promise<Array<MessageAttributes>> {
-  return channels.getMessagesWithFileAttachments(conversationId, limit);
+  return window.Data.getMessagesWithFileAttachments(conversationId, limit);
 }
 
 async function getSnodePoolFromDb(): Promise<Array<Snode> | null> {
@@ -703,88 +701,7 @@ async function getSnodePoolFromDb(): Promise<Array<Snode> | null> {
 }
 
 async function updateSnodePoolOnDb(snodesAsJsonString: string): Promise<void> {
-  await Storage.put(SNODE_POOL_ITEM_ID, snodesAsJsonString);
-}
-
-function keysToArrayBuffer(keys: any, data: any) {
-  const updated = _.cloneDeep(data);
-
-  for (let i = 0, max = keys.length; i < max; i += 1) {
-    const key = keys[i];
-    const value = _.get(data, key);
-
-    if (value) {
-      _.set(updated, key, fromBase64ToArrayBuffer(value));
-    }
-  }
-
-  return updated;
-}
-
-function keysFromArrayBuffer(keys: any, data: any) {
-  const updated = _.cloneDeep(data);
-  for (let i = 0, max = keys.length; i < max; i += 1) {
-    const key = keys[i];
-    const value = _.get(data, key);
-
-    if (value) {
-      _.set(updated, key, fromArrayBufferToBase64(value));
-    }
-  }
-
-  return updated;
-}
-
-const ITEM_KEYS: object = {
-  identityKey: ['value.pubKey', 'value.privKey'],
-  profileKey: ['value'],
-};
-
-/**
- * For anything related to the UI and redux, do not use `createOrUpdateItem` directly. Instead use Storage.put (from the utils folder).
- * `Storage.put` will update the settings redux slice if needed but createOrUpdateItem will not.
- */
-export async function createOrUpdateItem(data: StorageItem): Promise<void> {
-  const { id } = data;
-  if (!id) {
-    throw new Error('createOrUpdateItem: Provided data did not have a truthy id');
-  }
-
-  const keys = (ITEM_KEYS as any)[id];
-  const updated = Array.isArray(keys) ? keysFromArrayBuffer(keys, data) : data;
-
-  await channels.createOrUpdateItem(updated);
-}
-
-/**
- * Note: In the app, you should always call getItemById through Data.getItemById (from the data.ts file).
- * This is to ensure testing and stubbbing works as expected
- */
-export async function getItemById(id: string): Promise<StorageItem | undefined> {
-  const keys = (ITEM_KEYS as any)[id];
-  const data = await channels.getItemById(id);
-
-  return Array.isArray(keys) ? keysToArrayBuffer(keys, data) : data;
-}
-/**
- * Note: In the app, you should always call getAllItems through Data.getAllItems (from the data.ts file).
- * This is to ensure testing and stubbbing works as expected
- */
-export async function getAllItems(): Promise<Array<StorageItem>> {
-  const items = await channels.getAllItems();
-  return _.map(items, item => {
-    const { id } = item;
-    const keys = (ITEM_KEYS as any)[id];
-    return Array.isArray(keys) ? keysToArrayBuffer(keys, item) : item;
-  });
-}
-
-/**
- * Note: In the app, you should always call removeItemById through Data.removeItemById (from the data.ts file).
- * This is to ensure testing and stubbbing works as expected
- */
-export async function removeItemById(id: string): Promise<void> {
-  await channels.removeItemById(id);
+  await window.Storage.put(SNODE_POOL_ITEM_ID, snodesAsJsonString);
 }
 
 // we export them like this instead of directly with the `export function` cause this is helping a lot for testing
@@ -795,10 +712,10 @@ export const Data = {
   getPasswordHash,
 
   // items table logic
-  createOrUpdateItem,
-  getItemById,
-  getAllItems,
-  removeItemById,
+  createOrUpdateItem: DataItems.createOrUpdateItem,
+  getItemById: DataItems.getItemById,
+  getAllItems: DataItems.getAllItems,
+  removeItemById: DataItems.removeItemById,
 
   // guard nodes
   getGuardNodes,

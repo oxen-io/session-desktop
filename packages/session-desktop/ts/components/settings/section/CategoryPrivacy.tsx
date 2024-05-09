@@ -16,7 +16,6 @@ import {
   useHasBlindedMsgRequestsEnabled,
   useHasLinkPreviewEnabled,
 } from '../../../state/selectors/settings';
-import { Storage } from '../../../util/storage';
 import { SessionSettingButtonItem, SessionToggleWithDescription } from '../SessionSettingListItem';
 import { displayPasswordModal } from '../SessionSettings';
 
@@ -39,7 +38,7 @@ async function toggleLinkPreviews(isToggleOn: boolean, forceUpdate: () => void) 
     );
   } else {
     await window.setSettingValue(SettingsKey.settingsLinkPreview, false);
-    await Storage.put(SettingsKey.hasLinkPreviewPopupBeenDisplayed, false);
+    await window.Storage.put(SettingsKey.hasLinkPreviewPopupBeenDisplayed, false);
     forceUpdate();
   }
 }

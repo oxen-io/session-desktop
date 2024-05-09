@@ -2,7 +2,7 @@
 import { isEmpty, isNumber, uniq } from 'lodash';
 import { v4 } from 'uuid';
 import { Data } from '../../../../data/data';
-import { isSignInByLinking } from '../../../../util/storage';
+import { isSignInByLinking } from '../../../../util/storageUtils';
 import { DisappearingMessages } from '../../../disappearing_messages';
 import { runners } from '../JobRunner';
 import {

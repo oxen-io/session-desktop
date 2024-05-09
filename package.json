@@ -2,8 +2,8 @@
   "name": "session-desktop-monorepo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "resolutions": {
+    "clsx": "^2.0.0",
     "minimist": "^1.2.6",
     "getobject": "^1.0.0",
     "ansi-regex": "^4.1.1",
@@ -25,11 +25,18 @@
     "minimatch": "^3.0.5"
   },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "session": "pnpm --filter session-desktop"
   },
   "engines": {
     "pnpm": ">=9"
-},
+  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "pnpm": {
+    "patchedDependencies": {
+      "config@1.28.1": "patches/config@1.28.1.patch"
+    }
+  }
 }

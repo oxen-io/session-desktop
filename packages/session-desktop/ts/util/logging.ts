@@ -125,7 +125,7 @@ function logAtLevel(level: string, prefix: string, ...args: any) {
   ipc.send(`log-${level}`, logText);
 }
 
-window.log = {
+export default  {
   fatal: _.partial(logAtLevel, 'fatal', 'FATAL'),
   error: _.partial(logAtLevel, 'error', 'ERROR'),
   warn: _.partial(logAtLevel, 'warn', 'WARN '),
@@ -148,3 +148,5 @@ window.addEventListener('unhandledrejection', rejectionEvent => {
   const errorInfo = error && error.stack ? error.stack : error;
   window.log.error('Top-level unhandled promise rejection:', errorInfo);
 });
+
+

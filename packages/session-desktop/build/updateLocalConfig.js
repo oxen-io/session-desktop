@@ -4,7 +4,7 @@ var execSync = require('child_process').execSync;
 
 const updateLocalConfig = () => {
   var environment = process.env.SIGNAL_ENV || 'production';
-  var configPath = `config/local-${environment}.json`;
+  var configPath = `config/${environment}.json`;
   var localConfig;
 
   var hash = '';

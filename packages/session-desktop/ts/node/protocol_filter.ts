@@ -81,6 +81,7 @@ export function installFileHandler({
 
 // Turn off browser URI scheme since we do all network requests via Node.js
 function disabledHandler(_request: any, callback: any) {
+  // this will throw a native ERR::NOT_IMPLEMENTED (just keeping the words here so we can find it when searching for it in the codebase)
   return callback();
 }
 
@@ -93,8 +94,9 @@ export function installWebHandler({ protocol }: { protocol: Protocol }) {
   protocol.interceptFileProtocol('filesystem', disabledHandler);
   protocol.interceptFileProtocol('ftp', disabledHandler);
   protocol.interceptFileProtocol('gopher', disabledHandler);
-  protocol.interceptFileProtocol('http', disabledHandler);
-  protocol.interceptFileProtocol('https', disabledHandler);
+  // We need those not disabled to ERR::NOT_IMPLEMENTED
+  // protocol.interceptFileProtocol('http', disabledHandler);
+  // protocol.interceptFileProtocol('https', disabledHandler);
   protocol.interceptFileProtocol('javascript', disabledHandler);
   protocol.interceptFileProtocol('mailto', disabledHandler);
   protocol.interceptFileProtocol('ws', disabledHandler);

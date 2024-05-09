@@ -1,7 +1,5 @@
 import tls from 'tls';
 import https from 'https';
-// eslint-disable-next-line import/no-named-default
-import { default as insecureNodeFetch } from 'node-fetch';
 import _ from 'lodash';
 import pRetry from 'p-retry';
 
@@ -87,14 +85,14 @@ const getSslAgentForSeedNode = async (seedNodeHost: string, isSsl = false) => {
     default:
       throw new Error(`Unknown seed node: ${seedNodeHost}`);
   }
-
+  console.warn('rejectUnauthorized to put tot rue and to fix ');
   // read the cert each time. We only run this request once for each seed node nevertheless.
   const sslOptions: https.AgentOptions = {
     // as the seed nodes are using a self signed certificate, we have to provide it here.
     ca: certContent,
     // we have to reject them, otherwise our errors returned in the checkServerIdentity are simply not making the call fail.
     // so in production, rejectUnauthorized must be true.
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
     keepAlive: true,
 
     checkServerIdentity: (host: string, cert: any) => {
@@ -255,14 +253,24 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     timeout: 5000,
     body: JSON.stringify(body),
     headers: {
-      'User-Agent': 'WhatsApp',
+      // 'User-Agent': 'WhatsApp',Content-Security-Policy
       'Accept-Language': 'en-us',
     },
     agent: sslAgent,
   };
-  window?.log?.info(`insecureNodeFetch => plaintext for getSnodesFromSeedUrl  ${url}`);
+  window?.log?.info(
+    `insecureNodeFetch => plaintext for getSnodesFromSeedUrl  ${url}`,
+    fetchOptions
+  );
 
-  const response = await insecureNodeFetch(url, fetchOptions);
+  console.warn('plop1');
+
+  const response = await window.fetch(url, {
+    method: fetchOptions.method,
+    body: fetchOptions.body,
+    headers: fetchOptions.headers,
+  });
+  console.warn('plop2', response);
 
   if (response.status !== 200) {
     window?.log?.error(

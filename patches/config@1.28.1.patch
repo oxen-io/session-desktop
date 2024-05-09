@@ -1,0 +1,103 @@
+diff --git a/lib/config.js b/lib/config.js
+index a7651effb5092a489be1e348593bd19177d64806..9359078125c614e73434ccfb53ce62038da51861 100644
+--- a/lib/config.js
++++ b/lib/config.js
+@@ -973,37 +973,8 @@ util.parseString = function (content, format) {
+   // Initialize
+   var configObject = null;
+ 
+-  // Parse the file based on extension
+-  if (format === 'yaml' || format === 'yml') {
+-    if (!Yaml && !VisionmediaYaml) {
+-      // Lazy loading
+-      try {
+-        // Try to load the better js-yaml module
+-        Yaml = require('js-yaml');
+-      }
+-      catch (e) {
+-        try {
+-          // If it doesn't exist, load the fallback visionmedia yaml module.
+-          VisionmediaYaml = require('yaml');
+-        }
+-        catch (e) { }
+-      }
+-    }
+ 
+-    if (Yaml) {
+-      configObject = Yaml.load(content);
+-    }
+-    else if (VisionmediaYaml) {
+-      // The yaml library doesn't like strings that have newlines but don't
+-      // end in a newline: https://github.com/visionmedia/js-yaml/issues/issue/13
+-      content += '\n';
+-      configObject = VisionmediaYaml.eval(util.stripYamlComments(content));
+-    }
+-    else {
+-      console.error("No YAML parser loaded.  Suggest adding js-yaml dependency to your package.json file.")
+-    }
+-  }
+-  else if (format === 'json') {
++  if (format === 'json') {
+     try {
+       configObject = JSON.parse(content);
+     }
+@@ -1021,59 +992,7 @@ util.parseString = function (content, format) {
+       configObject = JSON5.parse(content);
+     }
+   }
+-  else if (format === 'json5') {
+-
+-    if (!JSON5) {
+-      JSON5 = require('json5');
+-    }
+-
+-    configObject = JSON5.parse(content);
+-
+-  } else if (format === 'hjson') {
+-
+-    if (!HJSON) {
+-      HJSON = require('hjson');
+-    }
+-
+-    configObject = HJSON.parse(content);
+-
+-  } else if (format === 'toml') {
+-
+-    if(!TOML) {
+-      TOML = require('toml');
+-    }
+-
+-    configObject = TOML.parse(content);
+-  }
+-  else if (format === 'cson') {
+-    if (!CSON) {
+-      CSON = require('cson');
+-    }
+-    // Allow comments in CSON files
+-    if (typeof CSON.parseSync === 'function') {
+-      configObject = CSON.parseSync(util.stripComments(content));
+-    } else {
+-      configObject = CSON.parse(util.stripComments(content));
+-    }
+-  }
+-  else if (format === 'properties') {
+-    if (!PPARSER) {
+-      PPARSER = require('properties');
+-    }
+-    configObject = PPARSER.parse(content, { namespaces: true, variables: true, sections: true });
+-  } else if (format === 'xml') {
+ 
+-    if (!XML) {
+-      XML = require('x2js');
+-    }
+-
+-    var x2js = new XML();
+-    configObject = x2js.xml2js(content);
+-    var rootKeys = Object.keys(configObject);
+-    if(rootKeys.length == 1) {
+-      configObject = configObject[rootKeys[0]];
+-    }
+-  }
+ 
+   return configObject;
+ };

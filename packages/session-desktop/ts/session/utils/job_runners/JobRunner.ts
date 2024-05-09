@@ -1,6 +1,5 @@
 import { cloneDeep, compact, isArray, isString } from 'lodash';
 import { Data } from '../../../data/data';
-import { Storage } from '../../../util/storage';
 import { timeout } from '../Promise';
 import { persistedJobFromData } from './JobDeserialization';
 import {
@@ -169,7 +168,7 @@ export class PersistedJobRunner<T extends TypeOfPersistedData> {
   private async writeJobsToDB() {
     const serialized = this.getSerializedJobs();
 
-    await Storage.put(this.getJobRunnerItemId(), JSON.stringify(serialized));
+    await window.Storage.put(this.getJobRunnerItemId(), JSON.stringify(serialized));
   }
 
   private async addJobUnchecked(job: PersistedJob<T>) {

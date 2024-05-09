@@ -9,7 +9,6 @@ import { SignalService } from '../../../protobuf';
 import { ECKeyPair } from '../../../receiver/keypairs';
 import { ConfigurationSyncJobDone } from '../../../shims/events';
 import { ReleasedFeatures } from '../../../util/releaseFeature';
-import { Storage } from '../../../util/storage';
 import { getCompleteUrlFromRoom } from '../../apis/open_group_api/utils/OpenGroupUtils';
 import { SnodeNamespaces } from '../../apis/snode_api/namespaces';
 import { DURATION } from '../../constants';
@@ -41,7 +40,7 @@ const getLastSyncTimestampFromDb = async (): Promise<number | undefined> =>
   (await Data.getItemById(ITEM_ID_LAST_SYNC_TIMESTAMP))?.value;
 
 const writeLastSyncTimestampToDb = async (timestamp: number) =>
-  Storage.put(ITEM_ID_LAST_SYNC_TIMESTAMP, timestamp);
+  window.Storage.put(ITEM_ID_LAST_SYNC_TIMESTAMP, timestamp);
 
 /**
  * Conditionally Syncs user configuration with other devices linked.

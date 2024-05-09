@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { Data } from '../../../../data/data';
 import { READ_MESSAGE_STATE } from '../../../../models/conversationAttributes';
 import { MessageModel } from '../../../../models/message';
-import { isSignInByLinking } from '../../../../util/storage';
+import { isSignInByLinking } from '../../../../util/storageUtils';
 import { getExpiriesFromSnode } from '../../../apis/snode_api/getExpiriesRequest';
 import { DisappearingMessages } from '../../../disappearing_messages';
 import { runners } from '../JobRunner';

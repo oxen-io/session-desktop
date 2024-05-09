@@ -2,7 +2,6 @@ import { isEmpty } from 'lodash';
 import { UserUtils } from '..';
 import { SettingsKey } from '../../../data/settings-key';
 import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes';
-import { Storage } from '../../../util/storage';
 import { UserConfigWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
 import { getConversationController } from '../../conversations';
 import { fromHexToArray } from '../String';
@@ -23,7 +22,9 @@ async function insertUserProfileIntoWrapper(convoId: string) {
   const dbProfileKey = fromHexToArray(ourConvo.get('profileKey') || '');
   const priority = ourConvo.get('priority') || CONVERSATION_PRIORITIES.default;
 
-  const areBlindedMsgRequestEnabled = !!Storage.get(SettingsKey.hasBlindedMsgRequestsEnabled);
+  const areBlindedMsgRequestEnabled = !!window.Storage.get(
+    SettingsKey.hasBlindedMsgRequestsEnabled
+  );
 
   const expirySeconds = ourConvo.getExpireTimer() || 0;
   window.log.debug(

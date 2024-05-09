@@ -4,13 +4,21 @@ import { useInterval, useMount } from 'react-use';
 import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';
-import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { MessageModelType } from '../../../../models/messageType';
 import { getConversationController } from '../../../../session/conversations';
 import { PropsForExpiringMessage, messagesExpired } from '../../../../state/ducks/conversations';
 import { getIncrement } from '../../../../util/timer';
 import { ExpireTimer } from '../../ExpireTimer';
 import { ReadableMessage, ReadableMessageProps } from './ReadableMessage';
+import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
+import {
+  useMessageDirection,
+  useMessageExpirationDurationMs,
+  useMessageExpirationTimestamp,
+  useMessageIsExpired,
+  useMessageIsUnread,
+  useMessageReceivedAt,
+} from '../../../../state/selectors';
 
 const EXPIRATION_CHECK_MINIMUM = 2000;
 
@@ -108,36 +116,34 @@ function ExpireTimerControlMessage({
 }
 
 export const ExpirableReadableMessage = (props: ExpirableReadableMessageProps) => {
-  const selected = useMessageExpirationPropsById(props.messageId);
+  const { isControlMessage, onClick, onDoubleClickCapture, role, dataTestId, messageId } = props;
+
+  const convoId = useSelectedConversationKey();
+  const direction = useMessageDirection(messageId);
+  const expirationDurationMs = useMessageExpirationDurationMs(messageId);
+  const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const messageIsExpired = useMessageIsExpired(messageId);
+  const isUnread = useMessageIsUnread(messageId);
+  const receivedAt = useMessageReceivedAt(messageId);
+
   const isDetailView = useIsDetailMessageView();
 
-  const { isControlMessage, onClick, onDoubleClickCapture, role, dataTestId } = props;
-
   const { isExpired } = useIsExpired({
-    convoId: selected?.convoId,
-    messageId: selected?.messageId,
-    direction: selected?.direction,
-    expirationTimestamp: selected?.expirationTimestamp,
-    expirationDurationMs: selected?.expirationDurationMs,
-    isExpired: selected?.isExpired,
+    convoId,
+    messageId,
+    direction,
+    expirationTimestamp,
+    expirationDurationMs,
+    isExpired: messageIsExpired,
   });
 
-  if (!selected || isExpired) {
+  if (!messageId || isExpired) {
     return null;
   }
 
-  const {
-    messageId,
-    direction: _direction,
-    receivedAt,
-    isUnread,
-    expirationDurationMs,
-    expirationTimestamp,
-  } = selected;
-
   // NOTE we want messages on the left in the message detail view regardless of direction
-  const direction = isDetailView ? 'incoming' : _direction;
-  const isIncoming = direction === 'incoming';
+  const overridenDirection = isDetailView ? 'incoming' : direction;
+  const isIncoming = overridenDirection === 'incoming';
 
   return (
     <StyledReadableMessage

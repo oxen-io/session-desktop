@@ -5,6 +5,7 @@ import { LocalizerType } from './types/Util';
 
 import { ConversationCollection } from './models/conversation';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
+import { StorageType } from './types/storageType';
 
 export interface LibTextsecure {
   messaging: boolean;
@@ -24,7 +25,8 @@ declare global {
     clipboard: any;
     getSettingValue: (id: string, comparisonValue?: any) => any;
     setSettingValue: (id: string, value: any) => Promise<void>;
-
+    Data: any;
+    Storage: StorageType;
     i18n: LocalizerType;
     log: any;
     sessionFeatureFlags: {

@@ -96,7 +96,6 @@ import {
 import { Notifications } from '../util/notifications';
 import { Reactions } from '../util/reactions';
 import { Registration } from '../util/registration';
-import { Storage } from '../util/storage';
 import {
   CONVERSATION_PRIORITIES,
   ConversationAttributes,
@@ -1217,7 +1216,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (!this.isPrivate() || !timestamps.length) {
       return;
     }
-    const settingsReadReceiptEnabled = Storage.get(SettingsKey.settingsReadReceipt) || false;
+    const settingsReadReceiptEnabled = window.Storage.get(SettingsKey.settingsReadReceipt) || false;
     const sendReceipt =
       settingsReadReceiptEnabled && !this.isBlocked() && !this.isIncomingRequest();
 
@@ -2278,7 +2277,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     // for typing to happen, this must be a private unblocked active convo, and the settings to be on
     if (
       !this.isActive() ||
-      !Storage.get(SettingsKey.settingsTypingIndicator) ||
+      !window.Storage.get(SettingsKey.settingsTypingIndicator) ||
       this.isBlocked() ||
       !this.isPrivate()
     ) {

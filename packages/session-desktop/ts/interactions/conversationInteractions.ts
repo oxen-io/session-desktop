@@ -44,7 +44,6 @@ import { urlToBlob } from '../types/attachments/VisualAttachment';
 import { BlockedNumberController } from '../util/blockedNumberController';
 import { encryptProfile } from '../util/crypto/profileEncrypter';
 import { ReleasedFeatures } from '../util/releaseFeature';
-import { Storage, setLastProfileUpdateTimestamp } from '../util/storage';
 import { UserGroupsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
 
 export enum ConversationInteractionStatus {
@@ -618,10 +617,9 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
     avatarImageId: fileId,
   });
   const newTimestampReupload = Date.now();
-  await Storage.put(SettingsKey.lastAvatarUploadTimestamp, newTimestampReupload);
+  await window.Storage.put(SettingsKey.lastAvatarUploadTimestamp, newTimestampReupload);
 
   if (newAvatarDecrypted) {
-    await setLastProfileUpdateTimestamp(Date.now());
     await ConfigurationSync.queueNewJobIfNeeded();
     const userConfigLibsession = await ReleasedFeatures.checkIsUserConfigFeatureReleased();
 
@@ -661,8 +659,6 @@ export async function clearOurAvatar(commit: boolean = true) {
   ourConvo.set('avatarPointer', undefined);
   ourConvo.set('avatarInProfile', undefined);
   ourConvo.set('profileKey', undefined);
-
-  await setLastProfileUpdateTimestamp(Date.now());
 
   if (commit) {
     await ourConvo.commit();
@@ -724,7 +720,7 @@ export async function showLinkSharingConfirmationModalDialog(e: any) {
             await window.setSettingValue(SettingsKey.settingsLinkPreview, true);
           },
           onClickClose: async () => {
-            await Storage.put(SettingsKey.hasLinkPreviewPopupBeenDisplayed, true);
+            await window.Storage.put(SettingsKey.hasLinkPreviewPopupBeenDisplayed, true);
           },
         })
       );

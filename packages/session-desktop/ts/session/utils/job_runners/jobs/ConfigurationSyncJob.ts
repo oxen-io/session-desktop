@@ -6,7 +6,7 @@ import { UserUtils } from '../..';
 import { ConfigDumpData } from '../../../../data/configDump/configDump';
 import { ConfigurationSyncJobDone } from '../../../../shims/events';
 import { ReleasedFeatures } from '../../../../util/releaseFeature';
-import { isSignInByLinking } from '../../../../util/storage';
+import { isSignInByLinking } from '../../../../util/storageUtils';
 import { GenericWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
 import { NotEmptyArrayOfBatchResults } from '../../../apis/snode_api/SnodeRequestTypes';
 import { getConversationController } from '../../../conversations';

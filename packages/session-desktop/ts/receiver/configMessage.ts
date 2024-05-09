@@ -35,12 +35,7 @@ import { assertUnreachable } from '../types/sqlSharedTypes';
 import { BlockedNumberController } from '../util';
 import { Registration } from '../util/registration';
 import { ReleasedFeatures } from '../util/releaseFeature';
-import {
-  Storage,
-  getLastProfileUpdateTimestamp,
-  isSignInByLinking,
-  setLastProfileUpdateTimestamp,
-} from '../util/storage';
+import { getLastProfileUpdateTimestamp, isSignInByLinking } from '../util/storageUtils';
 
 // eslint-disable-next-line import/no-unresolved
 import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
@@ -186,14 +181,14 @@ async function updateLibsessionLatestProcessedUserTimestamp(
   if (!settingsKey) {
     return;
   }
-  const currentLatestEnvelopeProcessed = Storage.get(settingsKey) || 0;
+  const currentLatestEnvelopeProcessed = window.Storage.get(settingsKey) || 0;
 
   const newLatestProcessed = Math.max(
     latestEnvelopeTimestamp,
     isNumber(currentLatestEnvelopeProcessed) ? currentLatestEnvelopeProcessed : 0
   );
   if (newLatestProcessed !== currentLatestEnvelopeProcessed || currentLatestEnvelopeProcessed) {
-    await Storage.put(settingsKey, newLatestProcessed);
+    await window.Storage.put(settingsKey, newLatestProcessed);
   }
 }
 
@@ -207,7 +202,7 @@ async function handleUserProfileUpdate(result: IncomingConfResult): Promise<Inco
     return result;
   }
 
-  const currentBlindedMsgRequest = Storage.get(SettingsKey.hasBlindedMsgRequestsEnabled);
+  const currentBlindedMsgRequest = window.Storage.get(SettingsKey.hasBlindedMsgRequestsEnabled);
   const newBlindedMsgRequest = await UserConfigWrapperActions.getEnableBlindedMsgRequest();
   if (!isNil(newBlindedMsgRequest) && newBlindedMsgRequest !== currentBlindedMsgRequest) {
     await window.setSettingValue(SettingsKey.hasBlindedMsgRequestsEnabled, newBlindedMsgRequest); // this does the dispatch to redux
@@ -261,14 +256,14 @@ async function handleUserProfileUpdate(result: IncomingConfResult): Promise<Inco
   }
 
   const settingsKey = SettingsKey.latestUserProfileEnvelopeTimestamp;
-  const currentLatestEnvelopeProcessed = Storage.get(settingsKey) || 0;
+  const currentLatestEnvelopeProcessed = window.Storage.get(settingsKey) || 0;
 
   const newLatestProcessed = Math.max(
     result.latestEnvelopeTimestamp,
     isNumber(currentLatestEnvelopeProcessed) ? currentLatestEnvelopeProcessed : 0
   );
   if (newLatestProcessed !== currentLatestEnvelopeProcessed) {
-    await Storage.put(settingsKey, newLatestProcessed);
+    await window.Storage.put(settingsKey, newLatestProcessed);
   }
 
   return result;
@@ -922,7 +917,6 @@ async function handleConfigMessagesViaLibSession(
 }
 
 async function updateOurProfileLegacyOrViaLibSession({
-  sentAt,
   displayName,
   profileUrl,
   profileKey,
@@ -935,7 +929,6 @@ async function updateOurProfileLegacyOrViaLibSession({
     priority,
   });
 
-  await setLastProfileUpdateTimestamp(toNumber(sentAt));
   // do not trigger a signin by linking if the display name is empty
   if (!isEmpty(displayName)) {
     trigger(configurationMessageReceived, displayName);
@@ -1001,7 +994,7 @@ async function handleGroupsAndContactsFromConfigMessageLegacy(
     return;
   }
 
-  await Storage.put(SettingsKey.hasSyncedInitialConfigurationItem, envelopeTimestamp);
+  await window.Storage.put(SettingsKey.hasSyncedInitialConfigurationItem, envelopeTimestamp);
 
   void handleOpenGroupsFromConfigLegacy(configMessage.openGroups);
 

@@ -5,7 +5,7 @@ import { PubKey } from '../types';
 import { fromHexToArray, toHex } from './String';
 import { getConversationController } from '../conversations';
 import { LokiProfile } from '../../types/Message';
-import { getOurPubKeyStrFromStorage, Storage } from '../../util/storage';
+import { getOurPubKeyStrFromStorage } from '../../util/storageUtils';
 import { SessionKeyPair } from '../../receiver/keypairs';
 
 export type HexKeyPair = {
@@ -63,6 +63,7 @@ export async function getIdentityKeyPair(): Promise<SessionKeyPair | undefined> 
   if (cachedIdentityKeyPair) {
     return cachedIdentityKeyPair;
   }
+
   const item = await Data.getItemById('identityKey');
 
   cachedIdentityKeyPair = item?.value;
@@ -101,7 +102,7 @@ export function getOurProfile(): LokiProfile | undefined {
   try {
     // Secondary devices have their profile stored
     // in their primary device's conversation
-    const ourNumber = Storage.get('primaryDevicePubKey') as string;
+    const ourNumber = window.Storage.get('primaryDevicePubKey') as string;
     const ourConversation = getConversationController().get(ourNumber);
     const ourProfileKeyHex = ourConversation.get('profileKey');
     const profileKeyAsBytes = ourProfileKeyHex ? fromHexToArray(ourProfileKeyHex) : null;

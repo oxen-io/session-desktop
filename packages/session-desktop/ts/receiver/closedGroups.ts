@@ -23,7 +23,6 @@ import { ClosedGroupEncryptionPairReplyMessage } from '../session/messages/outgo
 import { UserUtils } from '../session/utils';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { ReleasedFeatures } from '../util/releaseFeature';
-import { Storage } from '../util/storage';
 // eslint-disable-next-line import/no-unresolved, import/extensions
 import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 import { getSettingsKeyFromLibsessionWrapper } from './configMessage';
@@ -231,7 +230,7 @@ export async function sentAtMoreRecentThanWrapper(
   if (!settingsKey) {
     return 'unknown';
   }
-  const latestProcessedEnvelope = Storage.get(settingsKey);
+  const latestProcessedEnvelope = window.Storage.get(settingsKey);
   if (!isNumber(latestProcessedEnvelope) || !latestProcessedEnvelope) {
     // We want to process the message if we do not have valid data in the db.
     // Also, we DO want to process a message if we DO NOT have a latest processed timestamp for that wrapper yet

@@ -10,6 +10,7 @@ import {
 import { StateType } from '../reducer';
 import { getIsMessageSelected, getMessagePropsByMessageId } from './conversations';
 import { useSelectedIsPrivate } from './selectedConversation';
+import { MessageModelType } from '../../models/messageType';
 
 function useMessagePropsByMessageId(messageId: string | undefined) {
   return useSelector((state: StateType) => getMessagePropsByMessageId(state, messageId));
@@ -80,7 +81,9 @@ export const useMessageAuthor = (messageId: string | undefined): string | undefi
   return useMessagePropsByMessageId(messageId)?.propsForMessage.sender;
 };
 
-export const useMessageDirection = (messageId: string | undefined): string | undefined => {
+export const useMessageDirection = (
+  messageId: string | undefined
+): MessageModelType | undefined => {
   return useMessagePropsByMessageId(messageId)?.propsForMessage.direction;
 };
 
@@ -150,6 +153,14 @@ export const useMessageExpirationDurationMs = (messageId: string | undefined) =>
 
 export const useMessageExpirationTimestamp = (messageId: string | undefined) => {
   return useMessagePropsByMessageId(messageId)?.propsForMessage.expirationTimestamp;
+};
+
+export const useMessageIsExpired = (messageId: string | undefined) => {
+  return useMessagePropsByMessageId(messageId)?.propsForMessage.isExpired;
+};
+
+export const useMessageIsUnread = (messageId: string | undefined) => {
+  return useMessagePropsByMessageId(messageId)?.propsForMessage.isUnread;
 };
 
 export const useMessageServerId = (messageId: string | undefined) => {

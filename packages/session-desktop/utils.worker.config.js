@@ -3,6 +3,8 @@ const path = require('path');
 
 module.exports = {
   entry: './ts/webworker/workers/node/util/util.worker.ts',
+  mode: 'production',
+
   module: {
     rules: [
       {

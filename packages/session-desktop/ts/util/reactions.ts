@@ -6,7 +6,7 @@ import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/know
 import { ToastUtils, UserUtils } from '../session/utils';
 
 import { Action, OpenGroupReactionList, ReactionList, RecentReactions } from '../types/Reaction';
-import { getRecentReactions, saveRecentReations } from './storage';
+import { getRecentReactions, saveRecentReations } from './storageUtils';
 
 const SOGSReactorsFetchCount = 5;
 const rateCountLimit = 20;

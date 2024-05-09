@@ -44,7 +44,7 @@ import {
   makeVideoScreenshot,
 } from '../../types/attachments/VisualAttachment';
 import { AttachmentUtil, GoogleChrome, arrayBufferToObjectURL } from '../../util';
-import { getCurrentRecoveryPhrase } from '../../util/storage';
+import { getCurrentRecoveryPhrase } from '../../util/storageUtils';
 import { MessageView } from '../MainViewController';
 import { SplitViewContainer } from '../SplitViewContainer';
 import { SessionButtonColor } from '../basic/SessionButton';

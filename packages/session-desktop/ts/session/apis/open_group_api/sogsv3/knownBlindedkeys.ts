@@ -14,7 +14,6 @@ import { SogsBlinding } from './sogsBlinding';
 import { fromHexToArray } from '../../../utils/String';
 import { KNOWN_BLINDED_KEYS_ITEM } from '../../../../data/settings-key';
 import { roomHasBlindEnabled } from '../../../../types/sqlSharedTypes';
-import { Storage } from '../../../../util/storage';
 
 export type BlindedIdMapping = {
   blindedId: string;
@@ -67,7 +66,7 @@ export async function loadKnownBlindedKeys() {
  */
 export async function writeKnownBlindedKeys() {
   if (cachedKnownMapping && cachedKnownMapping.length) {
-    await Storage.put(KNOWN_BLINDED_KEYS_ITEM, JSON.stringify(cachedKnownMapping));
+    await window.Storage.put(KNOWN_BLINDED_KEYS_ITEM, JSON.stringify(cachedKnownMapping));
   }
 }
 

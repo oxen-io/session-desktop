@@ -1,12 +1,11 @@
 // eslint:disable: no-require-imports no-var-requires
-const { clipboard, ipcRenderer, webFrame } = require('electron/main');
-const { Storage } = require('./ts/util/storage');
-
-const { isTestNet, isTestIntegration } = require('./ts/shared/env_vars');
-
+const { clipboard, ipcRenderer, webFrame } = require('electron');
 const url = require('url');
-
 const _ = require('lodash');
+
+const { Storage } = require('./ts/util/storage');
+window.Storage = Storage;
+const { isTestNet, isTestIntegration } = require('./ts/shared/env_vars');
 
 const config = url.parse(window.location.toString(), true).query;
 const configAny = config;
@@ -118,8 +117,6 @@ window.setOpengroupPruning = async opengroupPruning =>
     ipc.send('set-opengroup-pruning', opengroupPruning);
   });
 
-window._ = require('lodash');
-
 // We never do these in our code, so we'll prevent it everywhere
 window.open = () => null;
 // eslint-disable-next-line no-eval, no-multi-assign
@@ -173,7 +170,7 @@ window.getSettingValue = (settingID, comparisonValue = null) => {
     return window.getAutoUpdateEnabled();
   }
 
-  const settingVal = Storage.get(settingID);
+  const settingVal = window.Storage.get(settingID);
   return comparisonValue ? !!settingVal === comparisonValue : settingVal;
 };
 
@@ -184,7 +181,7 @@ window.setSettingValue = async (settingID, value) => {
     return;
   }
 
-  await Storage.put(settingID, value);
+  await window.Storage.put(settingID, value);
 };
 
 window.getMediaPermissions = () => ipc.sendSync('get-media-permissions');
@@ -225,26 +222,22 @@ ipc.on('get-ready-for-shutdown', async () => {
 
 // We pull these dependencies in now, from here, because they have Node.js dependencies
 
-require('./ts/util/logging');
+const logging = require('./ts/util/logging');
+window.log = { ...logging.default };
 
 if (config.proxyUrl) {
   window.log.info('Using provided proxy url');
 }
 window.nodeSetImmediate = setImmediate;
 
-const data = require('./ts/data/dataInit');
 const { setupi18n } = require('./ts/util/i18n');
-window.Signal = data.initData();
+const data = require('./ts/data/dataInit');
+window.Data = data.initData();
 
-const { getConversationController } = require('./ts/session/conversations/ConversationController');
-window.getConversationController = getConversationController;
 // Linux seems to periodically let the event loop stop, so this is a global workaround
 setInterval(() => {
   window.nodeSetImmediate(() => {});
 }, 1000);
-
-window.React = require('react');
-window.ReactDOM = require('react-dom');
 
 window.clipboard = clipboard;
 

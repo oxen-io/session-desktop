@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { Data } from '../../data/data';
-import { Storage } from '../../util/storage';
 import { SnodeNamespaces } from '../apis/snode_api/namespaces';
 import { ContentMessage } from '../messages/outgoing';
 import { PubKey } from '../types';
@@ -141,6 +140,6 @@ export class PendingMessageCache {
     });
 
     const encodedPendingMessages = JSON.stringify(encodedCache) || '[]';
-    await Storage.put('pendingMessages', encodedPendingMessages);
+    await window.Storage.put('pendingMessages', encodedPendingMessages);
   }
 }

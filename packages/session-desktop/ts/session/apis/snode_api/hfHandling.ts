@@ -1,6 +1,5 @@
 import { isNumber } from 'lodash';
 import { Data } from '../../../data/data';
-import { Storage } from '../../../util/storage';
 
 let hasSeenHardfork190: boolean | undefined;
 let hasSeenHardfork191: boolean | undefined;
@@ -25,7 +24,7 @@ export async function getHasSeenHF190() {
     const oldHhasSeenHardfork190 = (await Data.getItemById(hasSeenHardfork190ItemId))?.value;
     // values do not exist in the db yet. Let's store false for now in the db and update our cached value.
     if (oldHhasSeenHardfork190 === undefined) {
-      await Storage.put(hasSeenHardfork190ItemId, false);
+      await window.Storage.put(hasSeenHardfork190ItemId, false);
       hasSeenHardfork190 = false;
     } else {
       hasSeenHardfork190 = oldHhasSeenHardfork190;
@@ -44,7 +43,7 @@ export async function getHasSeenHF191() {
 
     // values do not exist in the db yet. Let's store false for now in the db and update our cached value.
     if (oldHhasSeenHardfork191 === undefined) {
-      await Storage.put(hasSeenHardfork191ItemId, false);
+      await window.Storage.put(hasSeenHardfork191ItemId, false);
       hasSeenHardfork191 = false;
     } else {
       hasSeenHardfork191 = oldHhasSeenHardfork191;
@@ -61,13 +60,13 @@ export async function handleHardforkResult(json: Record<string, any>) {
 
     // values do not exist in the db yet. Let's store false for now in the db and update our cached value.
     if (oldHhasSeenHardfork190 === undefined) {
-      await Storage.put(hasSeenHardfork190ItemId, false);
+      await window.Storage.put(hasSeenHardfork190ItemId, false);
       hasSeenHardfork190 = false;
     } else {
       hasSeenHardfork190 = oldHhasSeenHardfork190;
     }
     if (oldHasSeenHardfork191 === undefined) {
-      await Storage.put(hasSeenHardfork191ItemId, false);
+      await window.Storage.put(hasSeenHardfork191ItemId, false);
       hasSeenHardfork191 = false;
     } else {
       hasSeenHardfork191 = oldHasSeenHardfork191;
@@ -89,11 +88,11 @@ export async function handleHardforkResult(json: Record<string, any>) {
     isNumber(json.hf[1])
   ) {
     if (!hasSeenHardfork190 && json.hf[0] >= 19 && json.hf[1] >= 0) {
-      await Storage.put(hasSeenHardfork190ItemId, true);
+      await window.Storage.put(hasSeenHardfork190ItemId, true);
       hasSeenHardfork190 = true;
     }
     if (!hasSeenHardfork191 && json.hf[0] >= 19 && json.hf[1] >= 1) {
-      await Storage.put(hasSeenHardfork191ItemId, true);
+      await window.Storage.put(hasSeenHardfork191ItemId, true);
       hasSeenHardfork191 = true;
     }
   }

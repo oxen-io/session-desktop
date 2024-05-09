@@ -28,7 +28,6 @@ import { isUsFromCache } from '../session/utils/User';
 import { assertUnreachable } from '../types/sqlSharedTypes';
 import { BlockedNumberController } from '../util';
 import { ReadReceipts } from '../util/readReceipts';
-import { Storage } from '../util/storage';
 import { ContactsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
 import { handleCallMessage } from './callMessage';
 import { getAllCachedECKeyPair, sentAtMoreRecentThanWrapper } from './closedGroups';
@@ -583,7 +582,7 @@ export async function innerHandleSwarmContentMessage({
 async function onReadReceipt(readAt: number, timestamp: number, source: string) {
   window?.log?.info('read receipt', source, timestamp);
 
-  if (!Storage.get(SettingsKey.settingsReadReceipt)) {
+  if (!window.Storage.get(SettingsKey.settingsReadReceipt)) {
     return;
   }
 
@@ -626,7 +625,7 @@ async function handleTypingMessage(
   await removeFromCache(envelope);
 
   // We don't do anything with incoming typing messages if the setting is disabled
-  if (!Storage.get(SettingsKey.settingsTypingIndicator)) {
+  if (!window.Storage.get(SettingsKey.settingsTypingIndicator)) {
     return;
   }
 

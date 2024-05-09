@@ -95,7 +95,6 @@ import { getAttachmentMetadata } from '../types/message/initializeAttachmentMeta
 import { assertUnreachable, roomHasBlindEnabled } from '../types/sqlSharedTypes';
 import { LinkPreviews } from '../util/linkPreviews';
 import { Notifications } from '../util/notifications';
-import { Storage } from '../util/storage';
 import { ConversationModel } from './conversation';
 import { READ_MESSAGE_STATE } from './conversationAttributes';
 // tslint:disable: cyclomatic-complexity
@@ -539,7 +538,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     }
 
     const readBy = this.get('read_by') || [];
-    if (Storage.get(SettingsKey.settingsReadReceipt) && readBy.length > 0) {
+    if (window.Storage.get(SettingsKey.settingsReadReceipt) && readBy.length > 0) {
       return 'read';
     }
     const sent = this.get('sent');

@@ -15,7 +15,6 @@ import { getConversationController } from '../../session/conversations';
 import { sanitizeSessionUsername } from '../../session/utils/String';
 import { editProfileModal, updateEditProfilePictureModel } from '../../state/ducks/modalDialog';
 import { saveQRCode } from '../../util/saveQRCode';
-import { setLastProfileUpdateTimestamp } from '../../util/storage';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonType } from '../basic/SessionButton';
 import { SessionSpinner } from '../basic/SessionSpinner';
@@ -58,7 +57,6 @@ const updateDisplayName = async (newName: string) => {
 
   // might be good to not trigger a sync if the name did not change
   await conversation.commit();
-  await setLastProfileUpdateTimestamp(Date.now());
   await SyncUtils.forceSyncConfigurationNowIfNeeded(true);
 };
 
