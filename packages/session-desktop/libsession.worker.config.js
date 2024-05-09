@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-
-const isProd = process.env.NODE_ENV === 'production';
+const sharedConfig = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/webworker/workers/node/libsession/libsession.worker.ts',
   node: {
     __dirname: false,
   },
-  mode: 'production',
 
   module: {
     rules: [
@@ -40,8 +38,5 @@ module.exports = {
     path: path.resolve(__dirname, 'ts', 'webworker', 'workers', 'node', 'libsession'),
   },
   target: 'node',
-  optimization: {
-    minimize: isProd,
-  },
-  watch: true,
+  ...sharedConfig,
 };

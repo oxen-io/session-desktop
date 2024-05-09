@@ -6,6 +6,7 @@ const sass = require('sass'); // Prefer `dart-sass`
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+// Do we want to spread shared.webpack.config.js here too?
 module.exports = {
   output: {
     path: path.resolve(__dirname, 'stylesheets', 'dist'),

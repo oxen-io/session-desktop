@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const sharedConfig = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/mains/main_renderer.tsx',
@@ -19,9 +20,6 @@ module.exports = {
       },
     ],
   },
-
-  devtool: 'source-map',
-  mode: 'production',
 
   resolve: {
     symlinks: true,
@@ -47,8 +45,5 @@ module.exports = {
     __filename: false,
   },
   target: 'electron-renderer',
-  optimization: {
-    minimize: false,
-  },
-  watch: true,
+  ...sharedConfig,
 };

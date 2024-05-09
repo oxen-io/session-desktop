@@ -1,9 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const sharedConfig = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/webworker/workers/node/util/util.worker.ts',
-  mode: 'production',
 
   module: {
     rules: [
@@ -28,8 +28,5 @@ module.exports = {
     path: path.resolve(__dirname, 'ts', 'webworker', 'workers', 'node', 'util'),
   },
   target: 'node',
-  optimization: {
-    minimize: true,
-  },
-  watch: true,
+  ...sharedConfig,
 };

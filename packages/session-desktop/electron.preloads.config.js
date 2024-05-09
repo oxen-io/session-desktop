@@ -1,6 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const webpack = require('webpack');
+const sharedConfig = require('./shared.webpack.config');
 
 module.exports = [
   {
@@ -14,10 +14,6 @@ module.exports = [
         },
       ],
     },
-    mode: 'production',
-
-    devtool: 'source-map',
-
     resolve: {
       symlinks: true,
       extensions: ['.ts', '.js'],
@@ -27,9 +23,6 @@ module.exports = [
       filename: 'preload.bundled.js',
     },
     target: 'electron-preload',
-    optimization: {
-      minimize: false,
-    },
-    watch: true,
+    ...sharedConfig,
   },
 ];

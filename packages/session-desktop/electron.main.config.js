@@ -1,10 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
+
+const sharedConfig = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/mains/main_node.ts',
-  mode: 'production',
   module: {
     rules: [
       {
@@ -22,8 +24,6 @@ module.exports = {
     ],
   },
 
-  devtool: 'source-map',
-
   resolve: {
     symlinks: true,
     extensions: ['.ts', '.js'],
@@ -34,9 +34,7 @@ module.exports = {
   },
 
   target: 'electron-main',
-  optimization: {
-    minimize: false,
-  },
+
   plugins: [new webpack.DefinePlugin({ CONFIG: JSON.stringify(require('config')) })],
-  watch: true,
+  ...sharedConfig,
 };
