@@ -19,6 +19,6 @@ ts/util/lint/exceptions.json
 
 # Managed by package manager (`pnpm`/`npm`):
 **/package.json
-
+**/*.bundled.js
 
 **/release/**

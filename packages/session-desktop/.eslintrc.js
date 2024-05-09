@@ -2,6 +2,7 @@ var path = require('path');
 
 module.exports = {
   root: true,
+
   settings: {
     'import/core-modules': ['electron'],
     'import/resolver': {
@@ -31,7 +32,7 @@ module.exports = {
 
   plugins: ['mocha', 'more', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
-  parserOptions: { project: ['tsconfig.json'] },
+  parserOptions: { project: ['../../tsconfig.json'] },
 
   rules: {
     'comma-dangle': [

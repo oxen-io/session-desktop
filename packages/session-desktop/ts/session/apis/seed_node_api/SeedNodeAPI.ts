@@ -85,7 +85,6 @@ const getSslAgentForSeedNode = async (seedNodeHost: string, isSsl = false) => {
     default:
       throw new Error(`Unknown seed node: ${seedNodeHost}`);
   }
-  console.warn('rejectUnauthorized to put tot rue and to fix ');
   // read the cert each time. We only run this request once for each seed node nevertheless.
   const sslOptions: https.AgentOptions = {
     // as the seed nodes are using a self signed certificate, we have to provide it here.

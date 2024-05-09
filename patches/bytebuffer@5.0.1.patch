@@ -1,0 +1,44 @@
+diff --git a/.npmignore b/.npmignore
+deleted file mode 100644
+index 590fb83169e46a5cacced43f32d76109572a814c..0000000000000000000000000000000000000000
+diff --git a/dist/bytebuffer-node.js b/dist/bytebuffer-node.js
+index 93a7c46d8127010a6579fa9beea215e0410ecb13..c9b77c3dbeeee6f154080fc30bc9fcbb3d4c14bf 100644
+--- a/dist/bytebuffer-node.js
++++ b/dist/bytebuffer-node.js
+@@ -26,7 +26,7 @@ module.exports = (function() {
+     var buffer = require("buffer"),
+         Buffer = buffer["Buffer"],
+         Long = require("long"),
+-        memcpy = null; try { memcpy = require("memcpy"); } catch (e) {}
++        memcpy = null; // try { memcpy = require("memcpy"); } catch (e) {}
+ 
+     /**
+      * Constructs a new ByteBuffer.
+diff --git a/src/wrap-node.js b/src/wrap-node.js
+index c157d47a31c165af385d9d6c57f4a9a450e409b4..a7ec073c11be775b5b78fa079b72304cfa52812d 100644
+--- a/src/wrap-node.js
++++ b/src/wrap-node.js
+@@ -23,11 +23,11 @@
+  */
+ module.exports = (function() {
+     "use strict";
+-    
++
+     var buffer = require("buffer"),
+         Buffer = buffer["Buffer"],
+-        Long = require("long"),
+-        memcpy = null; try { memcpy = require("memcpy"); } catch (e) {}
++        Long = require("long")
++        // memcpy = null; try { memcpy = require("memcpy"); } catch (e) {}
+ 
+     //? include("ByteBuffer.js");
+ 
+@@ -43,7 +43,7 @@ module.exports = (function() {
+      * @throws {Error} If any index is out of bounds
+      * @expose
+      */
+-    ByteBuffer.memcpy = memcpy;
++    // ByteBuffer.memcpy = memcpy;
+ 
+     return ByteBuffer;
+ 

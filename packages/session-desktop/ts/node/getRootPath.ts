@@ -5,7 +5,6 @@ import { join } from 'path';
  * If you move this file around, you will need to update those lines
  */
 export function getAppRootPath() {
-  const rootPath = join(__dirname, '..', '..','..');
-  console.info('getAppRootPath:', rootPath)
-  return rootPath
+  const rootPath = join(__dirname, '..', '..', '..');
+  return rootPath;
 }

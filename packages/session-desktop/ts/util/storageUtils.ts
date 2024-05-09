@@ -1,7 +1,6 @@
 import { isBoolean } from 'lodash';
 import { DEFAULT_RECENT_REACTS } from '../session/constants'; // ok
 
-
 export async function setLocalPubKey(pubkey: string) {
   await window.Storage.put('number_id', `${pubkey}.1`);
 }

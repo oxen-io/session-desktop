@@ -26,7 +26,7 @@ module.exports = {
 
   resolve: {
     symlinks: true,
-    extensions: ['.ts', '.js'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   output: {
     filename: 'main.bundled.js',
@@ -35,6 +35,7 @@ module.exports = {
 
   target: 'electron-main',
 
+  // eslint-disable-line global-require
   plugins: [new webpack.DefinePlugin({ CONFIG: JSON.stringify(require('config')) })],
   ...sharedConfig,
 };

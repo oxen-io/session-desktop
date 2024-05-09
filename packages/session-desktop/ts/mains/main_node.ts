@@ -178,11 +178,9 @@ function assertLogger(): Logger {
 function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
   let commitHash = 'unknown'; // FIXME audric
   try {
-    debugger
     commitHash = config.get('commitHash');
   } catch (e) {
     console.warn('config.get failed with', e.message);
-    debugger;
   }
 
   const urlObject: url.UrlObject = {

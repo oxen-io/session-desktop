@@ -24,14 +24,13 @@ module.exports = {
   resolve: {
     symlinks: true,
 
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     fallback: {
       crypto: false,
       path: false,
       fs: false,
       stream: false,
     },
-    // mainFields: ['module', 'browser', 'main'],
     mainFields: ['module', 'main'],
     aliasFields: [],
   },

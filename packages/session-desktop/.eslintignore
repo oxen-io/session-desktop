@@ -15,3 +15,5 @@ stylesheets/dist/
 compiled.d.ts
 .eslintrc.js
 playwright.config.js
+
+**/*.bundled.js

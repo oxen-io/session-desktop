@@ -1,4 +1,3 @@
-
 async function markDone() {
   await window.Storage.put('chromiumRegistrationDoneEver', '');
   await window.Storage.put('chromiumRegistrationDone', '');

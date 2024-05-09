@@ -16,7 +16,7 @@ module.exports = [
     },
     resolve: {
       symlinks: true,
-      extensions: ['.ts', '.js'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
     output: {
       path: path.join(__dirname),

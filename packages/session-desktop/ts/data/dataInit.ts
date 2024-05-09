@@ -182,7 +182,6 @@ export async function callChannel(name: string): Promise<any> {
 }
 
 export function initData() {
-  console.warn('initData()');
   // We listen to a lot of events on ipcRenderer, often on the same channel. This prevents
   //   any warnings that might be sent to the console in that case.
   ipcRenderer.setMaxListeners(0);
