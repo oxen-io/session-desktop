@@ -15,10 +15,12 @@
   "main": "ts/mains/main_node.built/main_node.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "session": "pnpm --filter session-desktop",
+    "libsession": "pnpm --filter libsession-util-nodejs",
     "start-prod": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron .",
     "start-dev": "cross-env NODE_ENV=development NODE_APP_INSTANCE=devprod$MULTI electron .",
-    "build-everything": "pnpm --filter session-desktop clean && pnpm --filter session-desktop protobuf && pnpm --filter session-desktop update-git-info && pnpm --filter session-desktop sass && tsc && pnpm build:workers",
-    "build-everything:watch": "pnpm --filter session-desktop clean && pnpm --filter session-desktop protobuf && pnpm --filter session-desktop update-git-info && ppnpm --filter session-desktopnpm sass && pnpm --filter session-desktop build:workers && tsc -w",
+    "build-everything": "pnpm session clean && pnpm session protobuf && pnpm session update-git-info && pnpm session sass && tsc && pnpm build:workers",
+    "build-everything:watch": "pnpm session clean && pnpm session protobuf && pnpm session update-git-info && ppnpm sessionnpm sass && pnpm session build:workers && tsc -w",
     "watch:tsc": "tsc -w",
     "build:workers": "concurrently --kill-others-on-fail -s=all 'npm:build*-w'",
     "build:workers:watch": "concurrently --kill-others-on-fail -s=all 'npm:build*-w --watch'",
@@ -31,15 +33,15 @@
     "electron-builder": "electron-builder",
     "sass": "rimraf 'stylesheets/dist/' && webpack  --config=./sass.config.js",
     "clean": "rimraf './ts/**/*.js' './ts/*.js' './ts/*.js.map' './ts/**/*.js.map' './tsconfig.tsbuildinfo';",
-    "lint-full": "pnpm --filter session-desktop format-full && eslint .",
+    "lint-full": "pnpm session format-full && eslint .",
     "format-full": "prettier --list-different --write \"*.{css,js,json,scss,ts,tsx}\" \"./**/*.{css,js,json,scss,ts,tsx}\"",
     "start-prod-test": "cross-env NODE_ENV=production NODE_APP_INSTANCE=$MULTI electron .",
     "test": "mocha  -r jsdom-global/register --recursive --exit --timeout 10000  \"./ts/test/**/*_test.js\"",
     "sedtoAppImage": "sed -i -z 's|        \"deb\",\\n        \"rpm\",\\n        \"freebsd\"|        \"AppImage\"|g' package.json",
     "sedtoDeb": "sed -i -z 's|        \"AppImage\"|        \"deb\",\\n        \"rpm\",\\n        \"freebsd\"|g' package.json",
-    "ready": "pnpm --filter session-desktop build-everything && pnpm --filter session-desktop lint-full && pnpm --filter session-desktop test",
+    "ready": "pnpm session build-everything && pnpm session lint-full && pnpm session test",
     "update-git-info": "node ./build/updateLocalConfig.js",
-    "postinstall": "pnpm --filter session-desktop electron-builder install-app-deps"
+    "postinstall": "pnpm session electron-builder install-app-deps"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",

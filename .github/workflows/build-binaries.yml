@@ -35,13 +35,13 @@ jobs:
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'
-        run: pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release
+        run: pnpm session electron-builder --config.extraMetadata.environment=production --publish=never --config.directories.output=release
 
       - name: Build mac production binaries
         if: runner.os == 'macOS'
         run: |
           source ./packages/session-desktop/build/setup-mac-certificate.sh
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          pnpm session electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
         env:
           MAC_CERTIFICATE: ${{ secrets.MAC_CERTIFICATE }}
           MAC_CERTIFICATE_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
@@ -54,13 +54,13 @@ jobs:
         # yes, we really have to make those two builds separately (we could break them down and run them in parallel eventually)
         run: |
           sudo apt-get install -y rpm
-          pnpm --filter session-desktop sedtoDeb
-          pnpm --filter session-desktop build-everything
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
-          pnpm --filter session-desktop sedtoAppImage
-          pnpm --filter session-desktop build-everything
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
-          pnpm --filter session-desktop sedtoDeb
+          pnpm session sedtoDeb
+          pnpm session build-everything
+          pnpm session electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          pnpm session sedtoAppImage
+          pnpm session build-everything
+          pnpm session electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
+          pnpm session sedtoDeb
 
       - name: Remaining files before1
         run: ls .

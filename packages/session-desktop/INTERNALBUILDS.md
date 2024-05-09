@@ -68,8 +68,8 @@ nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g pnpm # install pnpm globally for this node version
 pnpm install --frozen-lockfile # install all dependencies of this project
-pnpm --filter session-desktop build-everything # transpile and assemble files
-pnpm --filter session-desktop start-prod # start the app on production mode (currently this is the only one supported)
+pnpm session build-everything # transpile and assemble files
+pnpm session start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>
@@ -118,8 +118,8 @@ nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g pnpm # install pnpm globally for this node version
 pnpm install --frozen-lockfile # install all dependencies of this project
-pnpm --filter session-desktop build-everything # transpile and assemble files
-pnpm --filter session-desktop start-prod # start the app on production mode (currently this is the only one supported)
+pnpm session build-everything # transpile and assemble files
+pnpm session start-prod # start the app on production mode (currently this is the only one supported)
 ```
 
 </details>

@@ -27,13 +27,13 @@ jobs:
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'
-        run: pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=always
+        run: pnpm session electron-builder --config.extraMetadata.environment=production --publish=always
 
       - name: Build mac production binaries
         if: runner.os == 'macOS'
         run: |
           source ./packages/session-desktop/build/setup-mac-certificate.sh
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=always
+          pnpm session electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=always
         env:
           MAC_CERTIFICATE: ${{ secrets.MAC_CERTIFICATE }}
           MAC_CERTIFICATE_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
@@ -46,10 +46,10 @@ jobs:
         # run one full build for deb, freebsd, and rpm, and then one full build for appImage as that one cannot be done the same way
         run: |
           sudo apt-get install -y rpm
-          pnpm --filter session-desktop sedtoDeb
-          pnpm --filter session-desktop build-everything
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=always
-          pnpm --filter session-desktop sedtoAppImage
-          pnpm --filter session-desktop build-everything
-          pnpm --filter session-desktop electron-builder --config.extraMetadata.environment=production --publish=always
-          pnpm --filter session-desktop sedtoDeb
+          pnpm session sedtoDeb
+          pnpm session build-everything
+          pnpm session electron-builder --config.extraMetadata.environment=production --publish=always
+          pnpm session sedtoAppImage
+          pnpm session build-everything
+          pnpm session electron-builder --config.extraMetadata.environment=production --publish=always
+          pnpm session sedtoDeb

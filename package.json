@@ -26,7 +26,8 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "session": "pnpm --filter session-desktop"
+    "session": "pnpm --filter session-desktop",
+    "libsession": "pnpm --filter libsession-util-nodejs"
   },
   "engines": {
     "pnpm": ">=9"

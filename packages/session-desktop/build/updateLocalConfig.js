@@ -3,7 +3,7 @@ var _ = require('lodash');
 var execSync = require('child_process').execSync;
 
 const updateLocalConfig = () => {
-  var environment = process.env.SIGNAL_ENV || 'production';
+  var environment = 'production';
   var configPath = `config/${environment}.json`;
   var localConfig;
 
