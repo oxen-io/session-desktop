@@ -34,7 +34,7 @@ jobs:
       - name: Lint Files
         # no need to lint files on all platforms. Just do it once on the quicker one
         if: runner.os == 'Linux'
-        run: pnpm run --filter session-desktop lint-full
+        run: pnpm session lint-full
 
       - name: Unit Test
-        run: pnpm run --filter session-desktop test
+        run: pnpm session test

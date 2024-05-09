@@ -158,9 +158,6 @@ export function handleRequest(
   incomingMessagePromises.push(promise);
 }
 
-/**
- * Used in main_renderer.js
- */
 export async function queueAllCached() {
   const items = await getAllFromCache();
 

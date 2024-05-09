@@ -53,4 +53,4 @@ runs:
 
     - name: Generate and concat files
       shell: bash
-      run: pnpm run --filter session-desktop build-everything
+      run: pnpm session build-everything

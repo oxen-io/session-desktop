@@ -263,14 +263,12 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     fetchOptions
   );
 
-  console.warn('plop1');
 
   const response = await window.fetch(url, {
     method: fetchOptions.method,
     body: fetchOptions.body,
     headers: fetchOptions.headers,
   });
-  console.warn('plop2', response);
 
   if (response.status !== 200) {
     window?.log?.error(

@@ -39,7 +39,7 @@ module.exports = {
   },
 
   output: {
-    filename: 'main_renderer.js',
+    filename: 'main.bundled.js',
     path: path.resolve(__dirname, 'ts', 'mains', 'main_renderer.built'),
   },
   node: {

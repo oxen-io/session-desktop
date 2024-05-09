@@ -29,7 +29,7 @@ module.exports = {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'main_node.js',
+    filename: 'main.bundled.js',
     path: path.resolve('ts', 'mains', 'main_node.built'),
   },
 

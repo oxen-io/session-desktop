@@ -62,21 +62,6 @@ jobs:
           pnpm session electron-builder --config.extraMetadata.environment=production --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
           pnpm session sedtoDeb
 
-      - name: Remaining files before1
-        run: ls .
-        shell: bash
-        working-directory: ./
-
-      - name: Remaining files before2
-        run: ls .
-        shell: bash
-        working-directory: ./packages/
-
-      - name: Remaining files before3
-        run: ls .
-        shell: bash
-        working-directory: ./packages/session-desktop/
-
       - name: Remove unpacked files
         run: |
           ls -d -- */ | xargs -I{} echo "Removing {}"

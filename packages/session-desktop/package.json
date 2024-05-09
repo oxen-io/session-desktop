@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/oxen-io/session-desktop.git"
   },
-  "main": "ts/mains/main_node.built/main_node.js",
+  "main": "ts/mains/main_node.built/main.bundled.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "session": "pnpm --filter session-desktop",
@@ -245,8 +245,8 @@
       "icon": "build/icon-linux.icns"
     },
     "asarUnpack": [
-      "ts/mains/main_node.built/main_node.js",
-      "ts/mains/main_renderer.built/main_renderer.js"
+      "ts/mains/main_node.built/main.bundled.js",
+      "ts/mains/main_renderer.built/main.bundled.js"
     ],
     "deb": {
       "depends": [
@@ -326,8 +326,8 @@
       "!node_modules/libsession_util_nodejs/libsession-util/*",
       "!node_modules/libsession_util_nodejs/src/*",
       "node_modules/@signalapp/better-sqlite3/build/Release/better_sqlite3.node",
-      "ts/mains/main_node.built/*.js",
-      "ts/mains/main_renderer.built/*.js",
+      "ts/mains/main_node.built/main.bundled.js",
+      "ts/mains/main_renderer.built/main.bundled.js",
       "ts/mains/main_node.built/**/libsession_util_nodejs.node",
       "ts/webworker/workers/node/libsession/_/libsession-util-nodejs/build/Release/libsession_util_nodejs.node",
       "!dev-app-update.yml"
