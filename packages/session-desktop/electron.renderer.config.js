@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 module.exports = {
   entry: './ts/mains/main_renderer.tsx',
@@ -51,6 +50,5 @@ module.exports = {
   optimization: {
     minimize: false,
   },
-  plugins: [new LodashModuleReplacementPlugin()],
   watch: true,
 };

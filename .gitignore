@@ -1,3 +1,4 @@
 **/node_modules/
 squashfs-root/
 **/*.bundled.js
+packages/session-desktop/config/production.json
