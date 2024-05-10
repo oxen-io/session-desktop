@@ -242,7 +242,9 @@
       },
       "asarUnpack": "node_modules/spellchecker/vendor/hunspell_dictionaries",
       "target": [
-        "AppImage"
+        "deb",
+        "rpm",
+        "freebsd"
       ],
       "icon": "build/icon-linux.icns"
     },
