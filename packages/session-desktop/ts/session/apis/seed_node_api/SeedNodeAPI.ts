@@ -252,7 +252,7 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     timeout: 5000,
     body: JSON.stringify(body),
     headers: {
-      // 'User-Agent': 'WhatsApp'
+      'User-Agent': 'WhatsApp',
       'Accept-Language': 'en-us',
     },
     agent: sslAgent,
