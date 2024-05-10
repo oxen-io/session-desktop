@@ -1,7 +1,6 @@
-packages/session-desktop/build/*
+build/*
 **/dist
-packages/session-desktop/mnemonic_languages/
-packages/libsession-util-nodejs/
+mnemonic_languages/
 
 # editor
 .vscode/**
