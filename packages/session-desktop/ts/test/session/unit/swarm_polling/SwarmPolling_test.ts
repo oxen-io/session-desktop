@@ -36,6 +36,8 @@ describe('SwarmPolling', () => {
 
   let clock: Sinon.SinonFakeTimers;
   beforeEach(async () => {
+    TestUtils.stubWindowStorage();
+
     getConversationController().reset();
     TestUtils.stubWindowFeatureFlags();
     Sinon.stub(ConfigurationSync, 'queueNewJobIfNeeded').resolves();

@@ -10,6 +10,9 @@ import { TestUtils } from '../../../test-utils';
 
 describe('hardfork handling', () => {
   describe('getHasSeenHF190', () => {
+    beforeEach(() => {
+      TestUtils.stubWindowStorage();
+    });
     afterEach(() => {
       Sinon.restore();
       resetHardForkCachedValues();

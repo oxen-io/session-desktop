@@ -35,6 +35,9 @@ const sharedNoExpire = {
 };
 
 describe('Message Utils', () => {
+  beforeEach(() => {
+    TestUtils.stubWindowStorage();
+  });
   afterEach(() => {
     Sinon.restore();
   });

@@ -65,6 +65,7 @@ describe('OnionPathsErrors', () => {
 
   beforeEach(async () => {
     TestUtils.stubWindowLog();
+    TestUtils.stubWindowStorage();
 
     guardPubkeys = TestUtils.generateFakePubKeys(3).map(n => n.key);
     otherNodesPubkeys = TestUtils.generateFakePubKeys(20).map(n => n.key);

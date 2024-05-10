@@ -21,6 +21,8 @@ describe('PendingMessageCache', () => {
   let pendingMessageCacheStub: PendingMessageCache;
 
   beforeEach(() => {
+    TestUtils.stubWindowStorage();
+
     // Stub out methods which touch the database
     const storageID = 'pendingMessages';
     data = {

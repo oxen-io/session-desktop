@@ -18,6 +18,7 @@ import { generateFakeECKeyPair, stubWindowLog } from '../../../test-utils/utils'
 
 describe('libsession_user_groups', () => {
   stubWindowLog();
+  TestUtils.stubWindowStorage();
 
   const getLatestTimestampOffset = 200000;
   const ourNumber = '051234567890acbdef';

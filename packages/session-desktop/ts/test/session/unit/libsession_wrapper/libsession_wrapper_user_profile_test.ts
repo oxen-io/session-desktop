@@ -16,6 +16,7 @@ import { stubWindowLog } from '../../../test-utils/utils';
 
 describe('libsession_user_profile', () => {
   stubWindowLog();
+  TestUtils.stubWindowStorage();
 
   const getLatestTimestampOffset = 200000;
   const ourNumber = TestUtils.generateFakePubKeyStr();

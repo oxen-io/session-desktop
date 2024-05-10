@@ -101,6 +101,13 @@ export const stubWindowLog = () => {
   });
 };
 
+export const stubWindowStorage = () => {
+  stubWindow('Storage', {
+    get: (..._args: any) => (enableLogRedirect ? console.info(..._args) : {}),
+    put: async (..._args: any) => {},
+  });
+};
+
 export const stubWindowFeatureFlags = () => {
   stubWindow('sessionFeatureFlags', { debug: {} } as any);
 };

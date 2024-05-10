@@ -27,6 +27,8 @@ describe('MessageSender', () => {
   });
 
   beforeEach(async () => {
+    TestUtils.stubWindowStorage();
+
     TestUtils.stubWindowLog();
     TestUtils.stubWindowFeatureFlags();
     getConversationController().reset();

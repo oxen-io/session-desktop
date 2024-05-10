@@ -7,7 +7,7 @@ describe('BlockedNumberController', () => {
   let memoryDB: { [key: string]: any };
   beforeEach(() => {
     memoryDB = {};
-
+    TestUtils.stubWindowStorage();
     TestUtils.stubData('createOrUpdateItem').callsFake(data => {
       memoryDB[data.id] = data.value;
     });

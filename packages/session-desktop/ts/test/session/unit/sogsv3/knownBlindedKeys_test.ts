@@ -42,6 +42,8 @@ describe('knownBlindedKeys', () => {
   let createOrUpdateItem: Sinon.SinonStub;
   let sodium: LibSodiumWrappers;
   beforeEach(async () => {
+    TestUtils.stubWindowStorage();
+
     getItemById = stubData('getItemById');
     createOrUpdateItem = stubData('createOrUpdateItem');
     TEST_resetCachedBlindedKeys();

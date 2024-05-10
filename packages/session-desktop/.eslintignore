@@ -1,19 +1,22 @@
-build/**
-dist/**
-mnemonic_languages/**
+packages/session-desktop/build/*
+**/dist
+packages/session-desktop/mnemonic_languages/
+packages/libsession-util-nodejs/
 
 # editor
 .vscode/**
 .vscrof/**
 
 # TypeScript generated files
-ts/**/*.js
 **/ts/**/*.js
+**/ts/**/*.js.map
 
 preload.js
-stylesheets/dist/
-compiled.d.ts
+**/stylesheets/dist/
+**/compiled.d.ts
 .eslintrc.js
 playwright.config.js
+
+**/node_modules
 
 **/*.bundled.js

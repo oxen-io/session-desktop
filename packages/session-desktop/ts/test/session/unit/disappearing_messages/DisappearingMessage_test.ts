@@ -40,6 +40,8 @@ describe('DisappearingMessage', () => {
   } as ConversationAttributes;
 
   beforeEach(() => {
+    TestUtils.stubWindowStorage();
+
     Sinon.stub(GetNetworkTime, 'getLatestTimestampOffset').returns(getLatestTimestampOffset);
     Sinon.stub(UserUtils, 'getOurPubKeyStrFromCache').returns(ourNumber);
   });

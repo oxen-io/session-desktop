@@ -32,6 +32,8 @@ chai.should();
 const { expect } = chai;
 
 describe('MessageQueue', () => {
+  TestUtils.stubWindowStorage();
+
   // Initialize new stubbed cache
   const ourDevice = TestUtils.generateFakePubKey();
   const ourNumber = ourDevice.key;

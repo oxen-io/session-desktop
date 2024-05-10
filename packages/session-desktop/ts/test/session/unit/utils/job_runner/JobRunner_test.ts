@@ -53,6 +53,8 @@ describe('JobRunner', () => {
   let runnerMulti: PersistedJobRunner<FakeSleepForMultiJobData>;
 
   beforeEach(() => {
+    TestUtils.stubWindowStorage();
+
     getItemById = stubData('getItemById');
     stubData('createOrUpdateItem');
     clock = Sinon.useFakeTimers({ shouldAdvanceTime: true });
