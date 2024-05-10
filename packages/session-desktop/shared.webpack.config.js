@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const sharedRootProd = {
   mode: 'production',
   cache: true,
@@ -18,7 +19,7 @@ const sharedRootDev = {
 };
 
 const sharedTsLoader = {
-    transpileOnly: true,
+  transpileOnly: true,
 };
 
 module.exports = { sharedRoot: sharedRootDev, sharedTsLoader };

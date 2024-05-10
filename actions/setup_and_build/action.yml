@@ -3,10 +3,22 @@ description: 'Setup and build Session Desktop'
 runs:
   using: 'composite'
   steps:
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 9
+
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 18.15.0
+        cache: 'pnpm'
+        cache-dependency-path: |
+          'packages/*/package.json'
+          frontend/app/package-lock.json
+          pnpm-lock.yaml
+          package.json
+          'patches/**'
+
 
     - uses: pnpm/action-setup@v3
       with:
@@ -53,4 +65,6 @@ runs:
 
     - name: Generate and concat files
       shell: bash
-      run: pnpm session build-everything
+      run: |
+        pnpm session build-everything
+        pnpm session tsc # we don't type check with webpack (transpileOnly: true) for speed reasons, so we need to make sure the types are right

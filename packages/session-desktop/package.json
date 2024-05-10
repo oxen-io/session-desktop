@@ -41,7 +41,7 @@
     "test": "pnpm session build:tsc; mocha  -r jsdom-global/register --recursive --exit --timeout 10000  \"./ts/test/**/*_test.js\"",
     "sedtoAppImage": "sed -i -z 's|        \"deb\",\\n        \"rpm\",\\n        \"freebsd\"|        \"AppImage\"|g' package.json",
     "sedtoDeb": "sed -i -z 's|        \"AppImage\"|        \"deb\",\\n        \"rpm\",\\n        \"freebsd\"|g' package.json",
-    "ready": "pnpm session build-everything && pnpm session lint-full && pnpm session test",
+    "ready": "pnpm session build-everything && pnpm session lint-full && pnpm session build:tsc && pnpm session test",
     "update-git-info": "node ./build/updateLocalConfig.js",
     "postinstall": "pnpm session electron-builder install-app-deps"
   },
