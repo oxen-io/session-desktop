@@ -1,4 +1,4 @@
-// import path from 'path';
+import path from 'path';
 import * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { isNumber } from 'lodash';
 
@@ -14,23 +14,22 @@ import {
 } from '../database_utility';
 // import { getAppRootPath } from '../getRootPath';
 import { updateSessionSchema } from './sessionMigrations';
+import { getAppRootPath } from '../getRootPath';
 
 // eslint:disable: quotemark non-literal-fs-path one-variable-per-declaration
 const openDbOptions = {
   // eslint-disable-next-line no-constant-condition
   verbose: false ? console.log : undefined,
 
-  // nativeBinding: path.join(
-  //   // getAppRootPath(),
-  //   '/home/audric/pro/contribs/session-clearnet/packages/session-desktop/',
-
-  //   'node_modules',
-  //   '@signalapp',
-  //   'better-sqlite3',
-  //   'build',
-  //   'Release',
-  //   'better_sqlite3.node'
-  // ),
+  nativeBinding: path.join(
+    getAppRootPath(),
+    'node_modules',
+    '@signalapp',
+    'better-sqlite3',
+    'build',
+    'Release',
+    'better_sqlite3.node'
+  ),
 };
 
 // eslint:disable: one-variable-per-declaration
