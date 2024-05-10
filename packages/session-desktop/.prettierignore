@@ -1,9 +1,10 @@
 # TODO: Partially duplicated from `.gitignore`. Remove once Prettier
 # supports `.gitignore`: https://github.com/prettier/prettier/issues/2294
 
-# Generated files
-**/config/local-*.json
 **/config/local.json
+**/config/production.json
+# Generated files
+
 **/dist/**
 **/stylesheets/*
 
