@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';

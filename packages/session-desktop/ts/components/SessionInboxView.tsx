@@ -1,5 +1,5 @@
 import { fromPairs, map } from 'lodash';
-import React from 'react';
+
 import { Provider } from 'react-redux';
 import useMount from 'react-use/lib/useMount';
 import useUpdate from 'react-use/lib/useUpdate';

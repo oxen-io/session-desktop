@@ -1,5 +1,5 @@
 import { ipcRenderer, shell } from 'electron';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useDispatch } from 'react-redux';
 import useHover from 'react-use/lib/useHover';

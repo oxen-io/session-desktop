@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { AccentText } from './AccentText';
 
 import { RegistrationStages } from './RegistrationStages';
@@ -9,7 +9,7 @@ import { Flex } from '../basic/Flex';
 import { setSignInByLinking } from '../../util/storageUtils';
 
 export const SessionRegistrationView = () => {
-  React.useEffect(() => {
+  useEffect(() => {
     void setSignInByLinking(false);
   }, []);
   return (

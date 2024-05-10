@@ -1,11 +1,11 @@
 import _ from 'lodash';
-import React from 'react';
 
 import autoBind from 'auto-bind';
 import { blobToArrayBuffer } from 'blob-util';
 import loadImage from 'blueimp-load-image';
 import classNames from 'classnames';
 import styled from 'styled-components';
+import React from 'react';
 import {
   CompositionBox,
   SendMessageType,

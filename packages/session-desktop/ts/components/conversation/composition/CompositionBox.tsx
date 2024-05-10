@@ -1,5 +1,5 @@
 import _, { debounce, isEmpty } from 'lodash';
-import React from 'react';
+
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
@@ -7,6 +7,7 @@ import { AbortController } from 'abort-controller';
 import { Mention, MentionsInput, SuggestionDataItem } from 'react-mentions';
 
 import autoBind from 'auto-bind';
+import React from 'react';
 import * as MIME from '../../../types/MIME';
 
 import { SessionEmojiPanel, StyledEmojiPanel } from '../SessionEmojiPanel';

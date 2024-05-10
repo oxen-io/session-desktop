@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import useUpdate from 'react-use/lib/useUpdate';
 import styled from 'styled-components';

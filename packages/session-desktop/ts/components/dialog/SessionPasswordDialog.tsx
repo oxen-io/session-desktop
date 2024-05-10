@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
+
 import autoBind from 'auto-bind';
 
+import React from 'react';
 import { ToastUtils } from '../../session/utils';
 import { Data } from '../../data/data';
 import { SpacerSM } from '../basic/Text';

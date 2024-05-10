@@ -1,4 +1,3 @@
-import React from 'react';
 import { isEmpty, noop } from 'lodash';
 import styled from 'styled-components';
 

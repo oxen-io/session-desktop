@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import nativeEmojiData from '@emoji-mart/data';
 import { ipcRenderer } from 'electron';
 // eslint-disable-next-line import/no-named-default
-import { default as React } from 'react';
 
 import { isMacOS } from '../OS';
 import { SessionInboxView } from '../components/SessionInboxView';

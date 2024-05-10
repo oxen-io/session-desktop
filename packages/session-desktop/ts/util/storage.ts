@@ -1,17 +1,17 @@
 import { isBoolean } from 'lodash';
 import { deleteSettingsBoolValue, updateSettingsBoolValue } from '../state/ducks/settings'; // bad
-import type { StorageType, ValueType } from '../types/storageType';
+import { StorageType, StorageValueType } from '../types/storageType';
 import { DataItems } from '../data/dataItems';
 
 let ready = false;
 
-type InsertedValueType = { id: string; value: ValueType };
+type InsertedValueType = { id: string; value: StorageValueType };
 let items: Record<string, InsertedValueType>;
 let callbacks: Array<() => void> = [];
 
 reset();
 
-async function put(key: string, value: ValueType) {
+async function put(key: string, value: StorageValueType) {
   if (value === undefined) {
     throw new Error('Tried to store undefined');
   }
@@ -28,7 +28,7 @@ async function put(key: string, value: ValueType) {
   }
 }
 
-function get(key: string, defaultValue?: ValueType) {
+function get(key: string, defaultValue?: StorageValueType) {
   if (!ready) {
     window.log.warn('Called storage.get before storage is ready. key:', key);
     throw new Error(`Called storage.get before storage is ready. key:"${key}"`);

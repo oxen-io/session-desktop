@@ -1,5 +1,5 @@
-import React from 'react';
 import DOMPurify from 'dompurify';
+import React from 'react';
 
 type ReceivedProps = {
   html: string;

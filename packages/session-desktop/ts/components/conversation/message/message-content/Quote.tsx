@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { noop } from 'lodash';
 
 import * as MIME from '../../../../types/MIME';

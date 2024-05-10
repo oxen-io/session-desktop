@@ -1,4 +1,3 @@
-import React from 'react';
 import { contextMenu } from 'react-contexify';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';

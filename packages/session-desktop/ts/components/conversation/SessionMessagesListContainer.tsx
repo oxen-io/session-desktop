@@ -1,11 +1,10 @@
-import React from 'react';
-
 import { contextMenu } from 'react-contexify';
 
 import { connect } from 'react-redux';
 
 import autoBind from 'auto-bind';
 import styled from 'styled-components';
+import React from 'react';
 import {
   quotedMessageToAnimate,
   ReduxConversationType,

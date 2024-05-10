@@ -1,5 +1,5 @@
 import { isEmpty, toNumber } from 'lodash';
-import React from 'react';
+
 import { useSelector } from 'react-redux';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';

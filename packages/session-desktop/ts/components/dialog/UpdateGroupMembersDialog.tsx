@@ -1,4 +1,3 @@
-import React from 'react';
 import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import React from 'react';
+
 import { createGlobalStyle } from 'styled-components';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
 import { classicDark } from './classicDark';

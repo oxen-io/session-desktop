@@ -1,4 +1,3 @@
-import React from 'react';
 import moment from 'moment';
 
 import useInterval from 'react-use/lib/useInterval';

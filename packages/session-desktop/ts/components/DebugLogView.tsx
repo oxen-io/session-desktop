@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { switchThemeTo } from '../themes/switchTheme';
 import { SessionTheme } from '../themes/SessionTheme';

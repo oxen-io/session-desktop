@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+
 import { useSelector } from 'react-redux';
 import { isOpenOrClosedGroup } from '../../../../models/conversationAttributes';
 import { MessageRenderingProps } from '../../../../models/messageType';

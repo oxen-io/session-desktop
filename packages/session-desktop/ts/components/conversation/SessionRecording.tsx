@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
+
 import classNames from 'classnames';
 import moment from 'moment';
 
 import autoBind from 'auto-bind';
 import MicRecorder from 'mic-recorder-to-mp3';
 import styled from 'styled-components';
+import React from 'react';
 import { SessionIconButton } from '../icon';
 import { Constants } from '../../session';
 import { ToastUtils } from '../../session/utils';

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { KeyboardEvent } from 'react';
+import React, { KeyboardEvent, memo } from 'react';
 import styled from 'styled-components';
 import { SessionIcon, SessionIconProps } from './SessionIcon';
 
@@ -104,4 +104,4 @@ const SessionIconButtonInner = React.forwardRef<HTMLButtonElement, SProps>((prop
   );
 });
 
-export const SessionIconButton = React.memo(SessionIconButtonInner, _.isEqual);
+export const SessionIconButton = memo(SessionIconButtonInner, _.isEqual);

@@ -1,4 +1,3 @@
-import React from 'react';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
 import { AbortSignal } from 'abort-controller';

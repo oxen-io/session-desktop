@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { AttachmentType, getExtensionForDisplay } from '../../types/Attachment';
 
 interface Props {

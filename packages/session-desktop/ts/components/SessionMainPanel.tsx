@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { useAppIsFocused } from '../hooks/useAppFocused';
 import { getFocusedSettingsSection } from '../state/selectors/section';

@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -35,7 +36,6 @@ module.exports = {
 
   target: 'electron-main',
 
-  // eslint-disable-line global-require
   plugins: [new webpack.DefinePlugin({ CONFIG: JSON.stringify(require('config')) })],
   ...sharedConfig,
 };

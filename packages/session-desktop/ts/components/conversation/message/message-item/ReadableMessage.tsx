@@ -1,5 +1,5 @@
 import { debounce, noop } from 'lodash';
-import React, { MouseEventHandler, useCallback, useLayoutEffect, useState } from 'react';
+import { MouseEventHandler, useCallback, useLayoutEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useScrollToLoadedMessage } from '../../../../contexts/ScrollToLoadedMessage';

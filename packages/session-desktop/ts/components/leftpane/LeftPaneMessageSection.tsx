@@ -1,8 +1,9 @@
 import autoBind from 'auto-bind';
-import React from 'react';
+
 import { useSelector } from 'react-redux';
 import { AutoSizer, List, ListRowProps } from 'react-virtualized';
 import styled from 'styled-components';
+import React from 'react';
 import { SearchResults } from '../search/SearchResults';
 import { LeftPaneSectionHeader } from './LeftPaneSectionHeader';
 import { MessageRequestsBanner } from './MessageRequestsBanner';

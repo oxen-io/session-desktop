@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import styled, { css, CSSProperties, keyframes } from 'styled-components';
 
 import { icons, SessionIconSize, SessionIconType } from '.';

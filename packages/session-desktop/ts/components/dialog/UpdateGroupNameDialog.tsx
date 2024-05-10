@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import autoBind from 'auto-bind';
 import classNames from 'classnames';
-import React from 'react';
 
+import React from 'react';
 import { ConversationModel } from '../../models/conversation';
 import { Constants } from '../../session';
 import { getConversationController } from '../../session/conversations';

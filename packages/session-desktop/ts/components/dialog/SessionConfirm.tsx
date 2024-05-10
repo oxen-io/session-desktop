@@ -1,5 +1,5 @@
 import { shell } from 'electron';
-import React, { Dispatch, useEffect, useState } from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';

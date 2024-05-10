@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import {
   THEMES,
   ThemeStateType,
   // eslint-disable-next-line import/extensions
-} from '../../themes/constants/colors.js';
+} from '../../themes/constants/colors';
 import { hexColorToRGB } from '../../util/hexColorToRGB';
 import { getPrimaryColor } from '../../state/selectors/primaryColor';
 import { i18nEmojiData } from '../../util/emoji';
