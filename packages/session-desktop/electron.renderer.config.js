@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const sharedConfig = require('./shared.webpack.config');
+const { sharedRoot, sharedTsLoader } = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/mains/main_renderer.tsx',
@@ -8,8 +8,11 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          ...sharedTsLoader,
+        },
       },
       {
         test: /\.node$/,
@@ -44,5 +47,5 @@ module.exports = {
     __filename: false,
   },
   target: 'electron-renderer',
-  ...sharedConfig,
+  ...sharedRoot,
 };

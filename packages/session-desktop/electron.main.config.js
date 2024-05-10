@@ -4,7 +4,7 @@ const path = require('path');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
 
-const sharedConfig = require('./shared.webpack.config');
+const { sharedRoot, sharedTsLoader } = require('./shared.webpack.config');
 
 module.exports = {
   entry: './ts/mains/main_node.ts',
@@ -12,8 +12,11 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          ...sharedTsLoader,
+        },
       },
       {
         test: /\.node$/,
@@ -37,5 +40,5 @@ module.exports = {
   target: 'electron-main',
 
   plugins: [new webpack.DefinePlugin({ CONFIG: JSON.stringify(require('config')) })],
-  ...sharedConfig,
+  ...sharedRoot,
 };

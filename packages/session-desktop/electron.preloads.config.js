@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const sharedConfig = require('./shared.webpack.config');
+const { sharedRoot, sharedTsLoader } = require('./shared.webpack.config');
 
 const sharedConfigForPreloads = {
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          ...sharedTsLoader,
+        },
       },
     ],
   },
@@ -17,7 +20,7 @@ const sharedConfigForPreloads = {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   target: 'electron-preload',
-  ...sharedConfig,
+  ...sharedRoot,
 };
 
 module.exports = [
