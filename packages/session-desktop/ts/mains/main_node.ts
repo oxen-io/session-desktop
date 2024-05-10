@@ -558,7 +558,7 @@ async function showPasswordWindow() {
       contextIsolation: false,
 
       // sandbox: true,
-      preload: path.join(getAppRootPath(), 'password_preload.js'),
+      preload: path.join(getAppRootPath(), 'password_preload.bundled.js'),
       nativeWindowOpen: true,
     },
     // don't setup icon, the executable one will be used by default
@@ -631,7 +631,7 @@ async function showAbout() {
       nodeIntegration: true,
       nodeIntegrationInWorker: false,
       contextIsolation: false,
-      preload: path.join(getAppRootPath(), 'about_preload.js'),
+      preload: path.join(getAppRootPath(), 'about_preload.bundled.js'),
       nativeWindowOpen: true,
     },
     parent: mainWindow,
@@ -686,7 +686,7 @@ async function showDebugLogWindow() {
       nodeIntegration: true,
       nodeIntegrationInWorker: false,
       contextIsolation: false,
-      preload: path.join(getAppRootPath(), 'debug_log_preload.js'),
+      preload: path.join(getAppRootPath(), 'debug_log_preload.bundled.js'),
       nativeWindowOpen: true,
     },
     parent: mainWindow,
