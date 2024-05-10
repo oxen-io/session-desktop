@@ -49,15 +49,24 @@ function log(...args: any) {
   logAtLevel('info', 'INFO ', ...args);
 }
 
+const loggingFunctions = {
+  fatal: _.partial(logAtLevel, 'fatal', 'FATAL'),
+  error: _.partial(logAtLevel, 'error', 'ERROR'),
+  warn: _.partial(logAtLevel, 'warn', 'WARN '),
+  info: _.partial(logAtLevel, 'info', 'INFO '),
+  debug: _.partial(logAtLevel, 'debug', 'DEBUG'),
+  trace: _.partial(logAtLevel, 'trace', 'TRACE'),
+};
+
 if (window.console) {
-  (console as any)._log = (console as any).log;
+  (console as any)._log = console.log;
   (console as any).log = log;
-  (console as any)._trace = (console as any).trace;
-  (console as any)._debug = (console as any).debug;
-  (console as any)._info = (console as any).info;
-  (console as any)._warn = (console as any).warn;
-  (console as any)._error = (console as any).error;
-  (console as any)._fatal = (console as any).error;
+  (console as any)._trace = console.trace;
+  (console as any)._debug = console.debug;
+  (console as any)._info = console.info;
+  (console as any)._warn = console.warn;
+  (console as any)._error = console.error;
+  (console as any)._fatal = console.error;
 }
 
 // The mechanics of preparing a log for publish
@@ -125,15 +134,6 @@ function logAtLevel(level: string, prefix: string, ...args: any) {
   ipc.send(`log-${level}`, logText);
 }
 
-export default {
-  fatal: _.partial(logAtLevel, 'fatal', 'FATAL'),
-  error: _.partial(logAtLevel, 'error', 'ERROR'),
-  warn: _.partial(logAtLevel, 'warn', 'WARN '),
-  info: _.partial(logAtLevel, 'info', 'INFO '),
-  debug: _.partial(logAtLevel, 'debug', 'DEBUG'),
-  trace: _.partial(logAtLevel, 'trace', 'TRACE'),
-};
-
 window.onerror = (_message, _script, _line, _col, error) => {
   const errorInfo = JSON.stringify(error);
 
@@ -148,3 +148,5 @@ window.addEventListener('unhandledrejection', rejectionEvent => {
   const errorInfo = error && error.stack ? error.stack : error;
   window.log.error('Top-level unhandled promise rejection:', errorInfo);
 });
+
+export { loggingFunctions };

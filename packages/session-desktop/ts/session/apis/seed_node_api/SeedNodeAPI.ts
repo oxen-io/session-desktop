@@ -257,10 +257,7 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
     },
     agent: sslAgent,
   };
-  window?.log?.info(
-    `insecureNodeFetch => plaintext for getSnodesFromSeedUrl  ${url}`,
-    fetchOptions
-  );
+  window?.log?.info(`insecureNodeFetch => plaintext for getSnodesFromSeedUrl  ${url}`);
 
   const response = await window.fetch(url, {
     method: fetchOptions.method,

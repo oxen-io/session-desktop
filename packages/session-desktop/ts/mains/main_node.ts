@@ -192,7 +192,7 @@ function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
       locale: locale.name,
       version: app.getVersion(),
       commitHash,
-      environment: (config as any).environment,
+      environment: 'production',
       node_version: process.versions.node,
       hostname: os.hostname(),
       appInstance: process.env.NODE_APP_INSTANCE,

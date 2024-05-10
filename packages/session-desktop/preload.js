@@ -222,8 +222,8 @@ ipc.on('get-ready-for-shutdown', async () => {
 
 // We pull these dependencies in now, from here, because they have Node.js dependencies
 
-const logging = require('./ts/util/logging');
-window.log = { ...logging.default };
+const { loggingFunctions } = require('./ts/util/logging');
+window.log = loggingFunctions;
 
 if (config.proxyUrl) {
   window.log.info('Using provided proxy url');
