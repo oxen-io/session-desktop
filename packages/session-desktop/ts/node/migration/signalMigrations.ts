@@ -12,9 +12,8 @@ import {
   MESSAGES_FTS_TABLE,
   MESSAGES_TABLE,
 } from '../database_utility';
-// import { getAppRootPath } from '../getRootPath';
-import { updateSessionSchema } from './sessionMigrations';
 import { getAppRootPath } from '../getRootPath';
+import { updateSessionSchema } from './sessionMigrations';
 
 // eslint:disable: quotemark non-literal-fs-path one-variable-per-declaration
 const openDbOptions = {
@@ -22,7 +21,8 @@ const openDbOptions = {
   verbose: false ? console.log : undefined,
 
   nativeBinding: path.join(
-    getAppRootPath(),
+    getAppRootPath().replace('app.asar', 'app.asar.unpacked'),
+
     'node_modules',
     '@signalapp',
     'better-sqlite3',
@@ -600,7 +600,7 @@ export function openAndMigrateDatabase(filePath: string, key: string) {
     if (db) {
       db.close();
     }
-    console.log('migrateDatabase: Migration without cipher change failed', error.message);
+    console.log('migrateDatabase: Migration without cipher change failed', error);
   }
 
   // If that fails, we try to open the database with 3.x compatibility to extract the

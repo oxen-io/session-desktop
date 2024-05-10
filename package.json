@@ -38,7 +38,8 @@
   "pnpm": {
     "patchedDependencies": {
       "config@1.28.1": "patches/config@1.28.1.patch",
-      "bytebuffer@5.0.1": "patches/bytebuffer@5.0.1.patch"
+      "bytebuffer@5.0.1": "patches/bytebuffer@5.0.1.patch",
+      "@signalapp/better-sqlite3@8.7.1": "patches/@signalapp__better-sqlite3@8.7.1.patch"
     }
   }
 }

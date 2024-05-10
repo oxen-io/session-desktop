@@ -1,0 +1,21 @@
+diff --git a/lib/database.js b/lib/database.js
+index 5d6f7a1943214d5147573a9d365e200564c70b78..0b4a341f78f3749ffe9190afa3da72923bef5e7e 100644
+--- a/lib/database.js
++++ b/lib/database.js
+@@ -43,11 +43,14 @@ function Database(filenameGiven, options) {
+ 	if (nativeBindingPath != null && typeof nativeBindingPath !== 'string') throw new TypeError('Expected the "nativeBinding" option to be a string');
+ 
+ 	// Load the native addon
++	var requireFunc = typeof __webpack_require__ === 'function'
++      ? __non_webpack_require__
++      : require;
+ 	let addon;
+ 	if (nativeBindingPath == null) {
+-		addon = DEFAULT_ADDON || (DEFAULT_ADDON = require('bindings')('better_sqlite3.node'));
++		addon = DEFAULT_ADDON || (DEFAULT_ADDON = requireFunc('bindings')('better_sqlite3.node'));
+ 	} else {
+-		addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
++		addon = requireFunc(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
+ 	}
+ 	if (!addon.isInitialized) {
+ 		addon.setErrorConstructor(SqliteError);

@@ -27,6 +27,9 @@ overrides:
   minimatch: ^3.0.5
 
 patchedDependencies:
+  '@signalapp/better-sqlite3@8.7.1':
+    hash: 3fuxgieuirfcsmf3hmu3mwd3ra
+    path: patches/@signalapp__better-sqlite3@8.7.1.patch
   bytebuffer@5.0.1:
     hash: fctk4j3boq4y7n7k3ggzlgscqu
     path: patches/bytebuffer@5.0.1.patch
@@ -64,7 +67,7 @@ importers:
         version: 1.8.5(react-redux@8.0.4(@types/react-dom@17.0.25)(@types/react@17.0.2)(react-dom@17.0.2(react@17.0.2))(react-native@0.74.1(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@17.0.2)(react@17.0.2))(react@17.0.2)(redux@4.2.0))(react@17.0.2)
       '@signalapp/better-sqlite3':
         specifier: ^8.4.3
-        version: 8.7.1
+        version: 8.7.1(patch_hash=3fuxgieuirfcsmf3hmu3mwd3ra)
       '@types/react-mentions':
         specifier: ^4.1.8
         version: 4.1.13
@@ -8027,7 +8030,7 @@ snapshots:
 
   '@sideway/pinpoint@2.0.0': {}
 
-  '@signalapp/better-sqlite3@8.7.1':
+  '@signalapp/better-sqlite3@8.7.1(patch_hash=3fuxgieuirfcsmf3hmu3mwd3ra)':
     dependencies:
       bindings: 1.5.0
       tar: 6.2.1
