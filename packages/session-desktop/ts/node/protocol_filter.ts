@@ -42,7 +42,6 @@ function createFileHandler({
     const realPath = fs.existsSync(target) ? fs.realpathSync(target) : target;
     // finally we do case-insensitive checks on windows
     const properCasing = isWindows ? realPath.toLowerCase() : realPath;
-    console.warn('realPath', realPath);
 
     if (!path.isAbsolute(realPath)) {
       console.log(`Warning: denying request to non-absolute path '${realPath}'`);

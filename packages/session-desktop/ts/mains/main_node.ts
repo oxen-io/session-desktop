@@ -14,7 +14,6 @@ import {
   Menu,
   nativeTheme,
   screen,
-  // session,
   shell,
   systemPreferences,
 } from 'electron';
@@ -757,13 +756,26 @@ app.on('ready', async () => {
 
   installPermissionsHandler({ userConfig });
 
-  app.on('certificate-error', (event, _webContents, _url, _error, _certificate, callback) => {
-    console.warn('make this for seed nodes only?');
-
-    // Prevent having error
+  app.on('certificate-error', (event, _webContents, fullUrl, _error, certificate, callback) => {
+    const host = new URL(fullUrl).hostname;
+    console.info(`seednode checkServerIdentity: ${host}`);
+    // eslint-disable-next-line more/no-then
+    const expectedFingerprint = getSslDetailsForSeedNode(host);
+    // Prevent having error until we check
     event.preventDefault();
+
+    // Pin the exact certificate fingerprunt, rather than the pub key
+    if (expectedFingerprint !== certificate.fingerprint) {
+      const msg =
+        'Certificate verification error: ' +
+        `The certificate of '${certificate.subject.commonName}' ` +
+        'does not match our pinned fingerprint';
+      console.warn(msg);
+      callback(false); // not trusted
+      return;
+    }
     // and continue
-    callback(true);
+    callback(true); // trusted
   });
 
   await initializeLogger();
@@ -1199,3 +1211,19 @@ async function askForMediaAccess() {
 ipc.on('media-access', async () => {
   await askForMediaAccess();
 });
+
+function getSslDetailsForSeedNode(seedNodeHost: string) {
+  switch (seedNodeHost) {
+    case 'seed1.getsession.org':
+      return 'sha256/NuoLJTU3mIVR7oVuT9INVQEenIsn6qLzS48yoL3wTy0=';
+
+    case 'seed2.getsession.org':
+      return 'sha256/xZCN1BOazZau3R5FV2WXZQgJyKXqAq9VbUhT1FOW4Oc=';
+
+    case 'seed3.getsession.org':
+      return 'sha256/igryxxI0LyLOAOU8FgFBDvjYQVau4KmAnDL29+++VW4=';
+
+    default:
+      throw new Error(`Unknown seed node: ${seedNodeHost}`);
+  }
+}
