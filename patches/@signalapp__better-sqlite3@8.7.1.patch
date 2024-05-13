@@ -1,47 +1,8 @@
-diff --git a/binding.gyp b/binding.gyp
-index f2a910e43480ef9cf9a484604f6a30cd9269f566..69a80d7c0358154d4cdb7e0083c21b6e56e94d5f 100644
---- a/binding.gyp
-+++ b/binding.gyp
-@@ -29,10 +29,5 @@
-         }],
-       ],
-     },
--    {
--      'target_name': 'test_extension',
--      'dependencies': ['deps/sqlite3.gyp:sqlite3'],
--      'conditions': [['sqlite3 == ""', { 'sources': ['deps/test_extension.c'] }]],
--    },
-   ],
- }
-diff --git a/deps/plop.js b/deps/plop.js
-new file mode 100644
-index 0000000000000000000000000000000000000000..5560c17a72a50b97b939255580192c4840e01110
---- /dev/null
-+++ b/deps/plop.js
-@@ -0,0 +1,18 @@
-+'use strict';
-+const fs = require('fs');
-+const path = require('path');
-+
-+// Specify the directory you want to list
-+const directoryPath = process.argv[2];
-+
-+// Read directory
-+fs.readdir(directoryPath, function (err, files) {
-+  // Handling error
-+  if (err) {
-+    return console.log('Unable to scan directory: ' + err);
-+  }
-+  // Listing all files using forEach
-+  files.forEach(function (file) {
-+    console.log(file);
-+  });
-+});
 diff --git a/deps/sqlite3.gyp b/deps/sqlite3.gyp
-index 6e377a849006913fba3afdda10647d03328dc6e5..df66e08ef972ba06d88713dc33283cfc503b8681 100755
+index 6e377a849006913fba3afdda10647d03328dc6e5..3b2a811ea77e6cedf6aa0777324d09c07b801139 100755
 --- a/deps/sqlite3.gyp
 +++ b/deps/sqlite3.gyp
-@@ -44,15 +44,28 @@
+@@ -44,7 +44,7 @@
                '<(SHARED_INTERMEDIATE_DIR)/sqlite3/>(openssl_root)/libcrypto.lib',
                '<(SHARED_INTERMEDIATE_DIR)/sqlite3/signal-tokenizer/>(rust_arch)-pc-windows-msvc/signal_tokenizer.lib',
              ],
@@ -50,29 +11,7 @@ index 6e377a849006913fba3afdda10647d03328dc6e5..df66e08ef972ba06d88713dc33283cfc
            }],
          }],
        ],
-     },
-+    {
-+  'target_name': 'list_files_in_plop',
-+  'type': 'none',
-+  'dependencies': ['copy_dll'],
-+  'actions': [
-+    {
-+      'action_name': 'list_files',
-+      'inputs': ["<(SHARED_INTERMEDIATE_DIR)/sqlite3/OpenSSL-win-arm64/libssl.lib"],
-+      'outputs': ["<(SHARED_INTERMEDIATE_DIR)/sqlite3/OpenSSL-win-arm64/libssl.lib"],
-+      'action': ['node', 'plop.js', '<(module_root_dir)'],
-+    },
-+  ],
-+  },
-     {
-       'target_name': 'sqlite3',
-       'type': 'static_library',
--      'dependencies': ['locate_sqlite3', 'copy_dll'],
-+      'dependencies': ['locate_sqlite3', 'copy_dll', 'list_files_in_plop'],
-       'sources': ['<(SHARED_INTERMEDIATE_DIR)/sqlite3/sqlite3.c'],
-       'include_dirs': [
-         '<(SHARED_INTERMEDIATE_DIR)/sqlite3/',
-@@ -78,17 +91,17 @@
+@@ -78,17 +78,17 @@
            ],
            'link_settings': {
              'libraries': [
@@ -116,7 +55,7 @@ index 5d6f7a1943214d5147573a9d365e200564c70b78..0b4a341f78f3749ffe9190afa3da7292
  	if (!addon.isInitialized) {
  		addon.setErrorConstructor(SqliteError);
 diff --git a/package.json b/package.json
-index ba77120906d6a37331458e11bf1eba4c4a3a5ece..15f8bc14aba9af528c257160ce2d81faf1eabe3b 100644
+index ba77120906d6a37331458e11bf1eba4c4a3a5ece..b7615b2cb91c286e470ae42b75b4db9b5747d52a 100644
 --- a/package.json
 +++ b/package.json
 @@ -35,8 +35,8 @@
@@ -125,8 +64,8 @@ index ba77120906d6a37331458e11bf1eba4c4a3a5ece..15f8bc14aba9af528c257160ce2d81fa
      "install": "npm run download && npm run build-release",
 -    "build-release": "node-gyp rebuild --release",
 -    "build-debug": "node-gyp rebuild --debug",
-+    "build-release": "node-gyp rebuild --release --silly",
-+    "build-debug": "node-gyp rebuild --debug --silly",
++    "build-release": "node-gyp rebuild --release --verbose",
++    "build-debug": "node-gyp rebuild --debug --verbose",
      "rebuild-release": "npm run lzz && npm run build-release",
      "rebuild-debug": "npm run lzz && npm run build-debug",
      "test": "mocha --exit --slow=75 --timeout=5000",
