@@ -9,11 +9,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- connect-src needs
+      - "http&https: *"" to connect to seed nodes/snodes,
+      - we should need '*' for wss (webrtc calls), blob and data (link preview), but somehow it works without it, not sure why yet -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self';
             child-src 'self';
-            connect-src * http https: wss: blob: data:;
+            connect-src * http https:;
             font-src 'self';
             form-action 'self';
             frame-src 'none';
