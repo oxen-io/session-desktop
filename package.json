@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/session-desktop",
+    "packages/libsession-util-nodejs"
+  ],
+  "nohoist": [
+    "**/react",
+    "**/react/**",
+    "**/electron",
+    "**/electron/**"
+  ],
+  "packageManager": "yarn@4.2.2"
+}

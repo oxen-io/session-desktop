@@ -1,57 +1,39 @@
-node_modules
-.parcel-cache
-.sass-cache
-.eslintcache
-/dist
-.DS_Store
-config/local.json
-config/local-*.json
-*.provisionprofile
-release/
-/dev-app-update.yml
-*.sublime*
-sql/
+**/node_modules/
+**/*.bundled.js
+**/.DS_Store
+**/.eslintcache
+**/.sass-cache
+**/dist
 
-# React / TypeScript
-ts/**/*.js
-ts/protobuf/*.d.ts
-ts/**/*.js.map
-test/ts/**/*.js.map
-test/ts/**/*.js
-ts/test/automation/**/*.js
-ts/test/automation/**/*.js.map
-
-
-# Swapfiles
+# Swap files
 **/*.swp
+
+**/*.tsbuildinfo
+**/yarn-error.log
 
 # Ctags
 tags
 
-proxy.key
-proxy.pub
+# config is not tracked, but built during release
+packages/session-desktop/config/production.json
 
-*.tsbuildinfo
-yarn-error.log
+# folder created temporaly when we make a release during dev
+packages/session-desktop/release
 
-# editor
-.vscode/
-.vscrof/
+# react/typescript
+packages/session-desktop/ts/**/*.js
+packages/session-desktop/ts/protobuf/*.d.ts
+packages/session-desktop/test/ts/**/*.js
+packages/session-desktop/**/*.js.map
 
+# vscode files
+**/.vscode/
+**/.vscrof/
 
-playwright.config.js
-*.js.map
-ts/node/**/*.d.ts
-ts/node/**/*.d.ts.map
+**/*.LICENSE.txt
 
-test-results/
+# node native modules are not tracked (but compiled for each clients)
+**/*.node
 
-.nyc_output
-coverage/
-stylesheets/dist/
-
-*.LICENSE.txt
-ts/webworker/workers/node/**/*.node
-
-.yarn/**/*.mjs
-.yarn/**/*.cjs
+.yarn
+packages/session-desktop/config/*.json

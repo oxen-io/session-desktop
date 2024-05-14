@@ -11,8 +11,7 @@ import {
   PrimaryColorStateType,
   THEMES,
   ThemeStateType,
-  // eslint-disable-next-line import/extensions
-} from '../../themes/constants/colors.js';
+} from '../../themes/constants/colors';
 import { hexColorToRGB } from '../../util/hexColorToRGB';
 import { getPrimaryColor } from '../../state/selectors/primaryColor';
 import { i18nEmojiData } from '../../util/emoji';

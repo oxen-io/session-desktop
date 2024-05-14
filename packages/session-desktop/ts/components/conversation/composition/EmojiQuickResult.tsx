@@ -3,7 +3,7 @@ import { SuggestionDataItem } from 'react-mentions';
 import styled from 'styled-components';
 import { SearchIndex } from 'emoji-mart';
 // eslint-disable-next-line import/extensions
-import { searchSync } from '../../../util/emoji.js';
+import { searchSync } from '../../../util/emoji';
 
 const EmojiQuickResult = styled.span`
   display: flex;

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import Long from 'long';
 import { toNumber } from 'lodash';
+import Long from 'long';
 import { SignalService } from '../../../../protobuf';
 import { Constants } from '../../../../session';
 import { TypingMessage } from '../../../../session/messages/outgoing/controlMessage/TypingMessage';
@@ -53,7 +53,7 @@ describe('TypingMessage', () => {
     const plainText = message.plainTextBuffer();
     const decoded = SignalService.Content.decode(plainText);
     let timestamp = decoded.typingMessage?.timestamp;
-    if (timestamp instanceof Long) {
+    if (Long.isLong(timestamp)) {
       timestamp = timestamp.toNumber();
     }
     expect(timestamp).to.be.approximately(Date.now(), 10);
