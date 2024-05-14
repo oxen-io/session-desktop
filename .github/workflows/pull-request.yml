@@ -6,7 +6,6 @@ on:
     branches:
       - clearnet
       - unstable
-      - unstable1
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -33,7 +32,9 @@ jobs:
       - name: Lint Files
         # no need to lint files on all platforms. Just do it once on the quicker one
         if: runner.os == 'Linux'
+        working-directory: packages/session-desktop
         run: yarn lint-full
 
       - name: Unit Test
+        working-directory: packages/session-desktop
         run: yarn test

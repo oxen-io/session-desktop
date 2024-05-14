@@ -61,7 +61,7 @@ Now, run these commands in your preferred terminal in a good directory for devel
 git clone https://github.com/oxen-io/session-desktop.git
 cd session-desktop
 npm install --global yarn      # (only if you don’t already have `yarn`)
-yarn install --frozen-lockfile # Install and build dependencies (this will take a while)
+yarn install --immutable # Install and build dependencies (this will take a while)
 yarn build-everything
 yarn test                      # A good idea to make sure tests run first
 yarn start-prod                # Start Session!

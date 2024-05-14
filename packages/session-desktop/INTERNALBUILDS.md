@@ -1,6 +1,6 @@
 # Building
 
-This document alongside [Releasing.md](RELEASING.md) primarily cover our internal build process for release builds, if you are an external contributor please refer to [Contributing.md](CONTRIBUTING.md) for building instructions. 
+This document alongside [Releasing.md](RELEASING.md) primarily cover our internal build process for release builds, if you are an external contributor please refer to [Contributing.md](CONTRIBUTING.md) for building instructions.
 
 ## Automated
 
@@ -67,7 +67,7 @@ git lfs install
 nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g yarn # install yarn globally for this node version
-yarn install --frozen-lockfile # install all dependencies of this project
+yarn install --immutable # install all dependencies of this project
 yarn build-everything # transpile and assemble files
 yarn start-prod # start the app on production mode (currently this is the only one supported)
 ```
@@ -117,7 +117,7 @@ git lfs install # once git lfs is installed, you have to run this command too
 nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g yarn # install yarn globally for this node version
-yarn install --frozen-lockfile # install all dependencies of this project
+yarn install --immutable # install all dependencies of this project
 yarn build-everything # transpile and assemble files
 yarn start-prod # start the app on production mode (currently this is the only one supported)
 ```
@@ -140,7 +140,7 @@ Run the following to build the binaries for your specific system OS.
 
 ```
 npm install yarn --no-save
-yarn install --frozen-lockfile
+yarn install --immutable
 yarn build-everything
 yarn build-release
 ```

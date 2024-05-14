@@ -33,10 +33,12 @@ jobs:
       - uses: ./actions/setup_and_build
 
       - name: Build windows production binaries
+        working-directory: packages/session-desktop
         if: runner.os == 'Windows'
         run: node_modules\.bin\electron-builder --config.extraMetadata.environment=%SIGNAL_ENV% --publish=never --config.directories.output=release
 
       - name: Build mac production binaries
+        working-directory: packages/session-desktop
         if: runner.os == 'macOS'
         run: |
           source ./build/setup-mac-certificate.sh
@@ -49,25 +51,26 @@ jobs:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
 
       - name: Build linux production binaries
+        working-directory: packages/session-desktop
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y rpm
           yarn build-release
 
       - name: Remove unpacked files
+        working-directory: packages/session-desktop/release
         run: |
           ls -d -- */ | xargs -I{} echo "Removing {}"
           ls -d -- */ | xargs -I{} rm -rf {}
         shell: bash
-        working-directory: ./release/
 
       - name: Remaining files
+        working-directory: packages/session-desktop/release
         run: ls .
         shell: bash
-        working-directory: ./release/
 
       - name: Upload Production Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: ${{ runner.OS }}-production
-          path: release
+          path: packages/session-desktop/release

@@ -26,9 +26,11 @@ jobs:
 
       - name: Build windows production binaries
         if: runner.os == 'Windows'
+        working-directory: packages/session-desktop
         run: node_modules\.bin\electron-builder --config.extraMetadata.environment=%SIGNAL_ENV% --publish=always
 
       - name: Build mac production binaries
+        working-directory: packages/session-desktop
         if: runner.os == 'macOS'
         run: |
           source ./build/setup-mac-certificate.sh
@@ -41,6 +43,7 @@ jobs:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
 
       - name: Build linux production binaries
+        working-directory: packages/session-desktop
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y rpm
