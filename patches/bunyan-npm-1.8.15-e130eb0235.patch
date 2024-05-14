@@ -1,0 +1,61 @@
+diff --git a/lib/bunyan.js b/lib/bunyan.js
+index f98856061578bf935269bdcfabac56b094fce7de..7ab676e75887973d6fd1cbfa33393c59ded7a97b 100644
+--- a/lib/bunyan.js
++++ b/lib/bunyan.js
+@@ -63,7 +63,7 @@ if (!runtimeEnv) {
+ }
+ 
+ 
+-var os, fs, dtrace;
++var os, fs, pathModule, dtrace;
+ if (runtimeEnv === 'browser') {
+     os = {
+         hostname: function () {
+@@ -71,15 +71,13 @@ if (runtimeEnv === 'browser') {
+         }
+     };
+     fs = {};
++    pathModule = {};
+     dtrace = null;
+ } else {
+     os = require('os');
+     fs = require('fs');
+-    try {
+-        dtrace = require('dtrace-provider' + '');
+-    } catch (e) {
+-        dtrace = null;
+-    }
++    pathModule = require('path');
++    dtrace = null;
+ }
+ var util = require('util');
+ var assert = require('assert');
+@@ -1512,6 +1510,12 @@ RotatingFileStream.prototype.rotate = function rotate() {
+     }
+ 
+     function finish() {
++        if (!fs.existsSync(self.path)) {
++            var dirPath = pathModule.dirname(self.path);
++            if (!fs.existsSync(dirPath)) {
++                fs.mkdirSync(dirPath, { recursive: true });
++            }
++        }
+         self._debug('  open %s', self.path);
+         self.stream = fs.createWriteStream(self.path,
+             {flags: 'a', encoding: 'utf8'});
+diff --git a/package.json b/package.json
+index 3f6383b70183381d98635a13e33402c9b030be76..eab39328bcd9944e9f9422164007b8e8deff5568 100644
+--- a/package.json
++++ b/package.json
+@@ -26,11 +26,9 @@
+     "bunyan"
+   ],
+   "license": "MIT",
+-  "// dtrace-provider": "required for dtrace features",
+   "// mv": "required for RotatingFileStream",
+   "// moment": "required for local time with CLI",
+   "optionalDependencies": {
+-    "dtrace-provider": "~0.8",
+     "mv": "~2",
+     "safe-json-stringify": "~1",
+     "moment": "^2.19.3"
