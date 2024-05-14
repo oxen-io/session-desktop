@@ -31,12 +31,6 @@ runs:
       uses: microsoft/setup-msbuild@v1.3.1
       if: runner.os == 'Windows'
 
-    - name: Setup node for windows
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        yarn global add node-gyp@latest
-
     - name: Install dependencies
       shell: bash
       # if: steps.cache-desktop-modules.outputs.cache-hit != 'true'

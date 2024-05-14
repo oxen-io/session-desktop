@@ -40,8 +40,8 @@ jobs:
         run: node_modules\.bin\electron-builder --config.extraMetadata.environment=%SIGNAL_ENV% --publish=never --config.directories.output=release
 
       - name: Build mac production binaries
-        working-directory: packages/session-desktop
         if: runner.os == 'macOS'
+        working-directory: packages/session-desktop
         run: |
           source ./build/setup-mac-certificate.sh
           $(yarn bin)/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --config.mac.bundleVersion=${{ github.ref }} --publish=never --config.directories.output=release
@@ -53,8 +53,8 @@ jobs:
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
 
       - name: Build linux production binaries
-        working-directory: packages/session-desktop
         if: runner.os == 'Linux'
+        working-directory: packages/session-desktop
         run: |
           sudo apt-get install -y rpm
           yarn build-release
