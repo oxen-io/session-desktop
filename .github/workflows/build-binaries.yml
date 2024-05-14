@@ -59,6 +59,7 @@ jobs:
           sudo apt-get install -y rpm
           yarn build-release
 
+
       - name: Remove unpacked files
         working-directory: packages/session-desktop/release
         run: |

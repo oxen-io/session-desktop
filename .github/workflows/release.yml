@@ -48,4 +48,10 @@ jobs:
         working-directory: packages/session-desktop
         run: |
           sudo apt-get install -y rpm
-          yarn build-release-publish
+          yarn sedtoDeb
+          yarn build-everything
+          cross-env SIGNAL_ENV=production ./node_modules/.bin/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --publish=always
+          yarn sedtoAppImage
+          yarn build-everything
+          cross-env SIGNAL_ENV=production ./node_modules/.bin/electron-builder --config.extraMetadata.environment=$SIGNAL_ENV --publish=always
+          yarn sedtoDeb
