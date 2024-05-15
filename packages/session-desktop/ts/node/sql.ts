@@ -231,7 +231,7 @@ async function initializeSql({
   return true;
 }
 
-function removeDB(configDir = null) {
+function removeDB(configDir: string | null = null) {
   if (isInstanceInitialized()) {
     throw new Error('removeDB: Cannot erase database when it is open!');
   }

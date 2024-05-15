@@ -12,30 +12,32 @@ runs:
       with:
         python-version: '3.11'
 
-    - name: Cache Desktop node_modules
-      id: cache-desktop-modules
-      uses: actions/cache@v3
-      if: runner.os != 'Windows'
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-${{ hashFiles('package.json', 'yarn.lock', 'patches/**') }}
+    - name: Enable corepack
+      shell: bash
+      run: |
+        corepack enable
+
+    # - name: Cache Desktop node_modules
+    #   id: cache-desktop-modules
+    #   uses: actions/cache@v3
+    #   working-directory: packages/session-desktop
+    #   if: runner.os != 'Windows'
+    #   with:
+    #     path: packages/session-desktop/node_modules
+    #     key: ${{ runner.os }}-${{ hashFiles('package.json', 'yarn.lock', 'patches/**') }}
 
     # Not having this will break the windows build because the PATH won't be set by msbuild.
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.3.1
       if: runner.os == 'Windows'
 
-    - name: Setup node for windows
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        yarn global add node-gyp@latest
-
     - name: Install dependencies
       shell: bash
-      if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-      run: yarn install --frozen-lockfile --network-timeout 600000
+      # if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+      run: |
+        yarn install --immutable
 
     - name: Generate and concat files
       shell: bash
+      working-directory: packages/session-desktop
       run: yarn build-everything

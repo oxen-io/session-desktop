@@ -1,5 +1,5 @@
 import { debounce, noop } from 'lodash';
-import React, { AriaRole, MouseEventHandler, useCallback, useLayoutEffect, useState } from 'react';
+import React, { MouseEventHandler, useCallback, useLayoutEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useScrollToLoadedMessage } from '../../../../contexts/ScrollToLoadedMessage';
@@ -31,7 +31,7 @@ export type ReadableMessageProps = {
   isUnread: boolean;
   onClick?: MouseEventHandler<HTMLElement>;
   onDoubleClickCapture?: MouseEventHandler<HTMLElement>;
-  role?: AriaRole;
+  role?: string;
   dataTestId: string;
   onContextMenu?: (e: React.MouseEvent<HTMLElement>) => void;
   isControlMessage?: boolean;

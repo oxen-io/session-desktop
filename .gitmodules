@@ -1,0 +1,3 @@
+[submodule "packages/libsession-util-nodejs"]
+	path = packages/libsession-util-nodejs
+	url = https://github.com/oxen-io/libsession-util-nodejs
