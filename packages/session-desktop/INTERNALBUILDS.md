@@ -117,7 +117,9 @@ git lfs install # once git lfs is installed, you have to run this command too
 nvm install # install the current node version used in this project
 nvm use # use the current node version used in this project
 npm install -g yarn # install yarn globally for this node version
+corepack enable
 yarn install --immutable # install all dependencies of this project
+cd packages/session-desktop
 yarn build-everything # transpile and assemble files
 yarn start-prod # start the app on production mode (currently this is the only one supported)
 ```
@@ -140,9 +142,11 @@ Run the following to build the binaries for your specific system OS.
 
 ```
 npm install yarn --no-save
+corepack enable
 yarn install --immutable
+cd packages/session-desktop
 yarn build-everything
 yarn build-release
 ```
 
-The binaries will be placed inside the `release/` folder.
+The binaries will be placed inside the `packages/session-desktop/release/` folder.

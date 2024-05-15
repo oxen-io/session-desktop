@@ -59,9 +59,12 @@ Now, run these commands in your preferred terminal in a good directory for devel
 
 ```
 git clone https://github.com/oxen-io/session-desktop.git
+git submodule update --init --recursive
 cd session-desktop
 npm install --global yarn      # (only if you don’t already have `yarn`)
+corepack enable
 yarn install --immutable # Install and build dependencies (this will take a while)
+cd packages/session-desktop
 yarn build-everything
 yarn test                      # A good idea to make sure tests run first
 yarn start-prod                # Start Session!
@@ -145,7 +148,7 @@ Commit messages will be checked using [husky](https://typicode.github.io/husky/#
 
 So you wanna make a pull request? Please observe the following guidelines.
 
-- First, make sure that your `yarn ready` run passes - it's very similar to what our
+- First, make sure that your `yarn ready` (from the `packages/session-desktop` folder) run passes - it's very similar to what our
   Continuous Integration servers do to test the app.
 - Never use plain strings right in the source code - pull them from `messages.json`!
   You **only** need to modify the default locale
@@ -190,6 +193,8 @@ see how they did things.
 You can build a production binary by running the following:
 
 ```
+corepack enable
+cd packages/session-desktop
 yarn build-everything
 yarn build-release
 ```
