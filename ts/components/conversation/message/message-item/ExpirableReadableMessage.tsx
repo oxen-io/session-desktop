@@ -6,7 +6,7 @@ import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext
 import { Data } from '../../../../data/data';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { MessageModelType } from '../../../../models/messageType';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { PropsForExpiringMessage, messagesExpired } from '../../../../state/ducks/conversations';
 import { getIncrement } from '../../../../util/timer';
 import { ExpireTimer } from '../../ExpireTimer';
@@ -50,7 +50,7 @@ function useIsExpired(
             },
           ])
         );
-        const convo = getConversationController().get(convoId);
+        const convo = ConvoHub.use().get(convoId);
         convo?.updateLastMessage();
       }
     }

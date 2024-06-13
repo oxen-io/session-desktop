@@ -1,3 +1,3 @@
-import { getConversationController } from './ConversationController';
+import { ConvoHub } from './ConversationController';
 
-export { getConversationController };
+export { ConvoHub };

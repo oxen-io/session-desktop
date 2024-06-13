@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import styled, { keyframes } from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { MessageRenderingProps } from '../../../../models/messageType';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { StateType } from '../../../../state/reducer';
 import { useMessageSelected } from '../../../../state/selectors';
 import {
@@ -117,7 +117,7 @@ export const GenericReadableMessage = (props: Props) => {
 
   useEffect(() => {
     if (msgProps?.convoId) {
-      const conversationModel = getConversationController().get(msgProps?.convoId);
+      const conversationModel = ConvoHub.use().get(msgProps?.convoId);
       if (conversationModel) {
         setEnableReactions(conversationModel.hasReactions());
       }

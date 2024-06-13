@@ -1,14 +1,14 @@
 import { PendingMessageCache } from '../../../../session/sending';
-import { RawMessage } from '../../../../session/types';
+import { OutgoingRawMessage } from '../../../../session/types';
 
 export class PendingMessageCacheStub extends PendingMessageCache {
-  public dbData: Array<RawMessage>;
-  constructor(dbData: Array<RawMessage> = []) {
+  public dbData: Array<OutgoingRawMessage>;
+  constructor(dbData: Array<OutgoingRawMessage> = []) {
     super();
     this.dbData = dbData;
   }
 
-  public getCache(): Readonly<Array<RawMessage>> {
+  public getCache(): Readonly<Array<OutgoingRawMessage>> {
     return this.cache;
   }
 

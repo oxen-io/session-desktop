@@ -58,6 +58,9 @@ module.exports = {
     // it helps readability to put public API at top,
     'no-use-before-define': 'off',
 
+    // we need them with code in WIP sometimes, and it doesn't do any harm
+    'no-useless-return': 'off',
+
     // useful for unused or internal fields
     'no-underscore-dangle': 'off',
 

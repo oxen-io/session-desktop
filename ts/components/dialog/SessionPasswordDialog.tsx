@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
 import autoBind from 'auto-bind';
+import React from 'react';
 
-import { ToastUtils } from '../../session/utils';
 import { Data } from '../../data/data';
-import { SpacerSM } from '../basic/Text';
+import { ToastUtils } from '../../session/utils';
 import { sessionPassword } from '../../state/ducks/modalDialog';
 import { LocalizerKeys } from '../../types/LocalizerKeys';
-import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionWrapperModal } from '../SessionWrapperModal';
-import { matchesHash, validatePassword } from '../../util/passwordUtils';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
+import { matchesHash, validatePassword } from '../../util/passwordUtils';
+import { SessionWrapperModal } from '../SessionWrapperModal';
+import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
+import { SpacerSM } from '../basic/Text';
 import type { PasswordAction } from '../../types/ReduxTypes';
 
 interface Props {
@@ -196,7 +196,6 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
     await window.setPassword(enteredPassword, null);
     ToastUtils.pushToastSuccess(
       'setPasswordSuccessToast',
-      window.i18n('setPasswordTitle'),
       window.i18n('setPasswordToastDescription')
     );
 
@@ -236,7 +235,6 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
 
     ToastUtils.pushToastSuccess(
       'setPasswordSuccessToast',
-      window.i18n('changePasswordTitle'),
       window.i18n('changePasswordToastDescription')
     );
 
@@ -258,7 +256,6 @@ export class SessionPasswordDialog extends React.Component<Props, State> {
 
     ToastUtils.pushToastWarning(
       'setPasswordSuccessToast',
-      window.i18n('removePasswordTitle'),
       window.i18n('removePasswordToastDescription')
     );
 

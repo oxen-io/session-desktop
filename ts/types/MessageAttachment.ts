@@ -11,20 +11,39 @@ import {
   autoOrientJPEGAttachment,
   captureDimensionsAndScreenshot,
   deleteData,
+  deleteDataSuccessful,
   loadData,
   replaceUnicodeV2,
 } from './attachments/migrations';
 
 // NOTE I think this is only used on the renderer side, but how?!
-export const deleteExternalMessageFiles = async (message: {
-  attachments: any;
-  quote: any;
-  preview: any;
+export const deleteExternalMessageFiles = async (messageAttributes: {
+  attachments: Array<any> | undefined;
+  quote: { attachments: Array<any> | undefined };
+  preview: Array<any> | undefined;
 }) => {
-  const { attachments, quote, preview } = message;
+  let anyChanges = false;
+  const { attachments, quote, preview } = messageAttributes;
 
   if (attachments && attachments.length) {
     await Promise.all(attachments.map(deleteData));
+    anyChanges = true;
+
+    // test that the files were deleted successfully
+    try {
+      let results = await Promise.allSettled(attachments.map(deleteDataSuccessful));
+      results = results.filter(result => result.status === 'rejected');
+
+      if (results.length) {
+        throw Error;
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[deleteExternalMessageFiles]: Failed to delete attachments for',
+        messageAttributes
+      );
+    }
   }
 
   if (quote && quote.attachments && quote.attachments.length) {
@@ -41,6 +60,8 @@ export const deleteExternalMessageFiles = async (message: {
         }
 
         attachment.thumbnail = undefined;
+        anyChanges = true;
+
         return attachment;
       })
     );
@@ -57,10 +78,13 @@ export const deleteExternalMessageFiles = async (message: {
         }
 
         item.image = undefined;
+        anyChanges = true;
+
         return image;
       })
     );
   }
+  return anyChanges;
 };
 
 let attachmentsPath: string | undefined;

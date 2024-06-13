@@ -1,9 +1,9 @@
 import { isEmpty } from 'lodash';
 import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
+import { ConvoHub } from '../../../conversations';
+import { SessionUtilUserGroups } from '../../../utils/libsession/libsession_utils_user_groups';
 import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { getOpenGroupManager } from '../opengroupV2/OpenGroupManagerV2';
-import { SessionUtilUserGroups } from '../../../utils/libsession/libsession_utils_user_groups';
-import { getConversationController } from '../../../conversations';
 
 // eslint-disable-next-line prefer-regex-literals
 const protocolRegex = new RegExp('https?://');
@@ -148,7 +148,7 @@ export async function getAllValidOpenGroupV2ConversationRoomInfos() {
           /* eslint-disable no-await-in-loop */
           await OpenGroupData.removeV2OpenGroupRoom(roomConvoId);
           getOpenGroupManager().removeRoomFromPolledRooms(infos);
-          await getConversationController().deleteCommunity(roomConvoId, {
+          await ConvoHub.use().deleteCommunity(roomConvoId, {
             fromSyncMessage: false,
           });
           /* eslint-enable no-await-in-loop */

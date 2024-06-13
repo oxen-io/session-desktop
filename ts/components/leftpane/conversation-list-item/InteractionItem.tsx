@@ -7,7 +7,8 @@ import {
   ConversationInteractionStatus,
   ConversationInteractionType,
 } from '../../../interactions/conversationInteractions';
-import { getConversationController } from '../../../session/conversations';
+
+import { ConvoHub } from '../../../session/conversations';
 import { LastMessageType } from '../../../state/ducks/conversations';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
 import { MessageBody } from '../../conversation/message/message-content/MessageBody';
@@ -34,7 +35,7 @@ export const InteractionItem = (props: InteractionItemProps) => {
   // NOTE we want to reset the interaction state when the last message changes
   useEffect(() => {
     if (conversationId) {
-      const convo = getConversationController().get(conversationId);
+      const convo = ConvoHub.use().get(conversationId);
 
       if (storedLastMessageInteractionStatus !== convo.get('lastMessageInteractionStatus')) {
         setStoredLastMessageInteractionStatus(convo.get('lastMessageInteractionStatus'));

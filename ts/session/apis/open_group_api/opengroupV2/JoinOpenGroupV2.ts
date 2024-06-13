@@ -1,6 +1,6 @@
 import { OpenGroupV2Room } from '../../../../data/opengroups';
 import { ConversationModel } from '../../../../models/conversation';
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { PromiseUtils, ToastUtils } from '../../../utils';
 
 import { forceSyncConfigurationNowIfNeeded } from '../../../utils/sync/syncUtils';
@@ -71,7 +71,7 @@ async function joinOpenGroupV2(
 
   const alreadyExist = hasExistingOpenGroup(serverUrl, roomId);
   const conversationId = getOpenGroupV2ConversationId(serverUrl, roomId);
-  const existingConvo = getConversationController().get(conversationId);
+  const existingConvo = ConvoHub.use().get(conversationId);
 
   if (alreadyExist) {
     window?.log?.warn('Skipping join opengroupv2: already exists');
@@ -81,7 +81,7 @@ async function joinOpenGroupV2(
     // we already have a convo associated with it. Remove everything related to it so we start fresh
     window?.log?.warn('leaving before rejoining open group v2 room', conversationId);
 
-    await getConversationController().deleteCommunity(conversationId, {
+    await ConvoHub.use().deleteCommunity(conversationId, {
       fromSyncMessage: true,
     });
   }
@@ -145,8 +145,8 @@ export async function joinOpenGroupV2WithUIEvents(
     }
     const alreadyExist = hasExistingOpenGroup(parsedRoom.serverUrl, parsedRoom.roomId);
     const conversationID = getOpenGroupV2ConversationId(parsedRoom.serverUrl, parsedRoom.roomId);
-    if (alreadyExist || getConversationController().get(conversationID)) {
-      const existingConvo = getConversationController().get(conversationID);
+    if (alreadyExist || ConvoHub.use().get(conversationID)) {
+      const existingConvo = ConvoHub.use().get(conversationID);
       await existingConvo.setDidApproveMe(true, false);
       await existingConvo.setIsApproved(true, false);
       await existingConvo.commit();

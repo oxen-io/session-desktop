@@ -1,20 +1,21 @@
 import { SignalService } from '../../protobuf';
 import { SnodeNamespaces } from '../apis/snode_api/namespaces';
 
-export type RawMessage = {
+export type OutgoingRawMessage = {
   identifier: string;
   plainTextBuffer: Uint8Array;
   device: string;
   ttl: number; // ttl is in millis
+  networkTimestampCreated: number;
   encryption: SignalService.Envelope.Type;
-  namespace: SnodeNamespaces | null; // allowing null as when we upgrade, we might have messages awaiting sending which won't have a namespace
+  namespace: SnodeNamespaces;
 };
 
-// For building RawMessages from JSON
-export interface PartialRawMessage {
-  identifier: string;
-  plainTextBuffer: any;
-  device: string;
-  ttl: number;
-  encryption: number;
-}
+export type StoredRawMessage = Pick<
+  OutgoingRawMessage,
+  'identifier' | 'device' | 'ttl' | 'networkTimestampCreated'
+> & {
+  plainTextBufferHex: string;
+  encryption: number; // read it as number, we need to check that it is indeed a valid encryption once loaded
+  namespace: number; // read it as number, we need to check that it is indeed a valid namespace once loaded
+};

@@ -166,8 +166,8 @@ async function deleteEverythingAndNetworkData() {
   }
 }
 
-const DEVICE_ONLY = 'device_only';
-const DEVICE_AND_NETWORK = 'device_and_network';
+const DEVICE_ONLY = 'device_only' as const;
+const DEVICE_AND_NETWORK = 'device_and_network' as const;
 type DeleteModes = typeof DEVICE_ONLY | typeof DEVICE_AND_NETWORK;
 
 const DescriptionBeforeAskingConfirmation = (props: {
@@ -175,6 +175,22 @@ const DescriptionBeforeAskingConfirmation = (props: {
   setDeleteMode: (deleteMode: DeleteModes) => void;
 }) => {
   const { deleteMode, setDeleteMode } = props;
+
+  const items = [
+    {
+      label: window.i18n('deviceOnly'),
+      value: DEVICE_ONLY,
+    },
+    {
+      label: window.i18n('entireAccount'),
+      value: DEVICE_AND_NETWORK,
+    },
+  ].map(m => ({
+    ...m,
+    inputDatatestId: `input-${m.value}` as const,
+    labelDatatestId: `label-${m.value}` as const,
+  }));
+
   return (
     <>
       <span className="session-confirm-main-message">{window.i18n('deleteAccountWarning')}</span>
@@ -191,10 +207,7 @@ const DescriptionBeforeAskingConfirmation = (props: {
             setDeleteMode(value);
           }
         }}
-        items={[
-          { label: window.i18n('deviceOnly'), value: DEVICE_ONLY },
-          { label: window.i18n('entireAccount'), value: 'device_and_network' },
-        ]}
+        items={items}
       />
     </>
   );

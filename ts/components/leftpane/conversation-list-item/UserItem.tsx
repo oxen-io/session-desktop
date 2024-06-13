@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 import { useConvoIdFromContext } from '../../../contexts/ConvoIdContext';
 import {
   useConversationRealName,
@@ -18,8 +19,8 @@ export const UserItem = () => {
   const isSearchResultsMode = useSelector(isSearching);
 
   const shortenedPubkey = PubKey.shorten(conversationId);
-  const isMe = useIsMe(conversationId);
   const username = useConversationUsername(conversationId);
+  const isMe = useIsMe(conversationId);
   const realName = useConversationRealName(conversationId);
   const hasNickname = useHasNickname(conversationId);
 
@@ -31,7 +32,7 @@ export const UserItem = () => {
       : username;
 
   let shouldShowPubkey = false;
-  if ((!username || username.length === 0) && (!displayName || displayName.length === 0)) {
+  if (isEmpty(username) && isEmpty(displayName)) {
     shouldShowPubkey = true;
   }
 

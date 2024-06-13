@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "U heeft een nieuw vriendverzoek",
   "clearAllConfirmationTitle": "Wis alle berichtverzoeken",
   "clearAllConfirmationBody": "Weet je zeker dat je alle berichtverzoeken wilt wissen?",
-  "noMessagesInReadOnly": "Er zijn geen berichten in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "Er zijn geen berichten in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "Je hebt geen berichten in <b>$name$</b>.",
   "noMessagesInEverythingElse": "Je hebt geen berichten van <b>$name$</b>. Stuur een bericht om het gesprek te starten!",

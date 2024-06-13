@@ -10,7 +10,7 @@ import { SignalService } from '../../protobuf';
 import { ReleasedFeatures } from '../../util/releaseFeature';
 import { ExpiringDetails, expireMessagesOnSnode } from '../apis/snode_api/expireRequest';
 import { GetNetworkTime } from '../apis/snode_api/getNetworkTime';
-import { getConversationController } from '../conversations';
+import { ConvoHub } from '../conversations';
 import { isValidUnixTimestamp } from '../utils/Timestamps';
 import { UpdateMsgExpirySwarm } from '../utils/job_runners/jobs/UpdateMsgExpirySwarmJob';
 import {
@@ -24,8 +24,9 @@ import {
   DisappearingMessageUpdate,
   ReadyToDisappearMsgUpdate,
 } from './types';
+import { PubKey } from '../types';
 
-async function destroyMessagesAndUpdateRedux(
+export async function destroyMessagesAndUpdateRedux(
   messages: Array<{
     conversationKey: string;
     messageId: string;
@@ -59,7 +60,7 @@ async function destroyMessagesAndUpdateRedux(
 
   // trigger a refresh the last message for all those uniq conversation
   conversationWithChanges.forEach(convoIdToUpdate => {
-    getConversationController().get(convoIdToUpdate)?.updateLastMessage();
+    ConvoHub.use().get(convoIdToUpdate)?.updateLastMessage();
   });
 }
 
@@ -89,8 +90,8 @@ async function destroyExpiredMessages() {
     window.log.info('destroyExpiredMessages: convosToRefresh:', convosToRefresh);
     await Promise.all(
       convosToRefresh.map(async c => {
-        getConversationController().get(c)?.updateLastMessage();
-        return getConversationController().get(c)?.refreshInMemoryDetails();
+        ConvoHub.use().get(c)?.updateLastMessage();
+        return ConvoHub.use().get(c)?.refreshInMemoryDetails();
       })
     );
   } catch (error) {
@@ -171,7 +172,7 @@ function setExpirationStartTimestamp(
   callLocation?: string,
   messageId?: string
 ): number | undefined {
-  let expirationStartTimestamp: number | undefined = GetNetworkTime.getNowWithNetworkOffset();
+  let expirationStartTimestamp: number | undefined = GetNetworkTime.now();
 
   if (callLocation) {
     // window.log.debug(
@@ -456,7 +457,7 @@ function checkForExpiringOutgoingMessage(message: MessageModel, location?: strin
     expirationType &&
     expireTimer > 0 &&
     !message.getExpirationStartTimestamp() &&
-    !(isGroupConvo && isControlMessage)
+    !(isGroupConvo && isControlMessage && !PubKey.is03Pubkey(convo.id))
   ) {
     const expirationMode = changeToDisappearingConversationMode(convo, expirationType, expireTimer);
 
@@ -548,7 +549,7 @@ function getMessageReadyToDisappear(
      * The way we do it, is by checking that the swarm expiration is before (now + expireTimer).
      * If it looks like this expiration was not updated yet, we need to trigger a UpdateExpiryJob for that message.
      */
-    const now = GetNetworkTime.getNowWithNetworkOffset();
+    const now = GetNetworkTime.now();
     const expirationNowPlusTimer = now + expireTimer * 1000;
     const msgExpirationWasAlreadyUpdated = messageExpirationFromRetrieve <= expirationNowPlusTimer;
     // Note: a message might be added even when it expired, but the periodic cleaning of expired message will pick it up and remove it soon enough
@@ -700,12 +701,32 @@ async function updateMessageExpiriesOnSwarm(messages: Array<MessageModel>) {
   }
 }
 
+function getExpireDetailsForOutgoingMesssage(
+  convo: ConversationModel,
+  createAtNetworkTimestamp: number
+) {
+  const expireTimer = convo.getExpireTimer();
+  const expireDetails = {
+    expirationType: DisappearingMessages.changeToDisappearingMessageType(
+      convo,
+      expireTimer,
+      convo.getExpirationMode()
+    ),
+    expireTimer,
+    expirationTimer: expireTimer,
+    messageExpirationFromRetrieve: expireTimer > 0 ? createAtNetworkTimestamp + expireTimer : null,
+  };
+
+  return expireDetails;
+}
+
 export const DisappearingMessages = {
   destroyMessagesAndUpdateRedux,
   initExpiringMessageListener,
   updateExpiringMessagesCheck,
   setExpirationStartTimestamp,
   changeToDisappearingMessageType,
+  getExpireDetailsForOutgoingMesssage,
   changeToDisappearingConversationMode,
   forcedDeleteAfterReadMsgSetting,
   forcedDeleteAfterSendMsgSetting,

@@ -6,11 +6,9 @@ type IncomingMessageAvailableTypes =
   | SignalService.CallMessage
   | SignalService.ReceiptMessage
   | SignalService.TypingMessage
-  | SignalService.ConfigurationMessage
   | SignalService.DataExtractionNotification
   | SignalService.Unsend
-  | SignalService.MessageRequestResponse
-  | SignalService.ISharedConfigMessage;
+  | SignalService.MessageRequestResponse;
 
 export class IncomingMessage<T extends IncomingMessageAvailableTypes> {
   public readonly envelopeTimestamp: number;

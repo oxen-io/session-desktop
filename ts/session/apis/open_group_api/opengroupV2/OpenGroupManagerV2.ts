@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 
-import { clone, groupBy, isEqual, uniqBy } from 'lodash';
 import autoBind from 'auto-bind';
+import { clone, groupBy, isEqual, uniqBy } from 'lodash';
 
 import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
 import { ConversationModel } from '../../../../models/conversation';
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { allowOnlyOneAtATime } from '../../../utils/Promise';
 import {
   getAllValidOpenGroupV2ConversationRoomInfos,
@@ -24,9 +24,9 @@ import {
   CONVERSATION_PRIORITIES,
   ConversationTypeEnum,
 } from '../../../../models/conversationAttributes';
+import { UserGroupsWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
 import { SessionUtilUserGroups } from '../../../utils/libsession/libsession_utils_user_groups';
 import { openGroupV2GetRoomInfoViaOnionV4 } from '../sogsv3/sogsV3RoomInfos';
-import { UserGroupsWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
 
 let instance: OpenGroupManagerV2 | undefined;
 
@@ -136,6 +136,7 @@ export class OpenGroupManagerV2 {
     if (this.isPolling) {
       return;
     }
+
     const allRoomInfos = await getAllValidOpenGroupV2ConversationRoomInfos();
     if (allRoomInfos?.size) {
       this.addRoomToPolledRooms([...allRoomInfos.values()]);
@@ -155,7 +156,7 @@ export class OpenGroupManagerV2 {
   ): Promise<ConversationModel | undefined> {
     let conversationId = getOpenGroupV2ConversationId(serverUrl, roomId);
 
-    if (getConversationController().get(conversationId)) {
+    if (ConvoHub.use().get(conversationId)) {
       // Url incorrect or server not compatible
       throw new Error(window.i18n('publicChatExists'));
     }
@@ -203,7 +204,7 @@ export class OpenGroupManagerV2 {
         await OpenGroupData.saveV2OpenGroupRoom(updatedRoom);
       }
 
-      const conversation = await getConversationController().getOrCreateAndWait(
+      const conversation = await ConvoHub.use().getOrCreateAndWait(
         conversationId,
         ConversationTypeEnum.GROUP
       );

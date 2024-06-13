@@ -30,8 +30,8 @@ window.getNodeVersion = () => configAny.node_version;
 window.sessionFeatureFlags = {
   useOnionRequests: true,
   useTestNet: isTestNet() || isTestIntegration(),
-  integrationTestEnv: isTestIntegration(),
-  useClosedGroupV3: false,
+  useClosedGroupV2: true, // TODO DO NOT MERGE Remove after QA
+  useClosedGroupV2QAButtons: true, // TODO DO NOT MERGE Remove after QA
   debug: {
     debugLogging: !_.isEmpty(process.env.SESSION_DEBUG),
     debugLibsessionDumps: !_.isEmpty(process.env.SESSION_DEBUG_LIBSESSION_DUMPS),
@@ -234,10 +234,17 @@ window.nodeSetImmediate = setImmediate;
 
 const data = require('./ts/data/dataInit');
 const { setupi18n } = require('./ts/util/i18n');
-window.Signal = data.initData();
+data.initData();
 
-const { getConversationController } = require('./ts/session/conversations/ConversationController');
-window.getConversationController = getConversationController;
+const { ConvoHub } = require('./ts/session/conversations/ConversationController');
+window.getConversationController = ConvoHub.use;
+
+const { stringify } = require('./ts/types/sqlSharedTypes');
+window.stringify = stringify;
+
+const { IncomingMessageCache } = require('./ts/receiver/cache');
+window.IncomingMessageCache = IncomingMessageCache;
+
 // Linux seems to periodically let the event loop stop, so this is a global workaround
 setInterval(() => {
   window.nodeSetImmediate(() => {});

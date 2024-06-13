@@ -5,7 +5,7 @@ import {
   updateDefaultRoomsInProgress,
 } from '../../../../state/ducks/defaultRooms';
 import { UserGroupsWrapperActions } from '../../../../webworker/workers/browser/libsession_worker_interface';
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { allowOnlyOneAtATime } from '../../../utils/Promise';
 import { getAllRoomInfos } from '../sogsv3/sogsV3RoomInfos';
 import { parseOpenGroupV2 } from './JoinOpenGroupV2';
@@ -130,9 +130,7 @@ export function hasExistingOpenGroup(server: string, roomId: string) {
   const matchingRoom = rooms.find(r => r.roomId === roomId);
 
   return Boolean(
-    matchingRoom &&
-      matchingRoom.conversationId &&
-      getConversationController().get(matchingRoom.conversationId)
+    matchingRoom && matchingRoom.conversationId && ConvoHub.use().get(matchingRoom.conversationId)
   );
 }
 

@@ -7,13 +7,13 @@ import { GroupInvitationMessage } from '../../../../session/messages/outgoing/vi
 
 describe('GroupInvitationMessage', () => {
   let message: GroupInvitationMessage;
-  const timestamp = Date.now();
+  const createAtNetworkTimestamp = Date.now();
   const url = 'http://localhost';
   const name = 'test';
 
   beforeEach(() => {
     message = new GroupInvitationMessage({
-      timestamp,
+      createAtNetworkTimestamp,
       url,
       name,
       expirationType: null,

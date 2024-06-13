@@ -5,14 +5,14 @@ import useUpdate from 'react-use/lib/useUpdate';
 import { SettingsKey } from '../../../data/settings-key';
 import { ToastUtils } from '../../../session/utils';
 import { toggleAudioAutoplay } from '../../../state/ducks/userConfig';
+import { useHasEnterSendEnabled } from '../../../state/selectors/settings';
 import { getAudioAutoplay } from '../../../state/selectors/userConfig';
-import { SessionRadioGroup } from '../../basic/SessionRadioGroup';
+import { SessionRadioGroup, SessionRadioItems } from '../../basic/SessionRadioGroup';
 import { BlockedContactsList } from '../BlockedList';
 import {
   SessionSettingsItemWrapper,
   SessionToggleWithDescription,
 } from '../SessionSettingListItem';
-import { useHasEnterSendEnabled } from '../../../state/selectors/settings';
 
 async function toggleCommunitiesPruning() {
   try {
@@ -88,14 +88,18 @@ const EnterKeyFunctionSetting = () => {
   const initialSetting = useHasEnterSendEnabled();
   const selectedWithSettingTrue = 'enterForNewLine';
 
-  const items = [
+  const items: SessionRadioItems = [
     {
       label: window.i18n('enterSendNewMessageDescription'),
       value: 'enterForSend',
+      inputDatatestId: 'input-enterForSend',
+      labelDatatestId: 'label-enterForSend',
     },
     {
       label: window.i18n('enterNewLineDescription'),
       value: selectedWithSettingTrue,
+      inputDatatestId: `input-${selectedWithSettingTrue}`,
+      labelDatatestId: `label-${selectedWithSettingTrue}`,
     },
   ];
 

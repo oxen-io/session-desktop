@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "친구 요청이 들어왔습니다.",
   "clearAllConfirmationTitle": "모든 메세지 요청 삭제",
   "clearAllConfirmationBody": "모든 메세지 요청을 삭제하시겠습니까?",
-  "noMessagesInReadOnly": "There are no messages in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "There are no messages in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "You have no messages in <b>$name$</b>.",
   "noMessagesInEverythingElse": "You have no messages from <b>$name$</b>. Send a message to start the conversation!",

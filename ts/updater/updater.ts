@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable no-console */
-import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { autoUpdater, UpdateInfo } from 'electron-updater';
 import * as fs from 'fs-extra';
+// eslint-disable-next-line import/order
+import * as path from 'path';
 import { gt as isVersionGreaterThan, parse as parseVersion } from 'semver';
 
 import { windowMarkShouldQuit } from '../node/window_state';
 
 import { getLastestRelease } from '../node/latest_desktop_release';
+import { UPDATER_INTERVAL_MS } from '../session/constants';
 import {
   getPrintableError,
   LoggerType,
@@ -40,16 +42,13 @@ export async function start(
   autoUpdater.logger = logger;
   autoUpdater.autoDownload = false;
 
-  interval = global.setInterval(
-    async () => {
-      try {
-        await checkForUpdates(getMainWindow, messages, logger);
-      } catch (error) {
-        logger.error('auto-update: error:', getPrintableError(error));
-      }
-    },
-    1000 * 60 * 10
-  ); // trigger and try to update every 10 minutes to let the file gets downloaded if we are updating
+  interval = global.setInterval(async () => {
+    try {
+      await checkForUpdates(getMainWindow, messages, logger);
+    } catch (error) {
+      logger.error('auto-update: error:', getPrintableError(error));
+    }
+  }, UPDATER_INTERVAL_MS); // trigger and try to update every 10 minutes to let the file gets downloaded if we are updating
   stopped = false;
 
   global.setTimeout(

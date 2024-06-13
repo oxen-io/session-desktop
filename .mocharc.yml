@@ -1,0 +1,11 @@
+jobs: 1
+package: './package.json'
+parallel: false
+exit: true
+recursive: true
+require: 'jsdom-global/register'
+sort: false
+spec:
+  - './ts/test/**/*_test.js' # the positional arguments!
+timeout: 1000
+watch: false

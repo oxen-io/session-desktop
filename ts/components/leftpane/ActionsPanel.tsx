@@ -7,9 +7,8 @@ import useInterval from 'react-use/lib/useInterval';
 import useTimeoutFn from 'react-use/lib/useTimeoutFn';
 
 import { Data } from '../../data/data';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { getMessageQueue } from '../../session/sending';
-import { syncConfigurationIfNeeded } from '../../session/utils/sync/syncUtils';
 
 import { clearSearch } from '../../state/ducks/search';
 import { resetLeftOverlayMode, SectionType, showLeftPaneSection } from '../../state/ducks/section';
@@ -20,7 +19,7 @@ import {
 import { getFocusedSection } from '../../state/selectors/section';
 import { getOurNumber } from '../../state/selectors/user';
 
-import { cleanUpOldDecryptedMedias } from '../../session/crypto/DecryptedAttachmentsManager';
+import { DecryptedAttachmentsManager } from '../../session/crypto/DecryptedAttachmentsManager';
 
 import { DURATION } from '../../session/constants';
 
@@ -38,17 +37,16 @@ import { LeftPaneSectionContainer } from './LeftPaneSectionContainer';
 
 import { SettingsKey } from '../../data/settings-key';
 import { getLatestReleaseFromFileServer } from '../../session/apis/file_server_api/FileServerApi';
-import {
-  forceRefreshRandomSnodePool,
-  getFreshSwarmFor,
-} from '../../session/apis/snode_api/snodePool';
-import { ConfigurationSync } from '../../session/utils/job_runners/jobs/ConfigurationSyncJob';
+import { SnodePool } from '../../session/apis/snode_api/snodePool';
+import { UserSync } from '../../session/utils/job_runners/jobs/UserSyncJob';
+import { forceSyncConfigurationNowIfNeeded } from '../../session/utils/sync/syncUtils';
 import { isDarkTheme } from '../../state/selectors/theme';
 import { ensureThemeConsistency } from '../../themes/SessionTheme';
 import { switchThemeTo } from '../../themes/switchTheme';
-import { ReleasedFeatures } from '../../util/releaseFeature';
 import { getOppositeTheme } from '../../util/theme';
 import { SessionNotificationCount } from '../icon/SessionNotificationCount';
+
+import { ReleasedFeatures } from '../../util/releaseFeature';
 
 const Section = (props: { type: SectionType }) => {
   const ourNumber = useSelector(getOurNumber);
@@ -91,6 +89,7 @@ const Section = (props: { type: SectionType }) => {
         onAvatarClick={handleClick}
         pubkey={ourNumber}
         dataTestId="leftpane-primary-avatar"
+        imageDataTestId={`img-leftpane-primary-avatar`}
       />
     );
   }
@@ -175,12 +174,12 @@ const setupTheme = async () => {
 // Do this only if we created a new Session ID, or if we already received the initial configuration message
 const triggerSyncIfNeeded = async () => {
   const us = UserUtils.getOurPubKeyStrFromCache();
-  await getConversationController().get(us).setDidApproveMe(true, true);
-  await getConversationController().get(us).setIsApproved(true, true);
+  await ConvoHub.use().get(us).setDidApproveMe(true, true);
+  await ConvoHub.use().get(us).setIsApproved(true, true);
   const didWeHandleAConfigurationMessageAlready =
     (await Data.getItemById(SettingsKey.hasSyncedInitialConfigurationItem))?.value || false;
   if (didWeHandleAConfigurationMessageAlready) {
-    await syncConfigurationIfNeeded();
+    await forceSyncConfigurationNowIfNeeded();
   }
 };
 
@@ -210,7 +209,8 @@ const doAppStartUp = async () => {
   void triggerSyncIfNeeded();
   void getSwarmPollingInstance().start();
   void loadDefaultRooms();
-  void getFreshSwarmFor(UserUtils.getOurPubKeyStrFromCache()); // refresh our swarm on start to speed up the first message fetching event
+  void SnodePool.getFreshSwarmFor(UserUtils.getOurPubKeyStrFromCache()); // refresh our swarm on start to speed up the first message fetching event
+  void Data.cleanupOrphanedAttachments();
 
   // TODOLATER make this a job of the JobRunner
   debounce(triggerAvatarReUploadIfNeeded, 200);
@@ -228,7 +228,7 @@ const doAppStartUp = async () => {
 
   global.setTimeout(() => {
     // Schedule a confSyncJob in some time to let anything incoming from the network be applied and see if there is a push needed
-    void ConfigurationSync.queueNewJobIfNeeded();
+    void UserSync.queueNewJobIfNeeded();
   }, 20000);
 };
 
@@ -270,7 +270,10 @@ export const ActionsPanel = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  useInterval(cleanUpOldDecryptedMedias, startCleanUpMedia ? cleanUpMediasInterval : null);
+  useInterval(
+    DecryptedAttachmentsManager.cleanUpOldDecryptedMedias,
+    startCleanUpMedia ? cleanUpMediasInterval : null
+  );
 
   useInterval(() => {
     if (!ourPrimaryConversation) {
@@ -283,7 +286,7 @@ export const ActionsPanel = () => {
     if (!ourPrimaryConversation) {
       return;
     }
-    void syncConfigurationIfNeeded();
+    void forceSyncConfigurationNowIfNeeded();
   }, DURATION.DAYS * 2);
 
   useInterval(() => {
@@ -292,7 +295,7 @@ export const ActionsPanel = () => {
     }
     // trigger an updates from the snodes every hour
 
-    void forceRefreshRandomSnodePool();
+    void SnodePool.forceRefreshRandomSnodePool();
   }, DURATION.HOURS * 1);
 
   useTimeoutFn(() => {
@@ -300,7 +303,7 @@ export const ActionsPanel = () => {
       return;
     }
     // trigger an updates from the snodes after 5 minutes, once
-    void forceRefreshRandomSnodePool();
+    void SnodePool.forceRefreshRandomSnodePool();
   }, DURATION.MINUTES * 5);
 
   useInterval(() => {

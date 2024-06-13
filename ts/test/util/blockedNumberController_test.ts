@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import Sinon from 'sinon';
+import { Convo } from '../../models/conversation';
 import { BlockedNumberController } from '../../util/blockedNumberController';
 import { TestUtils } from '../test-utils';
 
@@ -51,6 +52,8 @@ describe('BlockedNumberController', () => {
 
   describe('block', () => {
     it('should block the user', async () => {
+      Sinon.stub(Convo, 'commitConversationAndRefreshWrapper').resolves();
+
       const other = TestUtils.generateFakePubKey();
 
       await BlockedNumberController.block(other);

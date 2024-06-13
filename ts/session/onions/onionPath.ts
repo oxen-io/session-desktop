@@ -5,15 +5,15 @@ import pRetry from 'p-retry';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
 
-import { Data, Snode } from '../../data/data';
-import * as SnodePool from '../apis/snode_api/snodePool';
-import { UserUtils } from '../utils';
-import { Onions, snodeHttpsAgent } from '../apis/snode_api/onions';
-import { allowOnlyOneAtATime } from '../utils/Promise';
-import { updateOnionPaths } from '../../state/ducks/onion';
-import { ERROR_CODE_NO_CONNECT } from '../apis/snode_api/SNodeAPI';
 import { OnionPaths } from '.';
+import { Data, Snode } from '../../data/data';
+import { updateOnionPaths } from '../../state/ducks/onion';
 import { APPLICATION_JSON } from '../../types/MIME';
+import { ERROR_CODE_NO_CONNECT } from '../apis/snode_api/SNodeAPI';
+import { Onions, snodeHttpsAgent } from '../apis/snode_api/onions';
+import { SnodePool } from '../apis/snode_api/snodePool';
+import { UserUtils } from '../utils';
+import { allowOnlyOneAtATime } from '../utils/Promise';
 import { ed25519Str } from '../utils/String';
 
 const desiredGuardCount = 3;
@@ -312,7 +312,7 @@ export async function testGuardNode(snode: Snode) {
     response = await insecureNodeFetch(url, fetchOptions);
   } catch (e) {
     if (e.type === 'request-timeout') {
-      window?.log?.warn('test :,', ed25519Str(snode.pubkey_ed25519));
+      window?.log?.warn('testGuardNode request timedout for:', ed25519Str(snode.pubkey_ed25519));
     }
     if (e.code === 'ENETUNREACH') {
       window?.log?.warn('no network on node,', snode);

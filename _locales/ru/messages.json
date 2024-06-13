@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "У вас новая заявка в друзья",
   "clearAllConfirmationTitle": "Очистить все запросы на переписку",
   "clearAllConfirmationBody": "Вы уверены, что хотите удалить все запросы на переписку?",
-  "noMessagesInReadOnly": "Нет никаких сообщений в <b>$name$</b>.",
+  "thereAreNoMessagesIn": "Нет никаких сообщений в <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "У Вас нет сообщений в <b>$name$</b>.",
   "noMessagesInEverythingElse": "У Вас нет сообщений от <b>$name$</b>. Отправьте сообщение, чтобы начать чат!",

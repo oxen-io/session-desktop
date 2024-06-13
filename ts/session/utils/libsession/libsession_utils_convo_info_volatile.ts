@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { BaseConvoInfoVolatile, ConvoVolatileType } from 'libsession_util_nodejs';
+import { BaseConvoInfoVolatile, ConvoVolatileType, GroupPubkeyType } from 'libsession_util_nodejs';
 import { isEmpty, isFinite } from 'lodash';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
@@ -10,7 +10,8 @@ import {
   UserGroupsWrapperActions,
 } from '../../../webworker/workers/browser/libsession_worker_interface';
 import { OpenGroupUtils } from '../../apis/open_group_api/utils';
-import { getConversationController } from '../../conversations';
+import { ConvoHub } from '../../conversations';
+import { PubKey } from '../../types';
 import { SessionUtilContact } from './libsession_utils_contacts';
 import { SessionUtilUserGroups } from './libsession_utils_user_groups';
 import { SessionUtilUserProfile } from './libsession_utils_user_profile';
@@ -24,6 +25,11 @@ const mapped1o1WrapperValues = new Map<string, BaseConvoInfoVolatile>();
  * The key of this map is the convoId as stored in the database. So the legacy group 05 sessionID
  */
 const mappedLegacyGroupWrapperValues = new Map<string, BaseConvoInfoVolatile>();
+
+/**
+ * The key of this map is the convoId as stored in the database. So the group 03 pubkey
+ */
+const mappedGroupWrapperValues = new Map<GroupPubkeyType, BaseConvoInfoVolatile>();
 
 /**
  * The key of this map is the convoId as stored in the database, so withoutpubkey
@@ -52,7 +58,9 @@ function getConvoType(convo: ConversationModel): ConvoVolatileType {
       ? '1o1'
       : SessionUtilUserGroups.isCommunityToStoreInWrapper(convo)
         ? 'Community'
-        : 'LegacyGroup';
+        : SessionUtilUserGroups.isLegacyGroupToStoreInWrapper(convo)
+          ? 'LegacyGroup'
+          : 'Group';
 
   return convoType;
 }
@@ -64,7 +72,7 @@ function getConvoType(convo: ConversationModel): ConvoVolatileType {
  */
 async function insertConvoFromDBIntoWrapperAndRefresh(convoId: string): Promise<void> {
   // this is too slow to fetch from the database the up to date data here. Let's hope that what we have in memory is up to date enough
-  const foundConvo = getConversationController().get(convoId);
+  const foundConvo = ConvoHub.use().get(convoId);
   if (!foundConvo || !isConvoToStoreInWrapper(foundConvo)) {
     return;
   }
@@ -78,9 +86,9 @@ async function insertConvoFromDBIntoWrapperAndRefresh(convoId: string): Promise<
       ? timestampFromDbMs
       : 0;
 
-  window.log.debug(
-    `inserting into convoVolatile wrapper: ${convoId} lastMessageReadTimestamp:${lastReadMessageTimestamp} forcedUnread:${isForcedUnread}...`
-  );
+  // window.log.debug(
+  //   `inserting into convoVolatile wrapper: ${convoId} lastMessageReadTimestamp:${lastReadMessageTimestamp} forcedUnread:${isForcedUnread}...`
+  // );
 
   const convoType = getConvoType(foundConvo);
   switch (convoType) {
@@ -110,6 +118,23 @@ async function insertConvoFromDBIntoWrapperAndRefresh(convoId: string): Promise<
       } catch (e) {
         window.log.warn(
           `ConvoInfoVolatileWrapperActions.setLegacyGroup of ${convoId} failed with ${e.message}`
+        );
+      }
+      break;
+    case 'Group':
+      try {
+        if (!PubKey.is03Pubkey(convoId)) {
+          throw new Error('group but not with 03 prefix');
+        }
+        await ConvoInfoVolatileWrapperActions.setGroup(
+          convoId,
+          lastReadMessageTimestamp,
+          isForcedUnread
+        );
+        await refreshConvoVolatileCached(convoId, true, false);
+      } catch (e) {
+        window.log.warn(
+          `ConvoInfoVolatileWrapperActions.setGroup of ${convoId} failed with ${e.message}`
         );
       }
       break;
@@ -167,6 +192,8 @@ async function refreshConvoVolatileCached(
       convoType = 'Community';
     } else if (convoId.startsWith('05') && isLegacyGroup) {
       convoType = 'LegacyGroup';
+    } else if (PubKey.is03Pubkey(convoId)) {
+      convoType = 'Group';
     } else if (convoId.startsWith('05')) {
       convoType = '1o1';
     }
@@ -187,6 +214,16 @@ async function refreshConvoVolatileCached(
         }
         refreshed = true;
         break;
+      case 'Group':
+        if (!PubKey.is03Pubkey(convoId)) {
+          throw new Error('expected a 03 group');
+        }
+        const fromWrapperGroup = await ConvoInfoVolatileWrapperActions.getGroup(convoId);
+        if (fromWrapperGroup) {
+          mappedGroupWrapperValues.set(convoId, fromWrapperGroup);
+        }
+        refreshed = true;
+        break;
       case 'Community':
         const fromWrapperCommunity = await ConvoInfoVolatileWrapperActions.getCommunity(convoId);
         if (fromWrapperCommunity && fromWrapperCommunity.fullUrlWithPubkey) {
@@ -200,7 +237,7 @@ async function refreshConvoVolatileCached(
     }
 
     if (refreshed && !duringAppStart) {
-      getConversationController().get(convoId)?.triggerUIRefresh();
+      ConvoHub.use().get(convoId)?.triggerUIRefresh();
     }
   } catch (e) {
     window.log.info(`refreshMappedValue for volatile convoID: ${convoId}`, e.message);
@@ -240,6 +277,15 @@ async function removeLegacyGroupFromWrapper(convoId: string) {
   mappedLegacyGroupWrapperValues.delete(convoId);
 }
 
+async function removeGroupFromWrapper(groupPk: GroupPubkeyType) {
+  try {
+    await ConvoInfoVolatileWrapperActions.eraseGroup(groupPk);
+  } catch (e) {
+    window.log.warn('removeGroupFromWrapper failed with ', e.message);
+  }
+  mappedGroupWrapperValues.delete(groupPk);
+}
+
 /**
  * Removes the matching legacy group from the wrapper and from the cached list of legacy groups
  */
@@ -262,7 +308,7 @@ async function removeContactFromWrapper(convoId: string) {
  * whole other bunch of issues because it is a native node module.
  */
 function getConvoInfoVolatileTypes(): Array<ConvoVolatileType> {
-  return ['1o1', 'LegacyGroup', 'Community'];
+  return ['1o1', 'LegacyGroup', 'Group', 'Community'];
 }
 
 export const SessionUtilConvoInfoVolatile = {
@@ -277,7 +323,10 @@ export const SessionUtilConvoInfoVolatile = {
   removeContactFromWrapper,
 
   // legacy group
-  removeLegacyGroupFromWrapper, // a group can be removed but also just marked hidden, so only call this function when the group is completely removed // TODOLATER
+  removeLegacyGroupFromWrapper, // a group can be removed but also just marked hidden, so only call this function when the group is completely removed
+
+  // group
+  removeGroupFromWrapper, // a group can be removed but also just marked hidden, so only call this function when the group is completely removed
 
   // communities
   removeCommunityFromWrapper,

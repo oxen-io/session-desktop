@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PubkeyType } from 'libsession_util_nodejs';
 import { omit, toNumber } from 'lodash';
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
 import { QuotedAttachmentType } from '../../components/conversation/message/message-content/quote/Quote';
@@ -11,6 +12,8 @@ import {
 } from '../../interactions/conversationInteractions';
 import {
   CONVERSATION_PRIORITIES,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ConversationAttributes,
   ConversationNotificationSettingType,
   ConversationTypeEnum,
 } from '../../models/conversationAttributes';
@@ -19,7 +22,7 @@ import {
   PropsForDataExtractionNotification,
   PropsForMessageRequestResponse,
 } from '../../models/messageType';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { DisappearingMessages } from '../../session/disappearing_messages';
 import {
   DisappearingMessageConversationModeType,
@@ -94,23 +97,29 @@ export type PropsForExpirationTimer = {
   messageId: string;
 };
 
-export type PropsForGroupUpdateGeneral = {
-  type: 'general';
-};
-
 export type PropsForGroupUpdateAdd = {
   type: 'add';
-  added: Array<string>;
+  withHistory: boolean;
+  added: Array<PubkeyType>;
 };
 
 export type PropsForGroupUpdateKicked = {
   type: 'kicked';
-  kicked: Array<string>;
+  kicked: Array<PubkeyType>;
+};
+
+export type PropsForGroupUpdatePromoted = {
+  type: 'promoted';
+  promoted: Array<PubkeyType>;
+};
+
+export type PropsForGroupUpdateAvatarChange = {
+  type: 'avatarChange';
 };
 
 export type PropsForGroupUpdateLeft = {
   type: 'left';
-  left: Array<string>;
+  left: Array<PubkeyType>;
 };
 
 export type PropsForGroupUpdateName = {
@@ -119,9 +128,10 @@ export type PropsForGroupUpdateName = {
 };
 
 export type PropsForGroupUpdateType =
-  | PropsForGroupUpdateGeneral
   | PropsForGroupUpdateAdd
   | PropsForGroupUpdateKicked
+  | PropsForGroupUpdatePromoted
+  | PropsForGroupUpdateAvatarChange
   | PropsForGroupUpdateName
   | PropsForGroupUpdateLeft;
 
@@ -266,7 +276,6 @@ export interface ReduxConversationType {
   isTyping?: boolean;
   isBlocked?: boolean;
   isKickedFromGroup?: boolean;
-  left?: boolean;
   avatarPath?: string | null; // absolute filepath to the avatar
   groupAdmins?: Array<string>; // admins for closed groups and admins for open groups
   members?: Array<string>; // members for closed groups only
@@ -276,6 +285,10 @@ export interface ReduxConversationType {
    * If this is undefined, it means all notification are enabled
    */
   currentNotificationSetting?: ConversationNotificationSettingType;
+  /**
+   * @see {@link ConversationAttributes#conversationIdOrigin}.
+   */
+  conversationIdOrigin?: string;
 
   priority?: number; // undefined means 0
   isInitialFetchingInProgress?: boolean;
@@ -375,7 +388,7 @@ async function getMessages({
 }> {
   const beforeTimestamp = Date.now();
 
-  const conversation = getConversationController().get(conversationKey);
+  const conversation = ConvoHub.use().get(conversationKey);
   if (!conversation) {
     // no valid conversation, early return
     window?.log?.error('Failed to get convo on reducer.');
@@ -1151,7 +1164,7 @@ export const {
 } = actions;
 
 async function unmarkAsForcedUnread(convoId: string) {
-  const convo = getConversationController().get(convoId);
+  const convo = ConvoHub.use().get(convoId);
   if (convo && convo.isMarkedUnread()) {
     // we just opened it and it was forced "Unread", so we reset the unread state here
     await convo.markAsUnread(false, true);

@@ -203,14 +203,6 @@ export async function timeout<T>(promise: Promise<T>, timeoutMs: number): Promis
   return Promise.race([timeoutPromise, promise]);
 }
 
-export async function delay(timeoutMs: number = 2000): Promise<boolean> {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(true);
-    }, timeoutMs);
-  });
-}
-
 export const sleepFor = async (ms: number, showLog = false) => {
   if (showLog) {
     // eslint-disable-next-line no-console

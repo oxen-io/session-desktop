@@ -299,9 +299,7 @@ const decryptBlindedMessage = async (
 
   const version = data[0];
   if (version !== 0) {
-    window?.log?.error(
-      'decryptBlindedMessage - Dropping message due to unsupported encryption version'
-    );
+    console.warn('decryptBlindedMessage - Dropping message due to unsupported encryption version');
     return undefined;
   }
 
@@ -319,7 +317,7 @@ const decryptBlindedMessage = async (
 
   if (plaintextIncoming.length <= 32) {
     // throw Error;
-    window?.log?.error('decryptBlindedMessage: plaintext insufficient length');
+    console.error('decryptBlindedMessage: plaintext insufficient length');
     return undefined;
   }
 

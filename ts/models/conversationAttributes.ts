@@ -18,14 +18,14 @@ import {
  */
 export enum ConversationTypeEnum {
   GROUP = 'group',
-  GROUPV3 = 'groupv3',
+  GROUPV2 = 'groupv2',
   PRIVATE = 'private',
 }
 
 export function isOpenOrClosedGroup(conversationType: ConversationTypeEnum) {
   return (
     conversationType === ConversationTypeEnum.GROUP ||
-    conversationType === ConversationTypeEnum.GROUPV3
+    conversationType === ConversationTypeEnum.GROUPV2
   );
 }
 
@@ -55,7 +55,7 @@ export type ConversationAttributesWithNotSavedOnes = ConversationAttributes &
 
 export interface ConversationAttributes {
   id: string;
-  type: ConversationTypeEnum.PRIVATE | ConversationTypeEnum.GROUPV3 | ConversationTypeEnum.GROUP;
+  type: ConversationTypeEnum.PRIVATE | ConversationTypeEnum.GROUPV2 | ConversationTypeEnum.GROUP;
 
   // 0 means inactive (undefined and null too but we try to get rid of them and only have 0 = inactive)
   active_at: number; // this field is the one used to sort conversations in the left pane from most recent
@@ -80,7 +80,7 @@ export interface ConversationAttributes {
 
   isTrustedForAttachmentDownload: boolean; // not synced accross devices, this field is used if we should auto download attachments from this conversation or not
 
-  conversationIdOrigin?: string; // Blinded message requests ONLY: The community from which this conversation originated from
+  conversationIdOrigin?: string; // The conversation from which this conversation originated from: blinded message request or 03-group admin who invited us
 
   // TODOLATER those two items are only used for legacy closed groups and will be removed when we get rid of the legacy closed groups support
   lastJoinedTimestamp: number; // ClosedGroup: last time we were added to this group // TODOLATER to remove after legacy closed group are dropped

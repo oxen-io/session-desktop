@@ -5,6 +5,7 @@ import { OpenGroupData } from '../../../../data/opengroups';
 import { assertUnreachable, roomHasBlindEnabled } from '../../../../types/sqlSharedTypes';
 import { Reactions } from '../../../../util/reactions';
 import { OnionSending, OnionV4JSONSnodeResponse } from '../../../onions/onionSend';
+import { MethodBatchType } from '../../snode_api/SnodeRequestTypes';
 import {
   OpenGroupPollingUtils,
   OpenGroupRequestHeaders,
@@ -55,7 +56,7 @@ export const sogsBatchSend = async (
   roomInfos: Set<string>,
   abortSignal: AbortSignal,
   batchRequestOptions: Array<OpenGroupBatchRow>,
-  batchType: 'batch' | 'sequence'
+  batchType: MethodBatchType
 ): Promise<BatchSogsReponse | null> => {
   // getting server pk for room
   const [roomId] = roomInfos;
@@ -356,9 +357,9 @@ const getBatchRequest = async (
   serverPublicKey: string,
   batchOptions: Array<OpenGroupBatchRow>,
   requireBlinding: boolean,
-  batchType: 'batch' | 'sequence'
+  batchType: MethodBatchType
 ): Promise<BatchRequest | undefined> => {
-  const batchEndpoint = batchType === 'sequence' ? '/sequence' : '/batch';
+  const batchEndpoint = `/${batchType}` as const;
   const batchMethod = 'POST';
   if (!batchOptions || isEmpty(batchOptions)) {
     return undefined;

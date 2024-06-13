@@ -48,7 +48,7 @@ type Props = {
   active: boolean;
   onClick: () => void;
   confirmationDialogParams?: any | undefined;
-  dataTestId?: string;
+  dataTestId?: React.SessionDataTestId;
 };
 
 export const SessionToggle = (props: Props) => {

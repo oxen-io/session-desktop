@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "У вас є новий запит у друзі",
   "clearAllConfirmationTitle": "Очистити всі запити",
   "clearAllConfirmationBody": "Ви впевнені, що бажаєте очистити всі запити на повідомлення?",
-  "noMessagesInReadOnly": "Немає повідомлень в <b>$name$</b>.",
+  "thereAreNoMessagesIn": "Немає повідомлень в <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "У вас відсутні повідомлення в <b>$name$</b>.",
   "noMessagesInEverythingElse": "У вас немає повідомлень від <b>$name$</b>. Надішліть повідомлення, щоб розпочати розмову!",

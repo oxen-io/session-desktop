@@ -1,7 +1,7 @@
 import { MessageCollection } from '../models/message';
 
 import { Data } from '../data/data';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 
 async function getTargetMessage(reader: string, messages: MessageCollection) {
   if (messages.length === 0) {
@@ -27,11 +27,7 @@ async function onReadReceipt(receipt: { source: string; timestamp: number; readA
       return;
     }
     const convoId = message.get('conversationId'); // this might be a group and we don't want to handle them
-    if (
-      !convoId ||
-      !getConversationController().get(convoId) ||
-      !getConversationController().get(convoId).isPrivate()
-    ) {
+    if (!convoId || !ConvoHub.use().get(convoId) || !ConvoHub.use().get(convoId).isPrivate()) {
       window.log.info(
         'Convo is undefined or not a private chat for read receipt in convo',
         convoId
@@ -58,7 +54,7 @@ async function onReadReceipt(receipt: { source: string; timestamp: number; readA
     await message.commit();
 
     // notify frontend listeners
-    const conversation = getConversationController().get(message.get('conversationId'));
+    const conversation = ConvoHub.use().get(message.get('conversationId'));
     if (conversation) {
       conversation.updateLastMessage();
     }

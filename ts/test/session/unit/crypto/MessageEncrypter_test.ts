@@ -1,18 +1,20 @@
-import * as crypto from 'crypto';
+/* eslint-disable import/order */
 import chai, { expect } from 'chai';
-import Sinon, * as sinon from 'sinon';
 import chaiBytes from 'chai-bytes';
+import * as crypto from 'crypto';
+import Sinon, * as sinon from 'sinon';
 
-import { concatUInt8Array, getSodiumRenderer, MessageEncrypter } from '../../../../session/crypto';
-import { TestUtils } from '../../../test-utils';
 import { SignalService } from '../../../../protobuf';
+import { concatUInt8Array, getSodiumRenderer } from '../../../../session/crypto';
+import { TestUtils } from '../../../test-utils';
 
 import { StringUtils, UserUtils } from '../../../../session/utils';
 
+import { SessionKeyPair } from '../../../../receiver/keypairs';
+import { addMessagePadding } from '../../../../session/crypto/BufferPadding';
 import { PubKey } from '../../../../session/types';
 import { fromHex, toHex } from '../../../../session/utils/String';
-import { addMessagePadding } from '../../../../session/crypto/BufferPadding';
-import { SessionKeyPair } from '../../../../receiver/keypairs';
+import { MessageEncrypter } from '../../../../session/crypto/MessageEncrypter';
 
 export const TEST_identityKeyPair: SessionKeyPair = {
   pubKey: new Uint8Array([
@@ -32,7 +34,7 @@ export const TEST_identityKeyPair: SessionKeyPair = {
 chai.use(chaiBytes);
 
 describe('MessageEncrypter', () => {
-  const ourNumber = '0123456789abcdef';
+  const ourNumber = TestUtils.generateFakePubKeyStr();
   const ourUserEd25516Keypair = {
     pubKey: '37e1631b002de498caf7c5c1712718bde7f257c6dadeed0c21abf5e939e6c309',
     privKey:

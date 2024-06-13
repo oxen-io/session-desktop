@@ -1,14 +1,41 @@
 import classNames from 'classnames';
 import React from 'react';
+import useMount from 'react-use/lib/useMount';
+import useTimeoutFn from 'react-use/lib/useTimeoutFn';
 import { MAX_USERNAME_BYTES } from '../../session/constants';
+import { isAutoLogin, isDevProd } from '../../shared/env_vars';
 import { SessionInput } from '../basic/SessionInput';
 
-const DisplayNameInput = (props: {
+type DisplayNameProps = {
   stealAutoFocus?: boolean;
   displayName: string;
   onDisplayNameChanged: (val: string) => any;
   handlePressEnter: () => any;
-}) => {
+};
+
+/**
+ * Can only be used with yarn start-prod. Auto creates a user with the NODE_APP_INSTANCE as username
+ */
+function useAutoRegister(props: DisplayNameProps) {
+  useTimeoutFn(() => {
+    if (isDevProd() && isAutoLogin() && !props.displayName) {
+      if (!process.env.NODE_APP_INSTANCE) {
+        throw new Error('NODE_APP_INSTANCE empty but devprod is true');
+      }
+      props.onDisplayNameChanged(process.env.NODE_APP_INSTANCE.replace('devprod', ''));
+    }
+  }, 100);
+
+  useTimeoutFn(() => {
+    if (isAutoLogin() && props.displayName) {
+      props.handlePressEnter();
+    }
+  }, 200);
+}
+
+const DisplayNameInput = (props: DisplayNameProps) => {
+  useAutoRegister(props);
+
   return (
     <SessionInput
       autoFocus={props.stealAutoFocus || false}
@@ -30,6 +57,14 @@ const RecoveryPhraseInput = (props: {
   handlePressEnter: () => any;
   stealAutoFocus?: boolean;
 }) => {
+  useMount(() => {
+    if (isAutoLogin()) {
+      const seed = window.clipboard.readText() as string | undefined;
+      if (seed?.split(' ').length === 13) {
+        props.onSeedChanged(seed);
+      }
+    }
+  });
   return (
     <SessionInput
       label={window.i18n('recoveryPhrase')}

@@ -1,30 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useKey from 'react-use/lib/useKey';
 
-import _ from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
+import { PubkeyType } from 'libsession_util_nodejs';
+import _, { difference, uniq } from 'lodash';
+import { useDispatch } from 'react-redux';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
 import { VALIDATION } from '../../session/constants';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { ToastUtils, UserUtils } from '../../session/utils';
 import { updateInviteContactModal } from '../../state/ducks/modalDialog';
 import { SpacerLG } from '../basic/Text';
 
-import { useConversationPropsById } from '../../hooks/useParamSelector';
+import {
+  useConversationUsername,
+  useIsPrivate,
+  useIsPublic,
+  useSortedGroupMembers,
+  useZombies,
+} from '../../hooks/useParamSelector';
 import { useSet } from '../../hooks/useSet';
-import { initiateClosedGroupUpdate } from '../../session/group/closed-group';
+import { ClosedGroup } from '../../session/group/closed-group';
+import { PubKey } from '../../session/types';
 import { SessionUtilUserGroups } from '../../session/utils/libsession/libsession_utils_user_groups';
-import { getPrivateContactsPubkeys } from '../../state/selectors/conversations';
+import { groupInfoActions } from '../../state/ducks/metaGroups';
+import { useContactsToInviteToGroup } from '../../state/selectors/conversations';
+import { useMemberGroupChangePending } from '../../state/selectors/groups';
+import { useSelectedIsGroupV2 } from '../../state/selectors/selectedConversation';
 import { MemberListItem } from '../MemberListItem';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
+import { SessionSpinner } from '../basic/SessionSpinner';
+import { SessionToggle } from '../basic/SessionToggle';
+import { GroupInviteRequiredVersionBanner } from '../NoticeBanner';
 
 type Props = {
   conversationId: string;
 };
 
 async function submitForOpenGroup(convoId: string, pubkeys: Array<string>) {
-  const convo = getConversationController().get(convoId);
+  const convo = ConvoHub.use().get(convoId);
   if (!convo || !convo.isPublic()) {
     throw new Error('submitForOpenGroup group not found');
   }
@@ -39,7 +53,7 @@ async function submitForOpenGroup(convoId: string, pubkeys: Array<string>) {
     };
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     pubkeys.forEach(async pubkeyStr => {
-      const privateConvo = await getConversationController().getOrCreateAndWait(
+      const privateConvo = await ConvoHub.use().getOrCreateAndWait(
         pubkeyStr,
         ConversationTypeEnum.PRIVATE
       );
@@ -60,20 +74,20 @@ async function submitForOpenGroup(convoId: string, pubkeys: Array<string>) {
 }
 
 const submitForClosedGroup = async (convoId: string, pubkeys: Array<string>) => {
-  const convo = getConversationController().get(convoId);
+  const convo = ConvoHub.use().get(convoId);
   if (!convo || !convo.isGroup()) {
     throw new Error('submitForClosedGroup group not found');
   }
   // closed group chats
   const ourPK = UserUtils.getOurPubKeyStrFromCache();
   // we only care about real members. If a member is currently a zombie we have to be able to add him back
-  let existingMembers = convo.get('members') || [];
+  let existingMembers = convo.getGroupMembers() || [];
   // at least make sure it's an array
   if (!Array.isArray(existingMembers)) {
     existingMembers = [];
   }
   existingMembers = _.compact(existingMembers);
-  const existingZombies = convo.get('zombies') || [];
+  const existingZombies = convo.getGroupZombies() || [];
   const newMembers = pubkeys.filter(d => !existingMembers.includes(d));
 
   if (newMembers.length > 0) {
@@ -93,7 +107,7 @@ const submitForClosedGroup = async (convoId: string, pubkeys: Array<string>) => 
     const groupId = convo.get('id');
     const groupName = convo.getNicknameOrRealUsernameOrPlaceholder();
 
-    await initiateClosedGroupUpdate(groupId, groupName, uniqMembers);
+    await ClosedGroup.initiateClosedGroupUpdate(groupId, groupName, uniqMembers);
   }
 };
 
@@ -101,30 +115,31 @@ const InviteContactsDialogInner = (props: Props) => {
   const { conversationId } = props;
   const dispatch = useDispatch();
 
-  const privateContactPubkeys = useSelector(getPrivateContactsPubkeys);
-  let validContactsForInvite = _.clone(privateContactPubkeys);
+  const privateContactPubkeys = useContactsToInviteToGroup() as Array<PubkeyType>;
 
-  const convoProps = useConversationPropsById(conversationId);
+  const isProcessingUIChange = useMemberGroupChangePending();
+
+  const isPrivate = useIsPrivate(conversationId);
+  const isPublic = useIsPublic(conversationId);
+  const membersFromRedux = useSortedGroupMembers(conversationId) || [];
+  const zombiesFromRedux = useZombies(conversationId) || [];
+  const displayName = useConversationUsername(conversationId);
+  const isGroupV2 = useSelectedIsGroupV2();
+  const [shareHistory, setShareHistory] = useState(false);
 
   const { uniqueValues: selectedContacts, addTo, removeFrom } = useSet<string>();
 
-  if (!convoProps) {
-    throw new Error('InviteContactsDialogInner not a valid convoId given');
-  }
-  if (convoProps.isPrivate) {
+  if (isPrivate) {
     throw new Error('InviteContactsDialogInner must be a group');
   }
-  if (!convoProps.isPublic) {
-    // filter our zombies and current members from the list of contact we can add
-    const members = convoProps.members || [];
-    const zombies = convoProps.zombies || [];
-    validContactsForInvite = validContactsForInvite.filter(
-      d => !members.includes(d) && !zombies.includes(d)
-    );
-  }
+  const zombiesAndMembers = uniq([...membersFromRedux, ...zombiesFromRedux]);
+  // filter our zombies and current members from the list of contact we can add
 
-  const chatName = convoProps.displayNameInProfile || window.i18n('unknown');
-  const isPublicConvo = convoProps.isPublic;
+  const validContactsForInvite = isPublic
+    ? privateContactPubkeys
+    : difference(privateContactPubkeys, zombiesAndMembers);
+
+  const chatName = displayName || window.i18n('unknown');
 
   const closeDialog = () => {
     dispatch(updateInviteContactModal(null));
@@ -132,9 +147,21 @@ const InviteContactsDialogInner = (props: Props) => {
 
   const onClickOK = () => {
     if (selectedContacts.length > 0) {
-      if (isPublicConvo) {
+      if (isPublic) {
         void submitForOpenGroup(conversationId, selectedContacts);
       } else {
+        if (PubKey.is03Pubkey(conversationId)) {
+          const forcedAsPubkeys = selectedContacts as Array<PubkeyType>;
+          const action = groupInfoActions.currentDeviceGroupMembersChange({
+            addMembersWithoutHistory: shareHistory ? [] : forcedAsPubkeys,
+            addMembersWithHistory: shareHistory ? forcedAsPubkeys : [],
+            removeMembers: [],
+            groupPk: conversationId,
+            alsoRemoveMessages: false,
+          });
+          dispatch(action as any);
+          return;
+        }
         void submitForClosedGroup(conversationId, selectedContacts);
       }
     }
@@ -160,8 +187,17 @@ const InviteContactsDialogInner = (props: Props) => {
 
   return (
     <SessionWrapperModal title={titleText} onClose={closeDialog}>
-      <SpacerLG />
+      {hasContacts && isGroupV2 && <GroupInviteRequiredVersionBanner />}
 
+      <SpacerLG />
+      {isGroupV2 && (
+        <>
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            Share History?{'  '}
+            <SessionToggle active={shareHistory} onClick={() => setShareHistory(!shareHistory)} />
+          </span>
+        </>
+      )}
       <div className="contact-selection-list">
         {hasContacts ? (
           validContactsForInvite.map((member: string) => (
@@ -183,12 +219,13 @@ const InviteContactsDialogInner = (props: Props) => {
         )}
       </div>
       <SpacerLG />
-
+      <SessionSpinner loading={isProcessingUIChange} />
+      <SpacerLG />
       <div className="session-modal__button-group">
         <SessionButton
           text={okText}
           buttonType={SessionButtonType.Simple}
-          disabled={!hasContacts}
+          disabled={!hasContacts || isProcessingUIChange}
           onClick={onClickOK}
         />
         <SessionButton
@@ -196,6 +233,7 @@ const InviteContactsDialogInner = (props: Props) => {
           buttonColor={SessionButtonColor.Danger}
           buttonType={SessionButtonType.Simple}
           onClick={closeDialog}
+          disabled={isProcessingUIChange}
         />
       </div>
     </SessionWrapperModal>

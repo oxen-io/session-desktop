@@ -40,23 +40,10 @@ message MessageRequestResponse {
   optional DataMessage.LokiProfile   profile                   = 3;
 }
 
-message SharedConfigMessage {
-  enum Kind {
-    USER_PROFILE              = 1;
-    CONTACTS                  = 2;
-    CONVO_INFO_VOLATILE       = 3;
-    USER_GROUPS               = 4;
-   // CLOSED_GROUP_INFO       = 5;
-   // CLOSED_GROUP_MEMBERS    = 6;
-   // ENCRYPTION_KEYS         = 7;
-  }
-
-  required Kind              kind             = 1;
-  required int64             seqno            = 2;
-  required bytes             data             = 3;
-}
 
 message Content {
+  reserved 7, 11;
+  reserved "configurationMessage", "sharedConfigMessage";
 
   enum ExpirationType {
     UNKNOWN             = 0;
@@ -68,19 +55,15 @@ message Content {
   optional CallMessage                callMessage                = 3;
   optional ReceiptMessage             receiptMessage             = 5;
   optional TypingMessage              typingMessage              = 6;
-  optional ConfigurationMessage       configurationMessage       = 7;
   optional DataExtractionNotification dataExtractionNotification = 8;
   optional Unsend                     unsendMessage              = 9;
   optional MessageRequestResponse     messageRequestResponse     = 10;
-  optional SharedConfigMessage        sharedConfigMessage        = 11;
   optional ExpirationType             expirationType             = 12;
   optional uint32                     expirationTimer            = 13;
 }
 
 message KeyPair {
-  // @required
   required bytes publicKey  = 1;
-  // @required
   required bytes privateKey = 2;
 }
 
@@ -91,49 +74,86 @@ message DataExtractionNotification {
     MEDIA_SAVED = 2; // timestamp
   }
 
-  // @required
   required Type   type      = 1;
   optional uint64 timestamp = 2;
 }
 
-// message GroupInviteMessage {
-//   required string         name              = 1;
-//   required bytes          memberPrivateKey  = 2;
-// }
+message GroupUpdateInviteMessage {
+  required string         groupSessionId         = 1; // The `groupIdentityPublicKey` with a `03` prefix
+  required string         name                   = 2;
+  required bytes          memberAuthData         = 3;
+  required bytes          adminSignature         = 4;
+}
 
-// this will replace our closedGroupControlMessage but we will need to keep both for some time
-// message GroupMessage {
-  // optional GroupAdminMessage           adminMessage         = 31;
-  // optional GroupMemberLeftMessage      memberLeftMessage    = 32;
-  // optional GroupInviteMessage          inviteMessage        = 33;
-  // optional GroupPromoteMessage         promoteMessage       = 34;
-// }
+message GroupUpdateInfoChangeMessage {
+	enum Type {
+    NAME                  = 1;
+		AVATAR                = 2;
+    DISAPPEARING_MESSAGES = 3;
+  }
 
-// message GroupPromoteMessage {
-  // required bytes          privateKey        = 1; // this is the group admins key
-// }
+  required Type     type              = 1;
+  optional string   updatedName       = 2;
+  optional uint32   updatedExpiration = 3;
+  required bytes    adminSignature    = 4;
+}
 
-// message GroupAdminMessage {
-  // enum Type {
-  //   DELETE_GROUP                   = 1; // members, groupSignature
-  //   DELETE_GROUP_ALL_MEMBERS       = 2;  // groupSignature
-  //   DELETE_MESSAGES_ALL_MEMBERS    = 3;  // groupSignature
-  //   DELETE_ATTACHMENTS_ALL_MEMBERS = 4;  // groupSignature
-  // }
-//
-  // // @required
- //  required Type           type              = 1;
-  // repeated bytes          members           = 2;
-  // @required
- //  required bytes          groupSignature    = 3; // used by every members to make sure incoming admin action can be trusted
-// }
+message GroupUpdateMemberChangeMessage {
+  enum Type {
+    ADDED    = 1;
+    REMOVED  = 2;
+    PROMOTED = 3;
+  }
 
-// message GroupMemberLeftMessage {
- // the pubkey of the member who left is already in the senderIdentity
-// }
+  required Type   type               = 1;
+  repeated string memberSessionIds   = 2;
+  optional bool   historyShared      = 3;
+  required bytes  adminSignature     = 4;
+
+}
+
+
+message GroupUpdatePromoteMessage {
+  required bytes          groupIdentitySeed       = 1;
+}
+
+message GroupUpdateMemberLeftMessage {
+  // the pubkey of the member left is included as part of the closed group encryption logic (senderIdentity on desktop)
+}
+
+message GroupUpdateInviteResponseMessage {
+  required bool                      isApproved                = 1; // Whether the request was approved
+}
+
+
+message GroupUpdateDeleteMemberContentMessage {
+  repeated string memberSessionIds    = 1;
+  repeated string messageHashes       = 2;
+  optional bytes  adminSignature      = 3;
+}
+
+message GroupUpdateMemberLeftNotificationMessage {
+  // the pubkey of the member left is included as part of the closed group encryption logic (senderIdentity on desktop)
+}
+
+message GroupUpdateMessage {
+  optional GroupUpdateInviteMessage                  inviteMessage                 = 1;
+  optional GroupUpdateInfoChangeMessage              infoChangeMessage             = 2;
+  optional GroupUpdateMemberChangeMessage            memberChangeMessage           = 3;
+  optional GroupUpdatePromoteMessage                 promoteMessage                = 4;
+  optional GroupUpdateMemberLeftMessage              memberLeftMessage             = 5;
+  optional GroupUpdateInviteResponseMessage          inviteResponse                = 6;
+  optional GroupUpdateDeleteMemberContentMessage     deleteMemberContent           = 7;
+  optional GroupUpdateMemberLeftNotificationMessage  memberLeftNotificationMessage = 8;
+
+}
 
 
 message DataMessage {
+
+  // 7 = timestamp unused and should not be used
+  reserved 7;
+  reserved "timestamp";
 
   enum Flags {
     EXPIRATION_TIMER_UPDATE   = 2;
@@ -144,12 +164,9 @@ message DataMessage {
         REACT = 0;
         REMOVE = 1;
     }
-    // @required
     required uint64 id        = 1; // Message timestamp
-    // @required
     required string author    = 2;
     optional string emoji     = 3;
-    // @required
     required Action action    = 4;
   }
 
@@ -161,16 +178,13 @@ message DataMessage {
       optional AttachmentPointer thumbnail   = 3;
     }
 
-    // @required
     required uint64           id          = 1;
-    // @required
     required string           author      = 2;
     optional string           text        = 3;
     repeated QuotedAttachment attachments = 4;
   }
 
   message Preview {
-    // @required
     required string            url   = 1;
     optional string            title = 2;
     optional AttachmentPointer image = 3;
@@ -182,9 +196,7 @@ message DataMessage {
   }
 
   message OpenGroupInvitation {
-    // @required
     required string url = 1;
-    // @required
     required string name = 3;
   }
 
@@ -206,8 +218,6 @@ message DataMessage {
 	    // @required
 	    required bytes encryptedKeyPair = 2; // The encrypted key pair
 	  }
-
-	  // @required
 	  required Type           type              = 1;
 	  optional bytes          publicKey         = 2;
 	  optional string         name              = 3;
@@ -215,7 +225,7 @@ message DataMessage {
 	  repeated bytes          members           = 5;
 	  repeated bytes          admins            = 6;
 	  repeated KeyPairWrapper wrappers          = 7;
-    optional uint32         expirationTimer   = 8;
+	  optional uint32         expirationTimer   = 8;
 	}
 
 
@@ -226,7 +236,6 @@ message DataMessage {
   // TODO legacy messages support will be removed in a future release
   optional uint32                    expireTimer               = 5;
   optional bytes                     profileKey                = 6;
-  optional uint64                    timestamp                 = 7;
   optional Quote                     quote                     = 8;
   repeated Preview                   preview                   = 10;
   optional Reaction                  reaction                  = 11;
@@ -235,7 +244,7 @@ message DataMessage {
   optional ClosedGroupControlMessage closedGroupControlMessage = 104;
   optional string                    syncTarget                = 105;
   optional bool                      blocksCommunityMessageRequests  = 106;
-  // optional GroupMessage              groupMessage              = 120;
+  optional GroupUpdateMessage        groupUpdateMessage              = 120;
 }
 
 message CallMessage {
@@ -249,45 +258,13 @@ message CallMessage {
     END_CALL           = 5;
   }
 
-  // @required
   required Type type              = 1;
   repeated string sdps            = 2;
   repeated uint32 sdpMLineIndexes = 3;
   repeated string sdpMids         = 4;
 
-  // @required
   required string uuid            = 5;
 
-}
-
-message ConfigurationMessage {
-
-  message ClosedGroup {
-    optional bytes   publicKey         = 1;
-    optional string  name              = 2;
-    optional KeyPair encryptionKeyPair = 3;
-    repeated bytes   members           = 4;
-    repeated bytes   admins            = 5;
-  }
-
-  message Contact {
-    // @required
-    required bytes  publicKey         = 1;
-    // @required
-    required string name              = 2;
-    optional string profilePicture    = 3;
-    optional bytes  profileKey        = 4;
-    optional bool   isApproved        = 5;
-    optional bool   isBlocked         = 6;
-    optional bool   didApproveMe      = 7;
-  }
-
-  repeated ClosedGroup closedGroups    = 1;
-  repeated string      openGroups      = 2;
-  optional string      displayName     = 3;
-  optional string      profilePicture  = 4;
-  optional bytes       profileKey      = 5;
-  repeated Contact     contacts        = 6;
 }
 
 message ReceiptMessage {

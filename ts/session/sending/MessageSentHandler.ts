@@ -1,10 +1,9 @@
-import _ from 'lodash';
+import { union } from 'lodash';
 import { Data } from '../../data/data';
 import { SignalService } from '../../protobuf';
-import { PnServer } from '../apis/push_notification_api';
 import { DisappearingMessages } from '../disappearing_messages';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import { RawMessage } from '../types';
+import { OutgoingRawMessage, PubKey } from '../types';
 import { UserUtils } from '../utils';
 
 async function handlePublicMessageSentSuccess(
@@ -41,29 +40,60 @@ async function handlePublicMessageSentSuccess(
   }
 }
 
-async function handleMessageSentSuccess(
-  sentMessage: RawMessage,
+async function handlePublicMessageSentFailure(sentMessage: OpenGroupVisibleMessage, error: any) {
+  const fetchedMessage = await fetchHandleMessageSentData(sentMessage.identifier);
+  if (!fetchedMessage) {
+    return;
+  }
+
+  if (error instanceof Error) {
+    await fetchedMessage.saveErrors(error);
+  }
+
+  // always mark the message as sent.
+  // the fact that we have errors on the sent is based on the saveErrors()
+  fetchedMessage.set({
+    sent: true,
+  });
+
+  await fetchedMessage.commit();
+  await fetchedMessage.getConversation()?.updateLastMessage();
+}
+
+async function handleSwarmMessageSentSuccess(
+  {
+    device: destination,
+    identifier,
+    isDestinationClosedGroup,
+    plainTextBuffer,
+  }: Pick<OutgoingRawMessage, 'device' | 'identifier'> & {
+    /**
+     * plainTextBuffer is only required when sending a message to a 1o1,
+     * as we need it to encrypt it again for our linked devices (synced messages)
+     */
+    plainTextBuffer: Uint8Array | null;
+    /**
+     * We must not sync a message when it was sent to a closed group
+     */
+    isDestinationClosedGroup: boolean;
+  },
   effectiveTimestamp: number,
-  wrappedEnvelope?: Uint8Array
+  storedHash: string | null
 ) {
   // The wrappedEnvelope will be set only if the message is not one of OpenGroupV2Message type.
-  let fetchedMessage = await fetchHandleMessageSentData(sentMessage.identifier);
+  let fetchedMessage = await fetchHandleMessageSentData(identifier);
   if (!fetchedMessage) {
     return;
   }
 
   let sentTo = fetchedMessage.get('sent_to') || [];
 
-  const isOurDevice = UserUtils.isUsFromCache(sentMessage.device);
+  const isOurDevice = UserUtils.isUsFromCache(destination);
 
-  // FIXME this is not correct and will cause issues with syncing
-  // At this point the only way to check for medium
-  // group is by comparing the encryption type
-  const isClosedGroupMessage =
-    sentMessage.encryption === SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE;
+  const isClosedGroupMessage = isDestinationClosedGroup || PubKey.is03Pubkey(destination);
 
   // We trigger a sync message only when the message is not to one of our devices, AND
-  // the message is not for an open group (there is no sync for opengroups, each device pulls all messages), AND
+  // the message is not for a group (there is no sync for groups, each device pulls all messages), AND
   // if we did not sync or trigger a sync message for this specific message already
   const shouldTriggerSyncMessage =
     !isOurDevice &&
@@ -73,53 +103,41 @@ async function handleMessageSentSuccess(
 
   // A message is synced if we triggered a sync message (sentSync)
   // and the current message was sent to our device (so a sync message)
-  const shouldMarkMessageAsSynced = isOurDevice && fetchedMessage.get('sentSync');
-
-  const contentDecoded = SignalService.Content.decode(sentMessage.plainTextBuffer);
-  const { dataMessage } = contentDecoded;
-
-  /**
-   * We should hit the notify endpoint for push notification only if:
-   *  • It's a one-to-one chat or a closed group
-   *  • The message has either text or attachments
-   */
-  const hasBodyOrAttachments = Boolean(
-    dataMessage && (dataMessage.body || (dataMessage.attachments && dataMessage.attachments.length))
-  );
-  const shouldNotifyPushServer = hasBodyOrAttachments && !isOurDevice;
-
-  if (shouldNotifyPushServer) {
-    // notify the push notification server if needed
-    if (!wrappedEnvelope) {
-      window?.log?.warn('Should send PN notify but no wrapped envelope set.');
-    } else {
-      // we do not really care about the result, neither of waiting for it
-      void PnServer.notifyPnServer(wrappedEnvelope, sentMessage.device);
-    }
-  }
+  const shouldMarkMessageAsSynced =
+    (isOurDevice && fetchedMessage.get('sentSync')) || isClosedGroupMessage;
 
   // Handle the sync logic here
-  if (shouldTriggerSyncMessage) {
-    if (dataMessage) {
-      try {
-        await fetchedMessage.sendSyncMessage(contentDecoded, effectiveTimestamp);
-        const tempFetchMessage = await fetchHandleMessageSentData(sentMessage.identifier);
-        if (!tempFetchMessage) {
-          window?.log?.warn(
-            'Got an error while trying to sendSyncMessage(): fetchedMessage is null'
-          );
-          return;
+  if (shouldTriggerSyncMessage && plainTextBuffer) {
+    try {
+      const contentDecoded = SignalService.Content.decode(plainTextBuffer);
+      if (contentDecoded && contentDecoded.dataMessage) {
+        try {
+          await fetchedMessage.sendSyncMessage(contentDecoded, effectiveTimestamp);
+          const tempFetchMessage = await fetchHandleMessageSentData(identifier);
+          if (!tempFetchMessage) {
+            window?.log?.warn(
+              'Got an error while trying to sendSyncMessage(): fetchedMessage is null'
+            );
+            return;
+          }
+          fetchedMessage = tempFetchMessage;
+        } catch (e) {
+          window?.log?.warn('Got an error while trying to sendSyncMessage():', e);
         }
-        fetchedMessage = tempFetchMessage;
-      } catch (e) {
-        window?.log?.warn('Got an error while trying to sendSyncMessage():', e);
       }
+    } catch (e) {
+      window.log.info(
+        'failed to decode content (excpected except if message was for a 1o1 as we need it to send the sync message'
+      );
     }
   } else if (shouldMarkMessageAsSynced) {
     fetchedMessage.set({ synced: true });
   }
 
-  sentTo = _.union(sentTo, [sentMessage.device]);
+  sentTo = union(sentTo, [destination]);
+  if (storedHash) {
+    fetchedMessage.updateMessageHash(storedHash);
+  }
 
   fetchedMessage.set({
     sent_to: sentTo,
@@ -133,8 +151,8 @@ async function handleMessageSentSuccess(
   fetchedMessage.getConversation()?.updateLastMessage();
 }
 
-async function handleMessageSentFailure(
-  sentMessage: RawMessage | OpenGroupVisibleMessage,
+async function handleSwarmMessageSentFailure(
+  sentMessage: Pick<OutgoingRawMessage, 'device' | 'identifier'>,
   error: any
 ) {
   const fetchedMessage = await fetchHandleMessageSentData(sentMessage.identifier);
@@ -146,14 +164,12 @@ async function handleMessageSentFailure(
     await fetchedMessage.saveErrors(error);
   }
 
-  if (!(sentMessage instanceof OpenGroupVisibleMessage)) {
-    const isOurDevice = UserUtils.isUsFromCache(sentMessage.device);
-    // if this message was for ourself, and it was not already synced,
-    // it means that we failed to sync it.
-    // so just remove the flag saying that we are currently sending the sync message
-    if (isOurDevice && !fetchedMessage.get('sync')) {
-      fetchedMessage.set({ sentSync: false });
-    }
+  const isOurDevice = UserUtils.isUsFromCache(sentMessage.device);
+  // if this message was for ourself, and it was not already synced,
+  // it means that we failed to sync it.
+  // so just remove the flag saying that we are currently sending the sync message
+  if (isOurDevice && !fetchedMessage.get('sync')) {
+    fetchedMessage.set({ sentSync: false });
   }
 
   // always mark the message as sent.
@@ -168,7 +184,7 @@ async function handleMessageSentFailure(
       expirationStartTimestamp: undefined,
     });
     window.log.warn(
-      `[handleMessageSentFailure] Stopping a message from disppearing until we retry the send operation. messageId: ${fetchedMessage.get(
+      `[handleSwarmMessageSentFailure] Stopping a message from disppearing until we retry the send operation. messageId: ${fetchedMessage.get(
         'id'
       )}`
     );
@@ -198,6 +214,7 @@ async function fetchHandleMessageSentData(messageIdentifier: string) {
 
 export const MessageSentHandler = {
   handlePublicMessageSentSuccess,
-  handleMessageSentSuccess,
-  handleMessageSentFailure,
+  handlePublicMessageSentFailure,
+  handleSwarmMessageSentFailure,
+  handleSwarmMessageSentSuccess,
 };

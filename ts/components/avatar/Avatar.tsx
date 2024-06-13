@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { isEqual } from 'lodash';
-import React, { useState } from 'react';
+import React, { SessionDataTestId, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -32,7 +32,8 @@ type Props = {
   size: AvatarSize;
   base64Data?: string; // if this is not empty, it will be used to render the avatar with base64 encoded data
   onAvatarClick?: () => void;
-  dataTestId?: string;
+  dataTestId?: SessionDataTestId;
+  imageDataTestId?: SessionDataTestId;
 };
 
 const Identicon = (props: Pick<Props, 'forcedName' | 'pubkey' | 'size'>) => {
@@ -110,8 +111,16 @@ const AvatarImage = (
 };
 
 const AvatarInner = (props: Props) => {
-  const { base64Data, size, pubkey, forcedAvatarPath, forcedName, dataTestId, onAvatarClick } =
-    props;
+  const {
+    base64Data,
+    size,
+    pubkey,
+    forcedAvatarPath,
+    forcedName,
+    dataTestId,
+    imageDataTestId,
+    onAvatarClick,
+  } = props;
   const [imageBroken, setImageBroken] = useState(false);
 
   const isSelectingMessages = useSelector(isMessageSelectionMode);
@@ -163,7 +172,7 @@ const AvatarInner = (props: Props) => {
           imageBroken={imageBroken}
           name={forcedName || name}
           handleImageError={handleImageError}
-          dataTestId={dataTestId ? `img-${dataTestId}` : undefined}
+          dataTestId={imageDataTestId}
         />
       ) : (
         <NoImage

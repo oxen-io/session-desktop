@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Vous avez une nouvelle demande d’ami",
   "clearAllConfirmationTitle": "Effacer toutes les demandes de message",
   "clearAllConfirmationBody": "Êtes-vous sûr de vouloir supprimer toutes les demandes de message ?",
-  "noMessagesInReadOnly": "Il n'y a aucun message dans <b>$name$</b>.",
+  "thereAreNoMessagesIn": "Il n'y a aucun message dans <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "Vous n'avez aucun message dans <b>$name$</b>.",
   "noMessagesInEverythingElse": "Vous n'avez aucun message de <b>$name$</b>. Envoyez un message pour démarrer la conversation !",

@@ -1,6 +1,6 @@
 import chai from 'chai';
-import Sinon, * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
+import Sinon, * as sinon from 'sinon';
 
 import { PromiseUtils } from '../../../../session/utils';
 
@@ -10,7 +10,6 @@ import {
   sleepFor,
 } from '../../../../session/utils/Promise';
 import { TestUtils } from '../../../test-utils';
-import { enableLogRedirect } from '../../../test-utils/utils';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -206,12 +205,5 @@ describe('Promise Utils', () => {
     it('returns false if not already started', () => {
       expect(hasAlreadyOneAtaTimeMatching('testing2')).to.be.eq(false, 'should be false');
     });
-  });
-
-  it('stubWindowLog is set to false before pushing', () => {
-    expect(
-      enableLogRedirect,
-      'If you see this message, just set `enableLogRedirect` to false in `ts/test/test-utils/utils/stubbing.ts`'
-    ).to.be.eq(false);
   });
 });

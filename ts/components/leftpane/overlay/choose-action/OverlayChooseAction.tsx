@@ -103,6 +103,7 @@ export const OverlayChooseAction = () => {
         <IconOnActionRow iconType="group" />
         <StyledChooseActionTitle>{window.i18n('createGroup')}</StyledChooseActionTitle>
       </StyledActionRow>
+
       <StyledActionRow
         onClick={openJoinCommunity}
         data-testid="chooser-new-community"

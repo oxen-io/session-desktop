@@ -48,14 +48,14 @@ class FetchMsgExpirySwarmJob extends PersistedJob<FetchMsgExpirySwarmPersistedDa
         return RunJobResult.Success;
       }
       let msgModels = await Data.getMessagesById(this.persistedData.msgIds);
-      const messageHashes = compact(msgModels.map(m => m.getMessageHash()));
+      const messagesHashes = compact(msgModels.map(m => m.getMessageHash()));
 
-      if (isEmpty(msgModels) || isEmpty(messageHashes)) {
+      if (isEmpty(msgModels) || isEmpty(messagesHashes)) {
         return RunJobResult.Success;
       }
 
       const fetchedExpiries = await getExpiriesFromSnode({
-        messageHashes,
+        messagesHashes,
       });
       const updatedMsgModels: Array<MessageModel> = [];
 

@@ -8,7 +8,7 @@ import {
   isSessionRunOpenGroup,
 } from '../../../../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { getOpenGroupV2ConversationId } from '../../../../session/apis/open_group_api/utils/OpenGroupUtils';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { stubData, stubOpenGroupData, stubWindowLog } from '../../../test-utils/utils';
 import { UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
@@ -86,9 +86,9 @@ describe('APIUtils', () => {
         stubData('saveConversation').resolves();
         stubData('getItemById').resolves();
         stubOpenGroupData('getAllV2OpenGroupRooms').resolves();
-        getConversationController().reset();
+        ConvoHub.use().reset();
 
-        await getConversationController().load();
+        await ConvoHub.use().load();
         await OpenGroupData.opengroupRoomsLoad();
       });
       afterEach(() => {
@@ -134,25 +134,25 @@ describe('APIUtils', () => {
         stubData('getItemById').resolves();
         stubOpenGroupData('getAllV2OpenGroupRooms').resolves();
         getV2OpenGroupRoomsByServerUrl = stubOpenGroupData('getV2OpenGroupRoomsByServerUrl');
-        getConversationController().reset();
+        ConvoHub.use().reset();
 
         Sinon.stub(UserUtils, 'getOurPubKeyStrFromCache').returns(
           TestUtils.generateFakePubKeyStr()
         );
 
-        await getConversationController().load();
+        await ConvoHub.use().load();
 
-        const convoOurIp = await getConversationController().getOrCreateAndWait(
+        const convoOurIp = await ConvoHub.use().getOrCreateAndWait(
           convoIdOurIp,
           ConversationTypeEnum.GROUP
         );
         convoOurIp.set({ active_at: Date.now() });
-        const convoOurUrl = await getConversationController().getOrCreateAndWait(
+        const convoOurUrl = await ConvoHub.use().getOrCreateAndWait(
           convoIdOurUrl,
           ConversationTypeEnum.GROUP
         );
         convoOurUrl.set({ active_at: Date.now() });
-        const convoNotOur = await getConversationController().getOrCreateAndWait(
+        const convoNotOur = await ConvoHub.use().getOrCreateAndWait(
           convoIdNotOur,
           ConversationTypeEnum.GROUP
         );

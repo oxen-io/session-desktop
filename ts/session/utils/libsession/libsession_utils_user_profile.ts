@@ -2,9 +2,10 @@ import { isEmpty } from 'lodash';
 import { UserUtils } from '..';
 import { SettingsKey } from '../../../data/settings-key';
 import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes';
+import { stringify, toFixedUint8ArrayOfLength } from '../../../types/sqlSharedTypes';
 import { Storage } from '../../../util/storage';
 import { UserConfigWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
-import { getConversationController } from '../../conversations';
+import { ConvoHub } from '../../conversations';
 import { fromHexToArray } from '../String';
 
 async function insertUserProfileIntoWrapper(convoId: string) {
@@ -12,37 +13,33 @@ async function insertUserProfileIntoWrapper(convoId: string) {
     return null;
   }
   const us = UserUtils.getOurPubKeyStrFromCache();
-  const ourConvo = getConversationController().get(us);
+  const ourConvo = ConvoHub.use().get(us);
 
   if (!ourConvo) {
     throw new Error('insertUserProfileIntoWrapper needs a ourConvo to exist');
   }
 
-  const dbName = ourConvo.get('displayNameInProfile') || '';
-  const dbProfileUrl = ourConvo.get('avatarPointer') || '';
-  const dbProfileKey = fromHexToArray(ourConvo.get('profileKey') || '');
-  const priority = ourConvo.get('priority') || CONVERSATION_PRIORITIES.default;
+  const dbName = ourConvo.getRealSessionUsername() || '';
+  const dbProfileUrl = ourConvo.getAvatarPointer() || '';
+  const dbProfileKey = fromHexToArray(ourConvo.getProfileKey() || '');
+  const priority = ourConvo.get('priority') || CONVERSATION_PRIORITIES.default; // this has to be a direct call to .get() and not getPriority()
 
   const areBlindedMsgRequestEnabled = !!Storage.get(SettingsKey.hasBlindedMsgRequestsEnabled);
 
   const expirySeconds = ourConvo.getExpireTimer() || 0;
   window.log.debug(
     `inserting into userprofile wrapper: username:"${dbName}", priority:${priority} image:${JSON.stringify(
-      {
-        url: dbProfileUrl,
-        key: dbProfileKey,
-      }
-    )}, settings: ${JSON.stringify({
-      areBlindedMsgRequestEnabled,
-      expirySeconds,
-    })}`
+      { url: dbProfileUrl, key: stringify(dbProfileKey) }
+    )}, settings: ${JSON.stringify({ areBlindedMsgRequestEnabled, expirySeconds })}`
   );
-
   if (dbProfileUrl && !isEmpty(dbProfileKey)) {
-    await UserConfigWrapperActions.setUserInfo(dbName, priority, {
-      url: dbProfileUrl,
-      key: dbProfileKey,
-    });
+    if (dbProfileKey.length === 32) {
+      const fixedLen = toFixedUint8ArrayOfLength(dbProfileKey, 32);
+      await UserConfigWrapperActions.setUserInfo(dbName, priority, {
+        url: dbProfileUrl,
+        key: fixedLen.buffer, // TODO make this use the fixed length array
+      });
+    }
   } else {
     await UserConfigWrapperActions.setUserInfo(dbName, priority, null);
   }

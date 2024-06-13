@@ -1,4 +1,4 @@
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { getSodiumRenderer } from '../session/crypto';
 import { fromArrayBufferToBase64, fromHex, toHex } from '../session/utils/String';
 import { getOurPubKeyStrFromCache } from '../session/utils/User';
@@ -194,7 +194,7 @@ async function registrationDone(ourPubkey: string, displayName: string) {
     window.log.warn('LibSessionUtil.initializeLibSessionUtilWrappers failed with', e.message);
   }
   // Ensure that we always have a conversation for ourself
-  const conversation = await getConversationController().getOrCreateAndWait(
+  const conversation = await ConvoHub.use().getOrCreateAndWait(
     ourPubkey,
     ConversationTypeEnum.PRIVATE
   );

@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { PubkeyType } from 'libsession_util_nodejs';
 import { compact, isEmpty, isFinite, isNumber, pick } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -6,6 +7,7 @@ import {
   hasValidIncomingRequestValues,
   hasValidOutgoingRequestValues,
 } from '../models/conversation';
+import { ConversationTypeEnum } from '../models/conversationAttributes';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { TimerOptions, TimerOptionsArray } from '../session/disappearing_messages/timerOptions';
 import { PubKey } from '../session/types';
@@ -16,7 +18,10 @@ import {
   getMessagePropsByMessageId,
   getMessageReactsProps,
 } from '../state/selectors/conversations';
+import { useLibGroupAdmins, useLibGroupMembers, useLibGroupName } from '../state/selectors/groups';
 import { isPrivateAndFriend } from '../state/selectors/selectedConversation';
+import { useOurPkStr } from '../state/selectors/user';
+import { useLibGroupInvitePending, useLibGroupKicked } from '../state/selectors/userGroups';
 
 export function useAvatarPath(convoId: string | undefined) {
   const convoProps = useConversationPropsById(convoId);
@@ -33,7 +38,17 @@ export function useOurAvatarPath() {
  */
 export function useConversationUsername(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
+  const groupName = useLibGroupName(convoId);
 
+  if (convoId && PubKey.is03Pubkey(convoId) && groupName) {
+    // when getting a new 03 group from the usergroup wrapper,
+    // we set the displayNameInProfile with the name from the wrapper.
+    // So let's keep falling back to convoProps?.displayNameInProfile if groupName is not set yet (it comes later through the groupInfos namespace)
+    return groupName;
+  }
+  if (convoId && (PubKey.is03Pubkey(convoId) || PubKey.is05Pubkey(convoId))) {
+    return convoProps?.nickname || convoProps?.displayNameInProfile || PubKey.shorten(convoId);
+  }
   return convoProps?.nickname || convoProps?.displayNameInProfile || convoId;
 }
 
@@ -60,18 +75,51 @@ export function useConversationRealName(convoId?: string) {
   return convoProps?.isPrivate ? convoProps?.displayNameInProfile : undefined;
 }
 
+function usernameForQuoteOrFullPk(pubkey: string, state: StateType) {
+  if (pubkey === UserUtils.getOurPubKeyStrFromCache() || pubkey.toLowerCase() === 'you') {
+    return window.i18n('you');
+  }
+  // use the name from the cached libsession wrappers if available
+  if (PubKey.is03Pubkey(pubkey)) {
+    const info = state.groups.infos[pubkey];
+    if (info && info.name) {
+      return info.name;
+    }
+  }
+  const convo = state.conversations.conversationLookup[pubkey];
+
+  const nameGot = convo?.nickname || convo?.displayNameInProfile;
+  return nameGot?.length ? nameGot : null;
+}
+
+export function usernameForQuoteOrFullPkOutsideRedux(pubkey: string) {
+  if (window?.inboxStore?.getState()) {
+    return usernameForQuoteOrFullPk(pubkey, window.inboxStore.getState()) || PubKey.shorten(pubkey);
+  }
+  return PubKey.shorten(pubkey);
+}
+
 /**
  * Returns either the nickname, the profileName, in '"' or the full pubkeys given
  */
 export function useConversationsUsernameWithQuoteOrFullPubkey(pubkeys: Array<string>) {
   return useSelector((state: StateType) => {
     return pubkeys.map(pubkey => {
-      if (pubkey === UserUtils.getOurPubKeyStrFromCache() || pubkey.toLowerCase() === 'you') {
-        return window.i18n('you');
-      }
-      const convo = state.conversations.conversationLookup[pubkey];
-      const nameGot = convo?.displayNameInProfile;
-      return nameGot?.length ? `"${nameGot}"` : pubkey;
+      const nameGot = usernameForQuoteOrFullPk(pubkey, state);
+      return nameGot?.length ? nameGot : pubkey;
+    });
+  });
+}
+
+/**
+ * Returns either the nickname, the profileName, a shortened pubkey, or "you" for our own pubkey
+ */
+export function useConversationsUsernameWithQuoteOrShortPk(pubkeys: Array<string>) {
+  return useSelector((state: StateType) => {
+    return pubkeys.map(pubkey => {
+      const nameGot = usernameForQuoteOrFullPk(pubkey, state);
+
+      return nameGot?.length ? nameGot : PubKey.shorten(pubkey);
     });
   });
 }
@@ -122,6 +170,12 @@ export function useNotificationSetting(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return convoProps?.currentNotificationSetting || 'all';
 }
+
+export function useIsGroupV2(convoId?: string) {
+  const convoProps = useConversationPropsById(convoId);
+  return convoId && convoProps?.type === ConversationTypeEnum.GROUPV2 && PubKey.is03Pubkey(convoId);
+}
+
 export function useIsPublic(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.isPublic);
@@ -141,19 +195,31 @@ export function useIsActive(convoId?: string) {
   return !!useActiveAt(convoId);
 }
 
-export function useIsLeft(convoId?: string) {
-  const convoProps = useConversationPropsById(convoId);
-  return Boolean(convoProps && convoProps.left);
-}
-
 export function useIsKickedFromGroup(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
-  return Boolean(convoProps && convoProps.isKickedFromGroup);
+  const libIsKicked = useLibGroupKicked(convoId);
+  if (convoId && PubKey.is03Pubkey(convoId)) {
+    return libIsKicked;
+  }
+  return Boolean(convoProps && (convoProps.isKickedFromGroup || libIsKicked)); // not ideal, but until we trust what we get from libsession for all cases, we have to either trust what we have in the DB
 }
 
 export function useWeAreAdmin(convoId?: string) {
+  const groupAdmins = useGroupAdmins(convoId);
+  const us = useOurPkStr();
+  return Boolean(groupAdmins.includes(us));
+}
+
+export function useGroupAdmins(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
-  return Boolean(convoProps && convoProps.weAreAdmin);
+
+  const libMembers = useLibGroupAdmins(convoId);
+
+  if (convoId && PubKey.is03Pubkey(convoId)) {
+    return compact(libMembers?.slice()?.sort()) || [];
+  }
+
+  return convoProps?.groupAdmins || [];
 }
 
 export function useExpireTimer(convoId?: string) {
@@ -178,18 +244,21 @@ export function useIsApproved(convoId?: string) {
 
 export function useIsIncomingRequest(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
+  const invitePending = useLibGroupInvitePending(convoId) || false;
   if (!convoProps) {
     return false;
   }
   return Boolean(
     convoProps &&
       hasValidIncomingRequestValues({
+        id: convoProps.id,
         isMe: convoProps.isMe || false,
         isApproved: convoProps.isApproved || false,
         isPrivate: convoProps.isPrivate || false,
         isBlocked: convoProps.isBlocked || false,
         didApproveMe: convoProps.didApproveMe || false,
         activeAt: convoProps.activeAt || 0,
+        invitePending,
       })
   );
 }
@@ -212,7 +281,13 @@ export function useIsOutgoingRequest(convoId?: string) {
   );
 }
 
-export function useConversationPropsById(convoId?: string) {
+/**
+ * Note: NOT to be exported:
+ * This selector is too generic and needs to be broken node in individual fields selectors.
+ * Make sure when writing a selector that you fetch the data from libsession if needed.
+ * (check useSortedGroupMembers() as an example)
+ */
+function useConversationPropsById(convoId?: string) {
   return useSelector((state: StateType) => {
     if (!convoId) {
       return null;
@@ -222,6 +297,19 @@ export function useConversationPropsById(convoId?: string) {
       return null;
     }
     return convo;
+  });
+}
+
+export function useZombies(convoId?: string) {
+  return useSelector((state: StateType) => {
+    if (!convoId) {
+      return null;
+    }
+    const convo = state.conversations.conversationLookup[convoId];
+    if (!convo) {
+      return null;
+    }
+    return convo.zombies;
   });
 }
 
@@ -367,17 +455,28 @@ export function useQuoteAuthorName(authorId?: string): {
   return { authorName, isMe };
 }
 
+function useMembers(convoId: string | undefined) {
+  const props = useConversationPropsById(convoId);
+  return props?.members || undefined;
+}
+
 /**
  * Get the list of members of a closed group or []
  * @param convoId the closed group id to extract members from
  */
-export function useSortedGroupMembers(convoId: string | undefined): Array<string> {
-  const convoProps = useConversationPropsById(convoId);
-  if (!convoProps || convoProps.isPrivate || convoProps.isPublic) {
+export function useSortedGroupMembers(convoId: string | undefined): Array<PubkeyType> {
+  const members = useMembers(convoId);
+  const isPublic = useIsPublic(convoId);
+  const isPrivate = useIsPrivate(convoId);
+  const libMembers = useLibGroupMembers(convoId);
+  if (isPrivate || isPublic) {
     return [];
   }
+  if (convoId && PubKey.is03Pubkey(convoId)) {
+    return compact(libMembers?.slice()?.sort()) || [];
+  }
   // we need to clone the array before being able to call sort() it
-  return compact(convoProps.members?.slice()?.sort()) || [];
+  return (compact(members?.slice()?.sort()) || []) as Array<PubkeyType>;
 }
 
 export function useDisappearingMessageSettingText({

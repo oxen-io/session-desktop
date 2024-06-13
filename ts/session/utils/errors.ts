@@ -66,3 +66,17 @@ export class HTTPError extends Error {
     }
   }
 }
+
+class BaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class SigningFailed extends BaseError {}
+export class InvalidSigningType extends BaseError {}
+export class GroupV2SigningFailed extends SigningFailed {}
+export class PreConditionFailed extends BaseError {}
+export class DecryptionFailed extends BaseError {}
+export class InvalidMessage extends BaseError {}

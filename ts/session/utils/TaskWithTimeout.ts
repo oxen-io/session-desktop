@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-return */
 /* eslint-disable consistent-return */
 /* eslint-disable no-promise-executor-return */
 

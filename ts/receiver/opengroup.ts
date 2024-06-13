@@ -8,7 +8,7 @@ import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/openg
 import { OpenGroupMessageV4 } from '../session/apis/open_group_api/opengroupV2/OpenGroupServerPoller';
 import { isUsAnySogsFromCache } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getOpenGroupV2ConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { removeMessagePadding } from '../session/crypto/BufferPadding';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 import { fromBase64ToArray } from '../session/utils/String';
@@ -68,12 +68,12 @@ const handleOpenGroupMessage = async (
     return;
   }
 
-  if (!getConversationController().get(conversationId)?.isOpenGroupV2()) {
+  if (!ConvoHub.use().get(conversationId)?.isOpenGroupV2()) {
     window?.log?.error('Received a message for an unknown convo or not an v2. Skipping');
     return;
   }
 
-  const groupConvo = getConversationController().get(conversationId);
+  const groupConvo = ConvoHub.use().get(conversationId);
 
   if (!groupConvo) {
     window?.log?.warn('Skipping handleJob for unknown convo: ', conversationId);

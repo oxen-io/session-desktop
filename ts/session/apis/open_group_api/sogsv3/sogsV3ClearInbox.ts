@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller';
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import { getOpenGroupV2ConversationId } from '../utils/OpenGroupUtils';
 import {
@@ -17,7 +17,7 @@ export const clearInbox = async (roomInfos: OpenGroupRequestCommonType): Promise
   let success = false;
 
   const conversationId = getOpenGroupV2ConversationId(roomInfos.serverUrl, roomInfos.roomId);
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
   if (!conversation) {
     throw new Error(`clearInbox Matching conversation not found in db ${conversationId}`);

@@ -3,4 +3,4 @@ export function trigger(name: string, param1?: any, param2?: any) {
 }
 
 export const configurationMessageReceived = 'configurationMessageReceived';
-export const ConfigurationSyncJobDone = 'ConfigurationSyncJobDone';
+export const UserSyncJobDone = 'UserSyncJobDone';

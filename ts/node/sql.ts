@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/order
 import * as BetterSqlite3 from '@signalapp/better-sqlite3';
 import { app, clipboard, dialog, Notification } from 'electron';
 import fs from 'fs';
@@ -24,6 +25,7 @@ import {
   uniq,
 } from 'lodash';
 
+import { GroupPubkeyType } from 'libsession_util_nodejs';
 import { ConversationAttributes } from '../models/conversationAttributes';
 import { PubKey } from '../session/types/PubKey'; // checked - only node
 import { redactAll } from '../util/privacy'; // checked - only node
@@ -52,6 +54,7 @@ import { StorageItem } from './storage_item'; // checked - only node
 
 import { OpenGroupV2Room } from '../data/opengroups';
 import {
+  AwaitedReturn,
   CONFIG_DUMP_TABLE,
   MsgDuplicateSearchOpenGroup,
   roomHasBlindEnabled,
@@ -62,10 +65,17 @@ import {
 } from '../types/sqlSharedTypes';
 
 import { KNOWN_BLINDED_KEYS_ITEM, SettingsKey } from '../data/settings-key';
+import {
+  DataCallArgs,
+  DeleteAllMessageFromSendersInConversationType,
+  DeleteAllMessageHashesInConversationMatchingAuthorType,
+  DeleteAllMessageHashesInConversationType,
+} from '../data/sharedDataTypes';
 import { MessageAttributes } from '../models/messageType';
 import { SignalService } from '../protobuf';
 import { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';
+import { createDeleter, getAttachmentsPath } from '../shared/attachments/shared_attachments';
 import {
   getSQLCipherIntegrityCheck,
   openAndMigrateDatabase,
@@ -231,7 +241,7 @@ async function initializeSql({
   return true;
 }
 
-function removeDB(configDir = null) {
+function removeDB(configDir: string | null = null) {
   if (isInstanceInitialized()) {
     throw new Error('removeDB: Cannot erase database when it is open!');
   }
@@ -829,6 +839,7 @@ function saveMessage(data: MessageAttributes) {
     expireTimer,
     expirationStartTimestamp,
     flags,
+    messageHash,
   } = data;
 
   if (!id) {
@@ -861,6 +872,7 @@ function saveMessage(data: MessageAttributes) {
     type: type || '',
     unread,
     flags: flags ?? 0,
+    messageHash,
   };
 
   assertGlobalInstance()
@@ -885,7 +897,8 @@ function saveMessage(data: MessageAttributes) {
     source,
     type,
     unread,
-    flags
+    flags,
+    messageHash
   ) values (
     $id,
     $json,
@@ -906,7 +919,8 @@ function saveMessage(data: MessageAttributes) {
     $source,
     $type,
     $unread,
-    $flags
+    $flags,
+    $messageHash
   );`
     )
     .run(payload);
@@ -955,7 +969,7 @@ function saveSeenMessageHash(data: any) {
   try {
     assertGlobalInstance()
       .prepare(
-        `INSERT INTO seenMessages (
+        `INSERT OR REPLACE INTO seenMessages (
       expiresAt,
       hash
       ) values (
@@ -1017,6 +1031,47 @@ function removeMessagesByIds(ids: Array<string>, instance?: BetterSqlite3.Databa
   console.log(`removeMessagesByIds of length ${ids.length} took ${Date.now() - start}ms`);
 }
 
+function removeAllMessagesInConversationSentBefore(
+  {
+    deleteBeforeSeconds,
+    conversationId,
+  }: { deleteBeforeSeconds: number; conversationId: GroupPubkeyType },
+  instance?: BetterSqlite3.Database
+) {
+  const msgIds = assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `SELECT id FROM ${MESSAGES_TABLE} WHERE conversationId = $conversationId AND sent_at <= $beforeMs;`
+    )
+    .all({ conversationId, beforeMs: deleteBeforeSeconds * 1000 });
+
+  assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = $conversationId AND sent_at <= $beforeMs;`
+    )
+    .run({ conversationId, beforeMs: deleteBeforeSeconds * 1000 });
+  console.info('removeAllMessagesInConversationSentBefore deleted msgIds:', JSON.stringify(msgIds));
+  return msgIds.map(m => m.id);
+}
+
+async function getAllMessagesWithAttachmentsInConversationSentBefore(
+  {
+    deleteAttachBeforeSeconds,
+    conversationId,
+  }: { deleteAttachBeforeSeconds: number; conversationId: GroupPubkeyType },
+  instance?: BetterSqlite3.Database
+) {
+  const rows = assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `SELECT json FROM ${MESSAGES_TABLE} WHERE conversationId = $conversationId AND sent_at <= $beforeMs;`
+    )
+    .all({ conversationId, beforeMs: deleteAttachBeforeSeconds * 1000 });
+  const messages = map(rows, row => jsonToObject(row.json));
+  const messagesWithAttachments = messages.filter(m => {
+    return getExternalFilesForMessage(m).some(a => !isEmpty(a) && isString(a)); // when we remove an attachment, we set the path to '' so it should be excluded here
+  });
+  return messagesWithAttachments;
+}
+
 function removeAllMessagesInConversation(
   conversationId: string,
   instance?: BetterSqlite3.Database
@@ -1029,6 +1084,68 @@ function removeAllMessagesInConversation(
   inst
     .prepare(`DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = $conversationId`)
     .run({ conversationId });
+}
+
+function deleteAllMessageFromSendersInConversation(
+  {
+    groupPk,
+    toRemove,
+    signatureTimestamp,
+  }: DataCallArgs<DeleteAllMessageFromSendersInConversationType>,
+  instance?: BetterSqlite3.Database
+): AwaitedReturn<DeleteAllMessageFromSendersInConversationType> {
+  if (!groupPk || !toRemove.length) {
+    return [];
+  }
+  return assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = ? AND sent_at <= ? AND source IN ( ${toRemove.map(() => '?').join(', ')} ) RETURNING id`
+    )
+    .all(groupPk, signatureTimestamp, ...toRemove)
+    .map(m => m.id);
+}
+
+function deleteAllMessageHashesInConversation(
+  {
+    groupPk,
+    messageHashes,
+    signatureTimestamp,
+  }: DataCallArgs<DeleteAllMessageHashesInConversationType>,
+  instance?: BetterSqlite3.Database
+): AwaitedReturn<DeleteAllMessageHashesInConversationType> {
+  if (!groupPk || !messageHashes.length) {
+    return [];
+  }
+  return assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = ? AND sent_at <= ? AND messageHash IN ( ${messageHashes.map(() => '?').join(', ')} ) RETURNING id`
+    )
+    .all(groupPk, signatureTimestamp, ...messageHashes)
+    .map(m => m.id);
+}
+
+function deleteAllMessageHashesInConversationMatchingAuthor(
+  {
+    author,
+    groupPk,
+    messageHashes,
+    signatureTimestamp,
+  }: DataCallArgs<DeleteAllMessageHashesInConversationMatchingAuthorType>,
+  instance?: BetterSqlite3.Database
+): AwaitedReturn<DeleteAllMessageHashesInConversationMatchingAuthorType> {
+  if (!groupPk || !author || !messageHashes.length) {
+    return { msgHashesDeleted: [], msgIdsDeleted: [] };
+  }
+  const results = assertGlobalInstanceOrInstance(instance)
+    .prepare(
+      `DELETE FROM ${MESSAGES_TABLE} WHERE conversationId = ? AND source = ? AND sent_at <= ? AND messageHash IN ( ${messageHashes.map(() => '?').join(', ')} ) RETURNING id, messageHash;`
+    )
+    .all(groupPk, author, signatureTimestamp, ...messageHashes);
+
+  return {
+    msgHashesDeleted: results.map(m => m.messageHash),
+    msgIdsDeleted: results.map(m => m.id),
+  };
 }
 
 function cleanUpExpirationTimerUpdateHistory(
@@ -1917,7 +2034,7 @@ function getMessagesWithFileAttachments(conversationId: string, limit: number) {
 
 function getExternalFilesForMessage(message: any) {
   const { attachments, quote, preview } = message;
-  const files: Array<any> = [];
+  const files: Array<string> = [];
 
   forEach(attachments, attachment => {
     const { path: file, thumbnail, screenshot } = attachment;
@@ -1979,6 +2096,24 @@ function getExternalFilesForConversation(
   }
 
   return files;
+}
+
+async function deleteAll({
+  userDataPath,
+  attachments,
+}: {
+  userDataPath: string;
+  attachments: Array<string>;
+}) {
+  const deleteFromDisk = createDeleter(getAttachmentsPath(userDataPath));
+
+  for (let index = 0, max = attachments.length; index < max; index += 1) {
+    const file = attachments[index];
+    // eslint-disable-next-line no-await-in-loop
+    await deleteFromDisk(file);
+  }
+
+  console.log(`deleteAll: deleted ${attachments.length} files`);
 }
 
 function removeKnownAttachments(allAttachments: Array<string>) {
@@ -2504,8 +2639,13 @@ export const sqlNode = {
   saveMessages,
   removeMessage,
   removeMessagesByIds,
+  removeAllMessagesInConversationSentBefore,
+  getAllMessagesWithAttachmentsInConversationSentBefore,
   cleanUpExpirationTimerUpdateHistory,
   removeAllMessagesInConversation,
+  deleteAllMessageFromSendersInConversation,
+  deleteAllMessageHashesInConversation,
+  deleteAllMessageHashesInConversationMatchingAuthor,
   getUnreadByConversation,
   getUnreadDisappearingByConversation,
   markAllAsReadByConversationNoExpiration,
@@ -2541,7 +2681,7 @@ export const sqlNode = {
   removeAttachmentDownloadJob,
   removeAllAttachmentDownloadJobs,
   removeKnownAttachments,
-
+  deleteAll,
   removeAll,
 
   getMessagesWithVisualMediaAttachments,

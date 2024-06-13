@@ -4,7 +4,7 @@ import { MIME } from '../../types';
 import { urlToBlob } from '../../types/attachments/VisualAttachment';
 import { processNewAttachment } from '../../types/MessageAttachment';
 import { uploadImageForRoomSogsV3 } from '../apis/open_group_api/sogsv3/sogsV3RoomImage';
-import { getConversationController } from '../conversations';
+import { ConvoHub } from '../conversations';
 
 export type OpenGroupUpdateAvatar = { objectUrl: string | null };
 
@@ -19,7 +19,7 @@ export async function initiateOpenGroupUpdate(
 ) {
   // we actually do not change the groupName just yet here, serverSide. This is just done client side. Maybe something to allow in a later release.
   // For now, the UI is actually not allowing changing the room name so we do not care.
-  const convo = getConversationController().get(groupId);
+  const convo = ConvoHub.use().get(groupId);
 
   if (!convo?.isPublic()) {
     throw new Error('initiateOpenGroupUpdate can only be used for communities');
@@ -68,7 +68,7 @@ export async function initiateOpenGroupUpdate(
         contentType: MIME.IMAGE_UNKNOWN, // contentType is mostly used to generate previews and screenshot. We do not care for those in this case.
       });
       await convo.setSessionProfile({
-        displayName: groupName || convo.get('displayNameInProfile') || window.i18n('unknown'),
+        displayName: groupName || convo.getRealSessionUsername() || window.i18n('unknown'),
         avatarPath: upgraded.path,
         avatarImageId,
       });

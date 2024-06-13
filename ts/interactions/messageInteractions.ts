@@ -7,7 +7,7 @@ import {
   isOpenGroupV2,
   openGroupV2CompleteURLRegex,
 } from '../session/apis/open_group_api/utils/OpenGroupUtils';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { PubKey } from '../session/types';
 import { ToastUtils } from '../session/utils';
 
@@ -67,7 +67,7 @@ export function copyBodyToClipboard(body?: string | null) {
 export async function removeSenderFromModerator(sender: string, convoId: string) {
   try {
     const pubKeyToRemove = PubKey.cast(sender);
-    const convo = getConversationController().getOrThrow(convoId);
+    const convo = ConvoHub.use().getOrThrow(convoId);
 
     const roomInfo = convo.toOpenGroupV2();
     const res = await sogsV3RemoveAdmins([pubKeyToRemove], roomInfo);
@@ -87,7 +87,7 @@ export async function removeSenderFromModerator(sender: string, convoId: string)
 export async function addSenderAsModerator(sender: string, convoId: string) {
   try {
     const pubKeyToAdd = PubKey.cast(sender);
-    const convo = getConversationController().getOrThrow(convoId);
+    const convo = ConvoHub.use().getOrThrow(convoId);
 
     const roomInfo = convo.toOpenGroupV2();
     const res = await sogsV3AddAdmin([pubKeyToAdd], roomInfo);

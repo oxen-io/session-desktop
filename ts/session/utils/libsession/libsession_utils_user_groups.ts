@@ -10,13 +10,19 @@ import {
   getLegacyGroupInfoFromDBValues,
 } from '../../../types/sqlSharedTypes';
 import { UserGroupsWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
-import { getConversationController } from '../../conversations';
+import { ConvoHub } from '../../conversations';
+import { PubKey } from '../../types';
+import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes';
 
 /**
  * Returns true if that conversation is an active group
  */
 function isUserGroupToStoreInWrapper(convo: ConversationModel): boolean {
-  return isCommunityToStoreInWrapper(convo) || isLegacyGroupToStoreInWrapper(convo);
+  return (
+    isCommunityToStoreInWrapper(convo) ||
+    isLegacyGroupToStoreInWrapper(convo) ||
+    isGroupToStoreInWrapper(convo)
+  );
 }
 
 function isCommunityToStoreInWrapper(convo: ConversationModel): boolean {
@@ -26,12 +32,14 @@ function isCommunityToStoreInWrapper(convo: ConversationModel): boolean {
 function isLegacyGroupToStoreInWrapper(convo: ConversationModel): boolean {
   return (
     convo.isGroup() &&
-    !convo.isPublic() &&
-    convo.id.startsWith('05') && // new closed groups won't start with 05
+    PubKey.is05Pubkey(convo.id) && // we only check legacy group here
     convo.isActive() &&
-    !convo.get('isKickedFromGroup') &&
-    !convo.get('left')
+    !convo.isKickedFromGroup() // we cannot have a left group anymore. We remove it when we leave it.
   );
+}
+
+function isGroupToStoreInWrapper(convo: ConversationModel): boolean {
+  return convo.isGroup() && PubKey.is03Pubkey(convo.id) && convo.isActive();
 }
 
 /**
@@ -65,7 +73,7 @@ function isLegacyGroupToRemoveFromDBIfNotInWrapper(convo: ConversationModel): bo
 async function insertGroupsFromDBIntoWrapperAndRefresh(
   convoId: string
 ): Promise<CommunityInfoFromDBValues | LegacyGroupInfo | null> {
-  const foundConvo = getConversationController().get(convoId);
+  const foundConvo = ConvoHub.use().get(convoId);
   if (!foundConvo) {
     return null;
   }
@@ -76,7 +84,9 @@ async function insertGroupsFromDBIntoWrapperAndRefresh(
 
   const convoType: UserGroupsType = SessionUtilUserGroups.isCommunityToStoreInWrapper(foundConvo)
     ? 'Community'
-    : 'LegacyGroup';
+    : PubKey.is03Pubkey(convoId)
+      ? 'Group'
+      : 'LegacyGroup';
 
   switch (convoType) {
     case 'Community':
@@ -95,7 +105,7 @@ async function insertGroupsFromDBIntoWrapperAndRefresh(
       );
 
       const wrapperComm = getCommunityInfoFromDBValues({
-        priority: foundConvo.get('priority'),
+        priority: foundConvo.get('priority') || CONVERSATION_PRIORITIES.default, // this has to be a direct call to .get
         fullUrl,
       });
 
@@ -120,17 +130,19 @@ async function insertGroupsFromDBIntoWrapperAndRefresh(
 
     case 'LegacyGroup':
       const encryptionKeyPair = await Data.getLatestClosedGroupEncryptionKeyPair(convoId);
+      // Note: For any fields stored in both the DB and libsession,
+      // we have to make direct calls to.get() and NOT the wrapped getPriority(), etc...
       const wrapperLegacyGroup = getLegacyGroupInfoFromDBValues({
         id: foundConvo.id,
-        priority: foundConvo.get('priority'),
+        priority: foundConvo.get('priority') || CONVERSATION_PRIORITIES.default,
         members: foundConvo.get('members') || [],
-        groupAdmins: foundConvo.get('groupAdmins') || [],
-        expirationMode: foundConvo.getExpirationMode() || 'off',
-        expireTimer: foundConvo.getExpireTimer() || 0,
-        displayNameInProfile: foundConvo.get('displayNameInProfile'),
+        groupAdmins: foundConvo.getGroupAdmins(), // cannot be changed for legacy groups, so we don't care
+        expirationMode: foundConvo.get('expirationMode') || 'off',
+        expireTimer: foundConvo.get('expireTimer') || 0,
+        displayNameInProfile: foundConvo.getRealSessionUsername(),
         encPubkeyHex: encryptionKeyPair?.publicHex || '',
         encSeckeyHex: encryptionKeyPair?.privateHex || '',
-        lastJoinedTimestamp: foundConvo.get('lastJoinedTimestamp') || 0,
+        lastJoinedTimestamp: foundConvo.getLastJoinedTimestamp(),
       });
 
       try {
@@ -142,6 +154,38 @@ async function insertGroupsFromDBIntoWrapperAndRefresh(
         await UserGroupsWrapperActions.setLegacyGroup(wrapperLegacyGroup);
         // returned for testing purposes only
         return wrapperLegacyGroup;
+      } catch (e) {
+        window.log.warn(`UserGroupsWrapperActions.set of ${convoId} failed with ${e.message}`);
+        // we still let this go through
+      }
+      break;
+    case 'Group':
+      // The 03-group is a bit different that the others as most fields are not to be updated.
+      // Indeed, they are more up to date on the group's swarm than ours and we don't want to keep both in sync.
+      if (!PubKey.is03Pubkey(convoId)) {
+        throw new Error('not a 03 group');
+      }
+      const groupInfo = {
+        pubkeyHex: convoId,
+        authData: null, // only updated when we process a new invite
+        invitePending: null, // only updated when we accept an invite
+        disappearingTimerSeconds: null, // not updated except when we process an invite/create a group
+        joinedAtSeconds: null, // no need to update this one except when we process an invite, maybe
+        name: null, // not updated except when we process an invite/create a group
+        secretKey: null, // not updated except when we process an promote/create a group
+        kicked: foundConvo.isKickedFromGroup() ?? null,
+        priority: foundConvo.getPriority() ?? null, // for 03 group, the priority is only tracked with libsession, so this is fine
+      };
+      try {
+        window.log.debug(
+          `inserting into usergroup wrapper "${foundConvo.id}"... }`,
+          JSON.stringify(groupInfo)
+        );
+        // this does the create or the update of the matching existing group
+        await UserGroupsWrapperActions.setGroup(groupInfo);
+
+        // returned for testing purposes only
+        return null;
       } catch (e) {
         window.log.warn(`UserGroupsWrapperActions.set of ${convoId} failed with ${e.message}`);
         // we still let this go through
@@ -179,20 +223,6 @@ async function removeCommunityFromWrapper(_convoId: string, fullUrlWithOrWithout
 }
 
 /**
- * Remove the matching legacy group from the wrapper and from the cached list of legacy groups
- */
-async function removeLegacyGroupFromWrapper(groupPk: string) {
-  try {
-    await UserGroupsWrapperActions.eraseLegacyGroup(groupPk);
-  } catch (e) {
-    window.log.warn(
-      `UserGroupsWrapperActions.eraseLegacyGroup with = ${groupPk} failed with`,
-      e.message
-    );
-  }
-}
-
-/**
  * This function can be used where there are things to do for all the types handled by this wrapper.
  * You can do a loop on all the types handled by this wrapper and have a switch using assertUnreachable to get errors when not every case is handled.
  *
@@ -202,7 +232,7 @@ async function removeLegacyGroupFromWrapper(groupPk: string) {
  * whole other bunch of issues because it is a native node module.
  */
 function getUserGroupTypes(): Array<UserGroupsType> {
-  return ['Community', 'LegacyGroup'];
+  return ['Community', 'LegacyGroup', 'Group'];
 }
 
 export const SessionUtilUserGroups = {
@@ -221,5 +251,6 @@ export const SessionUtilUserGroups = {
   isLegacyGroupToStoreInWrapper,
   isLegacyGroupToRemoveFromDBIfNotInWrapper,
 
-  removeLegacyGroupFromWrapper, // a group can be removed but also just marked hidden, so only call this function when the group is completely removed // TODOLATER
+  // group 03
+  isGroupToStoreInWrapper,
 };

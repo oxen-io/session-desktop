@@ -1,19 +1,20 @@
 import chai from 'chai';
-import Sinon, * as sinon from 'sinon';
-import { describe } from 'mocha';
 import chaiAsPromised from 'chai-as-promised';
+import { describe } from 'mocha';
+import Sinon, * as sinon from 'sinon';
 
-import { TestUtils } from '../../../test-utils';
-import { Onions, SnodePool } from '../../../../session/apis/snode_api';
 import { Snode } from '../../../../data/data';
+import { Onions } from '../../../../session/apis/snode_api';
+import { TestUtils } from '../../../test-utils';
 
+import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
+import { SnodePool } from '../../../../session/apis/snode_api/snodePool';
 import * as OnionPaths from '../../../../session/onions/onionPath';
 import {
   generateFakeSnodes,
   generateFakeSnodeWithEdKey,
   stubData,
 } from '../../../test-utils/utils';
-import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
 
 chai.use(chaiAsPromised as any);
 chai.should();

@@ -1,24 +1,25 @@
-import chai from 'chai';
-import Sinon, * as sinon from 'sinon';
-import { describe } from 'mocha';
-import chaiAsPromised from 'chai-as-promised';
 import AbortController from 'abort-controller';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { describe } from 'mocha';
+import Sinon, * as sinon from 'sinon';
 
-import { TestUtils } from '../../../test-utils';
 import * as SnodeAPI from '../../../../session/apis/snode_api';
+import { TestUtils } from '../../../test-utils';
 
-import { OnionPaths } from '../../../../session/onions';
+import { Snode } from '../../../../data/data';
+import { SNODE_POOL_ITEM_ID } from '../../../../data/settings-key';
+import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
+import { ServiceNodesList } from '../../../../session/apis/snode_api/getServiceNodesList';
 import {
   NEXT_NODE_NOT_FOUND_PREFIX,
   Onions,
   OXEN_SERVER_ERROR,
 } from '../../../../session/apis/snode_api/onions';
-import { Snode } from '../../../../data/data';
+import { SnodePool } from '../../../../session/apis/snode_api/snodePool';
+import { OnionPaths } from '../../../../session/onions';
 import { pathFailureCount } from '../../../../session/onions/onionPath';
-import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
 import { generateFakeSnodeWithEdKey, stubData } from '../../../test-utils/utils';
-import { ServiceNodesList } from '../../../../session/apis/snode_api/getServiceNodesList';
-import { SNODE_POOL_ITEM_ID } from '../../../../data/settings-key';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -97,8 +98,8 @@ describe('OnionPathsErrors', () => {
     updateSwarmSpy = stubData('updateSwarmNodesForPubkey').resolves();
     stubData('getItemById').resolves({ id: SNODE_POOL_ITEM_ID, value: '' });
     stubData('createOrUpdateItem').resolves();
-    dropSnodeFromSnodePool = Sinon.spy(SnodeAPI.SnodePool, 'dropSnodeFromSnodePool');
-    dropSnodeFromSwarmIfNeededSpy = Sinon.spy(SnodeAPI.SnodePool, 'dropSnodeFromSwarmIfNeeded');
+    dropSnodeFromSnodePool = Sinon.spy(SnodePool, 'dropSnodeFromSnodePool');
+    dropSnodeFromSwarmIfNeededSpy = Sinon.spy(SnodePool, 'dropSnodeFromSwarmIfNeeded');
     dropSnodeFromPathSpy = Sinon.spy(OnionPaths, 'dropSnodeFromPath');
     incrementBadPathCountOrDropSpy = Sinon.spy(OnionPaths, 'incrementBadPathCountOrDrop');
     incrementBadSnodeCountOrDropSpy = Sinon.spy(Onions, 'incrementBadSnodeCountOrDrop');
@@ -133,6 +134,7 @@ describe('OnionPathsErrors', () => {
           symmetricKey: new Uint8Array(),
           guardNode: guardSnode1,
           abortSignal: abortController.signal,
+          allow401s: false,
         });
         throw new Error('Error expected');
       } catch (e) {
@@ -148,6 +150,7 @@ describe('OnionPathsErrors', () => {
           response: getFakeResponseOnDestination(200),
           symmetricKey: new Uint8Array(),
           guardNode: guardSnode1,
+          allow401s: false,
         });
         throw new Error('Did not throw');
       } catch (e) {
@@ -166,6 +169,7 @@ describe('OnionPathsErrors', () => {
           response: getFakeResponseOnDestination(),
           symmetricKey: new Uint8Array(),
           guardNode: guardSnode1,
+          allow401s: false,
         });
         throw new Error('Did not throw');
       } catch (e) {
@@ -185,6 +189,7 @@ describe('OnionPathsErrors', () => {
             response: getFakeResponseOnPath(406),
             symmetricKey: new Uint8Array(),
             guardNode: guardSnode1,
+            allow401s: false,
           });
           throw new Error('Error expected');
         } catch (e) {
@@ -206,6 +211,7 @@ describe('OnionPathsErrors', () => {
             response: getFakeResponseOnDestination(406),
             symmetricKey: new Uint8Array(),
             guardNode: guardSnode1,
+            allow401s: false,
           });
           throw new Error('Error expected');
         } catch (e) {
@@ -230,6 +236,7 @@ describe('OnionPathsErrors', () => {
             response: getFakeResponseOnPath(425),
             symmetricKey: new Uint8Array(),
             guardNode: guardSnode1,
+            allow401s: false,
           });
           throw new Error('Error expected');
         } catch (e) {
@@ -251,6 +258,7 @@ describe('OnionPathsErrors', () => {
             response: getFakeResponseOnDestination(425),
             symmetricKey: new Uint8Array(),
             guardNode: guardSnode1,
+            allow401s: false,
           });
           throw new Error('Error expected');
         } catch (e) {
@@ -281,6 +289,7 @@ describe('OnionPathsErrors', () => {
               destinationSnodeEd25519: targetNode,
 
               associatedWith,
+              allow401s: false,
             });
             throw new Error('Error expected');
           } catch (e) {
@@ -329,6 +338,7 @@ describe('OnionPathsErrors', () => {
               guardNode: guardSnode1,
               destinationSnodeEd25519: targetNode,
               associatedWith,
+              allow401s: false,
             });
             throw new Error('Error expected');
           } catch (e) {
@@ -364,6 +374,7 @@ describe('OnionPathsErrors', () => {
               destinationSnodeEd25519: targetNode,
 
               associatedWith,
+              allow401s: false,
             });
             throw new Error('Error expected');
           } catch (e) {
@@ -401,6 +412,7 @@ describe('OnionPathsErrors', () => {
               guardNode: guardSnode1,
               destinationSnodeEd25519: targetNode,
               associatedWith,
+              allow401s: false,
             });
             throw new Error('Error expected');
           } catch (e) {
@@ -448,6 +460,7 @@ describe('OnionPathsErrors', () => {
           destinationSnodeEd25519: targetNode,
 
           associatedWith,
+          allow401s: false,
         });
         throw new Error('Error expected');
       } catch (e) {
@@ -484,6 +497,7 @@ describe('OnionPathsErrors', () => {
           guardNode: guardSnode1,
           destinationSnodeEd25519: targetNode,
           associatedWith,
+          allow401s: false,
         });
         throw new Error('Error expected');
       } catch (e) {
@@ -525,6 +539,7 @@ describe('OnionPathsErrors', () => {
           guardNode: guardSnode1,
           destinationSnodeEd25519: targetNode,
           associatedWith,
+          allow401s: false,
         });
         throw new Error('Error expected');
       } catch (e) {
@@ -565,6 +580,7 @@ describe('OnionPathsErrors', () => {
             guardNode: guardSnode1,
             destinationSnodeEd25519: targetNode,
             associatedWith,
+            allow401s: false,
           });
           throw new Error('Error expected');
         } catch (e) {
@@ -607,6 +623,7 @@ describe('OnionPathsErrors', () => {
           guardNode,
           destinationSnodeEd25519: targetNode,
           associatedWith,
+          allow401s: false,
         });
         throw new Error('Error expected');
       } catch (e) {

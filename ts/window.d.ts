@@ -3,7 +3,6 @@ import {} from 'styled-components/cssprop';
 
 import { LocalizerType } from './types/Util';
 
-import { ConversationCollection } from './models/conversation';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
 
 export interface LibTextsecure {
@@ -30,8 +29,8 @@ declare global {
     sessionFeatureFlags: {
       useOnionRequests: boolean;
       useTestNet: boolean;
-      useClosedGroupV3: boolean;
-      integrationTestEnv: boolean;
+      useClosedGroupV2: boolean;
+      useClosedGroupV2QAButtons: boolean;
       debug: {
         debugLogging: boolean;
         debugLibsessionDumps: boolean;
@@ -56,10 +55,8 @@ declare global {
     setTheme: (newTheme: string) => Promise<void>;
     userConfig: any;
     versionInfo: any;
-    getConversations: () => ConversationCollection;
     readyForUpdates: () => void;
     drawAttention: () => void;
-    MediaRecorder: any;
 
     platform: string;
     openFromNotification: (convoId: string) => void;
@@ -82,13 +79,12 @@ declare global {
     setMenuBarVisibility: (val: boolean) => void;
     contextMenuShown: boolean;
     inboxStore?: Store;
+    getState: () => unknown;
     openConversationWithMessages: (args: {
       conversationKey: string;
       messageId: string | null;
     }) => Promise<void>;
-    LokiPushNotificationServer: any;
     getGlobalOnlineStatus: () => boolean;
-    confirmationDialog: any;
     setStartInTray: (val: boolean) => Promise<void>;
     getStartInTray: () => Promise<boolean>;
     getOpengroupPruning: () => Promise<boolean>;
@@ -99,7 +95,5 @@ declare global {
     setAutoUpdateEnabled: (enabled: boolean) => void;
     setZoomFactor: (newZoom: number) => void;
     updateZoomFactor: () => void;
-
-    Signal: any;
   }
 }

@@ -1,20 +1,28 @@
 import { map, toNumber } from 'lodash';
 
-import { EnvelopePlus } from './types';
-import { StringUtils } from '../session/utils';
 import { Data } from '../data/data';
+import { PubKey } from '../session/types';
+import { StringUtils } from '../session/utils';
 import { UnprocessedParameter } from '../types/sqlSharedTypes';
+import { EnvelopePlus } from './types';
 
-export async function removeFromCache(envelope: Pick<EnvelopePlus, 'id'>) {
+async function removeFromCache(envelope: Pick<EnvelopePlus, 'id'>) {
   return Data.removeUnprocessed(envelope.id);
 }
 
-export async function addToCache(
-  envelope: EnvelopePlus,
-  plaintext: ArrayBuffer,
-  messageHash: string
-) {
+function assertNon03Group(envelope: Pick<EnvelopePlus, 'source'>) {
+  if (PubKey.is03Pubkey(envelope.source)) {
+    window.log.warn('tried to addtocache message with source:', envelope.source);
+    // 03 group message keys are handled first. We also block the polling until the current messages are processed (so not updating the corresponding last hash)
+    // This means that we cannot miss a message from a 03 swarm, and if a message fails to be decrypted/handled, it will keep failing.
+    // So, there is no need for cache at all for those messages, which is great news as we consider the caching to be legacy code, to be removed asap.
+    throw new Error('addToCache we do not rely on the caching for 03 group messages');
+  }
+}
+
+async function addToCache(envelope: EnvelopePlus, plaintext: ArrayBuffer, messageHash: string) {
   const { id } = envelope;
+  assertNon03Group(envelope);
 
   const encodedEnvelope = StringUtils.decode(plaintext, 'base64');
   const data: UnprocessedParameter = {
@@ -70,15 +78,16 @@ async function increaseAttemptsOrRemove(
   );
 }
 
-export async function getAllFromCache() {
-  window?.log?.info('getAllFromCache');
+async function getAllFromCache() {
   const items = await fetchAllFromCache();
 
-  window?.log?.info('getAllFromCache loaded', items.length, 'saved envelopes');
+  if (items.length) {
+    window?.log?.info('getAllFromCache loaded', items.length, 'saved envelopes');
+  }
   return increaseAttemptsOrRemove(items);
 }
 
-export async function getAllFromCacheForSource(source: string) {
+async function getAllFromCacheForSource(source: string) {
   const items = await fetchAllFromCache();
 
   // keep items without source too (for old message already added to the cache)
@@ -91,10 +100,15 @@ export async function getAllFromCacheForSource(source: string) {
   return increaseAttemptsOrRemove(itemsFromSource);
 }
 
-export async function updateCacheWithDecryptedContent(
-  envelope: Pick<EnvelopePlus, 'id' | 'senderIdentity' | 'source'>,
-  plaintext: ArrayBuffer
-): Promise<void> {
+async function updateCacheWithDecryptedContent({
+  envelope,
+  decryptedContent,
+}: {
+  envelope: Pick<EnvelopePlus, 'id' | 'senderIdentity' | 'source'>;
+  decryptedContent: ArrayBuffer;
+}): Promise<void> {
+  assertNon03Group(envelope);
+
   const { id, senderIdentity, source } = envelope;
   const item = await Data.getUnprocessedById(id);
   if (!item) {
@@ -111,7 +125,20 @@ export async function updateCacheWithDecryptedContent(
     item.senderIdentity = senderIdentity;
   }
 
-  item.decrypted = StringUtils.decode(plaintext, 'base64');
+  item.decrypted = StringUtils.decode(decryptedContent, 'base64');
 
   await Data.updateUnprocessedWithData(item.id, item);
 }
+
+async function forceEmptyCache() {
+  await Data.removeAllUnprocessed();
+}
+
+export const IncomingMessageCache = {
+  removeFromCache,
+  addToCache,
+  updateCacheWithDecryptedContent,
+  getAllFromCacheForSource,
+  getAllFromCache,
+  forceEmptyCache,
+};

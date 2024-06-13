@@ -272,7 +272,7 @@ describe('formatRowOfConversation', () => {
       formatRowOfConversation(
         fillConvoAttributesWithDefaults({
           id: '1234565',
-          type: ConversationTypeEnum.GROUPV3,
+          type: ConversationTypeEnum.GROUPV2,
           nickname: 'nickname',
           displayNameInProfile: 'displayNameInProfile',
           profileKey: '',

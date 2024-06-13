@@ -1,13 +1,13 @@
-import { RawMessage } from '../types/RawMessage';
+import { OutgoingRawMessage } from '../types/RawMessage';
 
-import { PubKey } from '../types';
-import { ClosedGroupMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMessage';
-import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
-import { ClosedGroupEncryptionPairReplyMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
-import { ContentMessage } from '../messages/outgoing';
-import { ExpirationTimerUpdateMessage } from '../messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
 import { SignalService } from '../../protobuf';
 import { SnodeNamespaces } from '../apis/snode_api/namespaces';
+import { ContentMessage } from '../messages/outgoing';
+import { ExpirationTimerUpdateMessage } from '../messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
+import { ClosedGroupEncryptionPairReplyMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
+import { ClosedGroupMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMessage';
+import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
+import { PubKey } from '../types';
 
 function getEncryptionTypeFromMessageType(
   message: ContentMessage,
@@ -38,19 +38,20 @@ export async function toRawMessage(
   message: ContentMessage,
   namespace: SnodeNamespaces,
   isGroup = false
-): Promise<RawMessage> {
+): Promise<OutgoingRawMessage> {
   const ttl = message.ttl();
   const plainTextBuffer = message.plainTextBuffer();
 
   const encryption = getEncryptionTypeFromMessageType(message, isGroup);
 
-  const rawMessage: RawMessage = {
+  const rawMessage: OutgoingRawMessage = {
     identifier: message.identifier,
     plainTextBuffer,
     device: destinationPubKey.key,
     ttl,
     encryption,
     namespace,
+    networkTimestampCreated: message.createAtNetworkTimestamp,
   };
 
   return rawMessage;

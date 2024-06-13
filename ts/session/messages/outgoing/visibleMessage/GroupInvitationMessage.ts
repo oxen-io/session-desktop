@@ -1,18 +1,19 @@
 import { SignalService } from '../../../../protobuf';
-import { VisibleMessage, VisibleMessageParams } from './VisibleMessage';
+import { DataMessage } from '../DataMessage';
+import { ExpirableMessageParams } from '../ExpirableMessage';
 
-interface GroupInvitationMessageParams extends VisibleMessageParams {
+interface GroupInvitationMessageParams extends ExpirableMessageParams {
   url: string;
   name: string;
 }
 
-export class GroupInvitationMessage extends VisibleMessage {
+export class GroupInvitationMessage extends DataMessage {
   private readonly url: string;
   private readonly name: string;
 
   constructor(params: GroupInvitationMessageParams) {
     super({
-      timestamp: params.timestamp,
+      createAtNetworkTimestamp: params.createAtNetworkTimestamp,
       identifier: params.identifier,
       expirationType: params.expirationType,
       expireTimer: params.expireTimer,
@@ -28,7 +29,6 @@ export class GroupInvitationMessage extends VisibleMessage {
     });
 
     return new SignalService.DataMessage({
-      ...super.dataProto(),
       openGroupInvitation,
     });
   }

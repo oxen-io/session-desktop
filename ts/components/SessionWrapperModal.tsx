@@ -5,6 +5,7 @@ import useKey from 'react-use/lib/useKey';
 import { SessionIconButton } from './icon';
 
 import { SessionButton, SessionButtonColor, SessionButtonType } from './basic/SessionButton';
+import { StyledRootDialog } from './dialog/StyledRootDialog';
 import { SessionFocusTrap } from './SessionFocusTrap';
 
 export type SessionWrapperModalType = {
@@ -65,7 +66,7 @@ export const SessionWrapperModal = (props: SessionWrapperModalType) => {
 
   return (
     <SessionFocusTrap>
-      <div
+      <StyledRootDialog
         className={classNames('loki-dialog modal', additionalClassName || null)}
         onClick={handleClick}
         role="dialog"
@@ -127,7 +128,7 @@ export const SessionWrapperModal = (props: SessionWrapperModalType) => {
             </div>
           </div>
         </div>
-      </div>
+      </StyledRootDialog>
     </SessionFocusTrap>
   );
 };

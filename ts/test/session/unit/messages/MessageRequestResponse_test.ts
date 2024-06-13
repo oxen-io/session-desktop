@@ -9,7 +9,7 @@ describe('MessageRequestResponse', () => {
   let message: MessageRequestResponse | undefined;
   it('correct ttl', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
     });
 
     expect(message.ttl()).to.equal(Constants.TTL_DEFAULT.CONTENT_MESSAGE);
@@ -17,7 +17,7 @@ describe('MessageRequestResponse', () => {
 
   it('has an identifier', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
     });
 
     expect(message.identifier).to.not.equal(null, 'identifier cannot be null');
@@ -27,7 +27,7 @@ describe('MessageRequestResponse', () => {
   it('has an identifier matching if given', () => {
     const identifier = v4();
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       identifier,
     });
 
@@ -36,7 +36,7 @@ describe('MessageRequestResponse', () => {
 
   it('isApproved is always true', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
     });
     const plainText = message.plainTextBuffer();
     const decoded = SignalService.Content.decode(plainText);
@@ -47,7 +47,7 @@ describe('MessageRequestResponse', () => {
 
   it('can create response without lokiProfile', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
     });
     const plainText = message.plainTextBuffer();
     const decoded = SignalService.Content.decode(plainText);
@@ -58,7 +58,7 @@ describe('MessageRequestResponse', () => {
 
   it('can create response with display name only', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile: { displayName: 'Jane', profileKey: null },
     });
     const plainText = message.plainTextBuffer();
@@ -71,7 +71,7 @@ describe('MessageRequestResponse', () => {
 
   it('empty profileKey does not get included', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile: { displayName: 'Jane', profileKey: new Uint8Array(0) },
     });
     const plainText = message.plainTextBuffer();
@@ -85,7 +85,7 @@ describe('MessageRequestResponse', () => {
 
   it('can create response with display name and profileKey and profileImage', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile: {
         displayName: 'Jane',
         profileKey: new Uint8Array([1, 2, 3, 4, 5, 6]),
@@ -117,7 +117,7 @@ describe('MessageRequestResponse', () => {
 
   it('profileKey not included if profileUrl not set', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile: { displayName: 'Jane', profileKey: new Uint8Array([1, 2, 3, 4, 5, 6]) },
     });
     const plainText = message.plainTextBuffer();
@@ -135,7 +135,7 @@ describe('MessageRequestResponse', () => {
 
   it('url not included if profileKey not set', () => {
     message = new MessageRequestResponse({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile: {
         displayName: 'Jane',
         profileKey: null,

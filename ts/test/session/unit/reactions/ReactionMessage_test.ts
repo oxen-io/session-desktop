@@ -1,19 +1,20 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-unused-expressions */
 import chai, { expect } from 'chai';
-import Sinon, { useFakeTimers } from 'sinon';
-import { noop } from 'lodash';
 import chaiAsPromised from 'chai-as-promised';
+import { noop } from 'lodash';
+import Sinon, { useFakeTimers } from 'sinon';
 
-import { Reactions } from '../../../../util/reactions';
 import { Data } from '../../../../data/data';
+import { DEFAULT_RECENT_REACTS } from '../../../../session/constants';
+import { Reactions } from '../../../../util/reactions';
 import * as Storage from '../../../../util/storage';
 import { generateFakeIncomingPrivateMessage, stubWindowLog } from '../../../test-utils/utils';
-import { DEFAULT_RECENT_REACTS } from '../../../../session/constants';
 
-import { UserUtils } from '../../../../session/utils';
-import { SignalService } from '../../../../protobuf';
 import { MessageCollection } from '../../../../models/message';
+import { SignalService } from '../../../../protobuf';
+import { UserUtils } from '../../../../session/utils';
+import { TestUtils } from '../../../test-utils';
 
 chai.use(chaiAsPromised as any);
 
@@ -21,7 +22,7 @@ describe('ReactionMessage', () => {
   stubWindowLog();
 
   let clock: Sinon.SinonFakeTimers;
-  const ourNumber = '0123456789abcdef';
+  const ourNumber = TestUtils.generateFakePubKeyStr();
   const originalMessage = generateFakeIncomingPrivateMessage();
   originalMessage.set('sent_at', Date.now());
 

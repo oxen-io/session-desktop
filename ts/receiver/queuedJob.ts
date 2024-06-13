@@ -1,10 +1,10 @@
-import _, { isEmpty, isNumber } from 'lodash';
+import _, { isEmpty, isNumber, toNumber } from 'lodash';
 import { queueAttachmentDownloads } from './attachments';
 
 import { Data } from '../data/data';
 import { ConversationModel } from '../models/conversation';
 import { MessageModel } from '../models/message';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { Quote } from './types';
 
 import { ConversationTypeEnum } from '../models/conversationAttributes';
@@ -20,9 +20,11 @@ import {
   pushQuotedMessageDetails,
 } from '../state/ducks/conversations';
 import { showMessageRequestBannerOutsideRedux } from '../state/ducks/userConfig';
+import { getMemberInviteSentOutsideRedux } from '../state/selectors/groups';
 import { getHideMessageRequestBannerOutsideRedux } from '../state/selectors/userConfig';
 import { GoogleChrome } from '../util';
 import { LinkPreviews } from '../util/linkPreviews';
+import { GroupV2Receiver } from './groupv2/handleGroupV2Message';
 
 function contentTypeSupported(type: string): boolean {
   const Chrome = GoogleChrome;
@@ -226,6 +228,66 @@ export function toRegularMessage(rawDataMessage: SignalService.DataMessage): Reg
   };
 }
 
+async function toggleMsgRequestBannerIfNeeded(
+  conversation: ConversationModel,
+  message: MessageModel,
+  source: string
+) {
+  if (!conversation.isPrivate() || !message.isIncoming()) {
+    return;
+  }
+
+  const incomingMessageCount = await Data.getMessageCountByType(
+    conversation.id,
+    MessageDirection.incoming
+  );
+  const isFirstRequestMessage = incomingMessageCount < 2;
+  if (
+    conversation.isIncomingRequest() &&
+    isFirstRequestMessage &&
+    getHideMessageRequestBannerOutsideRedux()
+  ) {
+    showMessageRequestBannerOutsideRedux();
+  }
+
+  // For edge case when messaging a client that's unable to explicitly send request approvals
+  if (conversation.isOutgoingRequest()) {
+    // Conversation was not approved before so a sync is needed
+    await conversation.addIncomingApprovalMessage(toNumber(message.get('sent_at')) - 1, source);
+  }
+  // should only occur after isOutgoing request as it relies on didApproveMe being false.
+  await conversation.setDidApproveMe(true);
+}
+
+async function handleMessageFromPendingMember(
+  conversation: ConversationModel,
+  message: MessageModel,
+  source: string
+) {
+  const convoId = conversation.id;
+  if (
+    !conversation.isClosedGroupV2() ||
+    !message.isIncoming() ||
+    !conversation.weAreAdminUnblinded() || // this checks on libsession of that group if we are an admin
+    !conversation.getGroupMembers().includes(source) || // this check that the sender of that message is indeed a member of the group
+    !PubKey.is03Pubkey(convoId) ||
+    !PubKey.is05Pubkey(source)
+  ) {
+    return;
+  }
+
+  const isMemberInviteSent = getMemberInviteSentOutsideRedux(source, convoId);
+  if (!isMemberInviteSent) {
+    return; // nothing else to do
+  }
+  // we are an admin and we received a message from a member whose invite is `pending`. Update that member state now and push a change.
+  await GroupV2Receiver.handleGroupUpdateInviteResponseMessage({
+    groupPk: convoId,
+    author: source,
+    change: { isApproved: true },
+  });
+}
+
 async function handleRegularMessage(
   conversation: ConversationModel,
   sendingDeviceConversation: ConversationModel,
@@ -234,7 +296,6 @@ async function handleRegularMessage(
   source: string,
   messageHash: string
 ): Promise<void> {
-  const type = message.get('type');
   // this does not trigger a UI update nor write to the db
   await copyFromQuotedMessage(message, rawDataMessage.quote);
 
@@ -265,34 +326,10 @@ async function handleRegularMessage(
     await sendingDeviceConversation.updateBlocksSogsMsgReqsTimestamp(updateBlockTimestamp, false);
   }
 
-  if (type === 'incoming') {
-    if (conversation.isPrivate()) {
-      const incomingMessageCount = await Data.getMessageCountByType(
-        conversation.id,
-        MessageDirection.incoming
-      );
-      const isFirstRequestMessage = incomingMessageCount < 2;
-      if (
-        conversation.isIncomingRequest() &&
-        isFirstRequestMessage &&
-        getHideMessageRequestBannerOutsideRedux()
-      ) {
-        showMessageRequestBannerOutsideRedux();
-      }
+  await toggleMsgRequestBannerIfNeeded(conversation, message, source);
+  await handleMessageFromPendingMember(conversation, message, source);
 
-      // For edge case when messaging a client that's unable to explicitly send request approvals
-      if (conversation.isOutgoingRequest()) {
-        // Conversation was not approved before so a sync is needed
-        await conversation.addIncomingApprovalMessage(
-          _.toNumber(message.get('sent_at')) - 1,
-          source
-        );
-      }
-      // should only occur after isOutgoing request as it relies on didApproveMe being false.
-      await conversation.setDidApproveMe(true);
-    }
-  }
-  const conversationActiveAt = conversation.get('active_at');
+  const conversationActiveAt = conversation.getActiveAt();
   if (
     !conversationActiveAt ||
     conversation.isHidden() ||
@@ -381,7 +418,7 @@ export async function handleMessageJob(
     } in conversation ${conversation.idForLogging()}, messageHash:${messageHash}`
   );
 
-  const sendingDeviceConversation = await getConversationController().getOrCreateAndWait(
+  const sendingDeviceConversation = await ConvoHub.use().getOrCreateAndWait(
     source,
     ConversationTypeEnum.PRIVATE
   );
@@ -445,7 +482,7 @@ export async function handleMessageJob(
         providedExpireTimer: expireTimerUpdate,
         providedSource: source,
         fromSync: source === UserUtils.getOurPubKeyStrFromCache(),
-        receivedAt: messageModel.get('received_at'),
+        sentAt: messageModel.get('received_at'),
         existingMessage: messageModel,
         shouldCommitConvo: false,
         fromCurrentDevice: false,
@@ -473,7 +510,7 @@ export async function handleMessageJob(
     //   to their source message.
 
     conversation.set({
-      active_at: Math.max(conversation.get('active_at'), messageModel.get('sent_at') || 0),
+      active_at: Math.max(conversation.getActiveAt() || 0, messageModel.get('sent_at') || 0),
     });
     // this is a throttled call and will only run once every 1 sec at most
     conversation.updateLastMessage();
@@ -486,7 +523,7 @@ export async function handleMessageJob(
     void queueAttachmentDownloads(messageModel, conversation);
     // Check if we need to update any profile names
     // the only profile we don't update with what is coming here is ours,
-    // as our profile is shared across our devices with a ConfigurationMessage
+    // as our profile is shared across our devices with libsession
     if (messageModel.isIncoming() && regularDataMessage.profile) {
       await ProfileManager.updateProfileOfContact(
         sendingDeviceConversation.id,

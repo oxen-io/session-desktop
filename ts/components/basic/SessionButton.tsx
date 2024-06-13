@@ -112,7 +112,7 @@ type Props = {
   onClick: any;
   children?: ReactNode;
   margin?: string;
-  dataTestId?: string;
+  dataTestId?: React.SessionDataTestId;
 };
 
 export const SessionButton = (props: Props) => {

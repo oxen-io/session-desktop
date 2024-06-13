@@ -2,14 +2,14 @@ import { filter, isNumber, omit } from 'lodash';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import * as Constants from '../constants';
 import { Data } from '../../data/data';
 import { MessageModel } from '../../models/message';
 import { downloadAttachment, downloadAttachmentSogsV3 } from '../../receiver/attachments';
 import { initializeAttachmentLogic, processNewAttachment } from '../../types/MessageAttachment';
 import { getAttachmentMetadata } from '../../types/message/initializeAttachmentMetadata';
-import { was404Error } from '../apis/snode_api/onions';
 import { AttachmentDownloadMessageDetails } from '../../types/sqlSharedTypes';
+import { was404Error } from '../apis/snode_api/onions';
+import * as Constants from '../constants';
 
 // this may cause issues if we increment that value to > 1, but only having one job will block the whole queue while one attachment is downloading
 const MAX_ATTACHMENT_JOB_PARALLELISM = 3;
@@ -152,6 +152,7 @@ async function _runJob(job: any) {
       await _finishJob(null, id);
       return;
     }
+
     const isTrusted = found.isTrustedForAttachmentDownload();
 
     if (!isTrusted) {

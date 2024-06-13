@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "友達申請が来ています。",
   "clearAllConfirmationTitle": "すべてのメッセージリクエストを削除",
   "clearAllConfirmationBody": "本当に全てのメッセージリクエストを消去しますか？",
-  "noMessagesInReadOnly": "<b>$name$</b> にはメッセージがありません。",
+  "thereAreNoMessagesIn": "<b>$name$</b> にはメッセージがありません。",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "<b>$name$</b> にはメッセージがありません。",
   "noMessagesInEverythingElse": "<b>$name$</b>からのメッセージがありません。会話を開始するにはメッセージを送信してください。",

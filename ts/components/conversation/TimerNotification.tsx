@@ -23,7 +23,7 @@ import { SpacerMD, TextWithChildren } from '../basic/Text';
 import { ExpirableReadableMessage } from './message/message-item/ExpirableReadableMessage';
 // eslint-disable-next-line import/order
 import { ConversationInteraction } from '../../interactions';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../basic/SessionButton';
 import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
@@ -62,7 +62,7 @@ function useFollowSettingsButtonClick(
           if (!selectedConvoKey) {
             throw new Error('no selected convokey');
           }
-          const convo = getConversationController().get(selectedConvoKey);
+          const convo = ConvoHub.use().get(selectedConvoKey);
           if (!convo) {
             throw new Error('no selected convo');
           }
@@ -153,7 +153,9 @@ function useTextToRender(props: PropsForExpirationTimer) {
     case 'fromOther':
       return disabled
         ? window.i18n(
-            ownSideOnly ? 'theyDisabledTheirDisappearingMessages' : 'disabledDisappearingMessages',
+            ownSideOnly
+              ? 'theyDisabledTheirDisappearingMessages'
+              : 'groupDisabledDisappearingMessages',
             [contact, timespanText]
           )
         : mode

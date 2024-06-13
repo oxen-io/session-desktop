@@ -1,10 +1,10 @@
 import { AbortController } from 'abort-controller';
 
+import { PubkeyType } from 'libsession_util_nodejs';
 import { MessageSender } from '.';
-import { ConfigurationMessage } from '../messages/outgoing/controlMessage/ConfigurationMessage';
 import { ClosedGroupMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMessage';
 import { ClosedGroupNameChangeMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNameChangeMessage';
-import { PubKey, RawMessage } from '../types';
+import { OutgoingRawMessage, PubKey } from '../types';
 import { JobQueue, MessageUtils, UserUtils } from '../utils';
 import { PendingMessageCache } from './PendingMessageCache';
 
@@ -13,9 +13,11 @@ import { ExpirationTimerUpdateMessage } from '../messages/outgoing/controlMessag
 import { ClosedGroupAddedMembersMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupAddedMembersMessage';
 import { ClosedGroupEncryptionPairMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairMessage';
 import { ClosedGroupMemberLeftMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupMemberLeftMessage';
-import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
 import { ClosedGroupRemovedMembersMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupRemovedMembersMessage';
-import { ClosedGroupVisibleMessage } from '../messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
+import {
+  ClosedGroupV2VisibleMessage,
+  ClosedGroupVisibleMessage,
+} from '../messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
 import { SyncMessageType } from '../utils/sync/syncUtils';
 import { MessageSentHandler } from './MessageSentHandler';
 
@@ -24,23 +26,21 @@ import { OpenGroupMessageV2 } from '../apis/open_group_api/opengroupV2/OpenGroup
 import { sendSogsReactionOnionV4 } from '../apis/open_group_api/sogsv3/sogsV3SendReaction';
 import {
   SnodeNamespaces,
-  SnodeNamespacesGroup,
+  SnodeNamespacesLegacyGroup,
   SnodeNamespacesUser,
 } from '../apis/snode_api/namespaces';
 import { CallMessage } from '../messages/outgoing/controlMessage/CallMessage';
-import { SharedConfigMessage } from '../messages/outgoing/controlMessage/SharedConfigMessage';
+import { DataExtractionNotificationMessage } from '../messages/outgoing/controlMessage/DataExtractionNotificationMessage';
+import { TypingMessage } from '../messages/outgoing/controlMessage/TypingMessage';
 import { UnsendMessage } from '../messages/outgoing/controlMessage/UnsendMessage';
+import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
+import { GroupUpdateDeleteMemberContentMessage } from '../messages/outgoing/controlMessage/group_v2/to_group/GroupUpdateDeleteMemberContentMessage';
+import { GroupUpdateInfoChangeMessage } from '../messages/outgoing/controlMessage/group_v2/to_group/GroupUpdateInfoChangeMessage';
+import { GroupUpdateMemberChangeMessage } from '../messages/outgoing/controlMessage/group_v2/to_group/GroupUpdateMemberChangeMessage';
+import { GroupUpdateMemberLeftMessage } from '../messages/outgoing/controlMessage/group_v2/to_group/GroupUpdateMemberLeftMessage';
+import { GroupUpdateInviteMessage } from '../messages/outgoing/controlMessage/group_v2/to_user/GroupUpdateInviteMessage';
+import { GroupUpdatePromoteMessage } from '../messages/outgoing/controlMessage/group_v2/to_user/GroupUpdatePromoteMessage';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-
-type ClosedGroupMessageType =
-  | ClosedGroupVisibleMessage
-  | ClosedGroupAddedMembersMessage
-  | ClosedGroupRemovedMembersMessage
-  | ClosedGroupNameChangeMessage
-  | ClosedGroupMemberLeftMessage
-  | ExpirationTimerUpdateMessage
-  | ClosedGroupEncryptionPairMessage
-  | UnsendMessage;
 
 // ClosedGroupEncryptionPairReplyMessage must be sent to a user pubkey. Not a group.
 
@@ -57,10 +57,10 @@ export class MessageQueue {
     destinationPubKey: PubKey,
     message: ContentMessage,
     namespace: SnodeNamespaces,
-    sentCb?: (message: RawMessage) => Promise<void>,
+    sentCb?: (message: OutgoingRawMessage) => Promise<void>,
     isGroup = false
   ): Promise<void> {
-    if (message instanceof ConfigurationMessage || !!(message as any).syncTarget) {
+    if ((message as any).syncTarget) {
       throw new Error('SyncMessage needs to be sent with sendSyncMessage');
     }
     await this.process(destinationPubKey, message, namespace, sentCb, isGroup);
@@ -85,7 +85,7 @@ export class MessageQueue {
     blinded: boolean;
     filesToLink: Array<number>;
   }) {
-    // Skipping the queue for Open Groups v2; the message is sent directly
+    // Skipping the MessageQueue for Open Groups v2; the message is sent directly
 
     try {
       // NOTE Reactions are handled separately
@@ -121,7 +121,7 @@ export class MessageQueue {
         `Failed to send message to open group: ${roomInfos.serverUrl}:${roomInfos.roomId}:`,
         e
       );
-      await MessageSentHandler.handleMessageSentFailure(
+      await MessageSentHandler.handlePublicMessageSentFailure(
         message,
         e || new Error('Failed to send message to open group.')
       );
@@ -161,7 +161,7 @@ export class MessageQueue {
         `Failed to send message to open group: ${roomInfos.serverUrl}:${roomInfos.roomId}:`,
         e.message
       );
-      await MessageSentHandler.handleMessageSentFailure(
+      await MessageSentHandler.handlePublicMessageSentFailure(
         message,
         e || new Error('Failed to send message to open group.')
       );
@@ -178,9 +178,17 @@ export class MessageQueue {
     groupPubKey,
     sentCb,
   }: {
-    message: ClosedGroupMessageType;
-    namespace: SnodeNamespacesGroup;
-    sentCb?: (message: RawMessage) => Promise<void>;
+    message:
+      | ClosedGroupVisibleMessage
+      | ClosedGroupAddedMembersMessage
+      | ClosedGroupRemovedMembersMessage
+      | ClosedGroupNameChangeMessage
+      | ClosedGroupMemberLeftMessage
+      | ExpirationTimerUpdateMessage
+      | ClosedGroupEncryptionPairMessage
+      | UnsendMessage;
+    namespace: SnodeNamespacesLegacyGroup;
+    sentCb?: (message: OutgoingRawMessage) => Promise<void>;
     groupPubKey?: PubKey;
   }): Promise<void> {
     let destinationPubKey: PubKey | undefined = groupPubKey;
@@ -196,6 +204,74 @@ export class MessageQueue {
     return this.sendToPubKey(PubKey.cast(destinationPubKey), message, namespace, sentCb, true);
   }
 
+  public async sendToGroupV2({
+    message,
+    sentCb,
+  }: {
+    message:
+      | ClosedGroupV2VisibleMessage
+      | GroupUpdateMemberChangeMessage
+      | GroupUpdateInfoChangeMessage
+      | GroupUpdateDeleteMemberContentMessage
+      | GroupUpdateMemberLeftMessage;
+    sentCb?: (message: OutgoingRawMessage) => Promise<void>;
+  }): Promise<void> {
+    if (!message.destination) {
+      throw new Error('Invalid group message passed in sendToGroupV2.');
+    }
+
+    return this.sendToPubKey(
+      PubKey.cast(message.destination),
+      message,
+      message.namespace,
+      sentCb,
+      true
+    );
+  }
+
+  public async sendToGroupV2NonDurably({
+    message,
+  }: {
+    message:
+      | ClosedGroupV2VisibleMessage
+      | GroupUpdateMemberChangeMessage
+      | GroupUpdateInfoChangeMessage
+      | GroupUpdateDeleteMemberContentMessage
+      | GroupUpdateMemberLeftMessage;
+  }) {
+    if (!message.destination || !PubKey.is03Pubkey(message.destination)) {
+      throw new Error('Invalid group message passed in sendToGroupV2NonDurably.');
+    }
+
+    return this.sendToPubKeyNonDurably({
+      message,
+      namespace: message.namespace,
+      pubkey: PubKey.cast(message.destination),
+      isSyncMessage: false,
+    });
+  }
+
+  public async sendToLegacyGroupNonDurably({
+    message,
+    namespace,
+    destination,
+  }: {
+    message: ClosedGroupMemberLeftMessage;
+    namespace: SnodeNamespaces.LegacyClosedGroup;
+    destination: PubkeyType;
+  }) {
+    if (!destination || !PubKey.is05Pubkey(destination)) {
+      throw new Error('Invalid legacygroup message passed in sendToLegacyGroupNonDurably.');
+    }
+
+    return this.sendToPubKeyNonDurably({
+      message,
+      namespace,
+      pubkey: PubKey.cast(destination),
+      isSyncMessage: false,
+    });
+  }
+
   public async sendSyncMessage({
     namespace,
     message,
@@ -203,17 +279,12 @@ export class MessageQueue {
   }: {
     namespace: SnodeNamespacesUser;
     message?: SyncMessageType;
-    sentCb?: (message: RawMessage) => Promise<void>;
+    sentCb?: (message: OutgoingRawMessage) => Promise<void>;
   }): Promise<void> {
     if (!message) {
       return;
     }
-    if (
-      !(message instanceof ConfigurationMessage) &&
-      !(message instanceof UnsendMessage) &&
-      !(message instanceof SharedConfigMessage) &&
-      !(message as any)?.syncTarget
-    ) {
+    if (!(message instanceof UnsendMessage) && !(message as any)?.syncTarget) {
       throw new Error('Invalid message given to sendSyncMessage');
     }
 
@@ -222,41 +293,83 @@ export class MessageQueue {
   }
 
   /**
-   * Sends a message that awaits until the message is completed sending
+   * Send a message to a 1o1 swarm
    * @param user user pub key to send to
    * @param message Message to be sent
    */
-  public async sendToPubKeyNonDurably({
+  public async sendTo1o1NonDurably({
     namespace,
     message,
     pubkey,
   }: {
     pubkey: PubKey;
     message:
-      | ClosedGroupNewMessage
+      | TypingMessage // no point of caching the typing message, they are very short lived
+      | DataExtractionNotificationMessage
       | CallMessage
-      | SharedConfigMessage
-      | ClosedGroupMemberLeftMessage;
+      | ClosedGroupNewMessage
+      | GroupUpdateInviteMessage
+      | GroupUpdatePromoteMessage;
+    namespace: SnodeNamespaces.Default;
+  }): Promise<number | null> {
+    return this.sendToPubKeyNonDurably({ message, namespace, pubkey, isSyncMessage: false });
+  }
+
+  /**
+   * Sends a message that awaits until the message is completed sending
+   * @param user user pub key to send to
+   * @param message Message to be sent
+   */
+  private async sendToPubKeyNonDurably({
+    namespace,
+    message,
+    pubkey,
+    isSyncMessage,
+  }: {
+    pubkey: PubKey;
+    message: ContentMessage;
     namespace: SnodeNamespaces;
-  }): Promise<boolean | number> {
-    let rawMessage;
+    isSyncMessage: boolean;
+  }): Promise<number | null> {
+    const rawMessage = await MessageUtils.toRawMessage(pubkey, message, namespace);
+    return this.sendSingleMessageAndHandleResult({ rawMessage, isSyncMessage });
+  }
+
+  private async sendSingleMessageAndHandleResult({
+    rawMessage,
+    isSyncMessage,
+  }: {
+    rawMessage: OutgoingRawMessage;
+    isSyncMessage: boolean;
+  }) {
     try {
-      rawMessage = await MessageUtils.toRawMessage(pubkey, message, namespace);
-      const { wrappedEnvelope, effectiveTimestamp } = await MessageSender.send({
+      const { effectiveTimestamp } = await MessageSender.sendSingleMessage({
         message: rawMessage,
-        isSyncMessage: false,
+        isSyncMessage,
       });
-      await MessageSentHandler.handleMessageSentSuccess(
-        rawMessage,
-        effectiveTimestamp,
-        wrappedEnvelope
-      );
+
+      const cb = this.pendingMessageCache.callbacks.get(rawMessage.identifier);
+
+      if (cb) {
+        await cb(rawMessage);
+      }
+      this.pendingMessageCache.callbacks.delete(rawMessage.identifier);
+
       return effectiveTimestamp;
     } catch (error) {
-      if (rawMessage) {
-        await MessageSentHandler.handleMessageSentFailure(rawMessage, error);
-      }
-      return false;
+      window.log.error(
+        'sendSingleMessageAndHandleResult: failed to send message with: ',
+        error.message
+      );
+      await MessageSentHandler.handleSwarmMessageSentFailure(
+        { device: rawMessage.device, identifier: rawMessage.identifier },
+        error
+      );
+
+      return null;
+    } finally {
+      // Remove from the cache because retrying is done in the sender
+      void this.pendingMessageCache.remove(rawMessage);
     }
   }
 
@@ -275,30 +388,7 @@ export class MessageQueue {
       if (!jobQueue.has(messageId)) {
         // We put the event handling inside this job to avoid sending duplicate events
         const job = async () => {
-          try {
-            const { wrappedEnvelope, effectiveTimestamp } = await MessageSender.send({
-              message,
-              isSyncMessage,
-            });
-
-            await MessageSentHandler.handleMessageSentSuccess(
-              message,
-              effectiveTimestamp,
-              wrappedEnvelope
-            );
-
-            const cb = this.pendingMessageCache.callbacks.get(message.identifier);
-
-            if (cb) {
-              await cb(message);
-            }
-            this.pendingMessageCache.callbacks.delete(message.identifier);
-          } catch (error) {
-            void MessageSentHandler.handleMessageSentFailure(message, error);
-          } finally {
-            // Remove from the cache because retrying is done in the sender
-            void this.pendingMessageCache.remove(message);
-          }
+          await this.sendSingleMessageAndHandleResult({ rawMessage: message, isSyncMessage });
         };
         await jobQueue.addWithId(messageId, job);
       }
@@ -323,14 +413,13 @@ export class MessageQueue {
     destinationPk: PubKey,
     message: ContentMessage,
     namespace: SnodeNamespaces,
-    sentCb?: (message: RawMessage) => Promise<void>,
+    sentCb?: (message: OutgoingRawMessage) => Promise<void>,
     isGroup = false
   ): Promise<void> {
     // Don't send to ourselves
-    const us = UserUtils.getOurPubKeyFromCache();
     let isSyncMessage = false;
-    if (us && destinationPk.isEqual(us)) {
-      // We allow a message for ourselves only if it's a ConfigurationMessage, a ClosedGroupNewMessage,
+    if (UserUtils.isUsFromCache(destinationPk)) {
+      // We allow a message for ourselves only if it's a ClosedGroupNewMessage,
       // or a message with a syncTarget set.
 
       if (MessageSender.isContentSyncMessage(message)) {

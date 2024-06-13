@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PubKey } from '../../session/types';
 import { ToastUtils } from '../../session/utils';
 import { Flex } from '../basic/Flex';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { updateAddModeratorsModal } from '../../state/ducks/modalDialog';
 import { SessionButton, SessionButtonType } from '../basic/SessionButton';
 import { SessionSpinner } from '../basic/SessionSpinner';
@@ -22,7 +22,7 @@ export const AddModeratorsDialog = (props: Props) => {
 
   const dispatch = useDispatch();
   const darkMode = useSelector(isDarkTheme);
-  const convo = getConversationController().get(conversationId);
+  const convo = ConvoHub.use().get(conversationId);
 
   const [inputBoxValue, setInputBoxValue] = useState('');
   const [addingInProgress, setAddingInProgress] = useState(false);

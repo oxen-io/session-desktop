@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "您有一个新的好友申请",
   "clearAllConfirmationTitle": "清除所有的消息请求",
   "clearAllConfirmationBody": "您确定要清除所有的消息请求吗？",
-  "noMessagesInReadOnly": "<b>$name$中没有消息</b>",
+  "thereAreNoMessagesIn": "<b>$name$中没有消息</b>",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "你在<b>$name$</b>中没有消息",
   "noMessagesInEverythingElse": "您没有来自 <b>$name$</b>的消息。发送一条消息开始对话！",

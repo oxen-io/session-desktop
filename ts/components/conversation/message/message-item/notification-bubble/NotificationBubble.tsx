@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { SessionHtmlRenderer } from '../../../../basic/SessionHTMLRenderer';
 import { SessionIcon, SessionIconType } from '../../../../icon';
 
 const NotificationBubbleFlex = styled.div`
@@ -44,8 +45,10 @@ export const NotificationBubble = (props: {
             iconPadding="auto 10px"
           />
         </NotificationBubbleIconContainer>
-      )}
-      <NotificationBubbleText>{notificationText}</NotificationBubbleText>
+      )}{' '}
+      <NotificationBubbleText>
+        <SessionHtmlRenderer html={notificationText}></SessionHtmlRenderer>
+      </NotificationBubbleText>
       {iconType && <NotificationBubbleIconContainer />}
     </NotificationBubbleFlex>
   );

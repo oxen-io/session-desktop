@@ -7,10 +7,8 @@ interface Props {
   label: string;
 }
 
-export class EmptyState extends React.Component<Props> {
-  public render() {
-    const { label } = this.props;
+export const EmptyState = (props: Props) => {
+  const { label } = props;
 
-    return <div className="module-empty-state">{label}</div>;
-  }
-}
+  return <div className="module-empty-state">{label}</div>;
+};

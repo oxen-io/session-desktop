@@ -2,6 +2,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { filter, isEmpty, isFinite, isNumber, pick, sortBy, toNumber } from 'lodash';
 
+import { useSelector } from 'react-redux';
 import {
   ConversationLookupType,
   ConversationsStateType,
@@ -25,7 +26,7 @@ import { GenericReadableMessageSelectorProps } from '../../components/conversati
 import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { CONVERSATION_PRIORITIES, isOpenOrClosedGroup } from '../../models/conversationAttributes';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { LocalizerType } from '../../types/Util';
 import { BlockedNumberController } from '../../util';
@@ -36,6 +37,7 @@ import { MessageReactsSelectorProps } from '../../components/conversation/messag
 import { processQuoteAttachment } from '../../models/message';
 import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { PubKey } from '../../session/types';
+import { UserGroupsWrapperActions } from '../../webworker/workers/browser/libsession_worker_interface';
 import { getSelectedConversationKey } from './selectedConversation';
 import { getModeratorsOutsideRedux } from './sogsRoomInfo';
 
@@ -72,7 +74,7 @@ export const getSortedMessagesOfSelectedConversation = createSelector(
     }
 
     const convoId = messages[0].propsForMessage.convoId;
-    const convo = getConversationController().get(convoId);
+    const convo = ConvoHub.use().get(convoId);
 
     if (!convo) {
       return [];
@@ -89,6 +91,13 @@ export const hasSelectedConversationIncomingMessages = createSelector(
   getSortedMessagesOfSelectedConversation,
   (messages: Array<MessageModelPropsWithoutConvoProps>): boolean => {
     return messages.some(m => m.propsForMessage.direction === 'incoming');
+  }
+);
+
+export const hasSelectedConversationOutgoingMessages = createSelector(
+  getSortedMessagesOfSelectedConversation,
+  (messages: Array<MessageModelPropsWithoutConvoProps>): boolean => {
+    return messages.some(m => m.propsForMessage.direction === 'outgoing');
   }
 );
 
@@ -277,6 +286,13 @@ const _getLeftPaneConversationIds = (
         return false;
       }
 
+      if (
+        PubKey.is03Pubkey(conversation.id) &&
+        UserGroupsWrapperActions.getCachedGroup(conversation.id)?.invitePending
+      ) {
+        return false;
+      }
+
       // a non private conversation is always returned here
       if (!conversation.isPrivate) {
         return true;
@@ -295,21 +311,6 @@ const _getLeftPaneConversationIds = (
       return true;
     })
     .map(m => m.id);
-};
-
-const _getPrivateFriendsConversations = (
-  sortedConversations: Array<ReduxConversationType>
-): Array<ReduxConversationType> => {
-  return sortedConversations.filter(convo => {
-    return (
-      convo.isPrivate &&
-      !convo.isMe &&
-      !convo.isBlocked &&
-      convo.isApproved &&
-      convo.didApproveMe &&
-      convo.activeAt !== undefined
-    );
-  });
 };
 
 const _getGlobalUnreadCount = (sortedConversations: Array<ReduxConversationType>): number => {
@@ -390,37 +391,38 @@ const _getConversationRequests = (
   sortedConversations: Array<ReduxConversationType>
 ): Array<ReduxConversationType> => {
   return filter(sortedConversations, conversation => {
-    const { isApproved, isBlocked, isPrivate, isMe, activeAt, didApproveMe } = conversation;
+    const { isApproved, isBlocked, isPrivate, isMe, activeAt, didApproveMe, id } = conversation;
+    const invitePending = PubKey.is03Pubkey(id)
+      ? UserGroupsWrapperActions.getCachedGroup(id)?.invitePending || false
+      : false;
     const isIncomingRequest = hasValidIncomingRequestValues({
+      id,
       isApproved: isApproved || false,
       isBlocked: isBlocked || false,
       isPrivate: isPrivate || false,
       isMe: isMe || false,
       activeAt: activeAt || 0,
       didApproveMe: didApproveMe || false,
+      invitePending,
     });
     return isIncomingRequest;
   });
 };
 
-export const getConversationRequests = createSelector(
-  getSortedConversations,
-  _getConversationRequests
-);
+const getConversationRequests = createSelector(getSortedConversations, _getConversationRequests);
 
 export const getConversationRequestsIds = createSelector(getConversationRequests, requests =>
   requests.map(m => m.id)
 );
 
-export const hasConversationRequests = (state: StateType) => {
-  return !!getConversationRequests(state).length;
-};
-
 const _getUnreadConversationRequests = (
   sortedConversationRequests: Array<ReduxConversationType>
 ): Array<ReduxConversationType> => {
   return filter(sortedConversationRequests, conversation => {
-    return Boolean(conversation && conversation.unreadCount && conversation.unreadCount > 0);
+    return Boolean(
+      conversation &&
+        ((conversation.unreadCount && conversation.unreadCount > 0) || conversation.isMarkedUnread)
+    );
   });
 };
 
@@ -443,11 +445,29 @@ export const getLeftPaneConversationIds = createSelector(
   _getLeftPaneConversationIds
 );
 
-const getDirectContacts = createSelector(getSortedConversations, _getPrivateFriendsConversations);
+const getPrivateFriendsConversations = (
+  sortedConversations: Array<ReduxConversationType>
+): Array<ReduxConversationType> => {
+  return sortedConversations.filter(convo => {
+    return (
+      convo.isPrivate &&
+      !convo.isMe &&
+      !convo.isBlocked &&
+      convo.isApproved &&
+      (window.sessionFeatureFlags.useClosedGroupV2 || convo.didApproveMe) && // with groupv2, we can invite contacts which did not approve us yet
+      convo.activeAt !== undefined
+    );
+  });
+};
 
-export const getPrivateContactsPubkeys = createSelector(getDirectContacts, state =>
-  state.map(m => m.id)
-);
+const getDirectContacts = createSelector(getSortedConversations, getPrivateFriendsConversations);
+
+const getPrivateContactsPubkeys = createSelector(getDirectContacts, state => state.map(m => m.id));
+
+export const useContactsToInviteToGroup = () => {
+  const contacts = useSelector(getPrivateContactsPubkeys);
+  return contacts;
+};
 
 export const getDirectContactsCount = createSelector(
   getDirectContacts,
@@ -627,8 +647,8 @@ export function getLoadedMessagesLength(state: StateType) {
   return getMessagesFromState(state).length;
 }
 
-export function getSelectedHasMessages(state: StateType): boolean {
-  return !isEmpty(getMessagesFromState(state));
+export function useSelectedHasMessages(): boolean {
+  return useSelector((state: StateType) => !isEmpty(getMessagesFromState(state)));
 }
 
 export const isFirstUnreadMessageIdAbove = createSelector(
@@ -979,4 +999,10 @@ export const getIsSelectedConvoInitialLoadingInProgress = (state: StateType): bo
 
 export function getCurrentlySelectedConversationOutsideRedux() {
   return window?.inboxStore?.getState().conversations.selectedConversation as string | undefined;
+}
+
+export function useConversationIdOrigin(convoId: string | undefined) {
+  return useSelector((state: StateType) =>
+    convoId ? state.conversations.conversationLookup?.[convoId]?.conversationIdOrigin : undefined
+  );
 }

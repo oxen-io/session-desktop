@@ -7,16 +7,11 @@ import { SettingsKey } from '../../data/settings-key';
 import { isAudioNotificationSupported } from '../../types/Settings';
 import { Notifications } from '../../util/notifications';
 import { SessionButton } from '../basic/SessionButton';
-import { SessionRadioGroup } from '../basic/SessionRadioGroup';
+import { SessionRadioGroup, SessionRadioItems } from '../basic/SessionRadioGroup';
 import { SpacerLG } from '../basic/Text';
 import { SessionSettingsItemWrapper, SessionToggleWithDescription } from './SessionSettingListItem';
 
-enum NOTIFICATION {
-  MESSAGE = 'message',
-  NAME = 'name',
-  COUNT = 'count',
-  OFF = 'off',
-}
+const NotificationType = { message: 'message', name: 'name', count: 'count', off: 'off' } as const;
 
 const StyledButtonContainer = styled.div`
   display: flex;
@@ -29,28 +24,26 @@ export const SessionNotificationGroupSettings = () => {
   const forceUpdate = useUpdate();
 
   const initialNotificationEnabled =
-    window.getSettingValue(SettingsKey.settingsNotification) || NOTIFICATION.MESSAGE;
+    window.getSettingValue(SettingsKey.settingsNotification) || NotificationType.message;
 
   const initialAudioNotificationEnabled =
     window.getSettingValue(SettingsKey.settingsAudioNotification) || false;
 
   const notificationsAreEnabled =
-    initialNotificationEnabled && initialNotificationEnabled !== NOTIFICATION.OFF;
+    initialNotificationEnabled && initialNotificationEnabled !== NotificationType.off;
 
-  const items = [
-    {
-      label: window.i18n('nameAndMessage'),
-      value: NOTIFICATION.MESSAGE,
-    },
-    {
-      label: window.i18n('nameOnly'),
-      value: NOTIFICATION.NAME,
-    },
-    {
-      label: window.i18n('noNameOrMessage'),
-      value: NOTIFICATION.COUNT,
-    },
-  ];
+  const options = [
+    { label: window.i18n('nameAndMessage'), value: NotificationType.message },
+    { label: window.i18n('nameOnly'), value: NotificationType.name },
+    { label: window.i18n('noNameOrMessage'), value: NotificationType.count },
+  ] as const;
+
+  const items: SessionRadioItems = options.map(m => ({
+    label: m.label,
+    value: m.value,
+    inputDatatestId: `input-${m.value}`,
+    labelDatatestId: `label-${m.value}`,
+  }));
 
   const onClickPreview = () => {
     if (!notificationsAreEnabled) {
@@ -75,7 +68,7 @@ export const SessionNotificationGroupSettings = () => {
         onClickToggle={async () => {
           await window.setSettingValue(
             SettingsKey.settingsNotification,
-            notificationsAreEnabled ? NOTIFICATION.OFF : NOTIFICATION.MESSAGE
+            notificationsAreEnabled ? 'off' : 'message'
           );
           forceUpdate();
         }}

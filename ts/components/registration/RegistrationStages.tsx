@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { Data } from '../../data/data';
 import { SettingsKey } from '../../data/settings-key';
 import { getSwarmPollingInstance } from '../../session/apis/snode_api';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { mnDecode } from '../../session/crypto/mnemonic';
 import { PromiseUtils, StringUtils, ToastUtils } from '../../session/utils';
 import { fromHex } from '../../session/utils/String';
@@ -21,8 +21,8 @@ export async function resetRegistration() {
   await Data.removeAll();
   Storage.reset();
   await Storage.fetch();
-  getConversationController().reset();
-  await getConversationController().load();
+  ConvoHub.use().reset();
+  await ConvoHub.use().load();
 }
 
 /**
@@ -70,8 +70,7 @@ export async function signUp(signUpDetails: {
 
 /**
  * Sign in/restore from seed.
- * Ask for a display name, as we will drop incoming ConfigurationMessages if any are saved on the swarm.
- * We will handle a ConfigurationMessage
+ * Ask for a display name, as we will drop incoming libsession updates if any are saved on the swarm.
  */
 export async function signInWithRecovery(signInDetails: {
   displayName: string;
@@ -101,7 +100,7 @@ export async function signInWithRecovery(signInDetails: {
 
 /**
  * This is will try to sign in with the user recovery phrase.
- * If no ConfigurationMessage is received in 60seconds, the loading will be canceled.
+ * If no libsession updates is received in 60seconds, the loading will be canceled.
  */
 export async function signInWithLinking(
   signInDetails: { userRecoveryPhrase: string },

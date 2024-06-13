@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "ඔබට නව මිතුරු ඉල්ලීමක් ඇත",
   "clearAllConfirmationTitle": "සියලුම පණිවිඩ ඉල්ලීම් හිස් කරන්න",
   "clearAllConfirmationBody": "ඔබට සියලු පණිවිඩ ඉල්ලීම් ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?",
-  "noMessagesInReadOnly": "There are no messages in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "There are no messages in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "You have no messages in <b>$name$</b>.",
   "noMessagesInEverythingElse": "You have no messages from <b>$name$</b>. Send a message to start the conversation!",

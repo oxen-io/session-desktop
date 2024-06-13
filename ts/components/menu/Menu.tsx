@@ -10,9 +10,9 @@ import {
   useIsActive,
   useIsBlinded,
   useIsBlocked,
+  useIsGroupV2,
   useIsIncomingRequest,
   useIsKickedFromGroup,
-  useIsLeft,
   useIsMe,
   useIsPrivate,
   useIsPrivateAndFriend,
@@ -24,12 +24,12 @@ import {
 import {
   ConversationInteractionStatus,
   ConversationInteractionType,
-  approveConvoAndSendResponse,
   blockConvoById,
   clearNickNameByConvoId,
   copyPublicKeyByConvoId,
   declineConversationWithConfirm,
   deleteAllMessagesByConvoIdWithConfirmation,
+  handleAcceptConversationRequest,
   markAllReadByConvoId,
   setNotificationForConvoId,
   showAddModeratorsByConvoId,
@@ -46,14 +46,18 @@ import {
   ConversationNotificationSetting,
   ConversationNotificationSettingType,
 } from '../../models/conversationAttributes';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { PubKey } from '../../session/types';
 import {
   changeNickNameModal,
   updateConfirmModal,
   updateUserDetailsModal,
 } from '../../state/ducks/modalDialog';
-import { getIsMessageSection } from '../../state/selectors/section';
+import { useConversationIdOrigin } from '../../state/selectors/conversations';
+import {
+  getIsMessageRequestOverlayShown,
+  getIsMessageSection,
+} from '../../state/selectors/section';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 import { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionButtonColor } from '../basic/SessionButton';
@@ -83,9 +87,14 @@ export const MarkConversationUnreadMenuItem = (): JSX.Element | null => {
   const isMessagesSection = useSelector(getIsMessageSection);
   const isPrivate = useIsPrivate(conversationId);
   const isPrivateAndFriend = useIsPrivateAndFriend(conversationId);
+  const isMessageRequestShown = useSelector(getIsMessageRequestOverlayShown);
 
-  if (isMessagesSection && (!isPrivate || (isPrivate && isPrivateAndFriend))) {
-    const conversation = getConversationController().get(conversationId);
+  if (
+    isMessagesSection &&
+    !isMessageRequestShown &&
+    (!isPrivate || (isPrivate && isPrivateAndFriend))
+  ) {
+    const conversation = ConvoHub.use().get(conversationId);
 
     const markUnread = () => {
       void conversation?.markAsUnread(true);
@@ -122,9 +131,10 @@ export const DeletePrivateContactMenuItem = () => {
           onClickClose,
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {
-            await getConversationController().delete1o1(convoId, {
+            await ConvoHub.use().delete1o1(convoId, {
               fromSyncMessage: false,
               justHidePrivate: false,
+              keepMessages: false,
             });
           },
         })
@@ -139,13 +149,12 @@ export const DeletePrivateContactMenuItem = () => {
 export const LeaveGroupOrCommunityMenuItem = () => {
   const convoId = useConvoIdFromContext();
   const username = useConversationUsername(convoId) || convoId;
-  const isLeft = useIsLeft(convoId);
-  const isKickedFromGroup = useIsKickedFromGroup(convoId);
   const isPrivate = useIsPrivate(convoId);
   const isPublic = useIsPublic(convoId);
   const lastMessage = useLastMessage(convoId);
+  const isMessageRequestShown = useSelector(getIsMessageRequestOverlayShown);
 
-  if (!isKickedFromGroup && !isLeft && !isPrivate) {
+  if (!isPrivate && !isMessageRequestShown) {
     return (
       <Item
         onClick={() => {
@@ -196,11 +205,10 @@ export const ShowUserDetailsMenuItem = () => {
 
 export const UpdateGroupNameMenuItem = () => {
   const convoId = useConvoIdFromContext();
-  const left = useIsLeft(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
   const weAreAdmin = useWeAreAdmin(convoId);
 
-  if (!isKickedFromGroup && !left && weAreAdmin) {
+  if (!isKickedFromGroup && weAreAdmin) {
     return (
       <Item
         onClick={() => {
@@ -396,8 +404,9 @@ export const ChangeNicknameMenuItem = () => {
  */
 export const DeleteMessagesMenuItem = () => {
   const convoId = useConvoIdFromContext();
+  const isMessageRequestShown = useSelector(getIsMessageRequestOverlayShown);
 
-  if (!convoId) {
+  if (!convoId || isMessageRequestShown) {
     return null;
   }
   return (
@@ -441,17 +450,16 @@ export const DeletePrivateConversationMenuItem = () => {
 export const AcceptMsgRequestMenuItem = () => {
   const convoId = useConvoIdFromContext();
   const isRequest = useIsIncomingRequest(convoId);
-  const convo = getConversationController().get(convoId);
   const isPrivate = useIsPrivate(convoId);
 
-  if (isRequest && isPrivate) {
+  if (isRequest && (isPrivate || PubKey.is03Pubkey(convoId))) {
     return (
       <Item
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onClick={async () => {
-          await convo.setDidApproveMe(true);
-          await convo.addOutgoingApprovalMessage(Date.now());
-          await approveConvoAndSendResponse(convoId);
+          await handleAcceptConversationRequest({
+            convoId,
+          });
         }}
       >
         {window.i18n('accept')}
@@ -466,20 +474,21 @@ export const DeclineMsgRequestMenuItem = () => {
   const isRequest = useIsIncomingRequest(convoId);
   const isPrivate = useIsPrivate(convoId);
   const selected = useSelectedConversationKey();
-
-  if (isPrivate && isRequest) {
+  const isGroupV2 = useIsGroupV2(convoId);
+  if ((isPrivate || isGroupV2) && isRequest) {
     return (
       <Item
         onClick={() => {
           declineConversationWithConfirm({
             conversationId: convoId,
             syncToDevices: true,
-            blockContact: false,
+            alsoBlock: false,
             currentlySelectedConvo: selected || undefined,
+            conversationIdOrigin: null,
           });
         }}
       >
-        {window.i18n('decline')}
+        {window.i18n('delete')}
       </Item>
     );
   }
@@ -491,16 +500,20 @@ export const DeclineAndBlockMsgRequestMenuItem = () => {
   const isRequest = useIsIncomingRequest(convoId);
   const selected = useSelectedConversationKey();
   const isPrivate = useIsPrivate(convoId);
+  const isGroupV2 = useIsGroupV2(convoId);
+  const convoOrigin = useConversationIdOrigin(convoId);
 
-  if (isRequest && isPrivate) {
+  if (isRequest && (isPrivate || (isGroupV2 && convoOrigin))) {
+    // to block the author of a groupv2 invitge we need the convoOrigin set
     return (
       <Item
         onClick={() => {
           declineConversationWithConfirm({
             conversationId: convoId,
             syncToDevices: true,
-            blockContact: true,
+            alsoBlock: true,
             currentlySelectedConvo: selected || undefined,
+            conversationIdOrigin: convoOrigin ?? null,
           });
         }}
       >
@@ -519,14 +532,14 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
   const currentNotificationSetting = useNotificationSetting(convoId);
   const isBlocked = useIsBlocked(convoId);
   const isActive = useIsActive(convoId);
-  const isLeft = useIsLeft(convoId);
   const isKickedFromGroup = useIsKickedFromGroup(convoId);
   const isFriend = useIsPrivateAndFriend(convoId);
   const isPrivate = useIsPrivate(convoId);
+  const isMessageRequestShown = useSelector(getIsMessageRequestOverlayShown);
 
   if (
     !convoId ||
-    isLeft ||
+    isMessageRequestShown ||
     isKickedFromGroup ||
     isBlocked ||
     !isActive ||

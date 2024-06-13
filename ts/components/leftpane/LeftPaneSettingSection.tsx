@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { SessionDataTestId } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -42,7 +42,11 @@ const StyledSettingsListItem = styled.div<{ active: boolean }>`
   }
 `;
 
-const getCategories = (): Array<{ id: SessionSettingCategory; title: string }> => {
+const getCategories = (): Array<{
+  id: SessionSettingCategory;
+  title: string;
+  dataTestId: SessionDataTestId;
+}> => {
   return [
     {
       id: 'privacy' as const,
@@ -65,7 +69,7 @@ const getCategories = (): Array<{ id: SessionSettingCategory; title: string }> =
       title: window.i18n('appearanceSettingsTitle'),
     },
     {
-      id: 'permissions',
+      id: 'permissions' as const,
       title: window.i18n('permissionsSettingsTitle'),
     },
     {
@@ -80,24 +84,26 @@ const getCategories = (): Array<{ id: SessionSettingCategory; title: string }> =
       id: 'clearData' as const,
       title: window.i18n('clearDataSettingsTitle'),
     },
-  ];
+  ].map(m => ({ ...m, dataTestId: `${m.id}-settings-menu-item` as const }));
 };
 
 const LeftPaneSettingsCategoryRow = (props: {
-  item: { id: SessionSettingCategory; title: string };
+  item: {
+    id: SessionSettingCategory;
+    title: string;
+    dataTestId: SessionDataTestId;
+  };
 }) => {
   const { item } = props;
   const { id, title } = item;
   const dispatch = useDispatch();
   const focusedSettingsSection = useSelector(getFocusedSettingsSection);
 
-  const dataTestId = `${title.toLowerCase().replace(' ', '-')}-settings-menu-item`;
-
   const isClearData = id === 'clearData';
 
   return (
     <StyledSettingsListItem
-      data-testid={dataTestId}
+      data-testid={item.dataTestId}
       key={id}
       active={id === focusedSettingsSection}
       role="link"

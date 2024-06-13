@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Du har en ny vänförfrågan",
   "clearAllConfirmationTitle": "Rensa alla meddelandeförfrågningar",
   "clearAllConfirmationBody": "Är du säker på att du vill rensa alla meddelandeförfrågningar?",
-  "noMessagesInReadOnly": "Det finns inga meddelanden i <b>$name$</b>.",
+  "thereAreNoMessagesIn": "Det finns inga meddelanden i <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "Det finns inga meddelanden i <b>$name$</b>.",
   "noMessagesInEverythingElse": "Du har inga meddelanden från <b>$name$</b>. Skicka ett meddelande för att starta konversationen!",

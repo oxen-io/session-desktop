@@ -1,14 +1,12 @@
-import path from 'path';
 import { ipcMain } from 'electron';
-import { isString, map } from 'lodash';
-import rimraf from 'rimraf';
 import fse from 'fs-extra';
-import pify from 'pify';
-// eslint-disable-next-line import/no-named-default
-import { default as glob } from 'glob';
+import { glob } from 'glob';
+import { isString, map } from 'lodash';
+import path from 'path';
+import rimraf from 'rimraf';
 
+import { getAttachmentsPath } from '../shared/attachments/shared_attachments';
 import { sqlNode } from './sql'; // checked - only node
-import { createDeleter, getAttachmentsPath } from '../shared/attachments/shared_attachments';
 
 let initialized = false;
 
@@ -23,36 +21,18 @@ const ensureDirectory = async (userDataPath: string) => {
   await fse.ensureDir(getAttachmentsPath(userDataPath));
 };
 
-const deleteAll = async ({
-  userDataPath,
-  attachments,
-}: {
-  userDataPath: string;
-  attachments: any;
-}) => {
-  const deleteFromDisk = createDeleter(getAttachmentsPath(userDataPath));
-
-  for (let index = 0, max = attachments.length; index < max; index += 1) {
-    const file = attachments[index];
-    // eslint-disable-next-line no-await-in-loop
-    await deleteFromDisk(file);
-  }
-
-  console.log(`deleteAll: deleted ${attachments.length} files`);
-};
-
 const getAllAttachments = async (userDataPath: string) => {
   const dir = getAttachmentsPath(userDataPath);
   const pattern = path.join(dir, '**', '*');
 
-  const files = await pify(glob)(pattern, { nodir: true });
+  const files = await glob(pattern, { nodir: true });
   return map(files, file => path.relative(dir, file));
 };
 
 async function cleanupOrphanedAttachments(userDataPath: string) {
   const allAttachments = await getAllAttachments(userDataPath);
   const orphanedAttachments = sqlNode.removeKnownAttachments(allAttachments);
-  await deleteAll({
+  await sqlNode.deleteAll({
     userDataPath,
     attachments: orphanedAttachments,
   });

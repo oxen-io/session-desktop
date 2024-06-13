@@ -1,20 +1,19 @@
-import React from 'react';
+import React, { SessionDataTestId } from 'react';
 import { DisappearingMessageConversationModeType } from '../../../../../session/disappearing_messages/types';
 import { PanelButtonGroup, PanelLabel } from '../../../../buttons/PanelButton';
 import { PanelRadioButton } from '../../../../buttons/PanelRadioButton';
 
-function loadDataTestId(mode: DisappearingMessageConversationModeType) {
-  const dataTestId = 'disappear-%-option';
+function toDataTestId(mode: DisappearingMessageConversationModeType): SessionDataTestId {
   switch (mode) {
     case 'legacy':
-      return dataTestId.replace('%', 'legacy');
+      return 'disappear-legacy-option';
     case 'deleteAfterRead':
-      return dataTestId.replace('%', 'after-read');
+      return 'disappear-after-read-option';
     case 'deleteAfterSend':
-      return dataTestId.replace('%', 'after-send');
+      return 'disappear-after-send-option';
     case 'off':
     default:
-      return dataTestId.replace('%', 'off');
+      return 'disappear-off-option';
   }
 }
 
@@ -67,7 +66,7 @@ export const DisappearingModes = (props: DisappearingModesProps) => {
                 setSelected(mode);
               }}
               disabled={options[mode]}
-              dataTestId={loadDataTestId(mode)}
+              dataTestId={toDataTestId(mode)}
             />
           );
         })}

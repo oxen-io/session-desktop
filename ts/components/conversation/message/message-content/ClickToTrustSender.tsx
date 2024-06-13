@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { AttachmentDownloads } from '../../../../session/utils';
 import { updateConfirmModal } from '../../../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../../../basic/SessionButton';
@@ -35,7 +35,7 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
       return;
     }
     const sender = found.getSource();
-    const convo = getConversationController().get(sender);
+    const convo = ConvoHub.use().get(sender);
     window.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('trustThisContactDialogTitle', [

@@ -1,5 +1,5 @@
-import React, { ChangeEvent, KeyboardEvent, useRef } from 'react';
 import classNames from 'classnames';
+import React, { ChangeEvent, KeyboardEvent, SessionDataTestId, useRef } from 'react';
 import { useFocusMount } from '../../hooks/useFocusMount';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   onPressEnter?: any;
   maxLength?: number;
   isGroup?: boolean;
-  dataTestId?: string;
+  dataTestId?: SessionDataTestId;
 };
 
 export const SessionIdEditable = (props: Props) => {

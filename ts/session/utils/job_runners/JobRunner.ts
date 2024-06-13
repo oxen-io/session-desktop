@@ -5,12 +5,16 @@ import { timeout } from '../Promise';
 import { persistedJobFromData } from './JobDeserialization';
 import {
   AvatarDownloadPersistedData,
-  ConfigurationSyncPersistedData,
   FetchMsgExpirySwarmPersistedData,
+  GroupInvitePersistedData,
+  GroupPendingRemovalsPersistedData,
+  GroupPromotePersistedData,
+  GroupSyncPersistedData,
   PersistedJob,
   RunJobResult,
   TypeOfPersistedData,
   UpdateMsgExpirySwarmPersistedData,
+  UserSyncPersistedData,
 } from './PersistedJob';
 import { JobRunnerType } from './jobs/JobRunnerType';
 
@@ -352,13 +356,26 @@ export class PersistedJobRunner<T extends TypeOfPersistedData> {
   }
 }
 
-const configurationSyncRunner = new PersistedJobRunner<ConfigurationSyncPersistedData>(
-  'ConfigurationSyncJob',
-  null
-);
+const userSyncRunner = new PersistedJobRunner<UserSyncPersistedData>('UserSyncJob', null);
+const groupSyncRunner = new PersistedJobRunner<GroupSyncPersistedData>('GroupSyncJob', null);
 
 const avatarDownloadRunner = new PersistedJobRunner<AvatarDownloadPersistedData>(
   'AvatarDownloadJob',
+  null
+);
+
+const groupInviteJobRunner = new PersistedJobRunner<GroupInvitePersistedData>(
+  'GroupInviteJob',
+  null
+);
+
+const groupPromoteJobRunner = new PersistedJobRunner<GroupPromotePersistedData>(
+  'GroupPromoteJob',
+  null
+);
+
+const groupPendingRemovalJobRunner = new PersistedJobRunner<GroupPendingRemovalsPersistedData>(
+  'GroupPendingRemovalJob',
   null
 );
 
@@ -373,8 +390,12 @@ const fetchSwarmMsgExpiryRunner = new PersistedJobRunner<FetchMsgExpirySwarmPers
 );
 
 export const runners = {
-  configurationSyncRunner,
+  userSyncRunner,
+  groupSyncRunner,
   updateMsgExpiryRunner,
   fetchSwarmMsgExpiryRunner,
   avatarDownloadRunner,
+  groupInviteJobRunner,
+  groupPromoteJobRunner,
+  groupPendingRemovalJobRunner,
 };

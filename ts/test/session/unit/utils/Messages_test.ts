@@ -1,29 +1,21 @@
 /* eslint-disable no-unused-expressions */
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { beforeEach } from 'mocha';
 import Sinon from 'sinon';
 
-import { ConfigurationMessage } from '../../../../session/messages/outgoing/controlMessage/ConfigurationMessage';
 import { ClosedGroupVisibleMessage } from '../../../../session/messages/outgoing/visibleMessage/ClosedGroupVisibleMessage';
 import { PubKey } from '../../../../session/types';
-import { MessageUtils, UserUtils } from '../../../../session/utils';
+import { MessageUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 
-import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { ConversationTypeEnum } from '../../../../models/conversationAttributes';
 import { SignalService } from '../../../../protobuf';
-import { getOpenGroupV2ConversationId } from '../../../../session/apis/open_group_api/utils/OpenGroupUtils';
 import { SnodeNamespaces } from '../../../../session/apis/snode_api/namespaces';
-import { getConversationController } from '../../../../session/conversations';
 import { ClosedGroupAddedMembersMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupAddedMembersMessage';
 import { ClosedGroupEncryptionPairMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairMessage';
 import { ClosedGroupEncryptionPairReplyMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupEncryptionPairReplyMessage';
 import { ClosedGroupNameChangeMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupNameChangeMessage';
 import { ClosedGroupNewMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
 import { ClosedGroupRemovedMembersMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupRemovedMembersMessage';
-import { getCurrentConfigurationMessage } from '../../../../session/utils/sync/syncUtils';
-import { stubData, stubOpenGroupData } from '../../../test-utils/utils';
 
 chai.use(chaiAsPromised as any);
 
@@ -50,7 +42,7 @@ describe('Message Utils', () => {
         SnodeNamespaces.UserContacts
       );
 
-      expect(Object.keys(rawMessage)).to.have.length(6);
+      expect(Object.keys(rawMessage)).to.have.length(7);
 
       expect(rawMessage.identifier).to.exist;
       expect(rawMessage.namespace).to.exist;
@@ -58,23 +50,21 @@ describe('Message Utils', () => {
       expect(rawMessage.encryption).to.exist;
       expect(rawMessage.plainTextBuffer).to.exist;
       expect(rawMessage.ttl).to.exist;
+      expect(rawMessage.networkTimestampCreated).to.exist;
 
       expect(rawMessage.identifier).to.equal(message.identifier);
       expect(rawMessage.device).to.equal(device.key);
       expect(rawMessage.plainTextBuffer).to.deep.equal(message.plainTextBuffer());
       expect(rawMessage.ttl).to.equal(message.ttl());
       expect(rawMessage.namespace).to.equal(3);
+      expect(rawMessage.networkTimestampCreated).to.eq(message.createAtNetworkTimestamp);
     });
 
     it('should generate valid plainTextBuffer', async () => {
       const device = TestUtils.generateFakePubKey();
       const message = TestUtils.generateVisibleMessage();
 
-      const rawMessage = await MessageUtils.toRawMessage(
-        device,
-        message,
-        SnodeNamespaces.UserMessages
-      );
+      const rawMessage = await MessageUtils.toRawMessage(device, message, SnodeNamespaces.Default);
 
       const rawBuffer = rawMessage.plainTextBuffer;
       const rawBufferJSON = JSON.stringify(rawBuffer);
@@ -94,11 +84,7 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
       const message = TestUtils.generateVisibleMessage();
 
-      const rawMessage = await MessageUtils.toRawMessage(
-        device,
-        message,
-        SnodeNamespaces.UserMessages
-      );
+      const rawMessage = await MessageUtils.toRawMessage(device, message, SnodeNamespaces.Default);
       const derivedPubKey = PubKey.from(rawMessage.device);
 
       expect(derivedPubKey).to.not.be.eq(undefined, 'should maintain pubkey');
@@ -110,31 +96,22 @@ describe('Message Utils', () => {
 
     it('should set encryption to ClosedGroup if a ClosedGroupVisibleMessage is passed in', async () => {
       const device = TestUtils.generateFakePubKey();
-      const groupId = TestUtils.generateFakePubKey();
+      const groupId = TestUtils.generateFakePubKeyStr();
       const chatMessage = TestUtils.generateVisibleMessage();
       const message = new ClosedGroupVisibleMessage({
         groupId,
-        timestamp: Date.now(),
         chatMessage,
         ...sharedNoExpire,
       });
 
-      const rawMessage = await MessageUtils.toRawMessage(
-        device,
-        message,
-        SnodeNamespaces.UserMessages
-      );
+      const rawMessage = await MessageUtils.toRawMessage(device, message, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE);
     });
 
     it('should set encryption to Fallback on other messages', async () => {
       const device = TestUtils.generateFakePubKey();
       const message = TestUtils.generateVisibleMessage();
-      const rawMessage = await MessageUtils.toRawMessage(
-        device,
-        message,
-        SnodeNamespaces.UserMessages
-      );
+      const rawMessage = await MessageUtils.toRawMessage(device, message, SnodeNamespaces.Default);
 
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
     });
@@ -144,7 +121,7 @@ describe('Message Utils', () => {
       const member = TestUtils.generateFakePubKey().key;
 
       const msg = new ClosedGroupNewMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         name: 'df',
         members: [member],
         admins: [member],
@@ -153,7 +130,7 @@ describe('Message Utils', () => {
         ...sharedNoExpire,
         expireTimer: 0,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
     });
 
@@ -161,12 +138,12 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
 
       const msg = new ClosedGroupNameChangeMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         name: 'df',
         groupId: TestUtils.generateFakePubKey().key,
         ...sharedNoExpire,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE);
     });
 
@@ -174,12 +151,12 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
 
       const msg = new ClosedGroupAddedMembersMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         addedMembers: [TestUtils.generateFakePubKey().key],
         groupId: TestUtils.generateFakePubKey().key,
         ...sharedNoExpire,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE);
     });
 
@@ -187,12 +164,12 @@ describe('Message Utils', () => {
       const device = TestUtils.generateFakePubKey();
 
       const msg = new ClosedGroupRemovedMembersMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         removedMembers: [TestUtils.generateFakePubKey().key],
         groupId: TestUtils.generateFakePubKey().key,
         ...sharedNoExpire,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE);
     });
 
@@ -208,12 +185,12 @@ describe('Message Utils', () => {
         })
       );
       const msg = new ClosedGroupEncryptionPairMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         groupId: TestUtils.generateFakePubKey().key,
         encryptedKeyPairs: fakeWrappers,
         ...sharedNoExpire,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE);
     });
 
@@ -229,106 +206,13 @@ describe('Message Utils', () => {
         })
       );
       const msg = new ClosedGroupEncryptionPairReplyMessage({
-        timestamp: Date.now(),
+        createAtNetworkTimestamp: Date.now(),
         groupId: TestUtils.generateFakePubKey().key,
         encryptedKeyPairs: fakeWrappers,
         ...sharedNoExpire,
       });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
+      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.Default);
       expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
-    });
-
-    it('passing a ConfigurationMessage returns Fallback', async () => {
-      const device = TestUtils.generateFakePubKey();
-
-      const msg = new ConfigurationMessage({
-        timestamp: Date.now(),
-        activeOpenGroups: [],
-        activeClosedGroups: [],
-        displayName: 'displayName',
-        contacts: [],
-      });
-      const rawMessage = await MessageUtils.toRawMessage(device, msg, SnodeNamespaces.UserMessages);
-      expect(rawMessage.encryption).to.equal(SignalService.Envelope.Type.SESSION_MESSAGE);
-    });
-  });
-
-  describe('getCurrentConfigurationMessage', () => {
-    const ourNumber = TestUtils.generateFakePubKey().key;
-
-    beforeEach(async () => {
-      Sinon.stub(UserUtils, 'getOurPubKeyStrFromCache').resolves(ourNumber);
-      Sinon.stub(UserUtils, 'getOurPubKeyFromCache').resolves(PubKey.cast(ourNumber));
-      stubData('getAllConversations').resolves([]);
-      stubData('saveConversation').resolves();
-      stubOpenGroupData('getAllV2OpenGroupRooms').resolves();
-      TestUtils.stubData('getItemById').callsFake(async () => {
-        return { value: '[]' };
-      });
-      getConversationController().reset();
-
-      await getConversationController().load();
-    });
-
-    afterEach(() => {
-      Sinon.restore();
-    });
-
-    // open groups are actually removed when we leave them so this doesn't make much sense, but just in case we break something later
-    it('filter out non active open groups', async () => {
-      await getConversationController().getOrCreateAndWait(
-        '05123456789',
-        ConversationTypeEnum.PRIVATE
-      );
-      await getConversationController().getOrCreateAndWait(
-        '0512345678',
-        ConversationTypeEnum.PRIVATE
-      );
-
-      const convoId3 = getOpenGroupV2ConversationId('http://chat-dev2.lokinet.org', 'fish');
-      const convoId4 = getOpenGroupV2ConversationId('http://chat-dev3.lokinet.org', 'fish2');
-      const convoId5 = getOpenGroupV2ConversationId('http://chat-dev3.lokinet.org', 'fish3');
-
-      const convo3 = await getConversationController().getOrCreateAndWait(
-        convoId3,
-        ConversationTypeEnum.GROUP
-      );
-      convo3.set({ active_at: Date.now() });
-
-      stubOpenGroupData('getV2OpenGroupRoom')
-        .returns(null)
-        .withArgs(convoId3)
-        .returns({
-          serverUrl: 'http://chat-dev2.lokinet.org',
-          roomId: 'fish',
-          serverPublicKey: 'serverPublicKey',
-        } as OpenGroupV2Room);
-
-      const convo4 = await getConversationController().getOrCreateAndWait(
-        convoId4,
-        ConversationTypeEnum.GROUP
-      );
-      convo4.set({ active_at: undefined });
-
-      await OpenGroupData.opengroupRoomsLoad();
-      const convo5 = await getConversationController().getOrCreateAndWait(
-        convoId5,
-        ConversationTypeEnum.GROUP
-      );
-      convo5.set({ active_at: 0 });
-
-      await getConversationController().getOrCreateAndWait(
-        '051234567',
-        ConversationTypeEnum.PRIVATE
-      );
-      const convos = getConversationController().getConversations();
-
-      // convoID3 is active but 4 and 5 are not
-      const configMessage = await getCurrentConfigurationMessage(convos);
-      expect(configMessage.activeOpenGroups.length).to.equal(1);
-      expect(configMessage.activeOpenGroups[0]).to.equal(
-        'http://chat-dev2.lokinet.org/fish?public_key=serverPublicKey'
-      );
     });
   });
 });

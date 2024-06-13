@@ -1,16 +1,17 @@
 /* eslint-disable no-param-reassign */
-import { isEmpty, isFinite, noop, omit, toNumber } from 'lodash';
+import { isEmpty, noop, omit, toNumber } from 'lodash';
 
 import { SignalService } from '../protobuf';
-import { removeFromCache } from './cache';
+import { IncomingMessageCache } from './cache';
+import { getEnvelopeId } from './common';
 import { EnvelopePlus } from './types';
 
 import { Data } from '../data/data';
 import { ConversationModel } from '../models/conversation';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { PubKey } from '../session/types';
 import { StringUtils, UserUtils } from '../session/utils';
-import { handleClosedGroupControlMessage } from './closedGroups';
+import { handleLegacyClosedGroupControlMessage } from './closedGroups';
 import { handleMessageJob, toRegularMessage } from './queuedJob';
 
 import { ConversationTypeEnum } from '../models/conversationAttributes';
@@ -20,12 +21,13 @@ import {
   createSwarmMessageSentFromUs,
 } from '../models/messageFactory';
 import { DisappearingMessages } from '../session/disappearing_messages';
-import { DisappearingMessageUpdate } from '../session/disappearing_messages/types';
+import { WithDisappearingMessageUpdate } from '../session/disappearing_messages/types';
 import { ProfileManager } from '../session/profile_manager/ProfileManager';
 import { isUsFromCache } from '../session/utils/User';
 import { Action, Reaction } from '../types/Reaction';
 import { toLogFormat } from '../types/attachments/Errors';
 import { Reactions } from '../util/reactions';
+import { GroupV2Receiver } from './groupv2/handleGroupV2Message';
 
 function cleanAttachment(attachment: any) {
   return {
@@ -39,19 +41,21 @@ function cleanAttachment(attachment: any) {
   };
 }
 
-function cleanAttachments(decrypted: SignalService.DataMessage) {
-  const { quote } = decrypted;
+function cleanAttachments(decryptedDataMessage: SignalService.DataMessage) {
+  const { quote } = decryptedDataMessage;
 
   // Here we go from binary to string/base64 in all AttachmentPointer digest/key fields
 
-  // we do not care about group on Session
+  // we do not care about group on Session Desktop
 
-  decrypted.group = null;
+  decryptedDataMessage.group = null;
 
   // when receiving a message we get keys of attachment as buffer, but we override the data with the decrypted string instead.
   // TODO it would be nice to get rid of that as any here, but not in this PR
-  decrypted.attachments = (decrypted.attachments || []).map(cleanAttachment) as any;
-  decrypted.preview = (decrypted.preview || []).map((item: any) => {
+  decryptedDataMessage.attachments = (decryptedDataMessage.attachments || []).map(
+    cleanAttachment
+  ) as any;
+  decryptedDataMessage.preview = (decryptedDataMessage.preview || []).map((item: any) => {
     const { image } = item;
 
     if (!image) {
@@ -98,10 +102,7 @@ export function messageHasVisibleContent(message: SignalService.DataMessage) {
   );
 }
 
-export function cleanIncomingDataMessage(
-  rawDataMessage: SignalService.DataMessage,
-  envelope?: EnvelopePlus
-) {
+export function cleanIncomingDataMessage(rawDataMessage: SignalService.DataMessage) {
   const FLAGS = SignalService.DataMessage.Flags;
 
   // Now that its decrypted, validate the message and clean it up for consumer
@@ -133,11 +134,6 @@ export function cleanIncomingDataMessage(
   }
   cleanAttachments(rawDataMessage);
 
-  // if the decrypted dataMessage timestamp is not set, copy the one from the envelope
-  if (!isFinite(rawDataMessage?.timestamp) && envelope) {
-    rawDataMessage.timestamp = envelope.timestamp;
-  }
-
   return rawDataMessage;
 }
 
@@ -152,7 +148,6 @@ export function cleanIncomingDataMessage(
  *        * envelope.source is our pubkey (our other device has the same pubkey as us)
  *        * dataMessage.syncTarget is either the group public key OR the private conversation this message is about.
  */
-
 export async function handleSwarmDataMessage({
   envelope,
   messageHash,
@@ -160,20 +155,34 @@ export async function handleSwarmDataMessage({
   senderConversationModel,
   sentAtTimestamp,
   expireUpdate,
-}: {
+}: WithDisappearingMessageUpdate & {
   envelope: EnvelopePlus;
   sentAtTimestamp: number;
   rawDataMessage: SignalService.DataMessage;
   messageHash: string;
   senderConversationModel: ConversationModel;
-  expireUpdate?: DisappearingMessageUpdate;
 }): Promise<void> {
   window.log.info('handleSwarmDataMessage');
 
-  const cleanDataMessage = cleanIncomingDataMessage(rawDataMessage, envelope);
-  // we handle group updates from our other devices in handleClosedGroupControlMessage()
+  const cleanDataMessage = cleanIncomingDataMessage(rawDataMessage);
+
+  if (cleanDataMessage.groupUpdateMessage) {
+    await GroupV2Receiver.handleGroupUpdateMessage({
+      signatureTimestamp: sentAtTimestamp,
+      updateMessage: rawDataMessage.groupUpdateMessage as SignalService.GroupUpdateMessage,
+      source: envelope.source,
+      senderIdentity: envelope.senderIdentity,
+      expireUpdate,
+    });
+    // Groups update should always be able to be decrypted as we get the keys before trying to decrypt them.
+    // If decryption failed once, it will keep failing, so no need to keep it in the cache.
+    await IncomingMessageCache.removeFromCache({ id: envelope.id });
+    return;
+  }
+  // we handle legacy group updates from our other devices in handleLegacyClosedGroupControlMessage()
   if (cleanDataMessage.closedGroupControlMessage) {
-    await handleClosedGroupControlMessage(
+    // TODO DEPRECATED
+    await handleLegacyClosedGroupControlMessage(
       envelope,
       cleanDataMessage.closedGroupControlMessage as SignalService.DataMessage.ClosedGroupControlMessage,
       expireUpdate || null
@@ -198,7 +207,7 @@ export async function handleSwarmDataMessage({
 
   if (isSyncedMessage && !isMe) {
     window?.log?.warn('Got a sync message from someone else than me. Dropping it.');
-    await removeFromCache(envelope);
+    await IncomingMessageCache.removeFromCache(envelope);
     return;
   }
   const convoIdToAddTheMessageTo = PubKey.removeTextSecurePrefixIfNeeded(
@@ -206,10 +215,10 @@ export async function handleSwarmDataMessage({
   );
 
   const isGroupMessage = !!envelope.senderIdentity;
-  const isGroupV3Message = isGroupMessage && PubKey.isClosedGroupV3(envelope.source);
+  const isGroupV2Message = isGroupMessage && PubKey.is03Pubkey(envelope.source);
   let typeOfConvo = ConversationTypeEnum.PRIVATE;
-  if (isGroupV3Message) {
-    typeOfConvo = ConversationTypeEnum.GROUPV3;
+  if (isGroupV2Message) {
+    typeOfConvo = ConversationTypeEnum.GROUPV2;
   } else if (isGroupMessage) {
     typeOfConvo = ConversationTypeEnum.GROUP;
   }
@@ -219,7 +228,7 @@ export async function handleSwarmDataMessage({
   );
 
   // remove the prefix from the source object so this is correct for all other
-  const convoToAddMessageTo = await getConversationController().getOrCreateAndWait(
+  const convoToAddMessageTo = await ConvoHub.use().getOrCreateAndWait(
     convoIdToAddTheMessageTo,
     typeOfConvo
   );
@@ -240,13 +249,14 @@ export async function handleSwarmDataMessage({
   }
 
   if (!messageHasVisibleContent(cleanDataMessage)) {
-    await removeFromCache(envelope);
+    window?.log?.warn(`Message ${getEnvelopeId(envelope)} ignored; it was empty`);
+    await IncomingMessageCache.removeFromCache(envelope);
     return;
   }
 
   if (!convoIdToAddTheMessageTo) {
     window?.log?.error('We cannot handle a message without a conversationId');
-    await removeFromCache(envelope);
+    await IncomingMessageCache.removeFromCache(envelope);
     return;
   }
 
@@ -282,7 +292,7 @@ export async function handleSwarmDataMessage({
     cleanDataMessage,
     convoToAddMessageTo,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    () => removeFromCache(envelope)
+    () => IncomingMessageCache.removeFromCache(envelope)
   );
 }
 

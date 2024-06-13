@@ -6,11 +6,11 @@ import { useConvoIdFromContext } from '../../../contexts/ConvoIdContext';
 import { Data } from '../../../data/data';
 import {
   useActiveAt,
-  useConversationPropsById,
   useHasUnread,
   useIsForcedUnreadWithoutUnreadMsg,
   useIsPinned,
   useMentionedUs,
+  useNotificationSetting,
   useUnreadCount,
 } from '../../../hooks/useParamSelector';
 import { Constants } from '../../../session';
@@ -27,7 +27,7 @@ import { UserItem } from './UserItem';
 const NotificationSettingIcon = () => {
   const isMessagesSection = useSelector(getIsMessageSection);
   const convoId = useConvoIdFromContext();
-  const convoSetting = useConversationPropsById(convoId)?.currentNotificationSetting;
+  const convoSetting = useNotificationSetting(convoId);
 
   if (!isMessagesSection) {
     return null;

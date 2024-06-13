@@ -19,11 +19,11 @@ import {
   tryMatchBlindWithStandardKey,
   writeKnownBlindedKeys,
 } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { LibSodiumWrappers } from '../../../../session/crypto';
 import { UserUtils } from '../../../../session/utils';
-import { expectAsyncToThrow, stubData, stubWindowLog } from '../../../test-utils/utils';
 import { TestUtils } from '../../../test-utils';
+import { expectAsyncToThrow, stubData, stubWindowLog } from '../../../test-utils/utils';
 
 const serverPublicKey = 'serverPublicKey';
 const blindedId = '151111';
@@ -479,7 +479,7 @@ describe('knownBlindedKeys', () => {
 
     describe('when not in cache', () => {
       beforeEach(async () => {
-        getConversationController().reset();
+        ConvoHub.use().reset();
         getItemById.resolves();
 
         stubData('getAllConversations').resolves([]);
@@ -487,7 +487,7 @@ describe('knownBlindedKeys', () => {
         Sinon.stub(UserUtils, 'getOurPubKeyStrFromCache').returns(
           TestUtils.generateFakePubKeyStr()
         );
-        await getConversationController().load();
+        await ConvoHub.use().load();
       });
 
       it('does iterate over all the conversations and find the first one matching (fails)', async () => {
@@ -500,7 +500,7 @@ describe('knownBlindedKeys', () => {
 
         await addCachedBlindedKey(shouldBeWrittenToDb);
 
-        Sinon.stub(getConversationController(), 'getConversations').returns([]);
+        Sinon.stub(ConvoHub.use(), 'getConversations').returns([]);
         const real = await findCachedBlindedMatchOrLookItUp(realSessionId, serverPublicKey, sodium);
         // we should have 1 call here as the value was already added to the cache
         expect(createOrUpdateItem.callCount).to.eq(1);
@@ -514,18 +514,12 @@ describe('knownBlindedKeys', () => {
       it('does iterate over all the conversations and find the first one matching (passes)', async () => {
         await loadKnownBlindedKeys();
         // adding a private conversation with a known match of the blinded pubkey we have
-        await getConversationController().getOrCreateAndWait(
-          realSessionId,
-          ConversationTypeEnum.PRIVATE
-        );
-        const convo = await getConversationController().getOrCreateAndWait(
+        ConvoHub.use().getOrCreate(realSessionId, ConversationTypeEnum.PRIVATE);
+        const convo = await ConvoHub.use().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
           ConversationTypeEnum.PRIVATE
         );
-        await getConversationController().getOrCreateAndWait(
-          realSessionId2,
-          ConversationTypeEnum.PRIVATE
-        );
+        ConvoHub.use().getOrCreate(realSessionId2, ConversationTypeEnum.PRIVATE);
         convo.set({ isApproved: true });
         const real = await findCachedBlindedMatchOrLookItUp(
           knownBlindingMatch.blindedId,
@@ -546,7 +540,7 @@ describe('knownBlindedKeys', () => {
       it('does iterate over all the conversations but is not approved so must fail', async () => {
         await loadKnownBlindedKeys();
         // adding a private conversation with a known match of the blinded pubkey we have
-        const convo = await getConversationController().getOrCreateAndWait(
+        const convo = await ConvoHub.use().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
           ConversationTypeEnum.PRIVATE
         );
@@ -564,7 +558,7 @@ describe('knownBlindedKeys', () => {
       it('does iterate over all the conversations but is not private so must fail: group', async () => {
         await loadKnownBlindedKeys();
         // adding a private conversation with a known match of the blinded pubkey we have
-        const convo = await getConversationController().getOrCreateAndWait(
+        const convo = await ConvoHub.use().getOrCreateAndWait(
           knownBlindingMatch.realSessionId,
           ConversationTypeEnum.GROUP
         );
@@ -578,8 +572,8 @@ describe('knownBlindedKeys', () => {
 
         expect(real).to.eq(undefined);
       });
-      it('does iterate over all the conversations but is not private so must fail: groupv3', () => {
-        // we actually cannot test this one as we would need to create  a conversation with groupv3 as type but 05 as prefix, and the conversation controller denies it, as expected
+      it('does iterate over all the conversations but is not private so must fail: groupv2', () => {
+        // we actually cannot test this one as we would need to create  a conversation with groupv2 as type but 05 as prefix, and the conversation controller denies it, as expected
       });
     });
   });

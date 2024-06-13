@@ -36,6 +36,8 @@ export type DisappearingMessageUpdate = {
   messageExpirationFromRetrieve: number | null;
 };
 
+export type WithDisappearingMessageUpdate = { expireUpdate: DisappearingMessageUpdate | null };
+
 export type ReadyToDisappearMsgUpdate = Pick<
   DisappearingMessageUpdate,
   'expirationType' | 'expirationTimer' | 'messageExpirationFromRetrieve'

@@ -6,18 +6,19 @@
 
 import { isNumber } from 'lodash';
 import { Snode } from '../../../data/data';
-import { doSnodeBatchRequest } from './batchRequest';
 import { NetworkTimeSubRequest } from './SnodeRequestTypes';
-
-function getNetworkTimeSubRequests(): Array<NetworkTimeSubRequest> {
-  const request: NetworkTimeSubRequest = { method: 'info', params: {} };
-
-  return [request];
-}
+import { BatchRequests } from './batchRequest';
 
 const getNetworkTime = async (snode: Snode): Promise<string | number> => {
-  const subRequests = getNetworkTimeSubRequests();
-  const result = await doSnodeBatchRequest(subRequests, snode, 4000, null);
+  const subrequest = new NetworkTimeSubRequest();
+
+  const result = await BatchRequests.doUnsignedSnodeBatchRequestNoRetries(
+    [subrequest],
+    snode,
+    10000,
+    null,
+    false
+  );
   if (!result || !result.length) {
     window?.log?.warn(`getNetworkTime on ${snode.ip}:${snode.port} returned falsish value`, result);
     throw new Error('getNetworkTime: Invalid result');
@@ -43,11 +44,11 @@ let latestTimestampOffset = Number.MAX_SAFE_INTEGER;
 function handleTimestampOffsetFromNetwork(_request: string, snodeTimestamp: number) {
   if (snodeTimestamp && isNumber(snodeTimestamp) && snodeTimestamp > 1609419600 * 1000) {
     // first january 2021. Arbitrary, just want to make sure the return timestamp is somehow valid and not some crazy low value
-    const now = Date.now();
+    const clockTime = Date.now();
     if (latestTimestampOffset === Number.MAX_SAFE_INTEGER) {
-      window?.log?.info(`first timestamp offset received:  ${now - snodeTimestamp}ms`);
+      window?.log?.info(`first timestamp offset received:  ${clockTime - snodeTimestamp}ms`);
     }
-    latestTimestampOffset = now - snodeTimestamp;
+    latestTimestampOffset = clockTime - snodeTimestamp;
   }
 }
 
@@ -65,7 +66,7 @@ function getLatestTimestampOffset() {
   return latestTimestampOffset;
 }
 
-function getNowWithNetworkOffset() {
+function now() {
   // make sure to call exports here, as we stub the exported one for testing.
   return Date.now() - GetNetworkTime.getLatestTimestampOffset();
 }
@@ -74,5 +75,5 @@ export const GetNetworkTime = {
   getNetworkTime,
   handleTimestampOffsetFromNetwork,
   getLatestTimestampOffset,
-  getNowWithNetworkOffset,
+  now,
 };

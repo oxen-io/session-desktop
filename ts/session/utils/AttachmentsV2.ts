@@ -47,7 +47,7 @@ async function uploadV3(params: UploadParamsV2): Promise<AttachmentPointerWithUr
   const fileDetails = await uploadFileToRoomSogs3(new Uint8Array(paddedAttachment), openGroup);
 
   if (!fileDetails) {
-    throw new Error(`upload to fileopengroupv3 of ${attachment.fileName} failed`);
+    throw new Error(`upload to fileopengroup of ${attachment.fileName} failed`);
   }
 
   return {

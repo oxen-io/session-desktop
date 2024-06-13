@@ -3,16 +3,18 @@
 // eslint-disable-next-line camelcase
 import {
   ContactInfoSet,
-  DisappearingMessageConversationModeType,
+  GroupPubkeyType,
   LegacyGroupInfo,
   LegacyGroupMemberInfo,
+  Uint8ArrayFixedLength,
 } from 'libsession_util_nodejs';
 import { from_hex } from 'libsodium-wrappers-sumo';
 import { isArray, isEmpty, isEqual } from 'lodash';
 import { OpenGroupV2Room } from '../data/opengroups';
 import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
-import { fromHexToArray } from '../session/utils/String';
-import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
+import { DisappearingMessageConversationModeType } from '../session/disappearing_messages/types';
+import { fromHexToArray, toHex } from '../session/utils/String';
+import { ConfigWrapperObjectTypesMeta } from '../webworker/workers/browser/libsession_worker_functions';
 
 /**
  * This wrapper can be used to make a function type not async, asynced.
@@ -21,6 +23,8 @@ import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsessio
 export type AsyncWrapper<T extends (...args: any) => any> = (
   ...args: Parameters<T>
 ) => Promise<ReturnType<T>>;
+
+export type AwaitedReturn<T extends (...args: any) => any> = Awaited<ReturnType<T>>;
 
 /**
  * This type is used to build from an objectType filled with functions, a new object type where all the functions their async equivalent
@@ -44,7 +48,7 @@ export type UpdateLastHashType = {
 };
 
 export type ConfigDumpRow = {
-  variant: ConfigWrapperObjectTypes; // the variant this entry is about. (user pr, contacts, ...)
+  variant: ConfigWrapperObjectTypesMeta; // the variant this entry is about. (user pr, contacts, ...)
   publicKey: string; // either our pubkey if a dump for our own swarm or the closed group pubkey
   data: Uint8Array; // the blob returned by libsession.dump() call
 };
@@ -57,13 +61,15 @@ export const CONFIG_DUMP_TABLE = 'configDump';
 
 export type ConfigDumpDataNode = {
   getByVariantAndPubkey: (
-    variant: ConfigWrapperObjectTypes,
+    variant: ConfigWrapperObjectTypesMeta,
     publicKey: string
   ) => Array<ConfigDumpRow>;
   saveConfigDump: (dump: ConfigDumpRow) => void;
 
   getAllDumpsWithData: () => Array<ConfigDumpRow>;
   getAllDumpsWithoutData: () => Array<ConfigDumpRowWithoutData>;
+  getAllDumpsWithoutDataFor: (pk: string) => Array<ConfigDumpRowWithoutData>;
+  deleteDumpFor: (pk: GroupPubkeyType) => void;
 };
 
 // ========== unprocessed
@@ -284,4 +290,29 @@ export function capabilitiesListHasBlindEnabled(caps?: Array<string> | null) {
 
 export function roomHasReactionsEnabled(openGroup?: OpenGroupV2Room) {
   return Boolean(openGroup?.capabilities?.includes('reactions'));
+}
+
+export function toFixedUint8ArrayOfLength<T extends number>(
+  data: Uint8Array,
+  length: T
+): Uint8ArrayFixedLength<T> {
+  if (data.length === length) {
+    return {
+      buffer: data,
+      length,
+    };
+  }
+  throw new Error(
+    `toFixedUint8ArrayOfLength invalid. Expected length ${length} but got: ${data.length}`
+  );
+}
+
+export function stringify(obj: unknown) {
+  return JSON.stringify(obj, (_key, value) => {
+    return value instanceof Uint8Array
+      ? `Uint8Array(${value.length}): ${toHex(value)}`
+      : value?.type === 'Buffer' && value?.data
+        ? `Buffer: ${toHex(value.data)}`
+        : value;
+  });
 }

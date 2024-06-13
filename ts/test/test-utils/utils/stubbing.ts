@@ -1,10 +1,14 @@
 /* eslint-disable func-names */
 import { expect } from 'chai';
+import { UserGroupsWrapperActionsCalls } from 'libsession_util_nodejs';
 import Sinon from 'sinon';
 import { ConfigDumpData } from '../../../data/configDump/configDump';
 import { Data } from '../../../data/data';
 import { OpenGroupData } from '../../../data/opengroups';
 
+import { TestUtils } from '..';
+import { SnodePool } from '../../../session/apis/snode_api/snodePool';
+import { BlockedNumberController } from '../../../util';
 import * as libsessionWorker from '../../../webworker/workers/browser/libsession_worker_interface';
 import * as utilWorker from '../../../webworker/workers/browser/util_worker_interface';
 
@@ -16,12 +20,6 @@ const globalAny: any = global;
 type DataFunction = typeof Data;
 type OpenGroupDataFunction = typeof OpenGroupData;
 type ConfigDumpDataFunction = typeof ConfigDumpData;
-
-export type TypedStub<T extends Record<string, unknown>, K extends keyof T> = T[K] extends (
-  ...args: any
-) => any
-  ? Sinon.SinonStub<Parameters<T[K]>, ReturnType<T[K]>>
-  : never;
 
 /**
  * Stub a function inside Data.
@@ -47,8 +45,20 @@ export function stubUtilWorker(fnName: string, returnedValue: any): sinon.SinonS
     .resolves(returnedValue);
 }
 
-export function stubLibSessionWorker(value: any) {
-  Sinon.stub(libsessionWorker, 'callLibSessionWorker').resolves(value);
+export function stubLibSessionWorker(resolveValue: any) {
+  Sinon.stub(libsessionWorker, 'callLibSessionWorker').resolves(resolveValue);
+}
+
+export function stubBlockedNumberController() {
+  Sinon.stub(BlockedNumberController, 'getNumbersFromDB').resolves();
+  Sinon.stub(BlockedNumberController, 'isBlocked').resolves();
+}
+
+export function stubUserGroupWrapper<T extends keyof UserGroupsWrapperActionsCalls>(
+  fn: T,
+  value: Awaited<ReturnType<UserGroupsWrapperActionsCalls[T]>>
+) {
+  Sinon.stub(libsessionWorker.UserGroupsWrapperActions, fn).resolves(value);
 }
 
 export function stubCreateObjectUrl() {
@@ -107,4 +117,20 @@ export async function expectAsyncToThrow(toAwait: () => Promise<any>, errorMessa
     expect(e.message).to.not.be.eq('fake_error');
     expect(e.message).to.be.eq(errorMessageToCatch);
   }
+}
+
+export type TypedStub<T extends Record<string, unknown>, K extends keyof T> = T[K] extends (
+  ...args: any
+) => any
+  ? Sinon.SinonStub<Parameters<T[K]>, ReturnType<T[K]>>
+  : never;
+
+export function stubValidSnodeSwarm() {
+  const snodes = TestUtils.generateFakeSnodes(20);
+  SnodePool.TEST_resetState(snodes);
+  const swarm = snodes.slice(0, 6);
+
+  Sinon.stub(SnodePool, 'getSwarmFor').resolves(swarm);
+
+  return { snodes, swarm };
 }

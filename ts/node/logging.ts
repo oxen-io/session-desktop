@@ -1,13 +1,14 @@
 // NOTE: Temporarily allow `then` until we convert the entire file to `async` / `await`:
 /* eslint-disable more/no-then */
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
-import { app, ipcMain as ipc } from 'electron';
 import Logger from 'bunyan';
-import _ from 'lodash';
+// eslint-disable-next-line import/order
+import { app, ipcMain as ipc } from 'electron';
 import firstline from 'firstline';
+import _ from 'lodash';
 import { readLastLinesEnc } from 'read-last-lines-ts';
 import rimraf from 'rimraf';
 

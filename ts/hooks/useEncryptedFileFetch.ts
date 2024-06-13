@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import {
-  getAlreadyDecryptedMediaUrl,
-  getDecryptedMediaUrl,
-} from '../session/crypto/DecryptedAttachmentsManager';
+import { DecryptedAttachmentsManager } from '../session/crypto/DecryptedAttachmentsManager';
 import { perfEnd, perfStart } from '../session/utils/Performance';
 
 export const useEncryptedFileFetch = (url: string, contentType: string, isAvatar: boolean) => {
@@ -12,12 +9,16 @@ export const useEncryptedFileFetch = (url: string, contentType: string, isAvatar
 
   const mountedRef = useRef(true);
 
-  const alreadyDecrypted = getAlreadyDecryptedMediaUrl(url);
+  const alreadyDecrypted = DecryptedAttachmentsManager.getAlreadyDecryptedMediaUrl(url);
 
   useEffect(() => {
     async function fetchUrl() {
       perfStart(`getDecryptedMediaUrl-${url}`);
-      const decryptedUrl = await getDecryptedMediaUrl(url, contentType, isAvatar);
+      const decryptedUrl = await DecryptedAttachmentsManager.getDecryptedMediaUrl(
+        url,
+        contentType,
+        isAvatar
+      );
       perfEnd(`getDecryptedMediaUrl-${url}`, `getDecryptedMediaUrl-${url}`);
 
       if (mountedRef.current) {

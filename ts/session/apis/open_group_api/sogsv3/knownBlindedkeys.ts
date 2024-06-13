@@ -2,7 +2,7 @@ import { from_hex, to_hex } from 'libsodium-wrappers-sumo';
 import { crypto_sign_curve25519_pk_to_ed25519 } from 'curve25519-js';
 import { cloneDeep, flatten, isEmpty, isEqual, isString, uniqBy } from 'lodash';
 
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { LibSodiumWrappers } from '../../../crypto';
 import { KeyPrefixType, PubKey } from '../../../types';
 import { Data } from '../../../../data/data';
@@ -202,7 +202,7 @@ function findNotCachedBlindingMatch(
   }
 
   // we iterate only over the convos private, approved, and which have an unblinded id.
-  const foundConvoMatchingBlindedPubkey = getConversationController()
+  const foundConvoMatchingBlindedPubkey = ConvoHub.use()
     .getConversations()
     .filter(m => m.isPrivate() && m.isApproved() && !PubKey.isBlinded(m.id))
     .find(m => {
@@ -238,7 +238,7 @@ export function getUsBlindedInThatServer(convo: ConversationModel | string): str
   }
   const convoId = isString(convo) ? convo : convo.id;
 
-  if (!getConversationController().get(convoId)?.isOpenGroupV2()) {
+  if (!ConvoHub.use().get(convoId)?.isOpenGroupV2()) {
     return undefined;
   }
   const room = OpenGroupData.getV2OpenGroupRoom(isString(convo) ? convo : convo.id);
@@ -273,7 +273,7 @@ function findNotCachedBlindedConvoFromUnblindedKey(
   // we iterate only over the convos private, with a blindedId, and active,
   // so the one to which we sent a message already or received one from outside sogs.
   const foundConvosForThisServerPk =
-    getConversationController()
+    ConvoHub.use()
       .getConversations()
       .filter(m => m.isPrivate() && PubKey.isBlinded(m.id) && m.isActive())
       .filter(m => {

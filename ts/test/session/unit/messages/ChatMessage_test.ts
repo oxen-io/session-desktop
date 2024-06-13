@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+// eslint-disable-next-line import/order
 import { TextEncoder } from 'util';
 
 import { toNumber } from 'lodash';
@@ -19,7 +20,7 @@ const sharedNoExpire = {
 describe('VisibleMessage', () => {
   it('can create empty message with just a timestamp', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       ...sharedNoExpire,
     });
     const plainText = message.plainTextBuffer();
@@ -30,7 +31,7 @@ describe('VisibleMessage', () => {
 
   it('can create message with a body', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       body: 'body',
       ...sharedNoExpire,
     });
@@ -41,7 +42,7 @@ describe('VisibleMessage', () => {
 
   it('can create a disappear after read message', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       ...sharedNoExpire,
       expirationType: 'deleteAfterRead',
       expireTimer: 300,
@@ -60,7 +61,7 @@ describe('VisibleMessage', () => {
 
   it('can create a disappear after send message', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       ...sharedNoExpire,
       expirationType: 'deleteAfterSend',
       expireTimer: 60,
@@ -86,7 +87,7 @@ describe('VisibleMessage', () => {
       profileKey,
     };
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       lokiProfile,
       ...sharedNoExpire,
     });
@@ -106,7 +107,7 @@ describe('VisibleMessage', () => {
   it('can create message with a quote without attachments', () => {
     const quote: Quote = { id: 1234, author: 'author', text: 'text' };
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       quote,
       ...sharedNoExpire,
     });
@@ -124,7 +125,7 @@ describe('VisibleMessage', () => {
     previews.push(preview);
 
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       preview: previews,
       ...sharedNoExpire,
     });
@@ -147,7 +148,7 @@ describe('VisibleMessage', () => {
     attachments.push(attachment);
 
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       attachments,
       ...sharedNoExpire,
     });
@@ -163,7 +164,7 @@ describe('VisibleMessage', () => {
 
   it('correct ttl', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       ...sharedNoExpire,
     });
     expect(message.ttl()).to.equal(Constants.TTL_DEFAULT.CONTENT_MESSAGE);
@@ -171,10 +172,9 @@ describe('VisibleMessage', () => {
 
   it('has an identifier', () => {
     const message = new VisibleMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       ...sharedNoExpire,
     });
-
     expect(message.identifier).to.not.equal(null, 'identifier cannot be null');
     expect(message.identifier).to.not.equal(undefined, 'identifier cannot be undefined');
   });

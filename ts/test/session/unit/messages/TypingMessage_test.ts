@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 
 import Long from 'long';
-import { toNumber } from 'lodash';
 import { SignalService } from '../../../../protobuf';
 import { Constants } from '../../../../session';
 import { TypingMessage } from '../../../../session/messages/outgoing/controlMessage/TypingMessage';
@@ -9,7 +8,7 @@ import { TypingMessage } from '../../../../session/messages/outgoing/controlMess
 describe('TypingMessage', () => {
   it('has Action.STARTED if isTyping = true', () => {
     const message = new TypingMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       isTyping: true,
     });
     const plainText = message.plainTextBuffer();
@@ -22,7 +21,7 @@ describe('TypingMessage', () => {
 
   it('has Action.STOPPED if isTyping = false', () => {
     const message = new TypingMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       isTyping: false,
     });
     const plainText = message.plainTextBuffer();
@@ -33,21 +32,9 @@ describe('TypingMessage', () => {
     );
   });
 
-  it('has typingTimestamp set if value passed', () => {
-    const message = new TypingMessage({
-      timestamp: Date.now(),
-      isTyping: true,
-      typingTimestamp: 111111111,
-    });
-    const plainText = message.plainTextBuffer();
-    const decoded = SignalService.Content.decode(plainText);
-    const decodedtimestamp = toNumber(decoded.typingMessage?.timestamp);
-    expect(decodedtimestamp).to.be.equal(111111111);
-  });
-
   it('has typingTimestamp set with Date.now() if value not passed', () => {
     const message = new TypingMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       isTyping: true,
     });
     const plainText = message.plainTextBuffer();
@@ -61,7 +48,7 @@ describe('TypingMessage', () => {
 
   it('correct ttl', () => {
     const message = new TypingMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       isTyping: true,
     });
     expect(message.ttl()).to.equal(Constants.TTL_DEFAULT.TYPING_MESSAGE);
@@ -69,7 +56,7 @@ describe('TypingMessage', () => {
 
   it('has an identifier', () => {
     const message = new TypingMessage({
-      timestamp: Date.now(),
+      createAtNetworkTimestamp: Date.now(),
       isTyping: true,
     });
     expect(message.identifier).to.not.equal(null, 'identifier cannot be null');

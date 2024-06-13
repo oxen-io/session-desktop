@@ -2,8 +2,9 @@ import { ContactInfo, ContactInfoSet } from 'libsession_util_nodejs';
 import { ConversationModel } from '../../../models/conversation';
 import { getContactInfoFromDBValues } from '../../../types/sqlSharedTypes';
 import { ContactsWrapperActions } from '../../../webworker/workers/browser/libsession_worker_interface';
-import { getConversationController } from '../../conversations';
+import { ConvoHub } from '../../conversations';
 import { PubKey } from '../../types';
+import { CONVERSATION_PRIORITIES } from '../../../models/conversationAttributes';
 
 /**
  * This file is centralizing the management of data from the Contacts Wrapper of libsession.
@@ -18,7 +19,7 @@ import { PubKey } from '../../types';
  *
  * Also, to make sure that our wrapper is up to date, we schedule jobs to be run and fetch all contacts and update all the wrappers entries.
  * This is done in the
- *    - `ConfigurationSyncJob` (sending data to the network) and the
+ *    - `UserSyncJob` (sending data to the network) and the
  *
  */
 const mappedContactWrapperValues = new Map<string, ContactInfo>();
@@ -41,10 +42,11 @@ function isContactToStoreInWrapper(convo: ConversationModel): boolean {
  * Fetches the specified convo and updates the required field in the wrapper.
  * If that contact does not exist in the wrapper, it is created before being updated.
  */
+
 async function insertContactFromDBIntoWrapperAndRefresh(
   id: string
 ): Promise<ContactInfoSet | null> {
-  const foundConvo = getConversationController().get(id);
+  const foundConvo = ConvoHub.use().get(id);
   if (!foundConvo) {
     return null;
   }
@@ -52,17 +54,21 @@ async function insertContactFromDBIntoWrapperAndRefresh(
   if (!SessionUtilContact.isContactToStoreInWrapper(foundConvo)) {
     return null;
   }
-
-  const dbName = foundConvo.get('displayNameInProfile') || undefined;
-  const dbNickname = foundConvo.get('nickname') || undefined;
+  // Note: We NEED those to come from the convo itself as .get() calls directly
+  // and not from the isApproved(), didApproveMe() functions.
+  //
+  // The reason is that when we make a change, we need to save it to the DB to update the libsession state (on commit()).
+  // But, if we use isApproved() instead of .get('isApproved'), we get the value from libsession which is not up to date with a change made in the convo yet!
+  const dbName = foundConvo.getRealSessionUsername() || undefined;
+  const dbNickname = foundConvo.get('nickname');
   const dbProfileUrl = foundConvo.get('avatarPointer') || undefined;
   const dbProfileKey = foundConvo.get('profileKey') || undefined;
-  const dbApproved = !!foundConvo.get('isApproved') || false;
-  const dbApprovedMe = !!foundConvo.get('didApproveMe') || false;
-  const dbBlocked = !!foundConvo.isBlocked() || false;
-  const priority = foundConvo.get('priority') || 0;
-  const expirationMode = foundConvo.getExpirationMode() || undefined;
-  const expireTimer = foundConvo.getExpireTimer() || 0;
+  const dbApproved = !!foundConvo.get('isApproved');
+  const dbApprovedMe = !!foundConvo.get('didApproveMe');
+  const dbBlocked = foundConvo.isBlocked();
+  const priority = foundConvo.get('priority') || CONVERSATION_PRIORITIES.default;
+  const expirationMode = foundConvo.get('expirationMode') || undefined;
+  const expireTimer = foundConvo.get('expireTimer') || 0;
 
   const wrapperContact = getContactInfoFromDBValues({
     id,
@@ -101,11 +107,11 @@ async function refreshMappedValue(id: string, duringAppStart = false) {
   if (fromWrapper) {
     setMappedValue(fromWrapper);
     if (!duringAppStart) {
-      getConversationController().get(id)?.triggerUIRefresh();
+      ConvoHub.use().get(id)?.triggerUIRefresh();
     }
   } else if (mappedContactWrapperValues.delete(id)) {
     if (!duringAppStart) {
-      getConversationController().get(id)?.triggerUIRefresh();
+      ConvoHub.use().get(id)?.triggerUIRefresh();
     }
   }
 }

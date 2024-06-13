@@ -10,7 +10,7 @@ import styled from 'styled-components';
 
 import { LeftPane } from './leftpane/LeftPane';
 // moment does not support es-419 correctly (and cause white screen on app start)
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { UserUtils } from '../session/utils';
 import { createStore } from '../state/createStore';
 import { initialCallState } from '../state/ducks/call';
@@ -31,10 +31,12 @@ import { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
 import { SettingsKey } from '../data/settings-key';
+import { groupInfoActions, initialGroupState } from '../state/ducks/metaGroups';
 import { getSettingsInitialState, updateAllOnStorageReady } from '../state/ducks/settings';
 import { initialSogsRoomInfoState } from '../state/ducks/sogsRoomInfo';
 import { useHasDeviceOutdatedSyncing } from '../state/selectors/settings';
 import { Storage } from '../util/storage';
+import { UserGroupsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
 import { NoticeBanner } from './NoticeBanner';
 import { Flex } from './basic/Flex';
 
@@ -56,11 +58,17 @@ const StyledGutter = styled.div`
   transition: none;
 `;
 
-function createSessionInboxStore() {
+async function createSessionInboxStore() {
   // Here we set up a full redux store with initial state for our LeftPane Root
-  const conversations = getConversationController()
+  const conversations = ConvoHub.use()
     .getConversations()
     .map(conversation => conversation.getConversationModelProps());
+
+  const userGroups: Record<string, any> = {};
+
+  (await UserGroupsWrapperActions.getAllGroups()).forEach(m => {
+    userGroups[m.pubkeyHex] = m;
+  });
 
   const initialState: StateType = {
     conversations: {
@@ -83,14 +91,17 @@ function createSessionInboxStore() {
     call: initialCallState,
     sogsRoomInfo: initialSogsRoomInfoState,
     settings: getSettingsInitialState(),
+    groups: initialGroupState,
+    userGroups: { userGroups },
   };
 
   return createStore(initialState);
 }
 
-function setupLeftPane(forceUpdateInboxComponent: () => void) {
+async function setupLeftPane(forceUpdateInboxComponent: () => void) {
   window.openConversationWithMessages = openConversationWithMessages;
-  window.inboxStore = createSessionInboxStore();
+
+  window.inboxStore = await createSessionInboxStore();
 
   window.inboxStore.dispatch(
     updateAllOnStorageReady({
@@ -103,7 +114,9 @@ function setupLeftPane(forceUpdateInboxComponent: () => void) {
       hasShiftSendEnabled: Storage.getBoolOrFalse(SettingsKey.hasShiftSendEnabled),
     })
   );
+  window.inboxStore.dispatch(groupInfoActions.loadMetaDumpsFromDB()); // this loads the dumps from DB and fills the 03-groups slice with the corresponding details
   forceUpdateInboxComponent();
+  window.getState = window.inboxStore.getState;
 }
 
 const SomeDeviceOutdatedSyncingNotice = () => {
@@ -119,7 +132,9 @@ const SomeDeviceOutdatedSyncingNotice = () => {
   return (
     <NoticeBanner
       text={window.i18n('someOfYourDeviceUseOutdatedVersion')}
-      dismissCallback={dismiss}
+      onButtonClick={dismiss}
+      icon="exit"
+      dataTestId="some-of-your-devices-outdated-inbox"
     />
   );
 };
@@ -128,7 +143,7 @@ export const SessionInboxView = () => {
   const update = useUpdate();
   // run only on mount
   useMount(() => {
-    setupLeftPane(update);
+    void setupLeftPane(update);
   });
 
   if (!window.inboxStore) {

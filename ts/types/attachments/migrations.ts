@@ -1,8 +1,8 @@
+/* eslint-disable no-param-reassign */
 import { arrayBufferToBlob, blobToArrayBuffer } from 'blob-util';
-import { pathExists } from 'fs-extra';
 
+import fse from 'fs-extra';
 import { isString } from 'lodash';
-
 import * as GoogleChrome from '../../util/GoogleChrome';
 import * as MIME from '../MIME';
 import { toLogFormat } from './Errors';
@@ -145,26 +145,6 @@ export const loadData = async (attachment: any) => {
   return { ...attachment, data };
 };
 
-const handleDiskDeletion = async (path: string) => {
-  await deleteOnDisk(path);
-  try {
-    const exists = await pathExists(path);
-
-    // NOTE we want to confirm the path no longer exists
-    if (exists) {
-      throw Error('Error: File path still exists.');
-    }
-
-    window.log.debug(`deleteDataSuccessful: Deletion succeeded for attachment ${path}`);
-    return undefined;
-  } catch (err) {
-    window.log.warn(
-      `deleteDataSuccessful: Deletion failed for attachment ${path} ${err.message || err}`
-    );
-    return path;
-  }
-};
-
 //      deleteData :: (RelativePath -> IO Unit)
 //                    Attachment ->
 //                    IO Unit
@@ -177,24 +157,43 @@ export const deleteData = async (attachment: {
     throw new TypeError('deleteData: attachment is not valid');
   }
 
-  let { path, thumbnail, screenshot } = attachment;
-
-  if (path && isString(path)) {
-    const pathAfterDelete = await handleDiskDeletion(path);
-    path = isString(pathAfterDelete) ? pathAfterDelete : undefined;
+  const { path, thumbnail, screenshot } = attachment;
+  if (isString(path)) {
+    await deleteOnDisk(path);
+    attachment.path = '';
   }
-
   if (thumbnail && isString(thumbnail.path)) {
-    const pathAfterDelete = await handleDiskDeletion(thumbnail.path);
-    thumbnail = isString(pathAfterDelete) ? pathAfterDelete : undefined;
+    await deleteOnDisk(thumbnail.path);
+    attachment.thumbnail = undefined;
   }
-
   if (screenshot && isString(screenshot.path)) {
-    const pathAfterDelete = await handleDiskDeletion(screenshot.path);
-    screenshot = isString(pathAfterDelete) ? pathAfterDelete : undefined;
+    await deleteOnDisk(screenshot.path);
+    attachment.screenshot = undefined;
   }
 
-  return { path, thumbnail, screenshot };
+  return attachment;
+};
+
+export const deleteDataSuccessful = async (attachment: {
+  path: string;
+  thumbnail: any;
+  screenshot: any;
+}) => {
+  const errorMessage = `deleteDataSuccessful: Deletion failed for attachment ${attachment.path}`;
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  return fse.pathExists(attachment.path, (err, exists) => {
+    if (err) {
+      return Promise.reject(new Error(`${errorMessage} ${err}`));
+    }
+
+    // Note we want to confirm the path no longer exists
+    if (exists) {
+      return Promise.reject(errorMessage);
+    }
+
+    window.log.debug(`deleteDataSuccessful: Deletion succeeded for attachment ${attachment.path}`);
+    return true;
+  });
 };
 
 type CaptureDimensionType = { contentType: string; path: string };

@@ -5,11 +5,9 @@ import { blobToArrayBuffer, dataURLToBlob } from 'blob-util';
 import moment from 'moment';
 import { toLogFormat } from './Errors';
 
-import {
-  getDecryptedBlob,
-  getDecryptedMediaUrl,
-} from '../../session/crypto/DecryptedAttachmentsManager';
+import { DecryptedAttachmentsManager } from '../../session/crypto/DecryptedAttachmentsManager';
 import { ToastUtils } from '../../session/utils';
+import { isTestIntegration } from '../../shared/env_vars';
 import { GoogleChrome } from '../../util';
 import { autoScaleForAvatar, autoScaleForThumbnail } from '../../util/attachmentsUtil';
 import { isAudio } from '../MIME';
@@ -41,7 +39,7 @@ export const getImageDimensions = async ({
       reject(error);
     });
     // image/jpg is hard coded here but does not look to cause any issues
-    void getDecryptedMediaUrl(objectUrl, 'image/jpg', false)
+    void DecryptedAttachmentsManager.getDecryptedMediaUrl(objectUrl, 'image/jpg', false)
       .then(decryptedUrl => {
         image.src = decryptedUrl;
       })
@@ -61,7 +59,7 @@ export const makeImageThumbnailBuffer = async ({
       'makeImageThumbnailBuffer can only be called with what GoogleChrome image type supports'
     );
   }
-  const decryptedBlob = await getDecryptedBlob(objectUrl, contentType);
+  const decryptedBlob = await DecryptedAttachmentsManager.getDecryptedBlob(objectUrl, contentType);
   const scaled = await autoScaleForThumbnail({ contentType, blob: decryptedBlob });
 
   return blobToArrayBuffer(scaled.blob);
@@ -101,11 +99,13 @@ export const makeVideoScreenshot = async ({
       reject(error);
     });
 
-    void getDecryptedMediaUrl(objectUrl, contentType, false).then(decryptedUrl => {
-      video.src = decryptedUrl;
-      video.muted = true;
-      void video.play(); // for some reason, this is to be started, otherwise the generated thumbnail will be empty
-    });
+    void DecryptedAttachmentsManager.getDecryptedMediaUrl(objectUrl, contentType, false).then(
+      decryptedUrl => {
+        video.src = decryptedUrl;
+        video.muted = true;
+        void video.play(); // for some reason, this is to be started, otherwise the generated thumbnail will be empty
+      }
+    );
   });
 
 export async function getVideoDuration({
@@ -128,7 +128,7 @@ export async function getVideoDuration({
       reject(error);
     });
 
-    void getDecryptedMediaUrl(objectUrl, contentType, false)
+    void DecryptedAttachmentsManager.getDecryptedMediaUrl(objectUrl, contentType, false)
       .then(decryptedUrl => {
         video.src = decryptedUrl;
       })
@@ -162,7 +162,7 @@ export async function getAudioDuration({
       reject(error);
     });
 
-    void getDecryptedMediaUrl(objectUrl, contentType, false)
+    void DecryptedAttachmentsManager.getDecryptedMediaUrl(objectUrl, contentType, false)
       .then(decryptedUrl => {
         audio.src = decryptedUrl;
       })
@@ -194,8 +194,7 @@ export async function autoScaleAvatarBlob(file: File) {
   } catch (e) {
     ToastUtils.pushToastError(
       'pickFileForAvatar',
-      'An error happened while picking/resizing the image',
-      e.message || ''
+      `An error happened while picking/resizing the image: "${e.message || ''}"`
     );
     window.log.error(e);
     return null;
@@ -206,7 +205,7 @@ export async function autoScaleAvatarBlob(file: File) {
  * Shows the system file picker for images, scale the image down for avatar/opengroup measurements and return the blob objectURL on success
  */
 export async function pickFileForAvatar(): Promise<string | null> {
-  if (window.sessionFeatureFlags.integrationTestEnv) {
+  if (isTestIntegration()) {
     window.log.info(
       'shorting pickFileForAvatar as it does not work in playwright/notsending the filechooser event'
     );

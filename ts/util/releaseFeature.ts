@@ -1,6 +1,6 @@
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { FEATURE_RELEASE_TIMESTAMPS } from '../session/constants';
-import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
+import { UserSync } from '../session/utils/job_runners/jobs/UserSyncJob';
 import { assertUnreachable } from '../types/sqlSharedTypes';
 import { Storage } from './storage';
 
@@ -77,15 +77,12 @@ async function checkIsFeatureReleased(featureName: FeatureNameTracked): Promise<
   const featureAlreadyReleased = await getIsFeatureReleased(featureName);
 
   // Is it time to release the feature based on the network timestamp?
-  if (
-    !featureAlreadyReleased &&
-    GetNetworkTime.getNowWithNetworkOffset() >= getFeatureReleaseTimestamp(featureName)
-  ) {
+  if (!featureAlreadyReleased && GetNetworkTime.now() >= getFeatureReleaseTimestamp(featureName)) {
     window.log.info(`[releaseFeature]: It is time to release ${featureName}. Releasing it now`);
     await Storage.put(featureStorageItemId(featureName), true);
     setIsFeatureReleasedCached(featureName, true);
     // trigger a sync right away so our user data is online
-    await ConfigurationSync.queueNewJobIfNeeded();
+    await UserSync.queueNewJobIfNeeded();
   }
 
   const isReleased = Boolean(getIsFeatureReleasedCached(featureName));
@@ -100,10 +97,7 @@ async function checkIsUserConfigFeatureReleased() {
 }
 
 async function checkIsDisappearMessageV2FeatureReleased() {
-  return (
-    (await checkIsFeatureReleased('disappearing_messages')) ||
-    !!process.env.MULTI?.toLocaleLowerCase().includes('disappear_v2')
-  ); // FIXME to remove after QA
+  return checkIsFeatureReleased('disappearing_messages');
 }
 
 function isUserConfigFeatureReleasedCached(): boolean {
@@ -112,10 +106,7 @@ function isUserConfigFeatureReleasedCached(): boolean {
 
 // NOTE Make sure to call checkIsDisappearMessageV2FeatureReleased at least once and then use this. It's mostly used in components that are rendered where we don't want to do async calls
 function isDisappearMessageV2FeatureReleasedCached(): boolean {
-  return (
-    !!isDisappearingMessageFeatureReleased ||
-    !!process.env.MULTI?.toLocaleLowerCase().includes('disappear_v2') // FIXME to remove after QA
-  );
+  return !!isDisappearingMessageFeatureReleased;
 }
 
 export const ReleasedFeatures = {

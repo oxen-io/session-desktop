@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { useDispatch } from 'react-redux';
 import { ConversationTypeEnum } from '../../../models/conversationAttributes';
-import { getConversationController } from '../../../session/conversations';
+import { ConvoHub } from '../../../session/conversations';
 import { PubKey } from '../../../session/types';
 import { ToastUtils, UserUtils } from '../../../session/utils';
 import { openConversationWithMessages } from '../../../state/ducks/conversations';
@@ -57,7 +57,7 @@ export const OverlayMessage = () => {
   const disableNextButton = !pubkeyOrOns || loading;
 
   async function openConvoOnceResolved(resolvedSessionID: string) {
-    const convo = await getConversationController().getOrCreateAndWait(
+    const convo = await ConvoHub.use().getOrCreateAndWait(
       resolvedSessionID,
       ConversationTypeEnum.PRIVATE
     );

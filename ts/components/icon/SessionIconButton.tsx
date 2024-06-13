@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { KeyboardEvent } from 'react';
+import React, { KeyboardEvent, SessionDataTestId } from 'react';
 import styled from 'styled-components';
 import { SessionIcon, SessionIconProps } from './SessionIcon';
 
@@ -9,8 +9,8 @@ interface SProps extends SessionIconProps {
   isSelected?: boolean;
   isHidden?: boolean;
   margin?: string;
-  dataTestId?: string;
-  dataTestIdIcon?: string;
+  dataTestId?: SessionDataTestId;
+  dataTestIdIcon?: SessionDataTestId;
   id?: string;
   style?: object;
   tabIndex?: number;

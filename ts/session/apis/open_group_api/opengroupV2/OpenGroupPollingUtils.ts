@@ -1,12 +1,12 @@
 import { compact } from 'lodash';
 
 import { OpenGroupData, OpenGroupV2Room } from '../../../../data/opengroups';
-import { OpenGroupMessageV2 } from './OpenGroupMessageV2';
+import { getSodiumRenderer } from '../../../crypto';
 import { UserUtils } from '../../../utils';
 import { fromHexToArray } from '../../../utils/String';
-import { getSodiumRenderer } from '../../../crypto';
-import { SogsBlinding } from '../sogsv3/sogsBlinding';
 import { GetNetworkTime } from '../../snode_api/getNetworkTime';
+import { SogsBlinding } from '../sogsv3/sogsBlinding';
+import { OpenGroupMessageV2 } from './OpenGroupMessageV2';
 
 export type OpenGroupRequestHeaders = {
   'X-SOGS-Pubkey': string;
@@ -42,7 +42,7 @@ const getOurOpenGroupHeaders = async (
 
   const nonce = (await getSodiumRenderer()).randombytes_buf(16);
 
-  const timestamp = Math.floor(GetNetworkTime.getNowWithNetworkOffset() / 1000);
+  const timestamp = Math.floor(GetNetworkTime.now() / 1000);
   return SogsBlinding.getOpenGroupHeaders({
     signingKeys,
     serverPK: fromHexToArray(serverPublicKey),

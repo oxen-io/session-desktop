@@ -1,3 +1,4 @@
+import { PubkeyType } from 'libsession_util_nodejs';
 import { defaultsDeep } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -39,7 +40,7 @@ export interface MessageAttributes {
   read_by: Array<string>; // we actually only care about the length of this. values are not used for anything
   type: MessageModelType;
   group_update?: MessageGroupUpdate;
-  groupInvitation?: any;
+  groupInvitation?: { url: string | undefined; name: string } | undefined;
   attachments?: any;
   conversationId: string;
   errors?: any;
@@ -159,10 +160,13 @@ export type PropsForMessageRequestResponse = MessageRequestResponseMsg & {
 };
 
 export type MessageGroupUpdate = {
-  left?: Array<string>;
-  joined?: Array<string>;
-  kicked?: Array<string>;
+  left?: Array<PubkeyType>;
+  joined?: Array<PubkeyType>;
+  joinedWithHistory?: Array<PubkeyType>;
+  kicked?: Array<PubkeyType>;
+  promoted?: Array<PubkeyType>;
   name?: string;
+  avatarChange?: boolean;
 };
 
 export interface MessageAttributesOptionals {
@@ -184,9 +188,8 @@ export interface MessageAttributesOptionals {
   read_by?: Array<string>; // we actually only care about the length of this. values are not used for anything
   type: MessageModelType;
   group_update?: MessageGroupUpdate;
-  groupInvitation?: any;
+  groupInvitation?: { url: string | undefined; name: string } | undefined;
   attachments?: any;
-  contact?: any;
   conversationId: string;
   errors?: any;
   flags?: number;

@@ -86,7 +86,7 @@ const sendMessageReaction = async (messageId: string, emoji: string) => {
       return undefined;
     }
 
-    let me = UserUtils.getOurPubKeyStrFromCache();
+    let me: string = UserUtils.getOurPubKeyStrFromCache();
     let id = Number(found.get('sent_at'));
 
     if (found.get('isPublic')) {

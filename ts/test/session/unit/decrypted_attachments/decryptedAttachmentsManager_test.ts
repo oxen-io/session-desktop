@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
 import Sinon from 'sinon';
-import * as DecryptedAttachmentsManager from '../../../../session/crypto/DecryptedAttachmentsManager';
 import { TestUtils } from '../../../test-utils';
+import { DecryptedAttachmentsManager } from '../../../../session/crypto/DecryptedAttachmentsManager';
 
 describe('DecryptedAttachmentsManager', () => {
   beforeEach(() => {
@@ -134,7 +134,4 @@ describe('DecryptedAttachmentsManager', () => {
       });
     });
   });
-
-  it.skip('cleanUpOldDecryptedMedias', () => {});
-  it.skip('getDecryptedBlob', () => {});
 });

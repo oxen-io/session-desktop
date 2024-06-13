@@ -1,13 +1,8 @@
 import crypto from 'crypto';
 import libsodiumwrappers from 'libsodium-wrappers-sumo';
 
-import * as DecryptedAttachmentsManager from './DecryptedAttachmentsManager';
-import * as MessageEncrypter from './MessageEncrypter';
-
 import { ECKeyPair } from '../../receiver/keypairs';
 import { toHex } from '../utils/String';
-
-export { DecryptedAttachmentsManager, MessageEncrypter };
 
 export type LibSodiumWrappers = typeof libsodiumwrappers;
 
@@ -50,21 +45,6 @@ export async function generateClosedGroupPublicKey() {
   prependedX25519PublicKey[0] = 5;
 
   return toHex(prependedX25519PublicKey);
-}
-
-/**
- * Returns a generated ed25519 hex with a public key being of length 66 and starting with 03.
- */
-export async function generateGroupV3Keypair() {
-  const sodium = await getSodiumRenderer();
-  const ed25519KeyPair = sodium.crypto_sign_keypair();
-
-  const publicKey = new Uint8Array(ed25519KeyPair.publicKey);
-  const preprendedPubkey = new Uint8Array(33);
-  preprendedPubkey.set(publicKey, 1);
-  preprendedPubkey[0] = 3;
-
-  return { pubkey: toHex(preprendedPubkey), privateKey: toHex(ed25519KeyPair.privateKey) };
 }
 
 /**

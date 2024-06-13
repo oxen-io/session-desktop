@@ -1,17 +1,18 @@
 import { SignalService } from '../../../../../protobuf';
 import { PubKey } from '../../../../types';
-import { ExpirableMessage, ExpirableMessageParams } from '../../ExpirableMessage';
+import { DataMessage } from '../../DataMessage';
+import { ExpirableMessageParams } from '../../ExpirableMessage';
 
 export interface ClosedGroupMessageParams extends ExpirableMessageParams {
   groupId: string | PubKey;
 }
 
-export abstract class ClosedGroupMessage extends ExpirableMessage {
+export abstract class ClosedGroupMessage extends DataMessage {
   public readonly groupId: PubKey;
 
   constructor(params: ClosedGroupMessageParams) {
     super({
-      timestamp: params.timestamp,
+      createAtNetworkTimestamp: params.createAtNetworkTimestamp,
       identifier: params.identifier,
       expirationType: params.expirationType,
       expireTimer: params.expireTimer,
@@ -41,7 +42,7 @@ export abstract class ClosedGroupMessage extends ExpirableMessage {
   }
 
   public dataProto(): SignalService.DataMessage {
-    const dataMessage = super.dataProto();
+    const dataMessage = new SignalService.DataMessage({});
 
     dataMessage.closedGroupControlMessage =
       new SignalService.DataMessage.ClosedGroupControlMessage();

@@ -16,7 +16,7 @@ export class ExpirableMessage extends ContentMessage {
 
   constructor(params: ExpirableMessageParams) {
     super({
-      timestamp: params.timestamp,
+      createAtNetworkTimestamp: params.createAtNetworkTimestamp,
       identifier: params.identifier,
     });
     this.expirationType = params.expirationType;
@@ -38,17 +38,8 @@ export class ExpirableMessage extends ContentMessage {
     });
   }
 
-  public dataProto(): SignalService.DataMessage {
-    return new SignalService.DataMessage({
-      // TODO legacy messages support will be removed in a future release
-      expireTimer:
-        (this.expirationType === 'unknown' || !this.expirationType) &&
-        this.expireTimer &&
-        this.expireTimer > -1
-          ? this.expireTimer
-          : undefined,
-    });
-  }
+  // Note: dataProto() or anything else must be implemented in the child classes
+  // public dataProto()
 
   public getDisappearingMessageType(): DisappearingMessageType | undefined {
     return this.expirationType || undefined;

@@ -14,7 +14,7 @@ import { SessionRecording } from '../SessionRecording';
 
 import { SettingsKey } from '../../../data/settings-key';
 import { showLinkSharingConfirmationModalDialog } from '../../../interactions/conversationInteractions';
-import { getConversationController } from '../../../session/conversations';
+import { ConvoHub } from '../../../session/conversations';
 import { ToastUtils } from '../../../session/utils';
 import { ReduxConversationType } from '../../../state/ducks/conversations';
 import { removeAllStagedAttachmentsInConversation } from '../../../state/ducks/stagedAttachments';
@@ -422,6 +422,11 @@ class CompositionBoxInner extends React.Component<Props, State> {
     const { typingEnabled } = this.props;
     /* eslint-disable @typescript-eslint/no-misused-promises */
 
+    // we completely hide the composition box when typing is not enabled now.
+    if (!typingEnabled) {
+      return null;
+    }
+
     return (
       <Flex
         dir={this.props.htmlDirection}
@@ -430,7 +435,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
         alignItems={'center'}
         width={'100%'}
       >
-        {typingEnabled && <AddStagedAttachmentButton onClick={this.onChooseAttachment} />}
+        <AddStagedAttachmentButton onClick={this.onChooseAttachment} />
         <input
           className="hidden"
           placeholder="Attachment"
@@ -439,7 +444,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
           type="file"
           onChange={this.onChoseAttachment}
         />
-        {typingEnabled && <StartRecordingButton onClick={this.onLoadVoiceNoteView} />}
+        <StartRecordingButton onClick={this.onLoadVoiceNoteView} />
         <StyledSendMessageInput
           role="main"
           dir={this.props.htmlDirection}
@@ -451,11 +456,11 @@ class CompositionBoxInner extends React.Component<Props, State> {
         >
           {this.renderTextArea()}
         </StyledSendMessageInput>
-        {typingEnabled && (
-          <ToggleEmojiButton ref={this.emojiPanelButton} onClick={this.toggleEmojiPanel} />
-        )}
-        {typingEnabled && <SendMessageButton onClick={this.onSendMessage} />}
-        {typingEnabled && showEmojiPanel && (
+
+        <ToggleEmojiButton ref={this.emojiPanelButton} onClick={this.toggleEmojiPanel} />
+
+        <SendMessageButton onClick={this.onSendMessage} />
+        {showEmojiPanel && (
           <StyledEmojiPanelContainer role="button" dir={this.props.htmlDirection}>
             <SessionEmojiPanel
               ref={this.emojiPanel}
@@ -478,13 +483,11 @@ class CompositionBoxInner extends React.Component<Props, State> {
     if (!this.props.selectedConversation) {
       return null;
     }
+    // Note: we completely hide the composition box if typing is not enabled now, so this component is not rendered
 
     const makeMessagePlaceHolderText = () => {
       if (isKickedFromGroup) {
         return i18n('youGotKickedFromGroup');
-      }
-      if (left) {
-        return i18n('youLeftTheGroup');
       }
       if (isBlocked) {
         return i18n('unblockToSend');
@@ -492,9 +495,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
       return i18n('sendMessage');
     };
 
-    const { isKickedFromGroup, left, isBlocked } = this.props.selectedConversation;
+    const { isKickedFromGroup, isBlocked } = this.props.selectedConversation;
     const messagePlaceHolder = makeMessagePlaceHolderText();
-    const { typingEnabled } = this.props;
     const neverMatchingRegex = /($a)/;
 
     const style = sendMessageStyle(htmlDirection);
@@ -511,7 +513,6 @@ class CompositionBoxInner extends React.Component<Props, State> {
         spellCheck={true}
         dir={htmlDirection}
         inputRef={this.textarea}
-        disabled={!typingEnabled}
         rows={1}
         data-testid="message-input-text-area"
         style={style}
@@ -598,7 +599,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     }
 
     const allMembers = allPubKeys.map(pubKey => {
-      const conv = getConversationController().get(pubKey);
+      const conv = ConvoHub.use().get(pubKey);
       const profileName =
         conv?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('anonymous');
 
@@ -894,7 +895,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
     // Also, check for a message length change before firing it up, to avoid
     // catching ESC, tab, or whatever which is not typing
     if (draft && draft.length && draft.length !== this.lastBumpTypingMessageLength) {
-      const conversationModel = getConversationController().get(this.props.selectedConversationKey);
+      const conversationModel = ConvoHub.use().get(this.props.selectedConversationKey);
       if (!conversationModel) {
         return;
       }
@@ -928,10 +929,6 @@ class CompositionBoxInner extends React.Component<Props, State> {
       return;
     }
 
-    if (!selectedConversation.isPrivate && selectedConversation.left) {
-      ToastUtils.pushYouLeftTheGroup();
-      return;
-    }
     if (!selectedConversation.isPrivate && selectedConversation.isKickedFromGroup) {
       ToastUtils.pushYouLeftTheGroup();
       return;

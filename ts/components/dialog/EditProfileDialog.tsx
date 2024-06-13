@@ -11,7 +11,7 @@ import { YourSessionIDPill, YourSessionIDSelectable } from '../basic/YourSession
 import { useOurAvatarPath, useOurConversationUsername } from '../../hooks/useParamSelector';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
 import { MAX_USERNAME_BYTES } from '../../session/constants';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { sanitizeSessionUsername } from '../../session/utils/String';
 import { editProfileModal, updateEditProfilePictureModel } from '../../state/ducks/modalDialog';
 import { saveQRCode } from '../../util/saveQRCode';
@@ -50,7 +50,7 @@ const QRView = ({ sessionID }: { sessionID: string }) => {
 
 const updateDisplayName = async (newName: string) => {
   const ourNumber = UserUtils.getOurPubKeyStrFromCache();
-  const conversation = await getConversationController().getOrCreateAndWait(
+  const conversation = await ConvoHub.use().getOrCreateAndWait(
     ourNumber,
     ConversationTypeEnum.PRIVATE
   );
@@ -114,7 +114,6 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 };
 
 type ProfileDialogModes = 'default' | 'edit' | 'qr';
-
 export const EditProfileDialog = () => {
   const dispatch = useDispatch();
 

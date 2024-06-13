@@ -56,7 +56,7 @@ export const BackButton = (props: { onGoBack: () => void; showBackButton: boolea
 export const CallButton = () => {
   const isPrivate = useSelectedIsPrivate();
   const isBlocked = useSelectedIsBlocked();
-  const activeAt = useSelectedIsActive();
+  const isActive = useSelectedIsActive();
   const isMe = useSelectedIsNoteToSelf();
   const selectedConvoKey = useSelectedConversationKey();
 
@@ -71,7 +71,7 @@ export const CallButton = () => {
     isMe ||
     !selectedConvoKey ||
     isBlocked ||
-    !activeAt ||
+    !isActive ||
     !isPrivateAndFriend // call requires us to be friends
   ) {
     return null;

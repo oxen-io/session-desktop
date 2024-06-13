@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { SessionDataTestId, useState } from 'react';
 
 import classNames from 'classnames';
 import { SessionIconButton } from '../icon';
@@ -16,7 +16,7 @@ type Props = {
   onEnterPressed?: any;
   autoFocus?: boolean;
   ref?: any;
-  inputDataTestId?: string;
+  inputDataTestId?: SessionDataTestId;
 };
 
 const LabelItem = (props: { inputValue: string; label?: string }) => {

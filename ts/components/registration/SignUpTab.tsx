@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
+import useTimeoutFn from 'react-use/lib/useTimeoutFn';
+import { isAutoLogin } from '../../shared/env_vars';
 import { Flex } from '../basic/Flex';
 import { SessionButton } from '../basic/SessionButton';
 import { SessionIdEditable } from '../basic/SessionIdEditable';
 import { SessionIconButton } from '../icon';
 import { RegistrationContext, RegistrationPhase, signUp } from './RegistrationStages';
 import { RegistrationUserDetails } from './RegistrationUserDetails';
-import { sanitizeDisplayNameOrToast, SignInMode } from './SignInTab';
+import { SignInMode, sanitizeDisplayNameOrToast } from './SignInTab';
 import { TermsAndConditions } from './TermsAndConditions';
 
 export enum SignUpMode {
@@ -18,8 +20,17 @@ const CreateSessionIdButton = ({ createSessionID }: { createSessionID: any }) =>
   return <SessionButton onClick={createSessionID} text={window.i18n('createSessionID')} />;
 };
 
-const ContinueSignUpButton = ({ continueSignUp }: { continueSignUp: any }) => {
-  return <SessionButton onClick={continueSignUp} text={window.i18n('continue')} />;
+function useAutoContinue(props: { continueSignUp: () => void }) {
+  useTimeoutFn(() => {
+    if (isAutoLogin()) {
+      props.continueSignUp();
+    }
+  }, 100);
+}
+
+const ContinueSignUpButton = (props: { continueSignUp: () => void }) => {
+  useAutoContinue(props);
+  return <SessionButton onClick={props.continueSignUp} text={window.i18n('continue')} />;
 };
 
 const SignUpDefault = (props: { createSessionID: () => void }) => {

@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Yeni bir arkadaşlık isteğin var",
   "clearAllConfirmationTitle": "Tüm Mesaj İsteklerini temizle",
   "clearAllConfirmationBody": "Tüm mesaj isteklerinizi silmek istediğinizden emin misiniz?",
-  "noMessagesInReadOnly": "There are no messages in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "There are no messages in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "You have no messages in <b>$name$</b>.",
   "noMessagesInEverythingElse": "You have no messages from <b>$name$</b>. Send a message to start the conversation!",

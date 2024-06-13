@@ -8,7 +8,7 @@ import { OpenGroupData } from '../../../../data/opengroups';
 import { ConversationModel } from '../../../../models/conversation';
 import { handleOpenGroupV4Message } from '../../../../receiver/opengroup';
 import { callUtilsWorker } from '../../../../webworker/workers/browser/util_worker_interface';
-import { getConversationController } from '../../../conversations';
+import { ConvoHub } from '../../../conversations';
 import { PubKey } from '../../../types';
 import { OpenGroupRequestCommonType } from '../opengroupV2/ApiUtil';
 import {
@@ -54,7 +54,7 @@ function getSogsConvoOrReturnEarly(serverUrl: string, roomId: string): Conversat
     return null;
   }
 
-  const foundConvo = getConversationController().get(convoId);
+  const foundConvo = ConvoHub.use().get(convoId);
   if (!foundConvo) {
     window.log.info('getSogsConvoOrReturnEarly: convo not found: ', convoId);
     return null;
@@ -174,7 +174,7 @@ const handleSogsV3DeletedMessages = async (
 
   try {
     const convoId = getOpenGroupV2ConversationId(serverUrl, roomId);
-    const convo = getConversationController().get(convoId);
+    const convo = ConvoHub.use().get(convoId);
     const messageIds = await Data.getMessageIdsFromServerIds(allIdsRemoved, convo.id);
 
     allIdsRemoved.forEach(removedId => {
@@ -319,7 +319,7 @@ const handleMessagesResponseV4 = async (
 
     if (messagesWithReactions.length > 0) {
       const conversationId = getOpenGroupV2ConversationId(serverUrl, roomId);
-      const groupConvo = getConversationController().get(conversationId);
+      const groupConvo = ConvoHub.use().get(conversationId);
       if (groupConvo && groupConvo.isOpenGroupV2()) {
         for (const messageWithReaction of messagesWithReactions) {
           if (isEmpty(messageWithReaction.reactions)) {
@@ -414,15 +414,15 @@ async function handleInboxOutboxMessages(
          * We will need this to send new message to that user from our second device.
          */
         const recipient = inboxOutboxItem.recipient;
-        const contentDecoded = SignalService.Content.decode(content);
+        const contentDecrypted = SignalService.Content.decode(content);
 
         // if we already know this user's unblinded pubkey, store the blinded message we sent to that blinded recipient under
         // the unblinded conversation instead (as we would have merge the blinded one with the other )
         const unblindedIDOrBlinded =
           (await findCachedBlindedMatchOrLookItUp(recipient, serverPubkey, sodium)) || recipient;
 
-        if (contentDecoded.dataMessage) {
-          const outboxConversationModel = await getConversationController().getOrCreateAndWait(
+        if (contentDecrypted.dataMessage) {
+          const outboxConversationModel = await ConvoHub.use().getOrCreateAndWait(
             unblindedIDOrBlinded,
             ConversationTypeEnum.PRIVATE
           );
@@ -436,13 +436,13 @@ async function handleInboxOutboxMessages(
             messageHash: '',
             sentAt: postedAtInMs,
           });
-          await outboxConversationModel.setOriginConversationID(serverConversationId);
+          await outboxConversationModel.setOriginConversationID(serverConversationId, true);
 
           await handleOutboxMessageModel(
             msgModel,
             '',
             postedAtInMs,
-            contentDecoded.dataMessage as SignalService.DataMessage,
+            contentDecrypted.dataMessage as SignalService.DataMessage,
             outboxConversationModel
           );
         }
@@ -476,9 +476,9 @@ async function handleInboxOutboxMessages(
         await innerHandleSwarmContentMessage({
           envelope: builtEnvelope,
           sentAtTimestamp: postedAtInMs,
-          plaintext: builtEnvelope.content,
+          contentDecrypted: builtEnvelope.content,
           messageHash: '',
-          messageExpirationFromRetrieve: null, // sogs message do not expire
+          messageExpirationFromRetrieve: null, // sogs message cannot expire
         });
       }
     } catch (e) {

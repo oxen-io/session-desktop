@@ -4,7 +4,7 @@ import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 import useKey from 'react-use/lib/useKey';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 import { ToastUtils } from '../../session/utils';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
 import { updateUserDetailsModal, UserDetailsModalState } from '../../state/ducks/modalDialog';
@@ -30,9 +30,9 @@ export const UserDetailsDialog = (props: UserDetailsModalState) => {
     if (!props) {
       return;
     }
-    const convo = getConversationController().get(props.conversationId);
+    const convo = ConvoHub.use().get(props.conversationId);
 
-    const conversation = await getConversationController().getOrCreateAndWait(
+    const conversation = await ConvoHub.use().getOrCreateAndWait(
       convo.id,
       ConversationTypeEnum.PRIVATE
     );

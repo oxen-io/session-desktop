@@ -1,5 +1,5 @@
 import { Data } from '../data/data';
-import { commitConversationAndRefreshWrapper } from '../models/conversation';
+import { Convo } from '../models/conversation';
 import { PubKey } from '../session/types';
 import { Storage } from './storage';
 
@@ -38,7 +38,7 @@ export class BlockedNumberController {
     if (!this.blockedNumbers.has(toBlock.key)) {
       this.blockedNumbers.add(toBlock.key);
       await this.saveToDB(BLOCKED_NUMBERS_ID, this.blockedNumbers);
-      await commitConversationAndRefreshWrapper(toBlock.key);
+      await Convo.commitConversationAndRefreshWrapper(toBlock.key);
     }
   }
 
@@ -64,7 +64,7 @@ export class BlockedNumberController {
       const user = users[index];
       try {
         // eslint-disable-next-line no-await-in-loop
-        await commitConversationAndRefreshWrapper(user);
+        await Convo.commitConversationAndRefreshWrapper(user);
       } catch (e) {
         window.log.warn(
           'failed to SessionUtilContact.insertContactFromDBIntoWrapperAndRefresh with: ',
@@ -103,7 +103,7 @@ export class BlockedNumberController {
     this.blockedNumbers = new Set();
   }
 
-  private static async getNumbersFromDB(id: string): Promise<Set<string>> {
+  public static async getNumbersFromDB(id: string): Promise<Set<string>> {
     const data = await Data.getItemById(id);
     if (!data || !data.value) {
       return new Set();

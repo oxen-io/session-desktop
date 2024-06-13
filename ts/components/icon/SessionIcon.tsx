@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, SessionDataTestId } from 'react';
 import styled, { css, CSSProperties, keyframes } from 'styled-components';
 
 import { icons, SessionIconSize, SessionIconType } from '.';
@@ -16,8 +16,8 @@ export type SessionIconProps = {
   glowStartDelay?: number;
   noScale?: boolean;
   backgroundColor?: string;
+  dataTestId?: SessionDataTestId;
   style?: CSSProperties;
-  dataTestId?: string;
   unreadCount?: number;
 };
 
@@ -142,7 +142,7 @@ const SessionSvg = (
     viewBox: string;
     path: string | Array<string>;
     style?: CSSProperties;
-    dataTestId?: string;
+    dataTestId?: SessionDataTestId;
   }
 ) => {
   const colorSvg = props.iconColor ? props.iconColor : 'var(--button-icon-stroke-color)';

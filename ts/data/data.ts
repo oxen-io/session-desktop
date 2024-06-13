@@ -1,5 +1,6 @@
 // eslint:disable: no-require-imports no-var-requires one-variable-per-declaration no-void-expression function-name
 
+import { GroupPubkeyType } from 'libsession_util_nodejs';
 import _, { isEmpty } from 'lodash';
 import { MessageResultProps } from '../components/search/MessageSearchResults';
 import { ConversationModel } from '../models/conversation';
@@ -25,6 +26,12 @@ import { channels } from './channels';
 import * as dataInit from './dataInit';
 import { cleanData } from './dataUtils';
 import { SNODE_POOL_ITEM_ID } from './settings-key';
+import {
+  DataCallArgs,
+  DeleteAllMessageFromSendersInConversationType,
+  DeleteAllMessageHashesInConversationMatchingAuthorType,
+  DeleteAllMessageHashesInConversationType,
+} from './sharedDataTypes';
 
 const ERASE_SQL_KEY = 'erase-sql-key';
 const ERASE_ATTACHMENTS_KEY = 'erase-attachments';
@@ -42,12 +49,12 @@ export type GuardNode = {
   ed25519PubKey: string;
 };
 
-export interface Snode {
+export type Snode = {
   ip: string;
   port: number;
   pubkey_x25519: string;
   pubkey_ed25519: string;
-}
+};
 
 export type SwarmNode = Snode & {
   address: string;
@@ -231,12 +238,12 @@ async function cleanLastHashes(): Promise<void> {
   await channels.cleanLastHashes();
 }
 
-async function saveSeenMessageHashes(
-  data: Array<{
-    expiresAt: number;
-    hash: string;
-  }>
-): Promise<void> {
+export type SeenMessageHashes = {
+  expiresAt: number;
+  hash: string;
+};
+
+async function saveSeenMessageHashes(data: Array<SeenMessageHashes>): Promise<void> {
   await channels.saveSeenMessageHashes(cleanData(data));
 }
 
@@ -286,6 +293,22 @@ async function removeMessage(id: string): Promise<void> {
  */
 async function removeMessagesByIds(ids: Array<string>): Promise<void> {
   await channels.removeMessagesByIds(ids);
+}
+
+async function removeAllMessagesInConversationSentBefore(args: {
+  deleteBeforeSeconds: number;
+  conversationId: GroupPubkeyType;
+}): Promise<Array<string>> {
+  return channels.removeAllMessagesInConversationSentBefore(args);
+}
+
+async function getAllMessagesWithAttachmentsInConversationSentBefore(args: {
+  deleteAttachBeforeSeconds: number;
+  conversationId: GroupPubkeyType;
+}): Promise<Array<MessageModel>> {
+  const msgAttrs = await channels.getAllMessagesWithAttachmentsInConversationSentBefore(args);
+
+  return msgAttrs.map((msg: any) => new MessageModel(msg));
 }
 
 async function getMessageIdsFromServerIds(
@@ -573,6 +596,24 @@ async function removeAllMessagesInConversation(conversationId: string): Promise<
   );
 }
 
+async function deleteAllMessageFromSendersInConversation(
+  args: DataCallArgs<DeleteAllMessageFromSendersInConversationType>
+): ReturnType<DeleteAllMessageFromSendersInConversationType> {
+  return channels.deleteAllMessageFromSendersInConversation(args);
+}
+
+async function deleteAllMessageHashesInConversation(
+  args: DataCallArgs<DeleteAllMessageHashesInConversationType>
+): ReturnType<DeleteAllMessageHashesInConversationType> {
+  return channels.deleteAllMessageHashesInConversation(args);
+}
+
+async function deleteAllMessageHashesInConversationMatchingAuthor(
+  args: DataCallArgs<DeleteAllMessageHashesInConversationMatchingAuthorType>
+): ReturnType<DeleteAllMessageHashesInConversationMatchingAuthorType> {
+  return channels.deleteAllMessageHashesInConversationMatchingAuthor(args);
+}
+
 async function getMessagesBySentAt(sentAt: number): Promise<MessageCollection> {
   const messages = await channels.getMessagesBySentAt(sentAt);
   return new MessageCollection(messages);
@@ -828,6 +869,8 @@ export const Data = {
   saveMessages,
   removeMessage,
   removeMessagesByIds,
+  removeAllMessagesInConversationSentBefore,
+  getAllMessagesWithAttachmentsInConversationSentBefore,
   cleanUpExpirationTimerUpdateHistory,
   getMessageIdsFromServerIds,
   getMessageById,
@@ -852,6 +895,9 @@ export const Data = {
   getLastHashBySnode,
   getSeenMessagesByHashList,
   removeAllMessagesInConversation,
+  deleteAllMessageFromSendersInConversation,
+  deleteAllMessageHashesInConversation,
+  deleteAllMessageHashesInConversationMatchingAuthor,
   getMessagesBySentAt,
   getExpiredMessages,
   getOutgoingWithoutExpiresAt,

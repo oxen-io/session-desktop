@@ -22,13 +22,13 @@ import {
 } from '../../types/MessageAttachment';
 import { decryptAttachmentBufferRenderer } from '../../util/local_attachments_encrypter';
 
-export const urlToDecryptedBlobMap = new Map<
+const urlToDecryptedBlobMap = new Map<
   string,
   { decrypted: string; lastAccessTimestamp: number; forceRetain: boolean }
 >();
-export const urlToDecryptingPromise = new Map<string, Promise<string>>();
+const urlToDecryptingPromise = new Map<string, Promise<string>>();
 
-export const cleanUpOldDecryptedMedias = () => {
+const cleanUpOldDecryptedMedias = () => {
   const currentTimestamp = Date.now();
   let countCleaned = 0;
   let countKept = 0;
@@ -57,19 +57,19 @@ export const cleanUpOldDecryptedMedias = () => {
   );
 };
 
-export const getLocalAttachmentPath = () => {
+const getLocalAttachmentPath = () => {
   return getAttachmentPath();
 };
 
-export const getAbsoluteAttachmentPath = (url: string) => {
+const getAbsoluteAttachmentPath = (url: string) => {
   return msgGetAbsoluteAttachmentPath(url);
 };
 
-export const readFileContent = async (url: string) => {
+const readFileContent = async (url: string) => {
   return fse.readFile(url);
 };
 
-export const getDecryptedMediaUrl = async (
+const getDecryptedMediaUrl = async (
   url: string,
   contentType: string,
   isAvatar: boolean
@@ -85,9 +85,9 @@ export const getDecryptedMediaUrl = async (
 
   if (
     (isAbsolute &&
-      exports.getLocalAttachmentPath &&
-      url.startsWith(exports.getLocalAttachmentPath())) ||
-    fse.pathExistsSync(exports.getAbsoluteAttachmentPath(url))
+      DecryptedAttachmentsManager.getLocalAttachmentPath &&
+      url.startsWith(DecryptedAttachmentsManager.getLocalAttachmentPath())) ||
+    fse.pathExistsSync(DecryptedAttachmentsManager.getAbsoluteAttachmentPath(url))
   ) {
     // this is a file encoded by session on our current attachments path.
     // we consider the file is encrypted.
@@ -160,14 +160,17 @@ export const getDecryptedMediaUrl = async (
  *
  * Returns the already decrypted URL or null
  */
-export const getAlreadyDecryptedMediaUrl = (url: string): string | null => {
+const getAlreadyDecryptedMediaUrl = (url: string): string | null => {
   if (!url) {
     return null;
   }
   if (url.startsWith('blob:')) {
     return url;
   }
-  if (exports.getLocalAttachmentPath() && url.startsWith(exports.getLocalAttachmentPath())) {
+  if (
+    DecryptedAttachmentsManager.getLocalAttachmentPath() &&
+    url.startsWith(DecryptedAttachmentsManager.getLocalAttachmentPath())
+  ) {
     if (urlToDecryptedBlobMap.has(url)) {
       const existing = urlToDecryptedBlobMap.get(url);
 
@@ -183,7 +186,7 @@ export const getAlreadyDecryptedMediaUrl = (url: string): string | null => {
   return null;
 };
 
-export const getDecryptedBlob = async (url: string, contentType: string): Promise<Blob> => {
+const getDecryptedBlob = async (url: string, contentType: string): Promise<Blob> => {
   const decryptedUrl = await getDecryptedMediaUrl(url, contentType, false);
   return urlToBlob(decryptedUrl);
 };
@@ -191,7 +194,18 @@ export const getDecryptedBlob = async (url: string, contentType: string): Promis
 /**
  * This function should only be used for testing purpose
  */
-export const resetDecryptedUrlForTesting = () => {
+const resetDecryptedUrlForTesting = () => {
   urlToDecryptedBlobMap.clear();
   urlToDecryptingPromise.clear();
+};
+
+export const DecryptedAttachmentsManager = {
+  resetDecryptedUrlForTesting,
+  getDecryptedBlob,
+  getAlreadyDecryptedMediaUrl,
+  getLocalAttachmentPath,
+  getAbsoluteAttachmentPath,
+  cleanUpOldDecryptedMedias,
+  getDecryptedMediaUrl,
+  readFileContent,
 };

@@ -18,7 +18,7 @@ export const uploadFileToRoomSogs3 = async (
 
   const roomDetails = OpenGroupData.getV2OpenGroupRoomByRoomId(roomInfos);
   if (!roomDetails || !roomDetails.serverPublicKey) {
-    window.log.warn('uploadFileOpenGroupV3: roomDetails is invalid');
+    window.log.warn('uploadFileOpenGroup: roomDetails is invalid');
     return null;
   }
 

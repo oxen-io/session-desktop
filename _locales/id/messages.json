@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Anda memiliki permintaan pertemanan baru",
   "clearAllConfirmationTitle": "Hapus Semua Permintaan Pesan",
   "clearAllConfirmationBody": "Yakin ingin menghapus semua permintaan pesan?",
-  "noMessagesInReadOnly": "There are no messages in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "There are no messages in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "You have no messages in <b>$name$</b>.",
   "noMessagesInEverythingElse": "You have no messages from <b>$name$</b>. Send a message to start the conversation!",

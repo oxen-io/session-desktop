@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { SessionDataTestId } from 'react';
 import styled from 'styled-components';
 import { Flex } from './basic/Flex';
-import { SessionIconButton } from './icon';
+import { SessionIconButton, SessionIconType } from './icon';
+import { StyledRootDialog } from './dialog/StyledRootDialog';
 
 const StyledNoticeBanner = styled(Flex)`
   position: relative;
@@ -23,11 +24,13 @@ const StyledText = styled.span`
 
 type NoticeBannerProps = {
   text: string;
-  dismissCallback: () => void;
+  icon: SessionIconType;
+  onButtonClick: () => void;
+  dataTestId: SessionDataTestId;
 };
 
 export const NoticeBanner = (props: NoticeBannerProps) => {
-  const { text, dismissCallback } = props;
+  const { text, onButtonClick, icon, dataTestId } = props;
 
   return (
     <StyledNoticeBanner
@@ -35,17 +38,43 @@ export const NoticeBanner = (props: NoticeBannerProps) => {
       flexDirection={'row'}
       justifyContent={'center'}
       alignItems={'center'}
+      data-testid={dataTestId}
     >
       <StyledText>{text}</StyledText>
       <SessionIconButton
-        iconType="exit"
+        iconType={icon}
         iconColor="inherit"
         iconSize="small"
         onClick={event => {
           event?.preventDefault();
-          dismissCallback();
+          onButtonClick();
         }}
       />
     </StyledNoticeBanner>
+  );
+};
+
+const StyledGroupInviteBanner = styled(Flex)`
+  position: relative;
+  background-color: var(--orange-color);
+  color: var(--black-color);
+  font-size: var(--font-size-sm);
+  padding: var(--margins-xs) var(--margins-lg);
+  text-align: center;
+  flex-shrink: 0;
+
+  // when part a a dialog, invert it and make it narrower (as the dialog grows to make it fit)
+  ${StyledRootDialog} & {
+    background-color: unset;
+    color: var(--orange-color);
+    max-width: 300px;
+  }
+`;
+
+export const GroupInviteRequiredVersionBanner = () => {
+  return (
+    <StyledGroupInviteBanner data-testid="invite-warning">
+      {window.i18n('versionRequiredForNewGroupDescription')}
+    </StyledGroupInviteBanner>
   );
 };

@@ -1,8 +1,13 @@
+import { GroupPubkeyType, PubkeyType } from 'libsession_util_nodejs';
 import { cloneDeep, flatten, isEmpty, isNil, uniq } from 'lodash';
 
 export type PersistedJobType =
-  | 'ConfigurationSyncJobType'
+  | 'UserSyncJobType'
+  | 'GroupSyncJobType'
   | 'AvatarDownloadJobType'
+  | 'GroupInviteJobType'
+  | 'GroupPromoteJobType'
+  | 'GroupPendingRemovalJobType'
   | 'FetchMsgExpirySwarmJobType'
   | 'UpdateMsgExpirySwarmJobType'
   | 'FakeSleepForJobType'
@@ -33,12 +38,31 @@ export interface AvatarDownloadPersistedData extends PersistedJobData {
   conversationId: string;
 }
 
-interface PersitedDataWithMsgIds extends PersistedJobData {
-  msgIds: Array<string>;
+export interface GroupInvitePersistedData extends PersistedJobData {
+  jobType: 'GroupInviteJobType';
+  groupPk: GroupPubkeyType;
+  member: PubkeyType;
 }
 
-export interface ConfigurationSyncPersistedData extends PersistedJobData {
-  jobType: 'ConfigurationSyncJobType';
+export interface GroupPromotePersistedData extends PersistedJobData {
+  jobType: 'GroupPromoteJobType';
+  groupPk: GroupPubkeyType;
+  member: PubkeyType;
+}
+
+export interface GroupPendingRemovalsPersistedData extends PersistedJobData {
+  jobType: 'GroupPendingRemovalJobType';
+  groupPk: GroupPubkeyType;
+}
+
+export interface UserSyncPersistedData extends PersistedJobData {
+  jobType: 'UserSyncJobType';
+}
+export interface GroupSyncPersistedData extends PersistedJobData {
+  jobType: 'GroupSyncJobType';
+}
+interface PersitedDataWithMsgIds extends PersistedJobData {
+  msgIds: Array<string>;
 }
 
 export interface FetchMsgExpirySwarmPersistedData extends PersitedDataWithMsgIds {
@@ -50,12 +74,16 @@ export interface UpdateMsgExpirySwarmPersistedData extends PersitedDataWithMsgId
 }
 
 export type TypeOfPersistedData =
-  | ConfigurationSyncPersistedData
+  | UserSyncPersistedData
   | AvatarDownloadPersistedData
   | FetchMsgExpirySwarmPersistedData
   | UpdateMsgExpirySwarmPersistedData
   | FakeSleepJobData
-  | FakeSleepForMultiJobData;
+  | FakeSleepForMultiJobData
+  | GroupSyncPersistedData
+  | GroupInvitePersistedData
+  | GroupPromotePersistedData
+  | GroupPendingRemovalsPersistedData;
 
 export type AddJobCheckReturn = 'skipAddSameJobPresent' | null;
 
@@ -137,6 +165,15 @@ export abstract class PersistedJob<T extends PersistedJobData> {
 
   public addJobCheckSameTypePresent(jobs: Array<T>): 'skipAddSameJobPresent' | null {
     return jobs.some(j => j.jobType === this.persistedData.jobType)
+      ? 'skipAddSameJobPresent'
+      : null;
+  }
+
+  public addJobCheckSameTypeAndIdentifierPresent(jobs: Array<T>): 'skipAddSameJobPresent' | null {
+    return jobs.some(
+      j =>
+        j.jobType === this.persistedData.jobType && j.identifier === this.persistedData.identifier
+    )
       ? 'skipAddSameJobPresent'
       : null;
   }

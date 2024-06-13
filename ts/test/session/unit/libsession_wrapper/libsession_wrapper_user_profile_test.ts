@@ -8,7 +8,7 @@ import {
   ConversationTypeEnum,
 } from '../../../../models/conversationAttributes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';
 import { SessionUtilUserProfile } from '../../../../session/utils/libsession/libsession_utils_user_profile';
 import { TestUtils } from '../../../test-utils';
@@ -64,7 +64,7 @@ describe('libsession_user_profile', () => {
         ...validArgs,
         ...contactArgs,
       } as ConversationAttributes);
-      Sinon.stub(getConversationController(), 'get').returns(contact);
+      Sinon.stub(ConvoHub.use(), 'get').returns(contact);
       Sinon.stub(SessionUtilUserProfile, 'isUserProfileToStoreInWrapper').returns(true);
 
       const wrapperUserProfile =
@@ -102,7 +102,7 @@ describe('libsession_user_profile', () => {
         ...contactArgs,
         id: TestUtils.generateFakePubKeyStr(),
       } as ConversationAttributes);
-      Sinon.stub(getConversationController(), 'get').returns(contact);
+      Sinon.stub(ConvoHub.use(), 'get').returns(contact);
       Sinon.stub(SessionUtilUserProfile, 'isUserProfileToStoreInWrapper').returns(true);
 
       try {
@@ -119,7 +119,7 @@ describe('libsession_user_profile', () => {
         expireTimer: 300,
         id: ourNumber,
       });
-      Sinon.stub(getConversationController(), 'get').returns(contact);
+      Sinon.stub(ConvoHub.use(), 'get').returns(contact);
       Sinon.stub(SessionUtilUserProfile, 'isUserProfileToStoreInWrapper').returns(true);
 
       const wrapperUserProfile =

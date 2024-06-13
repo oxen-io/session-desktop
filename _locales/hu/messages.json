@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Új barátkérésed van",
   "clearAllConfirmationTitle": "Minden üzenetkérelem törlése",
   "clearAllConfirmationBody": "Biztos, hogy törölni akarod az összes üzenetkérelmed?",
-  "noMessagesInReadOnly": "A <b>$name$</b>-ban nincsenek üzenetek.",
+  "thereAreNoMessagesIn": "A <b>$name$</b>-ban nincsenek üzenetek.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "Nincsenek üzeneteid a <b>$name$</b> könyvtárban.",
   "noMessagesInEverythingElse": "Nincsenek üzeneteid a <b>$name$</b> címzettől. Küldj üzenetet a beszélgetés megkezdéséhez!",

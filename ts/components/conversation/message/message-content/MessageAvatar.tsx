@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { OpenGroupData } from '../../../../data/opengroups';
 import { MessageRenderingProps } from '../../../../models/messageType';
 import { findCachedBlindedMatchOrLookItUp } from '../../../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
-import { getConversationController } from '../../../../session/conversations';
+import { ConvoHub } from '../../../../session/conversations';
 import { getSodiumRenderer } from '../../../../session/crypto';
 import { KeyPrefixType, PubKey } from '../../../../session/types';
 import { openConversationWithMessages } from '../../../../state/ducks/conversations';
@@ -64,8 +64,8 @@ export const MessageAvatar = (props: Props) => {
     if (isPublic && !PubKey.isBlinded(sender)) {
       // public chat but session id not blinded. disable showing user details if we do not have an active convo with that user.
       // an unactive convo with that user means that we never chatted with that id directyly, but only through a sogs
-      const convoWithSender = getConversationController().get(sender);
-      if (!convoWithSender || !convoWithSender.get('active_at')) {
+      const convoWithSender = ConvoHub.use().get(sender);
+      if (!convoWithSender || !convoWithSender.getActiveAt()) {
         // for some time, we might still get some unblinded messages, as in message sent unblinded because
         //    * older clients still send unblinded message and those are allowed by sogs if they doesn't enforce blinding
         //    * new clients still send unblinded message and those are allowed by sogs if it doesn't enforce blinding
@@ -89,7 +89,7 @@ export const MessageAvatar = (props: Props) => {
 
         return;
       }
-      const convoOpen = getConversationController().get(selectedConvoKey);
+      const convoOpen = ConvoHub.use().get(selectedConvoKey);
       const room = OpenGroupData.getV2OpenGroupRoom(convoOpen.id);
       let privateConvoToOpen = sender;
       if (room?.serverPublicKey) {
@@ -102,9 +102,7 @@ export const MessageAvatar = (props: Props) => {
         privateConvoToOpen = foundRealSessionId || privateConvoToOpen;
       }
 
-      await getConversationController()
-        .get(privateConvoToOpen)
-        .setOriginConversationID(selectedConvoKey);
+      await ConvoHub.use().get(privateConvoToOpen).setOriginConversationID(selectedConvoKey, true);
 
       // public and blinded key for that message, we should open the convo as is and see if the user wants
       // to send a sogs blinded message request.

@@ -41,7 +41,7 @@ export class CallMessage extends ExpirableMessage {
 
   public contentProto(): SignalService.Content {
     const content = super.contentProto();
-    content.callMessage = this.dataCallProto();
+    content.callMessage = this.callProto();
     return content;
   }
 
@@ -49,7 +49,7 @@ export class CallMessage extends ExpirableMessage {
     return TTL_DEFAULT.CALL_MESSAGE;
   }
 
-  private dataCallProto(): SignalService.CallMessage {
+  private callProto(): SignalService.CallMessage {
     return new SignalService.CallMessage({
       type: this.type,
       sdpMLineIndexes: this.sdpMLineIndexes,

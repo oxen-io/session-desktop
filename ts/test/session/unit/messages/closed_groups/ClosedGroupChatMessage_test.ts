@@ -9,21 +9,20 @@ import { StringUtils } from '../../../../../session/utils';
 import { TestUtils } from '../../../../test-utils';
 
 describe('ClosedGroupVisibleMessage', () => {
-  let groupId: PubKey;
+  let groupId: string;
   beforeEach(() => {
-    groupId = TestUtils.generateFakePubKey();
+    groupId = TestUtils.generateFakePubKeyStr();
   });
   it('can create empty message with timestamp, groupId and chatMessage', () => {
-    const timestamp = Date.now();
+    const createAtNetworkTimestamp = Date.now();
     const chatMessage = new VisibleMessage({
-      timestamp,
+      createAtNetworkTimestamp,
       body: 'body',
       expirationType: null,
       expireTimer: null,
     });
     const message = new ClosedGroupVisibleMessage({
       groupId,
-      timestamp,
       chatMessage,
     });
     const plainText = message.plainTextBuffer();
@@ -32,7 +31,7 @@ describe('ClosedGroupVisibleMessage', () => {
       .to.have.property('group')
       .to.have.deep.property(
         'id',
-        new Uint8Array(StringUtils.encode(PubKey.PREFIX_GROUP_TEXTSECURE + groupId.key, 'utf8'))
+        new Uint8Array(StringUtils.encode(PubKey.PREFIX_GROUP_TEXTSECURE + groupId, 'utf8'))
       );
     expect(decoded.dataMessage)
       .to.have.property('group')
@@ -41,34 +40,32 @@ describe('ClosedGroupVisibleMessage', () => {
     expect(decoded.dataMessage).to.have.deep.property('body', 'body');
 
     // we use the timestamp of the chatMessage as parent timestamp
-    expect(message).to.have.property('timestamp').to.be.equal(chatMessage.timestamp);
+    expect(message)
+      .to.have.property('createAtNetworkTimestamp')
+      .to.be.equal(chatMessage.createAtNetworkTimestamp);
   });
 
   it('correct ttl', () => {
-    const timestamp = Date.now();
     const chatMessage = new VisibleMessage({
-      timestamp,
+      createAtNetworkTimestamp: Date.now(),
       expirationType: null,
       expireTimer: null,
     });
     const message = new ClosedGroupVisibleMessage({
       groupId,
-      timestamp,
       chatMessage,
     });
     expect(message.ttl()).to.equal(Constants.TTL_DEFAULT.CONTENT_MESSAGE);
   });
 
   it('has an identifier', () => {
-    const timestamp = Date.now();
     const chatMessage = new VisibleMessage({
-      timestamp,
+      createAtNetworkTimestamp: Date.now(),
       expirationType: null,
       expireTimer: null,
     });
     const message = new ClosedGroupVisibleMessage({
       groupId,
-      timestamp,
       chatMessage,
     });
     expect(message.identifier).to.not.equal(null, 'identifier cannot be null');
@@ -76,27 +73,25 @@ describe('ClosedGroupVisibleMessage', () => {
   });
 
   it('should use the identifier passed into it over the one set in chatMessage', () => {
-    const timestamp = Date.now();
+    const createAtNetworkTimestamp = Date.now();
     const chatMessage = new VisibleMessage({
-      timestamp,
+      createAtNetworkTimestamp,
       body: 'body',
-      identifier: 'chatMessage',
+      identifier: 'closedGroupMessage',
       expirationType: null,
       expireTimer: null,
     });
     const message = new ClosedGroupVisibleMessage({
       groupId,
-      timestamp,
       chatMessage,
-      identifier: 'closedGroupMessage',
     });
     expect(message.identifier).to.be.equal('closedGroupMessage');
   });
 
   it('should use the identifier of the chatMessage if one is not specified on the closed group message', () => {
-    const timestamp = Date.now();
+    const createAtNetworkTimestamp = Date.now();
     const chatMessage = new VisibleMessage({
-      timestamp,
+      createAtNetworkTimestamp,
       body: 'body',
       identifier: 'chatMessage',
       expirationType: null,
@@ -104,7 +99,6 @@ describe('ClosedGroupVisibleMessage', () => {
     });
     const message = new ClosedGroupVisibleMessage({
       groupId,
-      timestamp,
       chatMessage,
     });
     expect(message.identifier).to.be.equal('chatMessage');

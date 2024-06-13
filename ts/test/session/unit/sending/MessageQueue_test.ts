@@ -13,18 +13,19 @@ import chaiAsPromised from 'chai-as-promised';
 import { describe } from 'mocha';
 import Sinon, * as sinon from 'sinon';
 
+import { PubkeyType } from 'libsession_util_nodejs';
 import { ContentMessage } from '../../../../session/messages/outgoing';
 import { ClosedGroupMessage } from '../../../../session/messages/outgoing/controlMessage/group/ClosedGroupMessage';
 import { MessageSender } from '../../../../session/sending';
 import { MessageQueue } from '../../../../session/sending/MessageQueue';
 import { PubKey } from '../../../../session/types';
-import { GroupUtils, PromiseUtils, UserUtils } from '../../../../session/utils';
+import { PromiseUtils, UserUtils } from '../../../../session/utils';
 import { TestUtils } from '../../../test-utils';
 import { PendingMessageCacheStub } from '../../../test-utils/stubs';
 
 import { SnodeNamespaces } from '../../../../session/apis/snode_api/namespaces';
 import { MessageSentHandler } from '../../../../session/sending/MessageSentHandler';
-import { stubData } from '../../../test-utils/utils';
+import { TypedStub, stubData } from '../../../test-utils/utils';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -34,13 +35,27 @@ const { expect } = chai;
 describe('MessageQueue', () => {
   // Initialize new stubbed cache
   const ourDevice = TestUtils.generateFakePubKey();
-  const ourNumber = ourDevice.key;
+  const ourNumber = ourDevice.key as PubkeyType;
 
   // Initialize new stubbed queue
   let pendingMessageCache: PendingMessageCacheStub;
-  let messageSentHandlerFailedStub: sinon.SinonStub;
-  let messageSentHandlerSuccessStub: sinon.SinonStub;
-  let messageSentPublicHandlerSuccessStub: sinon.SinonStub;
+  let messageSentHandlerFailedStub: TypedStub<
+    typeof MessageSentHandler,
+    'handleSwarmMessageSentFailure'
+  >;
+  let messageSentHandlerSuccessStub: TypedStub<
+    typeof MessageSentHandler,
+    'handleSwarmMessageSentSuccess'
+  >;
+  let messageSentPublicHandlerSuccessStub: TypedStub<
+    typeof MessageSentHandler,
+    'handlePublicMessageSentSuccess'
+  >;
+  let handlePublicMessageSentFailureStub: TypedStub<
+    typeof MessageSentHandler,
+    'handlePublicMessageSentFailure'
+  >;
+
   let messageQueueStub: MessageQueue;
 
   // Message Sender Stubs
@@ -51,18 +66,22 @@ describe('MessageQueue', () => {
     Sinon.stub(UserUtils, 'getOurPubKeyStrFromCache').returns(ourNumber);
 
     // Message Sender Stubs
-    sendStub = Sinon.stub(MessageSender, 'send');
+    sendStub = Sinon.stub(MessageSender, 'sendSingleMessage');
     messageSentHandlerFailedStub = Sinon.stub(
       MessageSentHandler,
-      'handleMessageSentFailure'
+      'handleSwarmMessageSentFailure'
     ).resolves();
     messageSentHandlerSuccessStub = Sinon.stub(
       MessageSentHandler,
-      'handleMessageSentSuccess'
+      'handleSwarmMessageSentSuccess'
     ).resolves();
     messageSentPublicHandlerSuccessStub = Sinon.stub(
       MessageSentHandler,
       'handlePublicMessageSentSuccess'
+    ).resolves();
+    handlePublicMessageSentFailureStub = Sinon.stub(
+      MessageSentHandler,
+      'handlePublicMessageSentFailure'
     ).resolves();
 
     // Init Queue
@@ -107,7 +126,7 @@ describe('MessageQueue', () => {
         await pendingMessageCache.add(
           device,
           TestUtils.generateVisibleMessage(),
-          SnodeNamespaces.UserMessages
+          SnodeNamespaces.Default
         );
 
         const initialMessages = await pendingMessageCache.getForDevice(device);
@@ -145,7 +164,7 @@ describe('MessageQueue', () => {
           });
 
         void pendingMessageCache
-          .add(device, message, SnodeNamespaces.UserMessages, waitForMessageSentEvent)
+          .add(device, message, SnodeNamespaces.Default, waitForMessageSentEvent)
           .then(() => messageQueueStub.processPending(device));
       });
 
@@ -155,7 +174,7 @@ describe('MessageQueue', () => {
         const device = TestUtils.generateFakePubKey();
         const message = TestUtils.generateVisibleMessage();
         void pendingMessageCache
-          .add(device, message, SnodeNamespaces.UserMessages)
+          .add(device, message, SnodeNamespaces.Default)
           .then(() => messageQueueStub.processPending(device));
         // The cb is only invoke is all reties fails. Here we poll until the messageSentHandlerFailed was invoked as this is what we want to do
 
@@ -183,7 +202,7 @@ describe('MessageQueue', () => {
       const stub = Sinon.stub(messageQueueStub as any, 'process').resolves();
 
       const message = TestUtils.generateVisibleMessage();
-      await messageQueueStub.sendToPubKey(device, message, SnodeNamespaces.UserMessages);
+      await messageQueueStub.sendToPubKey(device, message, SnodeNamespaces.Default);
 
       const args = stub.lastCall.args as [Array<PubKey>, ContentMessage];
       expect(args[0]).to.be.equal(device);
@@ -197,22 +216,19 @@ describe('MessageQueue', () => {
       return expect(
         messageQueueStub.sendToGroup({
           message: chatMessage as any,
-          namespace: SnodeNamespaces.ClosedGroupMessage,
+          namespace: SnodeNamespaces.LegacyClosedGroup,
         })
       ).to.be.rejectedWith('Invalid group message passed in sendToGroup.');
     });
 
     describe('closed groups', () => {
       it('can send to closed group', async () => {
-        const members = TestUtils.generateFakePubKeys(4);
-        Sinon.stub(GroupUtils, 'getGroupMembers').returns(members);
-
         const send = Sinon.stub(messageQueueStub, 'sendToPubKey').resolves();
 
         const message = TestUtils.generateClosedGroupMessage();
         await messageQueueStub.sendToGroup({
           message,
-          namespace: SnodeNamespaces.ClosedGroupMessage,
+          namespace: SnodeNamespaces.LegacyClosedGroup,
         });
         expect(send.callCount).to.equal(1);
 
@@ -269,6 +285,7 @@ describe('MessageQueue', () => {
 
         it('should emit a fail event if something went wrong', async () => {
           sendToOpenGroupV2Stub.resolves({ serverId: -1, serverTimestamp: -1 });
+          stubData('getMessageById').resolves();
           const message = TestUtils.generateOpenGroupVisibleMessage();
           const roomInfos = TestUtils.generateOpenGroupV2RoomInfos();
 
@@ -278,8 +295,8 @@ describe('MessageQueue', () => {
             blinded: false,
             filesToLink: [],
           });
-          expect(messageSentHandlerFailedStub.callCount).to.equal(1);
-          expect(messageSentHandlerFailedStub.lastCall.args[0].identifier).to.equal(
+          expect(handlePublicMessageSentFailureStub.callCount).to.equal(1);
+          expect(handlePublicMessageSentFailureStub.lastCall.args[0].identifier).to.equal(
             message.identifier
           );
         });

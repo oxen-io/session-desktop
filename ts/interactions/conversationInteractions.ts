@@ -4,22 +4,26 @@ import {
   ConversationTypeEnum,
   READ_MESSAGE_STATE,
 } from '../models/conversationAttributes';
-import { CallManager, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
+import { CallManager, PromiseUtils, SyncUtils, ToastUtils, UserUtils } from '../session/utils';
 
 import { SessionButtonColor } from '../components/basic/SessionButton';
 import { getCallMediaPermissionsSettings } from '../components/settings/SessionSettings';
 import { Data } from '../data/data';
 import { SettingsKey } from '../data/settings-key';
+import { GroupV2Receiver } from '../receiver/groupv2/handleGroupV2Message';
 import { uploadFileToFsWithOnionV4 } from '../session/apis/file_server_api/FileServerApi';
 import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
+import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
-import { getConversationController } from '../session/conversations';
+import { ConvoHub } from '../session/conversations';
 import { getSodiumRenderer } from '../session/crypto';
-import { getDecryptedMediaUrl } from '../session/crypto/DecryptedAttachmentsManager';
+import { DecryptedAttachmentsManager } from '../session/crypto/DecryptedAttachmentsManager';
 import { DisappearingMessageConversationModeType } from '../session/disappearing_messages/types';
+import { PubKey } from '../session/types';
 import { perfEnd, perfStart } from '../session/utils/Performance';
-import { fromHexToArray, toHex } from '../session/utils/String';
-import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
+import { sleepFor } from '../session/utils/Promise';
+import { ed25519Str, fromHexToArray, toHex } from '../session/utils/String';
+import { UserSync } from '../session/utils/job_runners/jobs/UserSyncJob';
 import { SessionUtilContact } from '../session/utils/libsession/libsession_utils_contacts';
 import { forceSyncConfigurationNowIfNeeded } from '../session/utils/sync/syncUtils';
 import {
@@ -38,6 +42,7 @@ import {
   updateRemoveModeratorsModal,
 } from '../state/ducks/modalDialog';
 import { MIME } from '../types';
+import { LocalizerKeys } from '../types/LocalizerKeys';
 import { IMAGE_JPEG } from '../types/MIME';
 import { processNewAttachment } from '../types/MessageAttachment';
 import { urlToBlob } from '../types/attachments/VisualAttachment';
@@ -78,16 +83,11 @@ export async function copyPublicKeyByConvoId(convoId: string) {
 }
 
 export async function blockConvoById(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
   if (!conversation.id || conversation.isPublic()) {
     return;
   }
-
-  // I don't think we want to reset the approved fields when blocking a contact
-  // if (conversation.isPrivate()) {
-  //   await conversation.setIsApproved(false);
-  // }
 
   await BlockedNumberController.block(conversation.id);
   await conversation.commit();
@@ -95,7 +95,7 @@ export async function blockConvoById(conversationId: string) {
 }
 
 export async function unblockConvoById(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
   if (!conversation) {
     // we assume it's a block contact and not group.
@@ -112,48 +112,116 @@ export async function unblockConvoById(conversationId: string) {
   await conversation.commit();
 }
 
-/**
- * marks the conversation's approval fields, sends messageRequestResponse, syncs to linked devices
- */
-export const approveConvoAndSendResponse = async (conversationId: string) => {
-  const convoToApprove = getConversationController().get(conversationId);
-
-  if (!convoToApprove) {
-    window?.log?.info('Conversation is already approved.');
-    return;
+export const handleAcceptConversationRequest = async ({ convoId }: { convoId: string }) => {
+  const convo = ConvoHub.use().get(convoId);
+  if (!convo || (!convo.isPrivate() && !convo.isClosedGroupV2())) {
+    return null;
   }
+  const previousIsApproved = convo.isApproved();
+  const previousDidApprovedMe = convo.didApproveMe();
+  // Note: we don't mark as approvedMe = true, as we do not know if they did send us a message yet.
+  await convo.setIsApproved(true, false);
+  await convo.commit();
+  void forceSyncConfigurationNowIfNeeded();
 
-  await convoToApprove.setIsApproved(true, false);
+  if (convo.isPrivate()) {
+    // we only need the approval message (and sending a reply) when we are accepting a message request. i.e. someone sent us a message already and we didn't accept it yet.
+    if (!previousIsApproved && previousDidApprovedMe) {
+      await convo.addOutgoingApprovalMessage(Date.now());
+      await convo.sendMessageRequestResponse();
+    }
 
-  await convoToApprove.commit();
-  await convoToApprove.sendMessageRequestResponse();
+    return null;
+  }
+  if (PubKey.is03Pubkey(convoId)) {
+    const found = await UserGroupsWrapperActions.getGroup(convoId);
+    if (!found) {
+      window.log.warn('cannot approve a non existing group in usergroup');
+      return null;
+    }
+    // this updates the wrapper and refresh the redux slice
+    await UserGroupsWrapperActions.setGroup({ ...found, invitePending: false });
+
+    // nothing else to do (and especially not wait for first poll) when the convo was already approved
+    if (previousIsApproved) {
+      return null;
+    }
+    const pollAndSendResponsePromise = new Promise(resolve => {
+      getSwarmPollingInstance().addGroupId(convoId, async () => {
+        // we need to do a first poll to fetch the keys etc before we can send our invite response
+        // this is pretty hacky, but also an admin seeing a message from that user in the group will mark it as not pending anymore
+        await sleepFor(2000);
+        if (!previousIsApproved) {
+          await GroupV2Receiver.sendInviteResponseToGroup({ groupPk: convoId });
+        }
+        window.log.info(
+          `handleAcceptConversationRequest: first poll for group ${ed25519Str(convoId)} happened, we should have encryption keys now`
+        );
+        return resolve(true);
+      });
+    });
+
+    // try at most 10s for the keys, and everything to come before continuing processing.
+    // Note: this is important as otherwise the polling just hangs when sending a message to a group (as the cb in addGroupId() is never called back)
+    const timeout = 10000;
+    try {
+      await PromiseUtils.timeout(pollAndSendResponsePromise, timeout);
+    } catch (e) {
+      window.log.warn(
+        `handleAcceptConversationRequest: waited ${timeout}ms for first poll of group ${ed25519Str(convoId)} to happen, but timedout with: ${e.message}`
+      );
+    }
+  }
+  return null;
 };
 
 export async function declineConversationWithoutConfirm({
-  blockContact,
+  alsoBlock,
   conversationId,
   currentlySelectedConvo,
   syncToDevices,
+  conversationIdOrigin,
 }: {
   conversationId: string;
   currentlySelectedConvo: string | undefined;
   syncToDevices: boolean;
-  blockContact: boolean; // if set to false, the contact will just be set to not approved
+  alsoBlock: boolean;
+  conversationIdOrigin: string | null;
 }) {
-  const conversationToDecline = getConversationController().get(conversationId);
+  const conversationToDecline = ConvoHub.use().get(conversationId);
 
-  if (!conversationToDecline || !conversationToDecline.isPrivate()) {
+  if (
+    !conversationToDecline ||
+    (!conversationToDecline.isPrivate() && !conversationToDecline.isClosedGroupV2())
+  ) {
     window?.log?.info('No conversation to decline.');
     return;
   }
+  window.log.debug(
+    `declineConversationWithoutConfirm of ${ed25519Str(conversationId)}, alsoBlock:${alsoBlock}, conversationIdOrigin:${conversationIdOrigin ? ed25519Str(conversationIdOrigin) : '<none>'}`
+  );
 
   // Note: do not set the active_at undefined as this would make that conversation not synced with the libsession wrapper
   await conversationToDecline.setIsApproved(false, false);
   await conversationToDecline.setDidApproveMe(false, false);
+
+  if (conversationToDecline.isClosedGroupV2()) {
+    // this can only be done for groupv2 convos
+    await conversationToDecline.setOriginConversationID('', false);
+  }
   // this will update the value in the wrapper if needed but not remove the entry if we want it gone. The remove is done below with removeContactFromWrapper
   await conversationToDecline.commit();
-  if (blockContact) {
-    await blockConvoById(conversationId);
+  if (alsoBlock) {
+    if (PubKey.is03Pubkey(conversationId)) {
+      // Note: if we do want to block this convo, we actually want to block the person who invited us, not the 03 pubkey itself
+      if (conversationIdOrigin && !PubKey.is03Pubkey(conversationIdOrigin)) {
+        // restoring from seed we can be missing the conversationIdOrigin, so we wouldn't be able to block the person who invited us
+
+        await blockConvoById(conversationIdOrigin);
+      }
+    } else {
+      await blockConvoById(conversationId);
+    }
   }
   // when removing a message request, without blocking it, we actually have no need to store the conversation in the wrapper. So just remove the entry
 
@@ -162,6 +230,10 @@ export async function declineConversationWithoutConfirm({
     !SessionUtilContact.isContactToStoreInWrapper(conversationToDecline)
   ) {
     await SessionUtilContact.removeContactFromWrapper(conversationToDecline.id);
+  }
+
+  if (PubKey.is03Pubkey(conversationId)) {
+    await UserGroupsWrapperActions.eraseGroup(conversationId);
   }
 
   if (syncToDevices) {
@@ -175,25 +247,61 @@ export async function declineConversationWithoutConfirm({
 export const declineConversationWithConfirm = ({
   conversationId,
   syncToDevices,
-  blockContact,
+  alsoBlock,
   currentlySelectedConvo,
+  conversationIdOrigin,
 }: {
   conversationId: string;
   currentlySelectedConvo: string | undefined;
   syncToDevices: boolean;
-  blockContact: boolean; // if set to false, the contact will just be set to not approved
+  alsoBlock: boolean;
+  conversationIdOrigin: string | null;
 }) => {
+  const isGroupV2 = PubKey.is03Pubkey(conversationId);
+
+  const okKey: LocalizerKeys = alsoBlock ? 'block' : 'delete';
+  const nameToBlock =
+    alsoBlock && !!conversationIdOrigin
+      ? ConvoHub.use().get(conversationIdOrigin)?.getContactProfileNameOrShortenedPubKey()
+      : null;
+  const messageKey: LocalizerKeys = isGroupV2
+    ? alsoBlock && nameToBlock
+      ? 'deleteGroupRequestAndBlock'
+      : 'deleteGroupRequest'
+    : 'declineRequestMessage';
+
+  let message = '';
+  // restoring from seeed we might not have the sender of that invite, so we need to take care of not having one (and not block)
+  if (isGroupV2 && messageKey === 'deleteGroupRequestAndBlock') {
+    if (!nameToBlock) {
+      throw new Error(
+        'deleteGroupRequestAndBlock needs a nameToBlock (or block should not be visible)'
+      );
+    }
+
+    message = window.i18n(
+      messageKey,
+      messageKey === 'deleteGroupRequestAndBlock' ? [nameToBlock] : []
+    );
+  } else {
+    message = window.i18n(messageKey);
+  }
+
   window?.inboxStore?.dispatch(
     updateConfirmModal({
-      okText: blockContact ? window.i18n('block') : window.i18n('decline'),
+      okText: window.i18n(okKey),
       cancelText: window.i18n('cancel'),
-      message: window.i18n('declineRequestMessage'),
+      title: window.i18n(okKey),
+      message,
+      okTheme: SessionButtonColor.Danger,
+      closeTheme: SessionButtonColor.Primary,
       onClickOk: async () => {
         await declineConversationWithoutConfirm({
           conversationId,
           currentlySelectedConvo,
-          blockContact,
+          alsoBlock,
           syncToDevices,
+          conversationIdOrigin,
         });
       },
       onClickCancel: () => {
@@ -207,26 +315,26 @@ export const declineConversationWithConfirm = ({
 };
 
 export async function showUpdateGroupNameByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   if (conversation.isClosedGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
-        .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
+        .getGroupMembers()
+        .map(m => ConvoHub.use().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
     );
   }
   window.inboxStore?.dispatch(updateGroupNameModal({ conversationId }));
 }
 
 export async function showUpdateGroupMembersByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   if (conversation.isClosedGroup()) {
     // make sure all the members' convo exists so we can add or remove them
     await Promise.all(
       conversation
-        .get('members')
-        .map(m => getConversationController().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
+        .getGroupMembers()
+        .map(m => ConvoHub.use().getOrCreateAndWait(m, ConversationTypeEnum.PRIVATE))
     );
   }
   window.inboxStore?.dispatch(updateGroupMembersModal({ conversationId }));
@@ -236,7 +344,7 @@ export function showLeavePrivateConversationbyConvoId(
   conversationId: string,
   name: string | undefined
 ) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   const isMe = conversation.isMe();
 
   if (!conversation.isPrivate()) {
@@ -255,7 +363,7 @@ export function showLeavePrivateConversationbyConvoId(
         status: ConversationInteractionStatus.Start,
       });
       onClickClose();
-      await getConversationController().delete1o1(conversationId, {
+      await ConvoHub.use().delete1o1(conversationId, {
         fromSyncMessage: false,
         justHidePrivate: true,
         keepMessages: isMe,
@@ -287,19 +395,24 @@ export function showLeavePrivateConversationbyConvoId(
   );
 }
 
-async function leaveGroupOrCommunityByConvoId(
-  conversationId: string,
-  isPublic: boolean,
-  forceDeleteLocal: boolean,
-  onClickClose?: () => void
-) {
+async function leaveGroupOrCommunityByConvoId({
+  conversationId,
+  sendLeaveMessage,
+  isPublic,
+  onClickClose,
+}: {
+  conversationId: string;
+  isPublic: boolean;
+  sendLeaveMessage: boolean;
+  onClickClose?: () => void;
+}) {
   try {
     if (onClickClose) {
       onClickClose();
     }
 
     if (isPublic) {
-      await getConversationController().deleteCommunity(conversationId, {
+      await ConvoHub.use().deleteCommunity(conversationId, {
         fromSyncMessage: false,
       });
       return;
@@ -311,11 +424,21 @@ async function leaveGroupOrCommunityByConvoId(
       type: ConversationInteractionType.Leave,
       status: ConversationInteractionStatus.Start,
     });
-    await getConversationController().deleteClosedGroup(conversationId, {
-      fromSyncMessage: false,
-      sendLeaveMessage: true,
-      forceDeleteLocal,
-    });
+
+    if (PubKey.is05Pubkey(conversationId)) {
+      await ConvoHub.use().deleteLegacyGroup(conversationId, {
+        fromSyncMessage: false,
+        sendLeaveMessage,
+      });
+    } else if (PubKey.is03Pubkey(conversationId)) {
+      await ConvoHub.use().deleteGroup(conversationId, {
+        fromSyncMessage: false,
+        sendLeaveMessage,
+        deleteAllMessagesOnSwarm: false,
+        emptyGroupButKeepAsKicked: false,
+        forceDestroyForAllMembers: false,
+      });
+    }
     await clearConversationInteractionState({ conversationId });
   } catch (err) {
     window.log.warn(`showLeaveGroupByConvoId error: ${err}`);
@@ -327,7 +450,7 @@ async function leaveGroupOrCommunityByConvoId(
 }
 
 export async function showLeaveGroupByConvoId(conversationId: string, name: string | undefined) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
   if (!conversation.isGroup()) {
     throw new Error('showLeaveGroupDialog() called with a non group convo.');
@@ -335,9 +458,9 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
 
   const isClosedGroup = conversation.isClosedGroup() || false;
   const isPublic = conversation.isPublic() || false;
-  const admins = conversation.get('groupAdmins') || [];
+  const admins = conversation.getGroupAdmins();
   const isAdmin = admins.includes(UserUtils.getOurPubKeyStrFromCache());
-  const showOnlyGroupAdminWarning = isClosedGroup && isAdmin && admins.length === 1;
+  const showOnlyGroupAdminWarning = isClosedGroup && isAdmin;
   const lastMessageInteractionType = conversation.get('lastMessageInteractionType');
   const lastMessageInteractionStatus = conversation.get('lastMessageInteractionStatus');
 
@@ -346,7 +469,7 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     lastMessageInteractionType === ConversationInteractionType.Leave &&
     lastMessageInteractionStatus === ConversationInteractionStatus.Error
   ) {
-    await leaveGroupOrCommunityByConvoId(conversationId, isPublic, true);
+    await leaveGroupOrCommunityByConvoId({ conversationId, isPublic, sendLeaveMessage: false });
     return;
   }
 
@@ -357,7 +480,12 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
   };
 
   const onClickOk = async () => {
-    await leaveGroupOrCommunityByConvoId(conversationId, isPublic, false, onClickClose);
+    await leaveGroupOrCommunityByConvoId({
+      conversationId,
+      isPublic,
+      sendLeaveMessage: true,
+      onClickClose,
+    });
   };
 
   if (showOnlyGroupAdminWarning) {
@@ -365,7 +493,9 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     window?.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('leaveGroup'),
-        message: window.i18n('leaveGroupConrirmationOnlyAdminLegacy', name ? [name] : ['']),
+        message: window.i18n('leaveGroupConfirmationOnlyAdminLegacy', [
+          name || window.i18n('unknown'),
+        ]),
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -373,7 +503,7 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
         conversationId,
       })
     );
-    // TODO Only to be used after the closed group rebuild
+    // TODO this is post release chunk3 stuff: Only to be used after the closed group rebuild chunk3
     // const onClickOkLastAdmin = () => {
     //   /* TODO */
     // };
@@ -436,7 +566,7 @@ export function showUnbanUserByConvoId(conversationId: string, pubkey?: string) 
 }
 
 export async function markAllReadByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   perfStart(`markAllReadByConvoId-${conversationId}`);
 
   await conversation?.markAllAsRead();
@@ -448,16 +578,16 @@ export async function setNotificationForConvoId(
   conversationId: string,
   selected: ConversationNotificationSettingType
 ) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
-  const existingSettings = conversation.get('triggerNotificationsFor');
+  const existingSettings = conversation.getNotificationsFor();
   if (existingSettings !== selected) {
     conversation.set({ triggerNotificationsFor: selected });
     await conversation.commit();
   }
 }
 export async function clearNickNameByConvoId(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   await conversation.setNickname(null, true);
 }
 
@@ -466,7 +596,7 @@ export function showChangeNickNameByConvoId(conversationId: string) {
 }
 
 export async function deleteAllMessagesByConvoIdNoConfirmation(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   await Data.removeAllMessagesInConversation(conversationId);
 
   // destroy message keeps the active timestamp set so the
@@ -507,7 +637,7 @@ export async function setDisappearingMessagesByConvoId(
   expirationMode: DisappearingMessageConversationModeType,
   seconds?: number
 ) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
 
   const canSetDisappearing = !conversation.isOutgoingRequest() && !conversation.isIncomingRequest();
 
@@ -541,7 +671,7 @@ export async function setDisappearingMessagesByConvoId(
  * If this is a reupload, the old profileKey is used, otherwise a new one is generated
  */
 export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
-  const ourConvo = getConversationController().get(UserUtils.getOurPubKeyStrFromCache());
+  const ourConvo = ConvoHub.use().get(UserUtils.getOurPubKeyStrFromCache());
   if (!ourConvo) {
     window.log.warn('ourConvo not found... This is not a valid case');
     return null;
@@ -556,8 +686,7 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
   } else {
     // this is a reupload. no need to generate a new profileKey
     const ourConvoProfileKey =
-      getConversationController().get(UserUtils.getOurPubKeyStrFromCache())?.get('profileKey') ||
-      null;
+      ConvoHub.use().get(UserUtils.getOurPubKeyStrFromCache())?.getProfileKey() || null;
 
     profileKey = ourConvoProfileKey ? fromHexToArray(ourConvoProfileKey) : null;
     if (!profileKey) {
@@ -571,7 +700,11 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
       return null;
     }
 
-    const decryptedAvatarUrl = await getDecryptedMediaUrl(currentAttachmentPath, IMAGE_JPEG, true);
+    const decryptedAvatarUrl = await DecryptedAttachmentsManager.getDecryptedMediaUrl(
+      currentAttachmentPath,
+      IMAGE_JPEG,
+      true
+    );
 
     if (!decryptedAvatarUrl) {
       window.log.warn('Could not decrypt avatar stored locally..');
@@ -606,7 +739,7 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
   });
   // Replace our temporary image with the attachment pointer from the server:
   ourConvo.set('avatarInProfile', undefined);
-  const displayName = ourConvo.get('displayNameInProfile');
+  const displayName = ourConvo.getRealSessionUsername();
 
   // write the profileKey even if it did not change
   ourConvo.set({ profileKey: toHex(profileKey) });
@@ -622,7 +755,7 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
 
   if (newAvatarDecrypted) {
     await setLastProfileUpdateTimestamp(Date.now());
-    await ConfigurationSync.queueNewJobIfNeeded();
+    await UserSync.queueNewJobIfNeeded();
     const userConfigLibsession = await ReleasedFeatures.checkIsUserConfigFeatureReleased();
 
     if (!userConfigLibsession) {
@@ -634,8 +767,8 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
     );
   }
   return {
-    avatarPointer: ourConvo.get('avatarPointer'),
-    profileKey: ourConvo.get('profileKey'),
+    avatarPointer: ourConvo.getAvatarPointer(),
+    profileKey: ourConvo.getProfileKey(),
   };
 }
 
@@ -643,7 +776,7 @@ export async function uploadOurAvatar(newAvatarDecrypted?: ArrayBuffer) {
  * This function can be used for clearing our avatar.
  */
 export async function clearOurAvatar(commit: boolean = true) {
-  const ourConvo = getConversationController().get(UserUtils.getOurPubKeyStrFromCache());
+  const ourConvo = ConvoHub.use().get(UserUtils.getOurPubKeyStrFromCache());
   if (!ourConvo) {
     window.log.warn('ourConvo not found... This is not a valid case');
     return;
@@ -676,9 +809,7 @@ export async function replyToMessage(messageId: string) {
     window.log.warn('Failed to find message to reply to');
     return false;
   }
-  const conversationModel = getConversationController().getOrThrow(
-    quotedMessageModel.get('conversationId')
-  );
+  const conversationModel = ConvoHub.use().getOrThrow(quotedMessageModel.get('conversationId'));
 
   const quotedMessageProps = await conversationModel.makeQuote(quotedMessageModel);
 
@@ -745,7 +876,7 @@ function isURL(str: string) {
 }
 
 export async function callRecipient(pubkey: string, canCall: boolean) {
-  const convo = getConversationController().get(pubkey);
+  const convo = ConvoHub.use().get(pubkey);
 
   if (!canCall) {
     ToastUtils.pushUnableToCall();
@@ -777,7 +908,7 @@ export async function updateConversationInteractionState({
   type: ConversationInteractionType;
   status: ConversationInteractionStatus;
 }) {
-  const convo = getConversationController().get(conversationId);
+  const convo = ConvoHub.use().get(conversationId);
   if (
     convo &&
     (type !== convo.get('lastMessageInteractionType') ||
@@ -802,7 +933,7 @@ export async function clearConversationInteractionState({
 }: {
   conversationId: string;
 }) {
-  const convo = getConversationController().get(conversationId);
+  const convo = ConvoHub.use().get(conversationId);
   if (
     convo &&
     (convo.get('lastMessageInteractionType') || convo.get('lastMessageInteractionStatus'))
@@ -822,7 +953,7 @@ async function saveConversationInteractionErrorAsMessage({
   conversationId: string;
   interactionType: ConversationInteractionType;
 }) {
-  const conversation = getConversationController().get(conversationId);
+  const conversation = ConvoHub.use().get(conversationId);
   if (!conversation) {
     return;
   }
@@ -842,7 +973,7 @@ async function saveConversationInteractionErrorAsMessage({
 
   // Add an error message to the database so we can view it in the message history
   await conversation?.addSingleIncomingMessage({
-    source: GetNetworkTime.getNowWithNetworkOffset().toString(),
+    source: GetNetworkTime.now().toString(),
     sent_at: Date.now(),
     interactionNotification: {
       interactionType,

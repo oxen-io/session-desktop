@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 
-import { getConversationController } from '../../session/conversations';
+import { ConvoHub } from '../../session/conversations';
 
 import { SpacerLG } from '../basic/Text';
 import { changeNickNameModal } from '../../state/ducks/modalDialog';
@@ -43,7 +43,7 @@ export const SessionNicknameDialog = (props: Props) => {
     if (!conversationId) {
       throw new Error('Cant save without conversation id');
     }
-    const conversation = getConversationController().get(conversationId);
+    const conversation = ConvoHub.use().get(conversationId);
     await conversation.setNickname(nickname, true);
     onClickClose();
   };

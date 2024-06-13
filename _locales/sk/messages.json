@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "Máte novú žiadosť o priateľstvo",
   "clearAllConfirmationTitle": "Vyčistiť všetky žiadosti o správy",
   "clearAllConfirmationBody": "Ste si istí, že chcete vyčistiť všetky žiadosti o správu?",
-  "noMessagesInReadOnly": "V <b>$name$</b> nie sú žiadne správy.",
+  "thereAreNoMessagesIn": "V <b>$name$</b> nie sú žiadne správy.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "V <b>$name$</b> nemáte žiadne správy.",
   "noMessagesInEverythingElse": "Nemáte žiadne správy od <b>$name$</b>. Pošlite správu a začnite konverzáciu!",

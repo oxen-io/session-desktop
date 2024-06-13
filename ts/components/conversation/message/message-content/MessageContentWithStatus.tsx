@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useState } from 'react';
+import React, { SessionDataTestId, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
@@ -30,7 +30,7 @@ export type MessageContentWithStatusSelectorProps = { isGroup: boolean } & Pick<
 type Props = {
   messageId: string;
   ctxMenuID: string;
-  dataTestId: string;
+  dataTestId: SessionDataTestId;
   enableReactions: boolean;
 };
 

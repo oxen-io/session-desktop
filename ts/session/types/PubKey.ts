@@ -1,3 +1,4 @@
+import { GroupPubkeyType, PubkeyType } from 'libsession_util_nodejs';
 import { fromHexToArray } from '../utils/String';
 
 export enum KeyPrefixType {
@@ -22,12 +23,16 @@ export enum KeyPrefixType {
   /**
    * used for participants in open groups
    */
-  groupV3 = '03',
+  groupV2 = '03',
 }
+
+// TODO make that Pubkey class more useful, add fields for what types of pubkey it is (group, legacy group, private)
 
 export class PubKey {
   public static readonly PUBKEY_LEN = 66;
   public static readonly PUBKEY_LEN_NO_PREFIX = PubKey.PUBKEY_LEN - 2;
+  public static readonly PUBKEY_BYTE_COUNT = PubKey.PUBKEY_LEN / 2;
+  public static readonly PUBKEY_BYTE_COUNT_NO_PREFIX = PubKey.PUBKEY_BYTE_COUNT - 1;
   public static readonly HEX = '[0-9a-fA-F]';
 
   // This is a temporary fix to allow groupPubkeys created from mobile to be handled correctly
@@ -38,19 +43,15 @@ export class PubKey {
   public static readonly PREFIX_GROUP_TEXTSECURE = '__textsecure_group__!';
   // prettier-ignore
   private static readonly regex: RegExp = new RegExp(
-    `^(${PubKey.PREFIX_GROUP_TEXTSECURE})?(${KeyPrefixType.standard}|${KeyPrefixType.blinded15}|${KeyPrefixType.blinded25}|${KeyPrefixType.unblinded}|${KeyPrefixType.groupV3})?(${PubKey.HEX}{64}|${PubKey.HEX}{32})$`
+    `^(${PubKey.PREFIX_GROUP_TEXTSECURE})?(${KeyPrefixType.standard}|${KeyPrefixType.blinded15}|${KeyPrefixType.blinded25}|${KeyPrefixType.unblinded}|${KeyPrefixType.groupV2})?(${PubKey.HEX}{64}|${PubKey.HEX}{${PubKey.PUBKEY_BYTE_COUNT_NO_PREFIX}})$`
   );
   /**
    * If you want to update this regex. Be sure that those are matches ;
    *  __textsecure_group__!05010203040506070809a0b0c0d0e0f0ff010203040506070809a0b0c0d0e0f0ff
-   *  __textsecure_group__!010203040506070809a0b0c0d0e0f0ff010203040506070809a0b0c0d0e0f0ff
    *  __textsecure_group__!05010203040506070809a0b0c0d0e0f0ff
-   *  __textsecure_group__!010203040506070809a0b0c0d0e0f0ff
    *  05010203040506070809a0b0c0d0e0f0ff010203040506070809a0b0c0d0e0f0ff
    *  03010203040506070809a0b0c0d0e0f0ff010203040506070809a0b0c0d0e0f0ff
-   *  010203040506070809a0b0c0d0e0f0ff010203040506070809a0B0c0d0e0f0FF
    *  05010203040506070809a0b0c0d0e0f0ff
-   *  010203040506070809a0b0c0d0e0f0ff
    *  030203040506070809a0b0c0d0e0f0ff
    */
 
@@ -64,7 +65,7 @@ export class PubKey {
    */
   constructor(pubkeyString: string) {
     if (!PubKey.validate(pubkeyString)) {
-      throw new Error(`Invalid pubkey string passed: ${pubkeyString}`);
+      throw new Error('Invalid pubkey string passed');
     }
     this.key = pubkeyString.toLowerCase();
   }
@@ -141,7 +142,7 @@ export class PubKey {
     const len = pubkey.length;
 
     // we do not support blinded prefix, see Note above
-    const isProdOrDevValid = len === 33 * 2 && /^05/.test(pubkey); // prod pubkey can have only 66 chars and the 05 only.
+    const isProdOrDevValid = len === PubKey.PUBKEY_LEN && /^05/.test(pubkey); // prod pubkey can have only 66 chars and the 05 only.
 
     // dev pubkey on testnet are now 66 chars too with the prefix, so every sessionID needs 66 chars and the prefix to be valid
     if (!isProdOrDevValid) {
@@ -232,31 +233,18 @@ export class PubKey {
     return fromHexToArray(this.key);
   }
 
-  public withoutPrefixToArray(): Uint8Array {
-    return fromHexToArray(PubKey.removePrefixIfNeeded(this.key));
-  }
-
   public static isBlinded(key: string) {
     return key.startsWith(KeyPrefixType.blinded15) || key.startsWith(KeyPrefixType.blinded25);
   }
 
-  public static isClosedGroupV3(key: string) {
-    const regex = new RegExp(`^${KeyPrefixType.groupV3}${PubKey.HEX}{64}$`);
+  // TODO we should probably move those to a libsession exported ts file
+  public static is03Pubkey(key: string): key is GroupPubkeyType {
+    const regex = new RegExp(`^${KeyPrefixType.groupV2}${PubKey.HEX}{64}$`);
     return regex.test(key);
   }
 
-  public static isHexOnly(str: string) {
-    return new RegExp(`^${PubKey.HEX}*$`).test(str);
-  }
-
-  /**
-   *
-   * @returns true if that string is a valid group (as in closed group) pubkey.
-   * i.e. returns true if length is 66, prefix is 05 only, and it's hex characters only
-   */
-  public static isValidGroupPubkey(pubkey: string): boolean {
-    return (
-      pubkey.length === 66 && pubkey.startsWith(KeyPrefixType.standard) && this.isHexOnly(pubkey)
-    );
+  public static is05Pubkey(key: string): key is PubkeyType {
+    const regex = new RegExp(`^${KeyPrefixType.standard}${PubKey.HEX}{64}$`);
+    return regex.test(key);
   }
 }

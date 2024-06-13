@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, SessionDataTestId } from 'react';
 import styled, { CSSProperties } from 'styled-components';
 import { Flex } from '../basic/Flex';
 
@@ -87,7 +87,7 @@ export type PanelButtonProps = {
   disabled?: boolean;
   children: ReactNode;
   onClick: (...args: Array<any>) => void;
-  dataTestId: string;
+  dataTestId: SessionDataTestId;
   style?: CSSProperties;
 };
 

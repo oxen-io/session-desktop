@@ -8,4 +8,6 @@ export abstract class DataMessage extends ExpirableMessage {
       dataMessage: this.dataProto(),
     });
   }
+
+  public abstract dataProto(): SignalService.DataMessage;
 }

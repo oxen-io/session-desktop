@@ -12,7 +12,7 @@ import {
   ConversationAttributes,
 } from '../../models/conversationAttributes';
 import { fromHexToArray } from '../../session/utils/String';
-import { CONFIG_DUMP_TABLE } from '../../types/sqlSharedTypes';
+import { CONFIG_DUMP_TABLE, toFixedUint8ArrayOfLength } from '../../types/sqlSharedTypes';
 import {
   CLOSED_GROUP_V2_KEY_PAIRS_TABLE,
   CONVERSATIONS_TABLE,
@@ -105,6 +105,7 @@ const LOKI_SCHEMA_VERSIONS = [
   updateToSessionSchemaVersion34,
   updateToSessionSchemaVersion35,
   updateToSessionSchemaVersion36,
+  updateToSessionSchemaVersion37,
 ];
 
 function updateToSessionSchemaVersion1(currentVersion: number, db: BetterSqlite3.Database) {
@@ -1377,10 +1378,13 @@ function updateToSessionSchemaVersion31(currentVersion: number, db: BetterSqlite
       const ourConvoPriority = ourConversation.priority;
 
       if (ourDbProfileUrl && !isEmpty(ourDbProfileKey)) {
-        userProfileWrapper.setUserInfo(ourDbName, ourConvoPriority, {
-          url: ourDbProfileUrl,
-          key: ourDbProfileKey,
-        });
+        if (ourDbProfileKey.length === 32) {
+          const ourKeyFixedLen = toFixedUint8ArrayOfLength(ourDbProfileKey, 32);
+          userProfileWrapper.setUserInfo(ourDbName, ourConvoPriority, {
+            url: ourDbProfileUrl,
+            key: ourKeyFixedLen.buffer, // TODO make this use the fixed length array
+          });
+        }
       }
 
       MIGRATION_HELPERS.V31.insertContactIntoContactWrapper(
@@ -1942,6 +1946,38 @@ function updateToSessionSchemaVersion36(currentVersion: number, db: BetterSqlite
       expirationType,
       unread,
       sent_at
+    );`);
+    writeSessionSchemaVersion(targetVersion, db);
+  })();
+
+  console.log(`updateToSessionSchemaVersion${targetVersion}: success!`);
+}
+
+function updateToSessionSchemaVersion37(currentVersion: number, db: BetterSqlite3.Database) {
+  const targetVersion = 37;
+  if (currentVersion >= targetVersion) {
+    return;
+  }
+
+  console.log(`updateToSessionSchemaVersion${targetVersion}: starting...`);
+
+  db.transaction(() => {
+    db.exec(`ALTER TABLE ${MESSAGES_TABLE} ADD COLUMN messageHash TEXT;
+      UPDATE ${MESSAGES_TABLE} SET
+      messageHash = json_extract(json, '$.messageHash');
+        `);
+
+    db.exec(`CREATE INDEX messages_t_messageHash ON ${MESSAGES_TABLE} (
+      messageHash
+    );`);
+    db.exec(`CREATE INDEX messages_t_messageHash_author ON ${MESSAGES_TABLE} (
+      messageHash,
+      source
+    );`);
+    db.exec(`CREATE INDEX messages_t_messageHash_author_convoId ON ${MESSAGES_TABLE} (
+      messageHash,
+      source,
+      conversationId
     );`);
     writeSessionSchemaVersion(targetVersion, db);
   })();

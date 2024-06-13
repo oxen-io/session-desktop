@@ -1,12 +1,13 @@
+import { PubkeyType } from 'libsession_util_nodejs';
 import _ from 'lodash';
 import { UserUtils } from '.';
 import { Data } from '../../data/data';
+import { SessionKeyPair } from '../../receiver/keypairs';
+import { LokiProfile } from '../../types/Message';
+import { getOurPubKeyStrFromStorage } from '../../util/storage';
+import { ConvoHub } from '../conversations';
 import { PubKey } from '../types';
 import { fromHexToArray, toHex } from './String';
-import { getConversationController } from '../conversations';
-import { LokiProfile } from '../../types/Message';
-import { getOurPubKeyStrFromStorage, Storage } from '../../util/storage';
-import { SessionKeyPair } from '../../receiver/keypairs';
 
 export type HexKeyPair = {
   pubKey: string;
@@ -35,12 +36,13 @@ export function isUsFromCache(pubKey: string | PubKey | undefined): boolean {
 /**
  * Returns the public key of this current device as a STRING, or throws an error
  */
-export function getOurPubKeyStrFromCache(): string {
+export function getOurPubKeyStrFromCache(): PubkeyType {
   const ourNumber = getOurPubKeyStrFromStorage();
   if (!ourNumber) {
     throw new Error('ourNumber is not set');
   }
-  return ourNumber;
+
+  return ourNumber as PubkeyType;
 }
 
 /**
@@ -81,7 +83,7 @@ export async function getUserED25519KeyPair(): Promise<HexKeyPair | undefined> {
   return undefined;
 }
 
-export const getUserED25519KeyPairBytes = async (): Promise<ByteKeyPair | undefined> => {
+export const getUserED25519KeyPairBytes = async (): Promise<ByteKeyPair> => {
   // 'identityKey' keeps the ed25519KeyPair under a ed25519KeyPair field.
   // it is only set if the user migrated to the ed25519 way of generating a key
   const item = await UserUtils.getIdentityKeyPair();
@@ -94,19 +96,17 @@ export const getUserED25519KeyPairBytes = async (): Promise<ByteKeyPair | undefi
       privKeyBytes,
     };
   }
-  return undefined;
+  throw new Error('getUserED25519KeyPairBytes: user has no keypair');
 };
 
 export function getOurProfile(): LokiProfile | undefined {
   try {
-    // Secondary devices have their profile stored
-    // in their primary device's conversation
-    const ourNumber = Storage.get('primaryDevicePubKey') as string;
-    const ourConversation = getConversationController().get(ourNumber);
-    const ourProfileKeyHex = ourConversation.get('profileKey');
+    const ourNumber = UserUtils.getOurPubKeyStrFromCache();
+    const ourConversation = ConvoHub.use().get(ourNumber);
+    const ourProfileKeyHex = ourConversation.getProfileKey();
     const profileKeyAsBytes = ourProfileKeyHex ? fromHexToArray(ourProfileKeyHex) : null;
 
-    const avatarPointer = ourConversation.get('avatarPointer');
+    const avatarPointer = ourConversation.getAvatarPointer();
     const displayName = ourConversation.getRealSessionUsername() || 'Anonymous';
     return {
       displayName,

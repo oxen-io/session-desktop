@@ -490,7 +490,7 @@
   "youHaveANewFriendRequest": "您有一個新的好友請求",
   "clearAllConfirmationTitle": "清除所有訊息請求",
   "clearAllConfirmationBody": "您確定要清除所有訊息請求嗎？",
-  "noMessagesInReadOnly": "There are no messages in <b>$name$</b>.",
+  "thereAreNoMessagesIn": "There are no messages in <b>$name$</b>.",
   "noMessagesInBlindedDisabledMsgRequests": "<b>$name$</b> has message requests from Community conversations turned off, so you cannot send them a message.",
   "noMessagesInNoteToSelf": "You have no messages in <b>$name$</b>.",
   "noMessagesInEverythingElse": "You have no messages from <b>$name$</b>. Send a message to start the conversation!",
