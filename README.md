@@ -32,7 +32,7 @@ gpg --import KeeJef.asc
 Get the signed hash for this release, the SESSION_VERSION needs to be updated for the release you want to verify
 
 ```
-export SESSION_VERSION=1.6.1
+export SESSION_VERSION=1.12.3
 wget https://github.com/oxen-io/session-desktop/releases/download/v$SESSION_VERSION/signatures.asc
 ```
 
