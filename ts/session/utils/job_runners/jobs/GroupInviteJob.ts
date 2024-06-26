@@ -18,6 +18,7 @@ import {
   PersistedJob,
   RunJobResult,
 } from '../PersistedJob';
+import { LibSessionUtil } from '../../libsession/libsession_utils';
 
 const defaultMsBetweenRetries = 10000;
 const defaultMaxAttemps = 1;
@@ -60,6 +61,7 @@ async function addJob({ groupPk, member }: JobExtraArgs) {
       window.log.warn('GroupInviteJob memberSetInvited (before) failed with', e.message);
     }
     window?.inboxStore?.dispatch(groupInfoActions.refreshGroupDetailsFromWrapper({ groupPk }));
+    await LibSessionUtil.saveDumpsToDb(groupPk);
 
     await runners.groupInviteJobRunner.addJob(groupInviteJob);
 
@@ -162,6 +164,7 @@ class GroupInviteJob extends PersistedJob<GroupInvitePersistedData> {
         namespace: SnodeNamespaces.Default,
         pubkey: PubKey.cast(member),
       });
+      // throw new Error('okdsds');
       if (storedAt !== null) {
         failed = false;
       }
@@ -169,7 +172,11 @@ class GroupInviteJob extends PersistedJob<GroupInvitePersistedData> {
       window.log.warn(
         `${jobType} with groupPk:"${groupPk}" member: ${member} id:"${identifier}" failed with ${e.message}`
       );
+      failed = true;
     } finally {
+      window.log.info(
+        `${jobType} with groupPk:"${groupPk}" member: ${member} id:"${identifier}" finished. failed:${failed}`
+      );
       try {
         await MetaGroupWrapperActions.memberSetInvited(groupPk, member, failed);
       } catch (e) {
@@ -177,7 +184,11 @@ class GroupInviteJob extends PersistedJob<GroupInvitePersistedData> {
       }
 
       updateFailedStateForMember(groupPk, member, failed);
+      window?.inboxStore?.dispatch(
+        groupInfoActions.setInvitePending({ groupPk, pubkey: member, sending: false })
+      );
       window?.inboxStore?.dispatch(groupInfoActions.refreshGroupDetailsFromWrapper({ groupPk }));
+      await LibSessionUtil.saveDumpsToDb(groupPk);
     }
     // return true so this job is marked as a success and we don't need to retry it
     return RunJobResult.Success;

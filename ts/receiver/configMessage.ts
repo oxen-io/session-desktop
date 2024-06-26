@@ -582,11 +582,13 @@ async function handleLegacyGroupUpdate(latestEnvelopeTimestamp: number) {
       toLeave.id
     );
     const toLeaveFromDb = ConvoHub.use().get(toLeave.id);
-    // the wrapper told us that this group is not tracked, so even if we left/got kicked from it, remove it from the DB completely
-    await ConvoHub.use().deleteLegacyGroup(toLeaveFromDb.id, {
-      fromSyncMessage: true,
-      sendLeaveMessage: false, // this comes from the wrapper, so we must have left/got kicked from that group already and our device already handled it.
-    });
+    if (PubKey.is05Pubkey(toLeaveFromDb.id)) {
+      // the wrapper told us that this group is not tracked, so even if we left/got kicked from it, remove it from the DB completely
+      await ConvoHub.use().deleteLegacyGroup(toLeaveFromDb.id, {
+        fromSyncMessage: true,
+        sendLeaveMessage: false, // this comes from the wrapper, so we must have left/got kicked from that group already and our device already handled it.
+      });
+    }
   }
 
   for (let index = 0; index < legacyGroupsToJoinInDB.length; index++) {

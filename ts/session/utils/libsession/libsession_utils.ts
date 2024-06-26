@@ -351,6 +351,8 @@ async function saveDumpsToDb(pubkey: PubkeyType | GroupPubkeyType) {
     const metaNeedsDump = await MetaGroupWrapperActions.needsDump(pubkey);
     // save the concatenated dumps as a single entry in the DB if any of the dumps had a need for dump
     if (metaNeedsDump) {
+      window.log.debug(`About to make and save dumps for metagroup ${ed25519Str(pubkey)}`);
+
       const dump = await MetaGroupWrapperActions.metaDump(pubkey);
       await ConfigDumpData.saveConfigDump({
         data: dump,
