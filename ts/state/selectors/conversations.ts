@@ -12,6 +12,7 @@ import {
   PropsForQuote,
   QuoteLookupType,
   ReduxConversationType,
+  ReturnToConversationProps,
   SortedMessageModelProps,
 } from '../ducks/conversations';
 import { StateType } from '../reducer';
@@ -497,6 +498,9 @@ export const isRightPanelShowing = (state: StateType): boolean =>
 
 export const isMessageSelectionMode = (state: StateType): boolean =>
   state.conversations.selectedMessageIds.length > 0;
+
+export const getReturnToConversation = (state: StateType): ReturnToConversationProps | undefined =>
+  state.conversations.returnToConversation;
 
 export const getSelectedMessageIds = (state: StateType): Array<string> =>
   state.conversations.selectedMessageIds;
