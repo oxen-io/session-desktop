@@ -207,6 +207,11 @@ window.setAutoUpdateEnabled = value => {
   ipc.send('set-auto-update-setting', !!value);
 };
 
+window.getUiLanguage = () => ipc.sendSync('get-ui-language');
+window.setUiLanguage = value => {
+  ipc.send('set-ui-language', String(value));
+};
+
 ipc.on('get-ready-for-shutdown', async () => {
   const { shutdown } = window.Events || {};
   if (!shutdown) {

@@ -8,6 +8,7 @@ import { isHideMenuBarSupported } from '../../../types/Settings';
 import { SessionToggleWithDescription } from '../SessionSettingListItem';
 import { SettingsThemeSwitcher } from '../SettingsThemeSwitcher';
 import { ZoomingSessionSlider } from '../ZoomingSessionSlider';
+import { SettingsSessionUiLanguage } from '../SettingsSessionUiLanguage';
 
 export const SettingsCategoryAppearance = () => {
   const forceUpdate = useUpdate();
@@ -20,6 +21,7 @@ export const SettingsCategoryAppearance = () => {
 
   return (
     <>
+      <SettingsSessionUiLanguage />
       <SettingsThemeSwitcher />
       <ZoomingSessionSlider />
       {isHideMenuBarSupported() && (

@@ -534,6 +534,8 @@ export type LocalizerKeys =
   | 'typingAlt'
   | 'typingIndicatorsSettingDescription'
   | 'typingIndicatorsSettingTitle'
+  | 'uiLanguage'
+  | 'uiLanguageDescription'
   | 'unableToCall'
   | 'unableToCallTitle'
   | 'unableToLoadAttachment'
