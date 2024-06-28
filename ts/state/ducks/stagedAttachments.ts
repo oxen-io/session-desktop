@@ -37,9 +37,8 @@ const stagedAttachmentsSlice = createSlice({
       }
 
       const allAttachments = _.concat(currentStagedAttachments, newAttachments);
-      const uniqAttachments = _.uniqBy(allAttachments, m => m.fileName);
 
-      state.stagedAttachments[conversationKey] = uniqAttachments;
+      state.stagedAttachments[conversationKey] = allAttachments;
       return state;
     },
     removeAllStagedAttachmentsInConversation(
