@@ -31,6 +31,12 @@ import { Notifications } from '../util/notifications';
 import { Registration } from '../util/registration';
 import { Storage, isSignInByLinking } from '../util/storage';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
+import {
+  updateAvailable,
+  updateDownloadProgress,
+  updateDownloaded,
+  updateDownloading,
+} from '../state/ducks/appUpdates';
 
 // Globally disable drag and drop
 document.body.addEventListener(
@@ -129,6 +135,19 @@ ipcRenderer.on('native-theme-update', (__unused, shouldUseDarkColors) => {
       });
     }
   }
+});
+
+ipcRenderer.on('update-available', () => {
+  window.inboxStore.dispatch(updateAvailable());
+});
+ipcRenderer.on('update-downloading', () => {
+  window.inboxStore.dispatch(updateDownloading());
+});
+ipcRenderer.on('update-download-progress', (_event, progress) => {
+  window.inboxStore.dispatch(updateDownloadProgress({ progress }));
+});
+ipcRenderer.on('update-downloaded', () => {
+  window.inboxStore.dispatch(updateDownloaded());
 });
 
 async function startJobRunners() {

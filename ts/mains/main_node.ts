@@ -161,6 +161,7 @@ import { setLastestRelease } from '../node/latest_desktop_release';
 import { load as loadLocale, LocaleMessagesWithNameType } from '../node/locale';
 import { isDevProd, isTestIntegration } from '../shared/env_vars';
 import { classicDark } from '../themes';
+import { acceptDownload, cancelUpdate, installUpdateAndRestart } from '../updater/updater';
 
 // Both of these will be set after app fires the 'ready' event
 let logger: Logger | null = null;
@@ -1148,6 +1149,18 @@ ipc.on('set-auto-update-setting', async (_event, enabled) => {
 
 ipc.on('get-native-theme', event => {
   event.sender.send('send-native-theme', nativeTheme.shouldUseDarkColors);
+});
+
+ipc.on('autoupdater-cancel-download', () => {
+  void cancelUpdate(getMainWindow, assertLogger());
+});
+
+ipc.on('autoupdater-accept-download', () => {
+  void acceptDownload(getMainWindow, assertLogger());
+});
+
+ipc.on('autoupdater-install-and-restart', () => {
+  void installUpdateAndRestart(assertLogger());
 });
 
 nativeTheme.on('updated', () => {

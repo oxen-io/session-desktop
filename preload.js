@@ -207,6 +207,10 @@ window.setAutoUpdateEnabled = value => {
   ipc.send('set-auto-update-setting', !!value);
 };
 
+window.autoupdaterCancelDownload = () => ipc.send('autoupdater-cancel-download');
+window.autoupdaterAcceptDownload = () => ipc.send('autoupdater-accept-download');
+window.autoupdaterInstallAndRestart = () => ipc.send('autoupdater-install-and-restart');
+
 ipc.on('get-ready-for-shutdown', async () => {
   const { shutdown } = window.Events || {};
   if (!shutdown) {

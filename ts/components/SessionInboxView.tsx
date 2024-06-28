@@ -27,6 +27,7 @@ import { initialSectionState } from '../state/ducks/section';
 import { getEmptyStagedAttachmentsState } from '../state/ducks/stagedAttachments';
 import { initialThemeState } from '../state/ducks/theme';
 import { initialUserConfigState } from '../state/ducks/userConfig';
+import { initialAppUpdatesState } from '../state/ducks/appUpdates';
 import { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
@@ -83,6 +84,7 @@ function createSessionInboxStore() {
     call: initialCallState,
     sogsRoomInfo: initialSogsRoomInfoState,
     settings: getSettingsInitialState(),
+    appUpdates: initialAppUpdatesState,
   };
 
   return createStore(initialState);
