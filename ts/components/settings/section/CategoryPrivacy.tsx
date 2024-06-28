@@ -19,6 +19,7 @@ import {
 import { Storage } from '../../../util/storage';
 import { SessionSettingButtonItem, SessionToggleWithDescription } from '../SessionSettingListItem';
 import { displayPasswordModal } from '../SessionSettings';
+import { TrustedWebsitesList } from '../TrustedWebsitesList';
 
 async function toggleLinkPreviews(isToggleOn: boolean, forceUpdate: () => void) {
   if (!isToggleOn) {
@@ -142,6 +143,8 @@ export const SettingsCategoryPrivacy = (props: {
           />
         </>
       )}
+
+      <TrustedWebsitesList />
     </>
   );
 };

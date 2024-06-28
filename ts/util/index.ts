@@ -5,5 +5,6 @@ import * as AttachmentUtil from './attachmentsUtil';
 import * as LinkPreviewUtil from './linkPreviewFetch';
 
 export * from './blockedNumberController';
+export * from './trustedWebsitesController';
 
 export { arrayBufferToObjectURL, GoogleChrome, missingCaseError, AttachmentUtil, LinkPreviewUtil };
