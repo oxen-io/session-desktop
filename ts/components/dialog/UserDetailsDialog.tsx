@@ -1,26 +1,29 @@
 import { useState } from 'react';
 
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
-
 import useKey from 'react-use/lib/useKey';
+import styled from 'styled-components';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';
-import { ToastUtils } from '../../session/utils';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
 import { updateUserDetailsModal, UserDetailsModalState } from '../../state/ducks/modalDialog';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
+import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonType } from '../basic/SessionButton';
-import { SessionIdEditable } from '../basic/SessionIdEditable';
 import { SpacerLG } from '../basic/Text';
+import { CopyToClipboardButton } from '../buttons/CopyToClipboardButton';
+import { SessionInput } from '../inputs';
 import { SessionWrapperModal } from '../SessionWrapperModal';
+
+const StyledInputContainer = styled(Flex)`
+  textarea {
+    overflow: hidden;
+  }
+`;
 
 export const UserDetailsDialog = (props: UserDetailsModalState) => {
   const [isEnlargedImageShown, setIsEnlargedImageShown] = useState(false);
 
   const size = isEnlargedImageShown ? AvatarSize.HUGE : AvatarSize.XL;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, copyToClipboard] = useCopyToClipboard();
 
   function closeDialog() {
     window.inboxStore?.dispatch(updateUserDetailsModal(null));
@@ -68,23 +71,33 @@ export const UserDetailsDialog = (props: UserDetailsModalState) => {
           />
         </div>
       </div>
-
       <SpacerLG />
-      <SessionIdEditable editable={false} text={props.conversationId} />
-
+      <StyledInputContainer
+        container={true}
+        width={'100%'}
+        justifyContent="center"
+        alignItems="center"
+      >
+        <SessionInput
+          value={props.conversationId}
+          textSize="md"
+          centerText={true}
+          editable={false}
+          monospaced={true}
+          isTextArea={true}
+        />
+      </StyledInputContainer>
+      <SpacerLG />
       <div className="session-modal__button-group__center">
         <SessionButton
           text={window.i18n('startConversation')}
           buttonType={SessionButtonType.Simple}
           onClick={onClickStartConversation}
         />
-        <SessionButton
-          text={window.i18n('editMenuCopy')}
+        <CopyToClipboardButton
+          copyContent={props.conversationId}
           buttonType={SessionButtonType.Simple}
-          onClick={() => {
-            copyToClipboard(props.conversationId);
-            ToastUtils.pushCopiedToClipBoard();
-          }}
+          hotkey={true}
         />
       </div>
     </SessionWrapperModal>

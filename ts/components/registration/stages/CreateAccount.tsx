@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
-import { useMount } from 'react-use';
+import useMount from 'react-use/lib/useMount';
 import { SettingsKey } from '../../../data/settings-key';
 import { mnDecode } from '../../../session/crypto/mnemonic';
 import { StringUtils } from '../../../session/utils';
@@ -26,11 +26,10 @@ import {
 } from '../../../util/accountManager';
 import { Storage, setSignWithRecoveryPhrase } from '../../../util/storage';
 import { Flex } from '../../basic/Flex';
-import { SessionButton, SessionButtonColor } from '../../basic/SessionButton';
 import { SpacerLG, SpacerSM } from '../../basic/Text';
 import { SessionInput } from '../../inputs';
 import { resetRegistration } from '../RegistrationStages';
-import { OnboardDescription, OnboardHeading } from '../components';
+import { ContinueButton, OnboardDescription, OnboardHeading } from '../components';
 import { BackButtonWithinContainer } from '../components/BackButton';
 import { displayNameIsValid, sanitizeDisplayNameOrToast } from '../utils';
 
@@ -128,8 +127,9 @@ export const CreateAccount = () => {
         <OnboardDescription>{window.i18n('displayNameDescription')}</OnboardDescription>
         <SpacerLG />
         <SessionInput
+          ariaLabel={window.i18n('enterDisplayName')}
           autoFocus={true}
-          disabledOnBlur={true}
+          disableOnBlurEvent={true}
           type="text"
           placeholder={window.i18n('enterDisplayName')}
           value={displayName}
@@ -142,12 +142,9 @@ export const CreateAccount = () => {
           inputDataTestId="display-name-input"
         />
         <SpacerLG />
-        <SessionButton
-          buttonColor={SessionButtonColor.White}
+        <ContinueButton
           onClick={signUpWithDetails}
-          text={window.i18n('continue')}
           disabled={isEmpty(displayName) || !isEmpty(displayNameError)}
-          dataTestId="continue-button"
         />
       </Flex>
     </BackButtonWithinContainer>

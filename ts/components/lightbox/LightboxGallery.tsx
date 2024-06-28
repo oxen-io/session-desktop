@@ -4,11 +4,12 @@ import useKey from 'react-use/lib/useKey';
 
 import { Lightbox } from './Lightbox';
 
-import { showLightBox } from '../../state/ducks/conversations';
+import { updateLightBoxOptions } from '../../state/ducks/modalDialog';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 import { MIME } from '../../types';
 import { AttachmentTypeWithPath } from '../../types/Attachment';
 import { saveAttachmentToDisk } from '../../util/attachmentsUtil';
+import { saveURLAsFile } from '../../util/saveURLAsFile';
 
 export interface MediaItemType {
   objectURL?: string;
@@ -23,11 +24,12 @@ export interface MediaItemType {
 
 type Props = {
   media: Array<MediaItemType>;
-  selectedIndex: number;
+  selectedIndex?: number;
+  onClose?: () => void;
 };
 
 export const LightboxGallery = (props: Props) => {
-  const { media } = props;
+  const { media, selectedIndex = -1, onClose } = props;
   const [currentIndex, setCurrentIndex] = useState(-1);
   const selectedConversation = useSelectedConversationKey();
 
@@ -35,11 +37,14 @@ export const LightboxGallery = (props: Props) => {
 
   // just run once, when the component is mounted. It's to show the lightbox on the specified index at start.
   useEffect(() => {
-    setCurrentIndex(props.selectedIndex);
+    setCurrentIndex(selectedIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedMedia = media[currentIndex];
+  const objectURL = selectedMedia?.objectURL || 'images/alert-outline.svg';
+  const isDataBlob = objectURL.startsWith('data:');
+
   const firstIndex = 0;
   const lastIndex = media.length - 1;
 
@@ -55,12 +60,22 @@ export const LightboxGallery = (props: Props) => {
   }, [currentIndex, lastIndex]);
 
   const handleSave = useCallback(() => {
-    if (!selectedConversation) {
-      return;
-    }
     const mediaItem = media[currentIndex];
-    void saveAttachmentToDisk({ ...mediaItem, conversationId: selectedConversation });
-  }, [currentIndex, media, selectedConversation]);
+
+    if (isDataBlob && mediaItem.objectURL) {
+      saveURLAsFile({
+        filename: mediaItem.attachment.fileName,
+        url: mediaItem.objectURL,
+        document,
+      });
+    } else {
+      if (!selectedConversation) {
+        return;
+      }
+
+      void saveAttachmentToDisk({ ...mediaItem, conversationId: selectedConversation });
+    }
+  }, [currentIndex, isDataBlob, media, selectedConversation]);
 
   useKey(
     'ArrowRight',
@@ -68,7 +83,7 @@ export const LightboxGallery = (props: Props) => {
       onNext?.();
     },
     undefined,
-    [currentIndex]
+    [onNext, currentIndex]
   );
   useKey(
     'ArrowLeft',
@@ -76,18 +91,21 @@ export const LightboxGallery = (props: Props) => {
       onPrevious?.();
     },
     undefined,
-    [currentIndex]
+    [onPrevious, currentIndex]
   );
-
   useKey(
     'Escape',
     () => {
-      dispatch(showLightBox(undefined));
+      dispatch(updateLightBoxOptions(null));
+      if (onClose) {
+        onClose();
+      }
     },
     undefined,
-    [currentIndex]
+    [currentIndex, updateLightBoxOptions, dispatch, onClose]
   );
-  if (!selectedConversation) {
+
+  if (!isDataBlob && !selectedConversation) {
     return null;
   }
 
@@ -95,7 +113,7 @@ export const LightboxGallery = (props: Props) => {
   if (currentIndex === -1) {
     return null;
   }
-  const objectURL = selectedMedia?.objectURL || 'images/alert-outline.svg';
+
   const { attachment } = selectedMedia;
 
   const caption = attachment?.caption;

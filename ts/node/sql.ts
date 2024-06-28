@@ -66,6 +66,7 @@ import { MessageAttributes } from '../models/messageType';
 import { SignalService } from '../protobuf';
 import { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';
+import { ed25519Str } from '../session/utils/String';
 import {
   getSQLCipherIntegrityCheck,
   openAndMigrateDatabase,
@@ -79,7 +80,6 @@ import {
   initDbInstanceWith,
   isInstanceInitialized,
 } from './sqlInstance';
-import { ed25519Str } from '../session/utils/String';
 
 // eslint:disable: function-name non-literal-fs-path
 
@@ -710,15 +710,19 @@ function searchConversations(query: string) {
   const rows = assertGlobalInstance()
     .prepare(
       `SELECT * FROM ${CONVERSATIONS_TABLE} WHERE
-      (
-        displayNameInProfile LIKE $displayNameInProfile OR
-        nickname LIKE $nickname
-      ) AND active_at > 0
-     ORDER BY active_at DESC
-     LIMIT $limit`
+    (
+      displayNameInProfile LIKE $displayNameInProfile COLLATE NOCASE OR
+      nickname LIKE $nickname COLLATE NOCASE OR
+      (id LIKE $id AND
+        (displayNameInProfile IS NULL OR displayNameInProfile = '') AND (nickname IS NULL OR nickname = '')
+      )
+    ) AND active_at > 0
+    ORDER BY (COALESCE(NULLIF(nickname, ''), displayNameInProfile) COLLATE NOCASE)
+    LIMIT $limit`
     )
     .all({
       displayNameInProfile: `%${query}%`,
+      id: `%${query}%`,
       nickname: `%${query}%`,
       limit: 50,
     });

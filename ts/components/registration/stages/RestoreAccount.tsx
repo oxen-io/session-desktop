@@ -32,13 +32,12 @@ import {
 } from '../../../util/accountManager';
 import { setSignInByLinking, setSignWithRecoveryPhrase } from '../../../util/storage';
 import { Flex } from '../../basic/Flex';
-import { SessionButton, SessionButtonColor } from '../../basic/SessionButton';
 import { SpacerLG, SpacerSM } from '../../basic/Text';
 import { SessionIcon } from '../../icon';
 import { SessionInput } from '../../inputs';
 import { SessionProgressBar } from '../../loading';
 import { resetRegistration } from '../RegistrationStages';
-import { OnboardDescription, OnboardHeading } from '../components';
+import { ContinueButton, OnboardDescription, OnboardHeading } from '../components';
 import { BackButtonWithinContainer } from '../components/BackButton';
 import { useRecoveryProgressEffect } from '../hooks';
 import { displayNameIsValid, sanitizeDisplayNameOrToast } from '../utils';
@@ -226,8 +225,9 @@ export const RestoreAccount = () => {
                 <OnboardDescription>{window.i18n('onboardingRecoveryPassword')}</OnboardDescription>
                 <SpacerLG />
                 <SessionInput
+                  ariaLabel="Recovery password input"
                   autoFocus={true}
-                  disabledOnBlur={true}
+                  disableOnBlurEvent={true}
                   type="password"
                   placeholder={window.i18n('recoveryPasswordEnter')}
                   value={recoveryPassword}
@@ -241,16 +241,21 @@ export const RestoreAccount = () => {
                   }}
                   onEnterPressed={recoverAndFetchDisplayName}
                   error={recoveryPasswordError}
-                  enableShowHide={true}
+                  enableShowHideButton={true}
+                  showHideButtonAriaLabels={{
+                    hide: 'Hide recovery password toggle',
+                    show: 'Reveal recovery password toggle',
+                  }}
+                  showHideButtonDataTestIds={{
+                    hide: 'hide-recovery-phrase-toggle',
+                    show: 'reveal-recovery-phrase-toggle',
+                  }}
                   inputDataTestId="recovery-phrase-input"
                 />
                 <SpacerLG />
-                <SessionButton
-                  buttonColor={SessionButtonColor.White}
+                <ContinueButton
                   onClick={recoverAndFetchDisplayName}
-                  text={window.i18n('continue')}
                   disabled={!(!!recoveryPassword && !recoveryPasswordError)}
-                  dataTestId="continue-button"
                 />
               </>
             ) : (
@@ -260,8 +265,9 @@ export const RestoreAccount = () => {
                 <OnboardDescription>{window.i18n('displayNameErrorNew')}</OnboardDescription>
                 <SpacerLG />
                 <SessionInput
+                  ariaLabel={window.i18n('enterDisplayName')}
                   autoFocus={true}
-                  disabledOnBlur={true}
+                  disableOnBlurEvent={true}
                   type="text"
                   placeholder={window.i18n('enterDisplayName')}
                   value={displayName}
@@ -278,17 +284,14 @@ export const RestoreAccount = () => {
                   inputDataTestId="display-name-input"
                 />
                 <SpacerLG />
-                <SessionButton
-                  buttonColor={SessionButtonColor.White}
+                <ContinueButton
                   onClick={recoverAndEnterDisplayName}
-                  text={window.i18n('continue')}
                   disabled={
                     isEmpty(recoveryPassword) ||
                     !isEmpty(recoveryPasswordError) ||
                     isEmpty(displayName) ||
                     !isEmpty(displayNameError)
                   }
-                  dataTestId="continue-button"
                 />
               </Flex>
             )}
@@ -304,7 +307,9 @@ export const RestoreAccount = () => {
         >
           <SessionProgressBar
             initialValue={
-              step !== AccountRestoration.Finished && step !== AccountRestoration.Complete ? 0 : 100
+              step !== AccountRestoration.Finished && step !== AccountRestoration.Complete
+                ? progress
+                : 100
             }
             progress={progress}
             margin={'0'}

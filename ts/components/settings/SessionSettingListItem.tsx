@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
+import { isEmpty, pick } from 'lodash';
 import { ReactNode } from 'react';
+import { Flex } from '../basic/Flex';
 import {
   SessionButton,
   SessionButtonColor,
@@ -8,8 +10,9 @@ import {
   SessionButtonType,
 } from '../basic/SessionButton';
 import { SessionToggle } from '../basic/SessionToggle';
+import { SpacerSM } from '../basic/Text';
 import { SessionConfirmDialogProps } from '../dialog/SessionConfirm';
-import { SessionIconButton } from '../icon';
+import { SessionIcon, SessionIconButton, SessionIconProps } from '../icon';
 
 type ButtonSettingsProps = {
   title?: string;
@@ -26,7 +29,6 @@ export const StyledDescriptionSettingsItem = styled.div`
   font-family: var(--font-default);
   font-size: var(--font-size-sm);
   font-weight: 400;
-  max-width: 700px;
 `;
 
 export const StyledTitleSettingsItem = styled.div`
@@ -64,23 +66,37 @@ const StyledSettingItemInline = styled(StyledSettingItem)`
 
 const StyledSettingItemClickable = styled(StyledSettingItemInline)`
   cursor: pointer;
-  :hover {
+  &:hover {
     background: var(--settings-tab-background-hover-color);
   }
-  :active {
+  &:active {
     background: var(--settings-tab-background-selected-color);
   }
 `;
 
 export const SettingsTitleAndDescription = (props: {
-  title?: string;
-  description?: string;
+  title?: ReactNode;
+  description?: ReactNode;
   childrenDescription?: ReactNode;
+  icon?: SessionIconProps;
 }) => {
-  const { description, childrenDescription, title } = props;
+  const { description, childrenDescription, title, icon } = props;
   return (
     <StyledInfo>
-      <StyledTitleSettingsItem>{title}</StyledTitleSettingsItem>
+      <Flex
+        container={true}
+        flexDirection={'row'}
+        justifyContent={'flex-start'}
+        alignItems={'center'}
+      >
+        <StyledTitleSettingsItem>{title}</StyledTitleSettingsItem>
+        {!isEmpty(icon) ? (
+          <>
+            <SpacerSM />
+            <SessionIcon {...pick(icon, ['iconType', 'iconSize', 'iconColor'])} />
+          </>
+        ) : null}
+      </Flex>
       <StyledDescriptionContainer>
         {description && (
           <StyledDescriptionSettingsItem>{description}</StyledDescriptionSettingsItem>
@@ -93,12 +109,13 @@ export const SettingsTitleAndDescription = (props: {
 
 export const SessionSettingsItemWrapper = (props: {
   inline: boolean;
-  title?: string;
-  description?: string;
+  title?: string | ReactNode;
+  icon?: SessionIconProps;
+  description?: string | ReactNode;
   children?: ReactNode;
   childrenDescription?: ReactNode;
 }) => {
-  const { inline, children, description, title, childrenDescription } = props;
+  const { inline, children, description, title, childrenDescription, icon } = props;
   const ComponentToRender = inline ? StyledSettingItemInline : StyledSettingItem;
   return (
     <ComponentToRender>
@@ -106,6 +123,7 @@ export const SessionSettingsItemWrapper = (props: {
         title={title}
         description={description}
         childrenDescription={childrenDescription}
+        icon={icon}
       />
       {children}
     </ComponentToRender>

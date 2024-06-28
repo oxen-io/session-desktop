@@ -1,5 +1,5 @@
 import { isArray, omit } from 'lodash';
-import { Snode } from '../../../data/data';
+import { Snode } from '../../../data/types';
 import { updateIsOnline } from '../../../state/ducks/onion';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
@@ -8,6 +8,7 @@ import { SnodeNamespace, SnodeNamespaces } from './namespaces';
 import { DURATION, TTL_DEFAULT } from '../../constants';
 import { UserUtils } from '../../utils';
 import { sleepFor } from '../../utils/Promise';
+import { SnodeResponseError } from '../../utils/errors';
 import {
   RetrieveLegacyClosedGroupSubRequestType,
   RetrieveSubRequestType,
@@ -124,6 +125,7 @@ async function retrieveNextMessages(
   );
   // let exceptions bubble up
   // no retry for this one as this a call we do every few seconds while polling for messages
+  // TODO[epic=ses-825] will this happen before the retrieve display name timeout and break things?
   const timeOutMs = 10 * DURATION.SECONDS; // yes this is a long timeout for just messages, but 4s timeouts way to often...
   const timeoutPromise = async () => sleepFor(timeOutMs);
   const fetchPromise = async () =>
@@ -136,7 +138,7 @@ async function retrieveNextMessages(
       window?.log?.warn(
         `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
       );
-      throw new Error(
+      throw new SnodeResponseError(
         `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
       );
     }
