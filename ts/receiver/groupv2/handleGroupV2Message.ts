@@ -1,6 +1,7 @@
 import { GroupPubkeyType, PubkeyType, WithGroupPubkey } from 'libsession_util_nodejs';
 import { compact, isEmpty, isFinite, isNumber } from 'lodash';
 import { Data } from '../../data/data';
+import { deleteAllMessagesByConvoIdNoConfirmation } from '../../interactions/conversationInteractions';
 import { deleteMessagesFromSwarmOnly } from '../../interactions/conversations/unsendingInteractions';
 import { ConversationTypeEnum } from '../../models/conversationAttributes';
 import { HexString } from '../../node/hexStrings';
@@ -14,6 +15,7 @@ import { WithDisappearingMessageUpdate } from '../../session/disappearing_messag
 import { ClosedGroup } from '../../session/group/closed-group';
 import { GroupUpdateInviteResponseMessage } from '../../session/messages/outgoing/controlMessage/group_v2/to_group/GroupUpdateInviteResponseMessage';
 import { PubKey } from '../../session/types';
+import { WithMessageHash } from '../../session/types/with';
 import { UserUtils } from '../../session/utils';
 import { sleepFor } from '../../session/utils/Promise';
 import { ed25519Str, stringToUint8Array } from '../../session/utils/String';
@@ -29,8 +31,6 @@ import {
   MetaGroupWrapperActions,
   UserGroupsWrapperActions,
 } from '../../webworker/workers/browser/libsession_worker_interface';
-import { WithMessageHash } from '../../session/types/with';
-import { deleteAllMessagesByConvoIdNoConfirmation } from '../../interactions/conversationInteractions';
 
 type WithSignatureTimestamp = { signatureTimestamp: number };
 type WithAuthor = { author: PubkeyType };
@@ -503,41 +503,109 @@ async function handleGroupUpdateInviteResponseMessage({
 
 async function handleGroupUpdatePromoteMessage({
   change,
+  author,
+  signatureTimestamp,
 }: Omit<GroupUpdateGeneric<SignalService.GroupUpdatePromoteMessage>, 'groupPk'>) {
   const seed = change.groupIdentitySeed;
   const sodium = await getSodiumRenderer();
   const groupKeypair = sodium.crypto_sign_seed_keypair(seed);
 
   const groupPk = `03${HexString.toHexString(groupKeypair.publicKey)}` as GroupPubkeyType;
+  // we can be invited via a GroupUpdatePromoteMessage as an admin right away,
+  // so we potentially need to deal with part of the invite process here too.
 
-  const convo = ConvoHub.use().get(groupPk);
-  if (!convo) {
-    return;
-  }
-  window.log.info(`handleGroupUpdatePromoteMessage for ${ed25519Str(groupPk)}`);
-
-  // no group update message here, another message is sent to the group's swarm for the update message.
-  // this message is just about the keys that we need to save, and accepting the promotion.
-
-  const found = await UserGroupsWrapperActions.getGroup(groupPk);
-
-  if (!found) {
-    // could have been removed by the user already so let's not force create it
+  if (BlockedNumberController.isBlocked(author)) {
     window.log.info(
-      'received group promote message but that group is not in the usergroups wrapper'
+      `received promote to group ${ed25519Str(groupPk)} by blocked user:${ed25519Str(
+        author
+      )}... dropping it`
     );
     return;
   }
-  found.secretKey = groupKeypair.privateKey;
-  await UserGroupsWrapperActions.setGroup(found);
-  await UserSync.queueNewJobIfNeeded();
 
-  window.inboxStore.dispatch(
-    groupInfoActions.markUsAsAdmin({
-      groupPk,
-      secret: groupKeypair.privateKey,
-    })
+  const authorIsApproved = ConvoHub.use().get(author)?.isApproved() || false;
+  window.log.info(
+    `received promote to group ${ed25519Str(groupPk)} by author:${ed25519Str(author)}. authorIsApproved:${authorIsApproved} `
   );
+
+  const convo = await ConvoHub.use().getOrCreateAndWait(groupPk, ConversationTypeEnum.GROUPV2);
+  convo.set({
+    active_at: signatureTimestamp,
+    didApproveMe: true,
+    conversationIdOrigin: author,
+  });
+
+  if (change.name && isEmpty(convo.getRealSessionUsername())) {
+    convo.set({
+      displayNameInProfile: change.name,
+    });
+  }
+  const userEd25519Secretkey = (await UserUtils.getUserED25519KeyPairBytes()).privKeyBytes;
+
+  let found = await UserGroupsWrapperActions.getGroup(groupPk);
+  const wasKicked = found?.kicked || false;
+
+  if (!found) {
+    found = {
+      authData: null,
+      joinedAtSeconds: Date.now(),
+      name: change.name,
+      priority: 0,
+      pubkeyHex: groupPk,
+      secretKey: groupKeypair.privateKey,
+      kicked: false,
+      invitePending: true,
+    };
+  } else {
+    found.kicked = false;
+    found.name = change.name;
+    found.secretKey = groupKeypair.privateKey;
+  }
+  if (authorIsApproved) {
+    // pre approve invite to groups when we've already approved the person who invited us
+    found.invitePending = false;
+  }
+
+  await UserGroupsWrapperActions.setGroup(found);
+  // force markedAsUnread to be true so it shows the unread banner (we only show the banner if there are unread messages on at least one msg/group request)
+  await convo.markAsUnread(true, false);
+  await convo.commit();
+
+  await SessionUtilConvoInfoVolatile.insertConvoFromDBIntoWrapperAndRefresh(convo.id);
+
+  if (wasKicked) {
+    // we have been reinvited to a group which we had been kicked from.
+    // Let's empty the conversation again to remove any "you were removed from the group" control message
+    await deleteAllMessagesByConvoIdNoConfirmation(groupPk);
+  }
+  try {
+    await MetaGroupWrapperActions.init(groupPk, {
+      metaDumped: null,
+      groupEd25519Secretkey: groupKeypair.privateKey,
+      userEd25519Secretkey: toFixedUint8ArrayOfLength(userEd25519Secretkey, 64).buffer,
+      groupEd25519Pubkey: toFixedUint8ArrayOfLength(HexString.fromHexStringNoPrefix(groupPk), 32)
+        .buffer,
+    });
+  } catch (e) {
+    window.log.warn(
+      `handleGroupUpdatePromoteMessage: init of ${ed25519Str(groupPk)} failed with ${e.message}. Trying to just load admin keys`
+    );
+    try {
+      await MetaGroupWrapperActions.loadAdminKeys(groupPk, groupKeypair.privateKey);
+    } catch (e2) {
+      window.log.warn(
+        `handleGroupUpdatePromoteMessage: loadAdminKeys of ${ed25519Str(groupPk)} failed with ${e.message}`
+      );
+    }
+  }
+
+  await LibSessionUtil.saveDumpsToDb(UserUtils.getOurPubKeyStrFromCache());
+  await UserSync.queueNewJobIfNeeded();
+  if (!found.invitePending) {
+    // This group should already be polling based on if that author is pre-approved or we've already approved that group from another device.
+    // Start polling from it, we will mark ourselves as admin once we get the first merge result, if needed.
+    getSwarmPollingInstance().addGroupId(groupPk);
+  }
 }
 
 async function handle1o1GroupUpdateMessage(

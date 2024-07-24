@@ -517,7 +517,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
         data-testid="message-input-text-area"
         style={style}
         suggestionsPortalHost={this.container as any}
-        forceSuggestionsAboveCursor={true} // force mentions to be rendered on top of the cursor, this is working with a fork of react-mentions for now
+        forceSuggestionsAboveCursor={true}
       >
         <Mention
           appendSpaceOnAdd={true}

@@ -25,6 +25,7 @@ import {
   useLibGroupInviteGroupName,
   useLibGroupInvitePending,
   useLibGroupKicked,
+  useLibGroupWeHaveSecretKey,
 } from '../../state/selectors/userGroups';
 import { LocalizerKeys } from '../../types/LocalizerKeys';
 import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
@@ -119,6 +120,8 @@ export const InvitedToGroupControlMessage = () => {
   const adminNameInvitedUs =
     useNicknameOrProfileNameOrShortenedPubkey(conversationOrigin) || window.i18n('unknown');
   const isGroupPendingInvite = useLibGroupInvitePending(selectedConversation);
+  const weHaveSecretKey = useLibGroupWeHaveSecretKey(selectedConversation);
+
   if (
     !selectedConversation ||
     isApproved ||
@@ -131,8 +134,12 @@ export const InvitedToGroupControlMessage = () => {
   }
   // when restoring from seed we might not have the pubkey of who invited us, in that case, we just use a fallback
   const html = conversationOrigin
-    ? window.i18n('userInvitedYouToGroup', [adminNameInvitedUs, groupName])
-    : window.i18n('youWereInvitedToGroup', [groupName]);
+    ? weHaveSecretKey
+      ? window.i18n('userInvitedYouToGroupAsAdmin', [adminNameInvitedUs, groupName])
+      : window.i18n('userInvitedYouToGroup', [adminNameInvitedUs, groupName])
+    : weHaveSecretKey
+      ? window.i18n('youWereInvitedToGroupAsAdmin', [groupName])
+      : window.i18n('youWereInvitedToGroup', [groupName]);
 
   return (
     <TextNotification

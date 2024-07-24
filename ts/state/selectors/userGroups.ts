@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 import { PubKey } from '../../session/types';
 import { UserGroupState } from '../ducks/userGroups';
 import { StateType } from '../reducer';
@@ -10,6 +11,12 @@ const getGroupById = (state: StateType, convoId?: string) => {
     ? getUserGroupState(state).userGroups[convoId]
     : undefined;
 };
+
+export function useLibGroupWeHaveSecretKey(convoId?: string) {
+  return useSelector((state: StateType) => {
+    return !isEmpty(getGroupById(state, convoId)?.secretKey);
+  });
+}
 
 export function useLibGroupInvitePending(convoId?: string) {
   return useSelector((state: StateType) => getGroupById(state, convoId)?.invitePending);

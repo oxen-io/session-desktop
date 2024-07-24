@@ -75,12 +75,6 @@ const getOnionPathForSending = async () => {
   return pathNodes;
 };
 
-export type OnionSnodeResponse = {
-  result: SnodeResponse;
-  txtResponse: string;
-  response: string;
-};
-
 export type OnionV4SnodeResponse = {
   body: string | object | null; // if the content can be decoded as string
   bodyBinary: Uint8Array | null; // otherwise we return the raw content (could be an image data or file from sogs/fileserver)

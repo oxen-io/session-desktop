@@ -1,12 +1,13 @@
+/* eslint-disable no-await-in-loop */
 import { ipcRenderer } from 'electron';
 import React, { useEffect, useState } from 'react';
 
-import { debounce, isEmpty, isString } from 'lodash';
+import { cloneDeep, debounce, isEmpty, isString, random, sample } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import useInterval from 'react-use/lib/useInterval';
 import useTimeoutFn from 'react-use/lib/useTimeoutFn';
 
-import { Data } from '../../data/data';
+import { Data, Snode } from '../../data/data';
 import { ConvoHub } from '../../session/conversations';
 import { getMessageQueue } from '../../session/sending';
 

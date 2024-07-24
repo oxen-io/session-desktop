@@ -578,6 +578,8 @@
   "respondingToGroupRequestWarning": "Sending a message to this group will automatically accept the group invite.",
   "userInvitedYouToGroup": "<b>$name$</b> invited you to join <b>$groupName$</b>.",
   "youWereInvitedToGroup": "<b>You</b> were invited to join <b>$groupName$</b>.",
+  "userInvitedYouToGroupAsAdmin": "<b>$name$</b> invited you to join <b>$groupName$</b>, where you are an Admin.",
+  "youWereInvitedToGroupAsAdmin": "<b>You</b> were invited to join <b>$groupName$</b>, where you are an Admin.",
   "hideRequestBanner": "Hide Message Request Banner",
   "openMessageRequestInbox": "Message Requests",
   "noMessageRequestsPending": "No pending message requests",

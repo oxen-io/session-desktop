@@ -617,6 +617,10 @@ export const MetaGroupWrapperActions: MetaGroupWrapperActionsCalls = {
       data,
       timestampMs,
     ]) as Promise<ReturnType<MetaGroupWrapperActionsCalls['loadKeyMessage']>>,
+  keysAdmin: async (groupPk: GroupPubkeyType) =>
+    callLibSessionWorker([`MetaGroupConfig-${groupPk}`, 'keysAdmin']) as Promise<
+      ReturnType<MetaGroupWrapperActionsCalls['keysAdmin']>
+    >,
   keyGetCurrentGen: async (groupPk: GroupPubkeyType) =>
     callLibSessionWorker([`MetaGroupConfig-${groupPk}`, 'keyGetCurrentGen']) as Promise<
       ReturnType<MetaGroupWrapperActionsCalls['keyGetCurrentGen']>

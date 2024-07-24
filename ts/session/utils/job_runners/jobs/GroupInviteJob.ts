@@ -153,7 +153,7 @@ class GroupInviteJob extends PersistedJob<GroupInvitePersistedData> {
     }
     let failed = true;
     try {
-      const inviteDetails = await SnodeGroupSignature.getGroupInviteMessage({
+      const inviteDetails = await SnodeGroupSignature.getGroupPromoteMessage({
         groupName: group.name,
         member,
         secretKey: group.secretKey,
