@@ -276,6 +276,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
   private linkPreviewAbortController?: AbortController;
   private container: HTMLDivElement | null;
   private lastBumpTypingMessageLength: number = 0;
+  private isSendingMessage: boolean;
 
   constructor(props: Props) {
     super(props);
@@ -290,6 +291,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
     this.emojiPanelButton = React.createRef();
     autoBind(this);
     this.toggleEmojiPanel = debounce(this.toggleEmojiPanel.bind(this), 100);
+
+    this.isSendingMessage = false;
   }
 
   public componentDidMount() {
@@ -907,6 +910,10 @@ class CompositionBoxInner extends React.Component<Props, State> {
     if (!this.props.selectedConversationKey) {
       throw new Error('selectedConversationKey is needed');
     }
+    if (this.isSendingMessage) {
+      return;
+    }
+
     this.linkPreviewAbortController?.abort();
 
     const messagePlaintext = cleanMentions(this.state.draft);
@@ -956,6 +963,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
         ? _.pick(stagedLinkPreview, 'url', 'image', 'title')
         : undefined;
 
+    this.isSendingMessage = true;
+
     try {
       // this does not call call removeAllStagedAttachmentsInConvers
       const { attachments, previews } = await this.getFiles(linkPreview);
@@ -986,6 +995,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
     } catch (e) {
       // Message sending failed
       window?.log?.error(e);
+    } finally {
+      this.isSendingMessage = false;
     }
   }
 
