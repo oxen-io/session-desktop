@@ -31,6 +31,7 @@ import { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
 import { SettingsKey } from '../data/settings-key';
+import { initialDictionaryState } from '../state/ducks/dictionary';
 import { getSettingsInitialState, updateAllOnStorageReady } from '../state/ducks/settings';
 import { initialSogsRoomInfoState } from '../state/ducks/sogsRoomInfo';
 import { useHasDeviceOutdatedSyncing } from '../state/selectors/settings';
@@ -49,7 +50,7 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
 // does not recognize it with what moment knows which is the closest.
 // i.e. es-419 will return 'es'.
 // We just need to use what we got from moment in getLocale on the updateLocale below
-moment.locale((window.i18n as any).getLocale());
+moment.locale(window.getLocale());
 
 const StyledGutter = styled.div`
   width: 380px !important;
@@ -83,6 +84,7 @@ function createSessionInboxStore() {
     call: initialCallState,
     sogsRoomInfo: initialSogsRoomInfoState,
     settings: getSettingsInitialState(),
+    dictionary: initialDictionaryState,
   };
 
   return createStore(initialState);
@@ -107,7 +109,7 @@ const SomeDeviceOutdatedSyncingNotice = () => {
   }
   return (
     <NoticeBanner
-      text={window.i18n('someOfYourDeviceUseOutdatedVersion')}
+      text={window.i18n('deleteAfterGroupFirstReleaseConfigOutdated')}
       dismissCallback={dismiss}
     />
   );

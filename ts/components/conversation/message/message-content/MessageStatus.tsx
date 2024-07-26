@@ -238,7 +238,7 @@ const MessageStatusError = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
       data-testid={dataTestId}
       data-testtype="failed"
       onClick={showDebugLog}
-      title={window.i18n('sendFailed')}
+      title={window.i18n('messageStatusFailedToSend')}
       isIncoming={false}
       isGroup={isGroup}
     >

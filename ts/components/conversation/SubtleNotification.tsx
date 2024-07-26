@@ -71,14 +71,14 @@ export const NoMessageInConversation = () => {
     }
 
     if (canWrite) {
-      return <I18n token="groupNoMessages" args={{ groupname: name }} />;
+      return <I18n token="groupNoMessages" args={{ group_name: name }} />;
     }
 
     if (privateBlindedAndBlockingMsgReqs) {
       return <I18n token="messageRequestsTurnedOff" args={{ name }} />;
     }
 
-    return <I18n token="conversationsEmpty" args={{ conversationname: name }} />;
+    return <I18n token="conversationsEmpty" args={{ conversation_name: name }} />;
   }, [isMe, canWrite, privateBlindedAndBlockingMsgReqs, name]);
 
   if (!selectedConversation || hasMessage) {

@@ -87,7 +87,7 @@ const OnionPathModalInner = () => {
 
   const nodes = [
     {
-      label: window.i18n('onionRoutingPathYou'),
+      label: window.i18n('you'),
     },
     ...onionPath,
     {

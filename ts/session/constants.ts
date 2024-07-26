@@ -74,3 +74,7 @@ export const FEATURE_RELEASE_TIMESTAMPS = {
   DISAPPEARING_MESSAGES_V2: 1710284400000, // 13/03/2024 10:00 Melbourne time
   USER_CONFIG: 1690761600000, // Monday July 31st at 10am Melbourne time
 };
+
+export const LOCALE_DEFAULTS = {
+  app_name: 'Session',
+} as const

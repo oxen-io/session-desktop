@@ -26,7 +26,7 @@ export const AttachmentInfo = (props: Props) => {
       />
       <StyledLabelContainer container={true} flexDirection="row" flexWrap="wrap">
         <LabelWithInfo
-          label={`${window.i18n('fileType')}:`}
+          label={`${window.i18n('attachmentsFileType')}:`}
           info={
             attachment?.contentType ? String(attachment.contentType) : window.i18n('attachmentsNa')
           }

@@ -16,6 +16,7 @@ const StyledQuoteImage = styled.div`
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+
   img {
     width: 100%;
     height: 100%;
@@ -75,12 +76,7 @@ export const QuoteImage = (props: {
 
   return !isEmpty(srcData) && !imageBroken ? (
     <StyledQuoteImage>
-      <img
-        src={srcData}
-        alt={window.i18n('quoteThumbnailAlt')}
-        onDragStart={disableDrag}
-        onError={handleImageErrorBound}
-      />
+      <img src={srcData} onDragStart={disableDrag} onError={handleImageErrorBound} />
       {showPlayButton && (
         <StyledPlayButton>
           <div>

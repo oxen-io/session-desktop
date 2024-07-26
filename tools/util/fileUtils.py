@@ -1,5 +1,12 @@
 import json
 import os
+import sys
+
+
+# This allows for importing from the localization and util directories NOTE: Auto importing tools will also prepend the import paths with "tools." this will not work and needs to be removed from import paths
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from localization.parseDictionary import parse_dictionary
 
 
 def createMappedJsonFileDictionary(inputDir, fileName):
@@ -39,8 +46,10 @@ def createMappedJsonFileDictionary(inputDir, fileName):
         dictionaryKeyFiles[key] = filePath
 
         # Open the JSON file and load the data into the dictionary
-        with open(filePath, "r") as jsonFile:
-            dictionary[key] = json.load(jsonFile)
+        localDict = parse_dictionary(filePath)
+
+        if localDict is not None:
+            dictionary[key] = localDict
 
     # Return the dictionaries containing the JSON data and file paths
     return dictionary, dictionaryKeyFiles

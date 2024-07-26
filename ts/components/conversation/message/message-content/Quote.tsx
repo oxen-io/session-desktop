@@ -75,7 +75,7 @@ function getTypeLabel({
     return window.i18n('video');
   }
   if (GoogleChrome.isImageTypeSupported(contentType)) {
-    return window.i18n('photo');
+    return window.i18n('image');
   }
   if (MIME.isAudio(contentType) && isVoiceMessage) {
     return window.i18n('messageVoice');
@@ -86,6 +86,7 @@ function getTypeLabel({
 
   return undefined;
 }
+
 export const QuoteIcon = (props: any) => {
   const { icon } = props;
 
@@ -132,12 +133,7 @@ export const QuoteImage = (props: {
 
   return (
     <div className="module-quote__icon-container">
-      <img
-        src={srcData}
-        alt={window.i18n('quoteThumbnailAlt')}
-        onDragStart={disableDrag}
-        onError={handleImageErrorBound}
-      />
+      <img src={srcData} onDragStart={disableDrag} onError={handleImageErrorBound} />
       {iconElement}
     </div>
   );
@@ -285,7 +281,7 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
       )}
     >
       {isFromMe ? (
-        window.i18n('onionRoutingPathYou')
+        window.i18n('you')
       ) : (
         <ContactName
           pubkey={PubKey.shorten(author)}

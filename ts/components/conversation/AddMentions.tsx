@@ -30,7 +30,7 @@ const Mention = (props: MentionProps) => {
 
   // this call takes care of finding if we have a blindedId of ourself on any sogs we have joined.
   if (isUsAnySogsFromCache(blindedOrNotPubkey)) {
-    return <StyledMentionedUs>@{window.i18n('onionRoutingPathYou')}</StyledMentionedUs>;
+    return <StyledMentionedUs>@{window.i18n('you')}</StyledMentionedUs>;
   }
 
   return (

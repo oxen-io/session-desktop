@@ -32,7 +32,7 @@ const style = {
     iconColor: 'inherit',
   },
   'answered-a-call': {
-    notificationTextKey: 'answeredACall',
+    notificationTextKey: 'callsInProgress',
     iconType: 'callIncoming',
     iconColor: 'inherit',
   },

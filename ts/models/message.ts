@@ -98,6 +98,7 @@ import { Notifications } from '../util/notifications';
 import { Storage } from '../util/storage';
 import { ConversationModel } from './conversation';
 import { READ_MESSAGE_STATE } from './conversationAttributes';
+
 // tslint:disable: cyclomatic-complexity
 
 /**
@@ -253,9 +254,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   public isDataExtractionNotification() {
     return !!this.get('dataExtractionNotification');
   }
+
   public isCallNotification() {
     return !!this.get('callNotificationType');
   }
+
   public isInteractionNotification() {
     return !!this.getInteractionNotification();
   }
@@ -273,14 +276,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       (pubkeysInDesc || []).forEach((pubkeyWithAt: string) => {
         const pubkey = pubkeyWithAt.slice(1);
         const isUS = isUsAnySogsFromCache(pubkey);
-        const displayName = getConversationController().getContactProfileNameOrShortenedPubKey(
-          pubkey
-        );
+        const displayName =
+          getConversationController().getContactProfileNameOrShortenedPubKey(pubkey);
         if (isUS) {
-          description = description?.replace(
-            pubkeyWithAt,
-            `@${window.i18n('onionRoutingPathYou')}`
-          );
+          description = description?.replace(pubkeyWithAt, `@${window.i18n('you')}`);
         } else if (displayName && displayName.length) {
           description = description?.replace(pubkeyWithAt, `@${displayName}`);
         }
@@ -315,7 +314,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         });
       }
 
-      return window.i18n('timerSetTo', {
+      return window.i18n('disappearingMessagesSet', {
         time: TimerOptions.getAbbreviated(expireTimerUpdate.expireTimer || 0),
       });
     }
@@ -752,9 +751,8 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const quoteWithData = await loadQuoteData(this.get('quote'));
     const previewWithData = await loadPreviewData(this.get('preview'));
 
-    const { hasAttachments, hasVisualMediaAttachments, hasFileAttachments } = getAttachmentMetadata(
-      this
-    );
+    const { hasAttachments, hasVisualMediaAttachments, hasFileAttachments } =
+      getAttachmentMetadata(this);
     this.set({ hasAttachments, hasVisualMediaAttachments, hasFileAttachments });
     await this.commit();
 
@@ -805,8 +803,9 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     }
 
     window.log.info(
-      `Upload of message data for message ${this.idForLogging()} is finished in ${Date.now() -
-        start}ms.`
+      `Upload of message data for message ${this.idForLogging()} is finished in ${
+        Date.now() - start
+      }ms.`
     );
     return {
       body,
@@ -1180,6 +1179,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const msFromNow = start + delta - now;
     return msFromNow < 0;
   }
+
   public async setToExpire() {
     if (this.isExpiring() && !this.getExpiresAt()) {
       const start = this.getExpirationStartTimestamp();
@@ -1248,18 +1248,18 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     const left: Array<string> | undefined = Array.isArray(groupUpdate.left)
       ? groupUpdate.left
       : groupUpdate.left
-      ? [groupUpdate.left]
-      : undefined;
+        ? [groupUpdate.left]
+        : undefined;
     const kicked: Array<string> | undefined = Array.isArray(groupUpdate.kicked)
       ? groupUpdate.kicked
       : groupUpdate.kicked
-      ? [groupUpdate.kicked]
-      : undefined;
+        ? [groupUpdate.kicked]
+        : undefined;
     const joined: Array<string> | undefined = Array.isArray(groupUpdate.joined)
       ? groupUpdate.joined
       : groupUpdate.joined
-      ? [groupUpdate.joined]
-      : undefined;
+        ? [groupUpdate.joined]
+        : undefined;
 
     const forcedArrayUpdate: MessageGroupUpdate = {};
 
@@ -1366,7 +1366,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         return window.i18n('callsYouCalled', { name });
       }
       if (callNotificationType === 'answered-a-call') {
-        return window.i18n('answeredACall', { name });
+        return window.i18n('callsInProgress');
       }
     }
 
@@ -1388,10 +1388,14 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
               return '';
             case ConversationInteractionType.Leave:
               return isCommunity
-                ? window.i18n('leaveCommunityFailed')
+                ? window.i18n('communityLeaveError', {
+                    community_name: this.getConversation()?.getRealSessionUsername(),
+                  })
                 : isGroup
-                  ? window.i18n('groupErrorLeave')
-                  : window.i18n('deleteConversationFailed');
+                  ? window.i18n('groupLeaveErrorFailed', {
+                      group_name: this.getConversation()?.getRealSessionUsername(),
+                    })
+                  : '';
             default:
               assertUnreachable(
                 interactionType,
@@ -1457,6 +1461,7 @@ const throttledAllMessagesDispatch = debounce(
 );
 
 const updatesToDispatch: Map<string, MessageModelPropsWithoutConvoProps> = new Map();
+
 export class MessageCollection extends Backbone.Collection<MessageModel> {}
 
 MessageCollection.prototype.model = MessageModel;
@@ -1470,7 +1475,7 @@ export function findAndFormatContact(pubkey: string): FindAndFormatContactType {
     pubkey === UserUtils.getOurPubKeyStrFromCache() ||
     (pubkey && PubKey.isBlinded(pubkey) && isUsAnySogsFromCache(pubkey))
   ) {
-    profileName = window.i18n('onionRoutingPathYou');
+    profileName = window.i18n('you');
     isMe = true;
   } else {
     profileName = contactModel?.getNicknameOrRealUsername() || null;

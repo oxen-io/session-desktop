@@ -21,7 +21,9 @@ type Props = {
 const StyledMessageReactBar = styled.div`
   background-color: var(--emoji-reaction-bar-background-color);
   border-radius: 25px;
-  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 2px 16px 0 rgba(0, 0, 0, 0.2),
+    0 0px 20px 0 rgba(0, 0, 0, 0.19);
 
   padding: 4px 8px;
   white-space: nowrap;
@@ -32,6 +34,7 @@ const StyledMessageReactBar = styled.div`
 
   .session-icon-button {
     margin: 0 4px;
+
     &:hover svg {
       background-color: var(--chat-buttons-background-hover-color);
     }
@@ -94,6 +97,8 @@ function useIsRenderedExpiresInItem(messageId: string) {
   return expiryDetails.expirationTimestamp;
 }
 
+// TODO - sort out all of these times and localize them
+
 function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
   const timeLeft = moment(timeLeftMs).utc();
 
@@ -102,29 +107,29 @@ function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'minute'))) {
-    return window.i18n('messageWillDisappear', {
-      countAndUnit: `${timeLeft.seconds()}s`,
+    return window.i18n('disappearingMessagesCountdownBig', {
+      time_large: `${timeLeft.seconds()}s`,
     });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'hour'))) {
     const extraUnit = timeLeft.seconds() ? ` ${timeLeft.seconds()}s` : '';
-    return window.i18n('messageWillDisappear', {
-      countAndUnit: `${timeLeft.minutes()}m${extraUnit}`,
+    return window.i18n('disappearingMessagesCountdownBig', {
+      time_large: `${timeLeft.minutes()}m${extraUnit}`,
     });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(1, 'day'))) {
     const extraUnit = timeLeft.minutes() ? ` ${timeLeft.minutes()}m` : '';
-    return window.i18n('messageWillDisappear', {
-      countAndUnit: `${timeLeft.hours()}h${extraUnit}`,
+    return window.i18n('disappearingMessagesCountdownBig', {
+      time_large: `${timeLeft.hours()}h${extraUnit}`,
     });
   }
 
   if (timeLeft.isBefore(moment.utc(0).add(7, 'day'))) {
     const extraUnit = timeLeft.hours() ? ` ${timeLeft.hours()}h` : '';
-    return window.i18n('messageWillDisappear', {
-      countAndUnit: `${timeLeft.dayOfYear() - 1}d${extraUnit}`,
+    return window.i18n('disappearingMessagesCountdownBig', {
+      time_large: `${timeLeft.dayOfYear() - 1}d${extraUnit}`,
     });
   }
 
@@ -133,7 +138,7 @@ function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
     const weeks = Math.floor(days / 7);
     const daysLeft = days % 7;
     const extraUnit = daysLeft ? ` ${daysLeft}d` : '';
-    return window.i18n('messageWillDisappear', { countAndUnit: `${weeks}w${extraUnit}` });
+    return window.i18n('disappearingMessagesCountdownBig', { time_large: `${weeks}w${extraUnit}` });
   }
 
   return '...';

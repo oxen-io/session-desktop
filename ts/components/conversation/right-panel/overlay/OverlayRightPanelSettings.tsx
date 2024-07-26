@@ -48,9 +48,7 @@ import { MediaItemType } from '../../../lightbox/LightboxGallery';
 import { MediaGallery } from '../../media-gallery/MediaGallery';
 import { Header, StyledScrollContainer } from './components';
 
-async function getMediaGalleryProps(
-  conversationId: string
-): Promise<{
+async function getMediaGalleryProps(conversationId: string): Promise<{
   documents: Array<MediaItemType>;
   media: Array<MediaItemType>;
 }> {
@@ -261,13 +259,14 @@ export const OverlayRightPanelSettings = () => {
   const leaveGroupString = isPublic
     ? window.i18n('communityLeave')
     : lastMessage?.interactionType === ConversationInteractionType.Leave &&
-      lastMessage?.interactionStatus === ConversationInteractionStatus.Error
-    ? window.i18n('conversationsDelete')
-    : isKickedFromGroup
-    ? window.i18n('youGotKickedFromGroup')
-    : left
-    ? window.i18n('groupMemberYouLeft')
-    : window.i18n('groupLeave');
+        lastMessage?.interactionStatus === ConversationInteractionStatus.Error
+      ? window.i18n('conversationsDelete')
+      : isKickedFromGroup
+        ? // TODO - add group name
+          window.i18n('groupRemovedYou', { group_name: '' })
+        : left
+          ? window.i18n('groupMemberYouLeft')
+          : window.i18n('groupLeave');
 
   const showUpdateGroupNameButton = isGroup && weAreAdmin && !commonNoShow; // legacy groups non-admin cannot change groupname anymore
   const showAddRemoveModeratorsButton = weAreAdmin && !commonNoShow && isPublic;
@@ -285,7 +284,7 @@ export const OverlayRightPanelSettings = () => {
           {showUpdateGroupNameButton && (
             <PanelIconButton
               iconType={'group'}
-              text={isPublic ? window.i18n('groupEdit') : window.i18n('editGroupName')}
+              text={window.i18n('groupEdit')}
               onClick={() => {
                 void showUpdateGroupNameByConvoId(selectedConvoKey);
               }}
@@ -297,7 +296,7 @@ export const OverlayRightPanelSettings = () => {
             <>
               <PanelIconButton
                 iconType={'addModerator'}
-                text={window.i18n('addModerators')}
+                text={window.i18n('adminPromote')}
                 onClick={() => {
                   showAddModeratorsByConvoId(selectedConvoKey);
                 }}
@@ -306,7 +305,7 @@ export const OverlayRightPanelSettings = () => {
 
               <PanelIconButton
                 iconType={'deleteModerator'}
-                text={window.i18n('removeModerators')}
+                text={window.i18n('adminRemove')}
                 onClick={() => {
                   showRemoveModeratorsByConvoId(selectedConvoKey);
                 }}

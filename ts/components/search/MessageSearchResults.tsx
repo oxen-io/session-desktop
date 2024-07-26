@@ -47,6 +47,7 @@ const StyledSearchResults = styled.div`
   align-items: flex-start;
 
   cursor: pointer;
+
   &:hover {
     background-color: var(--conversation-tab-background-hover-color);
   }
@@ -82,11 +83,7 @@ const FromName = (props: { source: string; conversationId: string }) => {
   }
 
   if (source === getOurPubKeyStrFromCache()) {
-    return (
-      <StyledMessageResultsHeaderName>
-        {window.i18n('onionRoutingPathYou')}
-      </StyledMessageResultsHeaderName>
-    );
+    return <StyledMessageResultsHeaderName>{window.i18n('you')}</StyledMessageResultsHeaderName>;
   }
 
   return (
@@ -133,7 +130,7 @@ const FromUserInGroup = (props: { authorPubkey: string; conversationId: string }
 
   if (authorPubkey === ourKey) {
     return (
-      <StyledConversationFromUserInGroup>{window.i18n('onionRoutingPathYou')}: </StyledConversationFromUserInGroup>
+      <StyledConversationFromUserInGroup>{window.i18n('you')}: </StyledConversationFromUserInGroup>
     );
   }
   return <StyledConversationFromUserInGroup>{authorConvoName}: </StyledConversationFromUserInGroup>;

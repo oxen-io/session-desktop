@@ -9,7 +9,7 @@ from util.listUtils import missingFromList
 from util.logger import console
 
 
-def extractDynamicVariables(input_string):
+def extractDynamicVariables(input_string, pattern):
     """
     Extracts dynamic variables from the input string.
 
@@ -19,7 +19,6 @@ def extractDynamicVariables(input_string):
     Returns:
       list: A list of dynamic variables found in the input string.
     """
-    pattern = r"\{(\w+)\}"
     matches = re.findall(pattern, input_string)
     console.debug(f"matches: {matches}")
     return matches
@@ -55,8 +54,8 @@ def extractVariablesFromDict(input_dict):
     output_dict_old = {}
     for key, value in input_dict.items():
         console.debug(f"key: {key}, value: {value}")
-        output_dict_new[key] = extractDynamicVariables(value)
-        output_dict_old[key] = extractDynamicVariables(value)
+        output_dict_new[key] = extractDynamicVariables(value, r"\{(\w+)\}")
+        output_dict_old[key] = extractDynamicVariables(value, r"\$(\w+)\$")
     return output_dict_new, output_dict_old
 
 
@@ -207,9 +206,11 @@ def identifyAndPrintOldDynamicVariables(
         for key, value in locale.items():
             if value:
                 invalid_strings[key] = value
-        console.warn(
-            f"{json.dumps(invalid_strings, indent=2, sort_keys=True) if printOldVariables else ''}"
-            f"\nLocale {locale_name} contains {len(invalid_strings)} strings with old dynamic variables. (see above)"
-        )
-        found_problems = True
+                found_problems = True
+        if invalid_strings:
+
+            console.warn(
+                f"{json.dumps(invalid_strings, indent=2, sort_keys=True) if printOldVariables else ''}"
+                f"\nLocale {locale_name} contains {len(invalid_strings)} strings with old dynamic variables. (see above)"
+            )
     return found_problems

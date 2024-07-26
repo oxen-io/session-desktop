@@ -468,6 +468,7 @@ class CompositionBoxInner extends React.Component<Props, State> {
       </Flex>
     );
   }
+
   /* eslint-enable @typescript-eslint/no-misused-promises */
 
   private renderTextArea() {
@@ -481,7 +482,8 @@ class CompositionBoxInner extends React.Component<Props, State> {
 
     const makeMessagePlaceHolderText = () => {
       if (isKickedFromGroup) {
-        return i18n('youGotKickedFromGroup');
+        // TODO - Add group name
+        return i18n('groupRemovedYou', { group_name: '' });
       }
       if (left) {
         return i18n('groupMemberYouLeft');
@@ -924,7 +926,6 @@ class CompositionBoxInner extends React.Component<Props, State> {
     // Verify message length
     const msgLen = messagePlaintext?.length || 0;
     if (msgLen === 0 && this.props.stagedAttachments?.length === 0) {
-      ToastUtils.pushMessageBodyMissing();
       return;
     }
 

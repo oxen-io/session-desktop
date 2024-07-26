@@ -21,12 +21,12 @@ import { Reactions } from '../../util/reactions';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 import { ContactName } from '../conversation/ContactName';
 import { MessageReactions } from '../conversation/message/message-content/MessageReactions';
 import { SessionIconButton } from '../icon';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { findAndFormatContact } from '../../models/message';
+import { I18n } from '../basic/I18n';
 
 const StyledReactListContainer = styled(Flex)`
   width: 376px;
@@ -78,6 +78,7 @@ const StyledReactionBar = styled(Flex)`
 const StyledReactionSender = styled(Flex)`
   width: 100%;
   margin-bottom: 12px;
+
   .module-avatar {
     margin-right: 12px;
   }
@@ -141,7 +142,7 @@ const ReactionSenders = (props: ReactionSendersProps) => {
               }}
             />
             {sender === me ? (
-              window.i18n('onionRoutingPathYou')
+              window.i18n('you')
             ) : (
               <ContactName
                 pubkey={sender}
@@ -175,25 +176,17 @@ const StyledCountText = styled.p`
   }
 `;
 
+window.i18n('emojiReactsCountOthers', { count: 2, emoji: 'nice' });
+
 const CountText = ({ count, emoji }: { count: number; emoji: string }) => {
   return (
     <StyledCountText>
-      <SessionHtmlRenderer
-        html={
-          count > Reactions.SOGSReactorsFetchCount + 1
-            ? window.i18n('reactionListCountPlural', {
-                otherPlural: window.i18n('otherPlural', {
-                  number: String(count - Reactions.SOGSReactorsFetchCount),
-                }),
-                emoji,
-              })
-            : window.i18n('reactionListCountSingular', {
-                otherSingular: window.i18n('otherSingular', {
-                  number: String(count - Reactions.SOGSReactorsFetchCount),
-                }),
-                emoji,
-              })
-        }
+      <I18n
+        token="emojiReactsCountOthers"
+        args={{
+          count: count - Reactions.SOGSReactorsFetchCount,
+          emoji,
+        }}
       />
     </StyledCountText>
   );

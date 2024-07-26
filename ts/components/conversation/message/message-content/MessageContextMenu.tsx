@@ -150,9 +150,9 @@ const AdminActionItems = ({ messageId }: MessageId) => {
       <Item onClick={onBan}>{window.i18n('banUser')}</Item>
       <Item onClick={onUnban}>{window.i18n('banUnbanUser')}</Item>
       {isSenderAdmin ? (
-        <Item onClick={removeModerator}>{window.i18n('removeFromModerators')}</Item>
+        <Item onClick={removeModerator}>{window.i18n('adminRemoveAsAdmin')}</Item>
       ) : (
-        <Item onClick={addModerator}>{window.i18n('addAsModerator')}</Item>
+        <Item onClick={addModerator}>{window.i18n('adminPromoteToAdmin')}</Item>
       )}
     </>
   ) : null;
@@ -377,7 +377,7 @@ export const MessageContextMenu = (props: Props) => {
           {attachments?.length ? (
             <Item onClick={saveAttachment}>{window.i18n('attachmentsDownload')}</Item>
           ) : null}
-          <Item onClick={copyText}>{window.i18n('messageCopy')}</Item>
+          <Item onClick={copyText}>{window.i18n('copy')}</Item>
           {(isSent || !isOutgoing) && <Item onClick={onReply}>{window.i18n('reply')}</Item>}
           <Item
             onClick={() => {

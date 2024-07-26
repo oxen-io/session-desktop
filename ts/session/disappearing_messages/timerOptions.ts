@@ -33,8 +33,7 @@ const timerOptionsDurations: Array<{
 
 // TODO - This is copied from the messages.json file as a temporary solution. This will be replaced once time localization is completed.
 type TimerOptionKey =
-  | 'timerOption_0_seconds'
-  | 'timerOption_0_seconds_abbreviated'
+  | 'off'
   | 'timerOption_10_seconds'
   | 'timerOption_10_seconds_abbreviated'
   | 'timerOption_12_hours'

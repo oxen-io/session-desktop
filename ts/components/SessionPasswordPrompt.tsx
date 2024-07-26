@@ -27,7 +27,7 @@ const TextPleaseWait = (props: { isLoading: boolean }) => {
   if (!props.isLoading) {
     return null;
   }
-  return <div>{window.i18n('pleaseWaitOpenAndOptimizeDb')}</div>;
+  return <div>{window.i18n('waitOneMoment')}</div>;
 };
 
 const StyledContent = styled.div`

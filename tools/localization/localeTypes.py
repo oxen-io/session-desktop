@@ -67,6 +67,6 @@ def generateLocalesType(locale):
     with open(OUTPUT_FILE, "w") as ts_file:
         ts_file.write(
             f"{DISCLAIMER}"
-            f"const dict = {generate_js_object(locale)} as const;\nexport type Dictionary = typeof dict;"
+            f"export const en = {generate_js_object(locale)} as const;\nexport type Dictionary = typeof en;"
         )
     return f"Locales generated at: {OUTPUT_FILE}"

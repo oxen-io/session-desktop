@@ -68,7 +68,7 @@ export function useConversationsUsernameWithQuoteOrFullPubkey(pubkeys: Array<str
   return useSelector((state: StateType) => {
     return pubkeys.map(pubkey => {
       if (pubkey === UserUtils.getOurPubKeyStrFromCache() || pubkey.toLowerCase() === 'you') {
-        return window.i18n('onionRoutingPathYou');
+        return window.i18n('you');
       }
       const convo = state.conversations.conversationLookup[pubkey];
       const nameGot = convo?.displayNameInProfile;
@@ -123,6 +123,7 @@ export function useNotificationSetting(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return convoProps?.currentNotificationSetting || 'all';
 }
+
 export function useIsPublic(convoId?: string) {
   const convoProps = useConversationPropsById(convoId);
   return Boolean(convoProps && convoProps.isPublic);
@@ -274,28 +275,29 @@ export function useIsTyping(conversationId?: string): boolean {
   return useConversationPropsById(conversationId)?.isTyping || false;
 }
 
-const getMessageExpirationProps = createSelector(getMessagePropsByMessageId, (props):
-  | PropsForExpiringMessage
-  | undefined => {
-  if (!props || isEmpty(props)) {
-    return undefined;
+const getMessageExpirationProps = createSelector(
+  getMessagePropsByMessageId,
+  (props): PropsForExpiringMessage | undefined => {
+    if (!props || isEmpty(props)) {
+      return undefined;
+    }
+
+    const msgProps: PropsForExpiringMessage = {
+      ...pick(props.propsForMessage, [
+        'convoId',
+        'direction',
+        'receivedAt',
+        'isUnread',
+        'expirationTimestamp',
+        'expirationDurationMs',
+        'isExpired',
+      ]),
+      messageId: props.propsForMessage.id,
+    };
+
+    return msgProps;
   }
-
-  const msgProps: PropsForExpiringMessage = {
-    ...pick(props.propsForMessage, [
-      'convoId',
-      'direction',
-      'receivedAt',
-      'isUnread',
-      'expirationTimestamp',
-      'expirationDurationMs',
-      'isExpired',
-    ]),
-    messageId: props.propsForMessage.id,
-  };
-
-  return msgProps;
-});
+);
 
 export function useMessageExpirationPropsById(messageId?: string) {
   return useSelector((state: StateType) => {
@@ -352,17 +354,18 @@ export function useTimerOptionsByMode(disappearingMessageMode?: string, hasOnlyO
   }, [disappearingMessageMode, hasOnlyOneMode]);
 }
 
-export function useQuoteAuthorName(
-  authorId?: string
-): { authorName: string | undefined; isMe: boolean } {
+export function useQuoteAuthorName(authorId?: string): {
+  authorName: string | undefined;
+  isMe: boolean;
+} {
   const convoProps = useConversationPropsById(authorId);
 
   const isMe = Boolean(authorId && isUsAnySogsFromCache(authorId));
   const authorName = isMe
-    ? window.i18n('onionRoutingPathYou')
+    ? window.i18n('you')
     : convoProps?.nickname || convoProps?.isPrivate
-    ? convoProps?.displayNameInProfile
-    : undefined;
+      ? convoProps?.displayNameInProfile
+      : undefined;
 
   return { authorName, isMe };
 }
@@ -403,12 +406,12 @@ export function useDisappearingMessageSettingText({
     expirationMode === 'deleteAfterRead'
       ? window.i18n('disappearingMessagesDisappearAfterRead')
       : expirationMode === 'deleteAfterSend'
-      ? window.i18n('disappearingMessagesDisappearAfterSend')
-      : expirationMode === 'legacy'
-      ? isMe || (isGroup && !isPublic)
-      ? window.i18n('disappearingMessagesDisappearAfterSend')
-      : window.i18n('disappearingMessagesDisappearAfterRead')
-      : null;
+        ? window.i18n('disappearingMessagesDisappearAfterSend')
+        : expirationMode === 'legacy'
+          ? isMe || (isGroup && !isPublic)
+            ? window.i18n('disappearingMessagesDisappearAfterSend')
+            : window.i18n('disappearingMessagesDisappearAfterRead')
+          : null;
 
   const expireTimerText = isNumber(expireTimer)
     ? abbreviate

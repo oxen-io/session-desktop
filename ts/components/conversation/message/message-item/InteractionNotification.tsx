@@ -42,10 +42,11 @@ export const InteractionNotification = (props: PropsForInteractionNotification) 
       break;
     case ConversationInteractionType.Leave:
       text = isCommunity
-        ? window.i18n('communityLeaveError')
+        ? // TODO - Check if this is the community name
+          window.i18n('communityLeaveError', { community_name: convoId })
         : isGroup
-        ? window.i18n('groupErrorLeave')
-        : window.i18n('deleteConversationFailedPleaseTryAgain');
+          ? window.i18n('groupLeaveErrorFailed', { group_name: convoId })
+          : window.i18n('deleteConversationFailedPleaseTryAgain');
       break;
     default:
       assertUnreachable(

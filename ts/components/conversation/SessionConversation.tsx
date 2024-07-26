@@ -64,6 +64,7 @@ const DEFAULT_JPEG_QUALITY = 0.85;
 interface State {
   isDraggingFile: boolean;
 }
+
 export interface LightBoxOptions {
   media: Array<MediaItemType>;
   attachment: AttachmentTypeWithPath;
@@ -256,7 +257,7 @@ export class SessionConversation extends React.Component<Props, State> {
         ? window.i18n('disappearingMessagesLegacy', {
             name: selectedConversation.hasOutdatedClient,
           })
-        : window.i18n('someOfYourDeviceUseOutdatedVersion');
+        : window.i18n('deleteAfterGroupFirstReleaseConfigOutdated');
 
     return (
       <SessionTheme>

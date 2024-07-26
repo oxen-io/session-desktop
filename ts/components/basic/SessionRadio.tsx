@@ -18,8 +18,8 @@ const StyledInput = styled.input<{
       props.disabled
         ? 'var(--disabled-color)'
         : props.selectedColor
-        ? props.selectedColor
-        : 'var(--primary-color)'};
+          ? props.selectedColor
+          : 'var(--primary-color)'};
   }
 `;
 
@@ -119,10 +119,12 @@ export const SessionRadio = (props: SessionRadioProps) => {
 
 const StyledInputOutlineSelected = styled(StyledInput)`
   color: ${props => (props.disabled ? 'var(--disabled-color)' : 'var(--text-primary-color)')};
+
   label:before,
   label:before {
     outline: none;
   }
+
   :checked + label:before {
     outline: 1px solid currentColor;
   }
@@ -133,8 +135,8 @@ const StyledLabelOutlineSelected = styled(StyledLabel)<{ selectedColor: string }
       props.disabled
         ? 'var(--disabled-color)'
         : props.selectedColor
-        ? props.selectedColor
-        : 'var(--primary-color)'};
+          ? props.selectedColor
+          : 'var(--primary-color)'};
     outline: 1px solid transparent; /* CSS variables don't work here */
   }
 `;
@@ -147,7 +149,7 @@ export const SessionRadioPrimaryColors = (props: {
   active: boolean;
   inputName?: string;
   onClick: (value: string) => void;
-  ariaLabel: string;
+  ariaLabel?: string;
   color: string; // by default, we use the theme accent color but for the settings screen we need to be able to force it
   disabled?: boolean;
 }) => {

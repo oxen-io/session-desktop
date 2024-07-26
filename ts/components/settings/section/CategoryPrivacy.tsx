@@ -111,8 +111,7 @@ export const SettingsCategoryPrivacy = (props: {
 
         {!props.hasPassword && (
           <SessionSettingButtonItem
-            // TODO: String localization - remove
-            title={window.i18n('setAccountPasswordTitle')}
+            title={window.i18n('passwordSet')}
             description={window.i18n('passwordDescription')}
             onClick={() => {
               displayPasswordModal('set', props.onPasswordUpdated);
@@ -124,7 +123,7 @@ export const SettingsCategoryPrivacy = (props: {
         {props.hasPassword && (
           <SessionSettingButtonItem
             // TODO: String localization - remove
-            title={window.i18n('changeAccountPasswordTitle')}
+            title={window.i18n('passwordChange')}
             description={window.i18n('passwordChangeDescription')}
             onClick={() => {
               displayPasswordModal('change', props.onPasswordUpdated);

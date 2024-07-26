@@ -1,10 +1,12 @@
 // eslint-disable-next-line import/no-unresolved
 import {} from 'styled-components/cssprop';
 
+import { Store } from 'redux';
 import { ConversationCollection } from './models/conversation';
+import type { StateType } from './state/reducer';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
-
 import type { GetMessageArgs, LocalizerDictionary, LocalizerToken } from './types/Localizer';
+import type { Locale } from './util/i18n';
 
 export interface LibTextsecure {
   messaging: boolean;
@@ -42,6 +44,7 @@ declare global {
     i18n: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
       ...[token, args]: GetMessageArgs<T>
     ) => R;
+    getLocale: () => Locale;
     log: any;
     sessionFeatureFlags: {
       useOnionRequests: boolean;

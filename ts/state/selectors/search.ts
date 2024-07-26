@@ -3,10 +3,10 @@ import { compact, isEmpty } from 'lodash';
 
 import { StateType } from '../reducer';
 
+import { MessageResultProps } from '../../components/search/MessageSearchResults';
 import { ConversationLookupType } from '../ducks/conversations';
 import { SearchStateType } from '../ducks/search';
 import { getConversationLookup } from './conversations';
-import { MessageResultProps } from '../../components/search/MessageSearchResults';
 
 export const getSearch = (state: StateType): SearchStateType => state.search;
 
@@ -73,7 +73,7 @@ export const getSearchResultsList = createSelector([getSearchResults], searchSta
   const { contactsAndGroups, messages } = searchState;
   const builtList: Array<SearchResultsMergedListItem> = [];
   if (contactsAndGroups.length) {
-    builtList.push(window.i18n('conversationsHeader', { count: contactsAndGroups.length }));
+    builtList.push(window.i18n('sessionConversations'));
     builtList.push(...contactsAndGroups.map(m => ({ contactConvoId: m.id })));
   }
   if (messages.length) {

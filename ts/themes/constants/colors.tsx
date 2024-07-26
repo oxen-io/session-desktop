@@ -94,16 +94,17 @@ export type PrimaryColorStateType =
   | 'orange'
   | 'red';
 
-type PrimaryColorType = { id: PrimaryColorStateType; ariaLabel: string; color: string };
+// NOTE - Making arialLabel optional instead of removing it as we'll be using it again later
+type PrimaryColorType = { id: PrimaryColorStateType; ariaLabel?: string; color: string };
 
 export const getPrimaryColors = (): Array<PrimaryColorType> => [
-  { id: 'green', ariaLabel: window.i18n('primaryColorGreen'), color: COLORS.PRIMARY.GREEN },
-  { id: 'blue', ariaLabel: window.i18n('primaryColorBlue'), color: COLORS.PRIMARY.BLUE },
-  { id: 'yellow', ariaLabel: window.i18n('primaryColorYellow'), color: COLORS.PRIMARY.YELLOW },
-  { id: 'pink', ariaLabel: window.i18n('primaryColorPink'), color: COLORS.PRIMARY.PINK },
-  { id: 'purple', ariaLabel: window.i18n('primaryColorPurple'), color: COLORS.PRIMARY.PURPLE },
-  { id: 'orange', ariaLabel: window.i18n('primaryColorOrange'), color: COLORS.PRIMARY.ORANGE },
-  { id: 'red', ariaLabel: window.i18n('primaryColorRed'), color: COLORS.PRIMARY.RED },
+  { id: 'green', color: COLORS.PRIMARY.GREEN },
+  { id: 'blue', color: COLORS.PRIMARY.BLUE },
+  { id: 'yellow', color: COLORS.PRIMARY.YELLOW },
+  { id: 'pink', color: COLORS.PRIMARY.PINK },
+  { id: 'purple', color: COLORS.PRIMARY.PURPLE },
+  { id: 'orange', color: COLORS.PRIMARY.ORANGE },
+  { id: 'red', color: COLORS.PRIMARY.RED },
 ];
 
 // Themes

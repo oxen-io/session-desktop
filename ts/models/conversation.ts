@@ -214,6 +214,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
   public isOpenGroupV2(): boolean {
     return OpenGroupUtils.isOpenGroupV2(this.id);
   }
+
   public isClosedGroup(): boolean {
     return Boolean(
       (this.get('type') === ConversationTypeEnum.GROUP && this.id.startsWith('05')) ||
@@ -1697,7 +1698,7 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
 
     const pubkey = this.id;
     if (UserUtils.isUsFromCache(pubkey)) {
-      return window.i18n('onionRoutingPathYou');
+      return window.i18n('you');
     }
 
     const profileName = this.get('displayNameInProfile');
@@ -2048,7 +2049,10 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const roomInfo = OpenGroupData.getV2OpenGroupRoom(groupUrl);
 
     if (!roomInfo || !roomInfo.serverPublicKey) {
-      ToastUtils.pushToastError('no-sogs-matching', window.i18n('couldntFindServerMatching'));
+      ToastUtils.pushToastError(
+        'no-sogs-matching',
+        window.i18n('communityJoinError', { community_name: groupUrl })
+      );
       window?.log?.error('Could not find room with matching server url', groupUrl);
       throw new Error(`Could not find room with matching server url: ${groupUrl}`);
     }
@@ -2104,8 +2108,8 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     const interactionNotification = lastMessageModel.getInteractionNotification();
 
     const lastMessageInteractionType = interactionNotification?.interactionType;
-    const lastMessageInteractionStatus = lastMessageModel.getInteractionNotification()
-      ?.interactionStatus;
+    const lastMessageInteractionStatus =
+      lastMessageModel.getInteractionNotification()?.interactionStatus;
     const lastMessageStatus = lastMessageModel.getMessagePropStatus() || undefined;
     const lastMessageNotificationText = lastMessageModel.getNotificationText() || undefined;
     // we just want to set the `status` to `undefined` if there are no `lastMessageNotificationText`
@@ -2473,10 +2477,10 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       mode === 'deleteAfterRead'
         ? ours === 'deleteAfterRead'
         : mode === 'deleteAfterSend'
-        ? ours === 'deleteAfterSend'
-        : mode === 'off'
-        ? ours === 'off'
-        : false;
+          ? ours === 'deleteAfterSend'
+          : mode === 'off'
+            ? ours === 'off'
+            : false;
 
     return success;
   }
@@ -2579,6 +2583,7 @@ export class ConversationCollection extends Backbone.Collection<ConversationMode
     };
   }
 }
+
 ConversationCollection.prototype.model = ConversationModel;
 
 export function hasValidOutgoingRequestValues({

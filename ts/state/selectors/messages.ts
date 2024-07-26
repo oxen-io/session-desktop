@@ -37,7 +37,7 @@ export const useAuthorProfileName = (messageId: string): string | null => {
   const senderIsUs = msg.propsForMessage.sender === UserUtils.getOurPubKeyStrFromCache();
 
   const authorProfileName = senderIsUs
-    ? window.i18n('onionRoutingPathYou')
+    ? window.i18n('you')
     : senderProps.nickname || senderProps.displayNameInProfile || window.i18n('anonymous');
   return authorProfileName || window.i18n('unknown');
 };

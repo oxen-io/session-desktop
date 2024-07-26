@@ -54,24 +54,49 @@ parser.add_argument(
     action="store_true",
     help="The file to write the problems to",
 )
+parser.add_argument("--en-only", action="store_true", help="Only check the en locale")
 parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+parser.add_argument(
+    "--dict-dir",
+    type=str,
+    default="./_locales"
+)
+parser.add_argument(
+    "--dict-file-name",
+    type=str,
+    default="messages.json",
+)
+parser.add_argument(
+    "--en-file-path",
+    type=str,
+    default="./_locales/en/messages.json",
+)
+parser.add_argument(
+    "--generate-types",
+    action="store_true",
+    help="Generate the types file",
+)
 
 args = parser.parse_args()
 
 if args.debug:
     console.enableDebug()
 
-
-EN_FILE = "./_locales/en/messages.json"
+GENERATE_TYPES = args.generate_types
 OUTPUT_DIR = "./ts/localization"
-INPUT_DIR = "./_locales"
+EN_FILE = args.en_file_path
+INPUT_DIR = args.dict_dir
 
 # Create a dictionary that maps locale names to their corresponding JSON file data
-locales, localeFiles = createMappedJsonFileDictionary(INPUT_DIR, "messages.json")
+locales, localeFiles = createMappedJsonFileDictionary(INPUT_DIR, args.dict_file_name)
+
+if args.en_only:
+    locales = {"en": locales["en"]}
 
 # Generate the locales type and write it to a file
-generateTypesOutputMessage = generateLocalesType(locales["en"])
-console.info(generateTypesOutputMessage)
+if GENERATE_TYPES:
+  generateTypesOutputMessage = generateLocalesType(locales["en"])
+  console.info(generateTypesOutputMessage)
 
 localeVariables = dict()
 localeVariablesOld = dict()
@@ -93,9 +118,6 @@ found_old_dynamic_variables = identifyAndPrintOldDynamicVariables(
 )
 
 # Wrapping up the script and printing out the results
-
-console.info(generateTypesOutputMessage)
-
 
 if problems:
     message = "There are issues with the locales."

@@ -1,12 +1,10 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Data } from '../../../../data/data';
+import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
 import { isDarkTheme } from '../../../../state/selectors/theme';
-import { LocalizerToken } from '../../../../types/Localizer';
 import { nativeEmojiData } from '../../../../util/emoji';
-import { findAndFormatContact } from '../../../../models/message';
 
 export type TipPosition = 'center' | 'left' | 'right';
 
@@ -55,13 +53,9 @@ export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>
   }
 `;
 
-const StyledEmoji = styled.span`
-  font-size: 36px;
-  margin-left: 8px;
-`;
-
 const StyledContacts = styled.span`
   word-break: break-all;
+
   span {
     word-break: keep-all;
   }
@@ -71,66 +65,84 @@ const StyledOthers = styled.span<{ darkMode: boolean }>`
   color: ${props => (props.darkMode ? 'var(--primary-color)' : 'var(--text-primary-color)')};
 `;
 
-const generateContactsString = async (
-  messageId: string,
+const generateContactsString = (
   senders: Array<string>
-): Promise<Array<string> | null> => {
-  let results = [];
-  const message = await Data.getMessageById(messageId);
-  if (message) {
-    let meIndex = -1;
-    results = senders.map((sender, index) => {
-      const contact = findAndFormatContact(sender);
-      if (contact.isMe) {
-        meIndex = index;
-      }
-      return contact?.profileName || contact?.name || PubKey.shorten(sender);
-    });
-    if (meIndex >= 0) {
-      results.splice(meIndex, 1);
-      results = [window.i18n('onionRoutingPathYou'), ...results];
+): { contacts: Array<string>; numberOfReactors: number; hasMe: boolean } => {
+  const contacts: Array<string> = [];
+  let hasMe = false;
+  let numberOfReactors = 0;
+  senders.forEach(sender => {
+    // TODO - make sure to truncate with ellipsis if too long @will
+    const contact = findAndFormatContact(sender);
+    if (contact.isMe) {
+      hasMe = true;
+      numberOfReactors++;
+    } else {
+      contacts.push(contact?.profileName ?? contact?.name ?? PubKey.shorten(sender));
+      numberOfReactors++;
     }
-    if (results && results.length > 0) {
-      return results;
-    }
+  });
+  return { contacts, hasMe, numberOfReactors };
+};
+
+const generateReactionString = (
+  isYou: boolean,
+  contacts: Array<string>,
+  numberOfReactors: number
+) => {
+  const name = contacts[0];
+  const other_name = contacts[1];
+  const emoji = '';
+
+  switch (numberOfReactors) {
+    case 1:
+      return isYou
+        ? window.i18n('emojiReactsHoverYou', { emoji })
+        : window.i18n('emojiReactsHoverName', { name, emoji });
+    case 2:
+      return isYou
+        ? window.i18n('emojiReactsHoverYouName', { name, emoji })
+        : window.i18n('emojiReactsHoverTwoName', { name, other_name, emoji });
+    case 3:
+      return isYou
+        ? window.i18n('emojiReactsHoverYouNameOne', { name, emoji })
+        : window.i18n('emojiReactsHoverTwoNameOne', { name, other_name, emoji });
+    default:
+      return isYou
+        ? window.i18n('emojiReactsHoverYouNameMultiple', {
+            name,
+            emoji,
+            count: numberOfReactors - 2,
+          })
+        : window.i18n('emojiReactsHoverTwoNameMultiple', {
+            name,
+            other_name,
+            emoji,
+            count: numberOfReactors - 2,
+          });
   }
-  return null;
 };
 
 const Contacts = (contacts: Array<string>, count: number) => {
   const darkMode = useSelector(isDarkTheme);
 
-  if (!(contacts?.length > 0)) {
-    return null;
-  }
-
-  const reactors = contacts.length;
-
-  let reactionPopupKey: LocalizerToken;
-  switch (reactors) {
-    case 1:
-      reactionPopupKey = 'reactionPopupOne';
-      break;
-    case 2:
-      reactionPopupKey = 'reactionPopupTwo';
-      break;
-    case 3:
-      reactionPopupKey = 'reactionPopupThree';
-      break;
-    default:
-      reactionPopupKey = 'reactionPopupMany';
-  }
+  const isYou = contacts[0] === window.i18n('you');
+  const reactionPopupKey = useMemo(
+    () => reactionKey(isYou, contacts.length),
+    [isYou, contacts.length]
+  );
 
   return (
     <StyledContacts>
       {window.i18n(reactionPopupKey, {
         name: contacts[0],
-        name2: contacts[1],
-        name3: contacts[2],
+        other_name: contacts[1],
+        count: contacts.length,
+        emoji: '',
       })}{' '}
-      {reactors > 3 ? (
+      {contacts.length > 3 ? (
         <StyledOthers darkMode={darkMode}>
-          {window.i18n(reactors === 4 ? 'otherSingular' : 'otherPlural', {
+          {window.i18n(contacts.length === 4 ? 'otherSingular' : 'otherPlural', {
             number: `${count - 3}`,
           })}
         </StyledOthers>
@@ -150,32 +162,22 @@ type Props = {
 };
 
 export const ReactionPopup = (props: Props): ReactElement => {
-  const { messageId, emoji, count, senders, tooltipPosition = 'center', onClick } = props;
+  const { emoji, count, senders, tooltipPosition = 'center', onClick } = props;
+  const darkMode = useSelector(isDarkTheme);
 
-  const [contacts, setContacts] = useState<Array<string>>([]);
+  const { contacts, hasMe, numberOfReactors } = useMemo(
+    () => generateContactsString(senders),
+    [senders]
+  );
 
-  useEffect(() => {
-    let isCancelled = false;
-    // eslint-disable-next-line more/no-then
-    generateContactsString(messageId, senders)
-      .then(async results => {
-        if (isCancelled) {
-          return;
-        }
-        if (results) {
-          setContacts(results);
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [count, messageId, senders]);
+  const reactionString = useMemo(
+    () => generateReactionString(hasMe, contacts, numberOfReactors),
+    [hasMe, contacts.length, numberOfReactors]
+  );
 
   return (
     <StyledPopupContainer tooltipPosition={tooltipPosition} onClick={onClick}>
-      {Contacts(contacts, count)}
+      {contacts.length ? <StyledContacts>{Contacts(contacts, count)}</StyledContacts> : null}
       <StyledEmoji role={'img'} aria-label={nativeEmojiData?.ariaLabels?.[emoji]}>
         {emoji}
       </StyledEmoji>

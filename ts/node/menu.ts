@@ -1,6 +1,7 @@
 import { isString } from 'lodash';
 import type { LocalizerDictionary } from '../types/Localizer';
 import { Noop } from '../types/Util';
+import { LOCALE_DEFAULTS } from '../session/constants';
 
 /**
  * Adds the accelerator prefix to the label for the menu item
@@ -181,7 +182,7 @@ function updateForMac(
 
   // Add the OSX-specific Signal Desktop menu at the far left
   template.unshift({
-    label: messages.sessionMessenger,
+    label: LOCALE_DEFAULTS.app_name,
     submenu: [
       {
         label: messages.about,

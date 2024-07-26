@@ -50,9 +50,9 @@ function useFollowSettingsButtonClick(
         : window.i18n('disappearingMessagesTypeSent');
     const message = props.disabled
       ? window.i18n('disappearingMessagesFollowSettingOff')
-      : window.i18n('followSettingTimeAndType', {
+      : window.i18n('disappearingMessagesFollowSettingOn', {
           time: props.timespanText,
-          type: mode,
+          disappearing_messages_type: mode,
         });
     const okText = props.disabled ? window.i18n('yes') : window.i18n('set');
     dispatch(
@@ -163,7 +163,7 @@ function useTextToRender(props: PropsForExpirationTimer) {
           ? window.i18n('disappearingMessagesChanged', {
               name: contact,
               time: timespanText,
-              disappearingmessagestype: mode,
+              disappearing_messages_type: mode,
             })
           : window.i18n('theyChangedTheTimer', {
               name: contact,
@@ -179,14 +179,14 @@ function useTextToRender(props: PropsForExpirationTimer) {
     case 'fromSync':
       if (disabled) {
         return ownSideOnly
-          ? window.i18n('youDisabledYourDisappearingMessages')
+          ? window.i18n('disappearingMessagesTurnedOffYou')
           : window.i18n('disappearingMessagesTurnedOff', { name: contact });
       }
       if (mode) {
         return ownSideOnly
           ? window.i18n('disappearingMessagesSetYou', {
               time: timespanText,
-              disappearingmessagestype: mode,
+              disappearing_messages_type: mode,
             })
           : window.i18n('youChangedTheTimer', { time: timespanText, mode });
       }

@@ -95,7 +95,8 @@ async function joinOpenGroupV2(
 
     if (!conversation) {
       window?.log?.warn('Failed to join open group v2');
-      throw new Error(window.i18n('groupErrorJoin'));
+      // TODO - Check that this is the room name
+      throw new Error(window.i18n('groupErrorJoin', { group_name: roomId }));
     }
 
     // here we managed to connect to the group.
@@ -139,7 +140,7 @@ export async function joinOpenGroupV2WithUIEvents(
     const parsedRoom = parseOpenGroupV2(completeUrl);
     if (!parsedRoom) {
       if (showToasts) {
-        ToastUtils.pushToastError('connectToServer', window.i18n('invalidOpenGroupUrl'));
+        ToastUtils.pushToastError('connectToServer', window.i18n('communityEnterUrlErrorInvalid'));
       }
       return false;
     }
@@ -172,14 +173,22 @@ export async function joinOpenGroupV2WithUIEvents(
       return true;
     }
     if (showToasts) {
-      ToastUtils.pushToastError('connectToServerFail', window.i18n('groupErrorJoin'));
+      // TODO - Check that this is the room name
+      ToastUtils.pushToastError(
+        'connectToServerFail',
+        window.i18n('groupErrorJoin', { group_name: parsedRoom.roomId })
+      );
     }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
   } catch (error) {
     window?.log?.warn('got error while joining open group:', error.message);
     if (showToasts) {
-      ToastUtils.pushToastError('connectToServerFail', window.i18n('groupErrorJoin'));
+      // TODO - Check that this is the room name
+      ToastUtils.pushToastError(
+        'connectToServerFail',
+        window.i18n('groupErrorJoin', { group_name: 'unknown' })
+      );
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }

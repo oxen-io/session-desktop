@@ -29,11 +29,16 @@ const ChangeItemKicked = (kicked: Array<string>): string => {
   const names = useConversationsUsernameWithQuoteOrFullPubkey(kicked);
 
   if (arrayContainsUsOnly(kicked)) {
-    return window.i18n('youGotKickedFromGroup');
+    // TODO - add group name
+    return window.i18n('groupRemovedYou', { group_name: '' });
   }
 
-  const kickedKey = kicked.length > 1 ? 'multipleKickedFromTheGroup' : 'groupRemoved';
-  return window.i18n(kickedKey, { name: names.join(', ') });
+  // TODO - support bold
+  return kicked.length === 1
+    ? window.i18n('groupRemoved', { name: names[0] })
+    : kicked.length === 2
+      ? window.i18n('groupRemovedTwo', { name: names[0], other_name: names[1] })
+      : window.i18n('groupRemovedMore', { name: names[0], count: names.length });
 };
 
 const ChangeItemLeft = (left: Array<string>): string => {
@@ -47,15 +52,19 @@ const ChangeItemLeft = (left: Array<string>): string => {
     return window.i18n('groupMemberYouLeft');
   }
 
-  const leftKey = left.length > 1 ? 'multipleLeftTheGroup' : 'groupMemberLeft';
-  return window.i18n(leftKey, { name: names.join(', ') });
+  // TODO - support bold
+  return left.length === 1
+    ? window.i18n('groupMemberLeft', { name: names[0] })
+    : left.length === 2
+      ? window.i18n('groupMemberLeftTwo', { name: names[0], other_name: names[1] })
+      : window.i18n('groupMemberLeftMore', { name: names[0], count: names.length });
 };
 
 const ChangeItem = (change: PropsForGroupUpdateType): string => {
   const { type } = change;
   switch (type) {
     case 'name':
-      return window.i18n('groupNameNew', { groupname: change.newName });
+      return window.i18n('groupNameNew', { group_name: change.newName });
     case 'add':
       return ChangeItemJoined(change.added);
 
