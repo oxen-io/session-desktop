@@ -28,6 +28,8 @@ const BlockedEntriesRoundedContainer = styled.div`
 `;
 
 const BlockedContactsSection = styled.div`
+  flex-shrink: 0;
+
   display: flex;
   flex-direction: column;
   min-height: 80px;
@@ -142,7 +144,7 @@ export const BlockedContactsList = () => {
                 iconSize={'large'}
                 iconType={'chevron'}
                 onClick={toggleUnblockList}
-                iconRotation={expanded ? 0 : 180}
+                iconRotation={expanded ? 180 : 0}
                 dataTestId="reveal-blocked-user-settings"
               />
             </BlockedContactListTitleButtons>

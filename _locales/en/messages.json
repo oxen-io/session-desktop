@@ -289,6 +289,7 @@
   "block": "Block",
   "unblock": "Unblock",
   "unblocked": "Unblocked",
+  "removed": "Removed",
   "blocked": "Blocked",
   "blockedSettingsTitle": "Blocked Contacts",
   "conversationsSettingsTitle": "Conversations",
@@ -579,5 +580,9 @@
   "duration": "Duration",
   "notApplicable": "N/A",
   "unknownError": "Unknown Error",
-  "displayNameErrorNew": "We were unable to load your display name. Please enter a new display name to continue."
+  "displayNameErrorNew": "We were unable to load your display name. Please enter a new display name to continue.",
+  "trustHostname": "Trust $hostname$",
+  "trustedWebsites": "Trusted websites",
+  "trustedWebsitesDescription": "Clicking on a trusted website will open it in your browser.",
+  "noTrustedWebsitesEntries": "You have no trusted websites."
 }

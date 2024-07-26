@@ -12,6 +12,7 @@ import {
   InviteContactModalState,
   ModalState,
   OnionPathModalState,
+  OpenExternalLinkModalState,
   ReactModalsState,
   RecoveryPhraseModalState,
   RemoveModeratorsModalState,
@@ -108,4 +109,9 @@ export const getReactClearAllDialog = createSelector(
 export const getEditProfilePictureModalState = createSelector(
   getModal,
   (state: ModalState): EditProfilePictureModalState => state.editProfilePictureModalState
+);
+
+export const getOpenExternalLinkModalState = createSelector(
+  getModal,
+  (state: ModalState): OpenExternalLinkModalState => state.openExternalLinkModalState
 );

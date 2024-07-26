@@ -23,6 +23,7 @@ export enum SessionButtonColor {
   Orange = 'orange',
   Red = 'red',
   White = 'white',
+  Grey = 'grey',
   Primary = 'primary',
   Danger = 'danger',
   None = 'transparent',
