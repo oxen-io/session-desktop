@@ -9,6 +9,7 @@ import { reducer as section, SectionStateType } from './ducks/section';
 import { ReduxSogsRoomInfos, SogsRoomInfoState } from './ducks/sogsRoomInfo';
 import { reducer as theme } from './ducks/theme';
 import { reducer as user, UserStateType } from './ducks/user';
+import { reducer as appUpdates, AppUpdatesState } from './ducks/appUpdates';
 
 import { PrimaryColorStateType, ThemeStateType } from '../themes/constants/colors';
 import { modalReducer as modals, ModalState } from './ducks/modalDialog';
@@ -35,6 +36,7 @@ export type StateType = {
   call: CallStateType;
   sogsRoomInfo: SogsRoomInfoState;
   settings: SettingsState;
+  appUpdates: AppUpdatesState;
 };
 
 const reducers = {
@@ -52,6 +54,7 @@ const reducers = {
   call,
   sogsRoomInfo: ReduxSogsRoomInfos.sogsRoomInfoReducer,
   settings: settingsReducer,
+  appUpdates,
 };
 
 // Making this work would require that our reducer signature supported AnyAction, not

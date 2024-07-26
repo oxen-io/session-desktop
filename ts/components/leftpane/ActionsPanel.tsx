@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import useInterval from 'react-use/lib/useInterval';
 import useTimeoutFn from 'react-use/lib/useTimeoutFn';
+import styled from 'styled-components';
 
 import { Data } from '../../data/data';
 import { getConversationController } from '../../session/conversations';
@@ -47,6 +48,7 @@ import { switchThemeTo } from '../../themes/switchTheme';
 import { ReleasedFeatures } from '../../util/releaseFeature';
 import { getOppositeTheme } from '../../util/theme';
 import { SessionNotificationCount } from '../icon/SessionNotificationCount';
+import { UpdateStatus } from './UpdateStatus';
 
 const Section = (props: { type: SectionType }) => {
   const ourNumber = useSelector(getOurNumber);
@@ -118,6 +120,8 @@ const Section = (props: { type: SectionType }) => {
           isSelected={isSelected}
         />
       );
+    case SectionType.AppUpdateStatus:
+      return <UpdateStatus />;
     case SectionType.PathIndicator:
       return (
         <ActionPanelOnionStatusLight
@@ -139,6 +143,10 @@ const Section = (props: { type: SectionType }) => {
       );
   }
 };
+
+const SpacerFlex = styled.div`
+  flex: 1;
+`;
 
 const cleanUpMediasInterval = DURATION.MINUTES * 60;
 
@@ -293,6 +301,8 @@ export const ActionsPanel = () => {
         <Section type={SectionType.Profile} />
         <Section type={SectionType.Message} />
         <Section type={SectionType.Settings} />
+        <SpacerFlex />
+        <Section type={SectionType.AppUpdateStatus} />
         <Section type={SectionType.PathIndicator} />
         <Section type={SectionType.ColorMode} />
       </LeftPaneSectionContainer>

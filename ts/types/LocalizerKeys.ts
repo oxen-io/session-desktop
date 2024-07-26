@@ -547,6 +547,8 @@ export type LocalizerKeys =
   | 'unknownError'
   | 'unpinConversation'
   | 'unreadMessages'
+  | 'updateDownloadProgress'
+  | 'updateDownloadedRestart'
   | 'updateGroupDialogTitle'
   | 'updatedTheGroup'
   | 'userAddedToModerators'

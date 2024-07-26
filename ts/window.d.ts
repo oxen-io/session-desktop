@@ -97,6 +97,9 @@ declare global {
     closeDebugLog: () => void;
     getAutoUpdateEnabled: () => boolean;
     setAutoUpdateEnabled: (enabled: boolean) => void;
+    autoupdaterInstallAndRestart: () => void;
+    autoupdaterCancelDownload: () => void;
+    autoupdaterAcceptDownload: () => void;
     setZoomFactor: (newZoom: number) => void;
     updateZoomFactor: () => void;
 
