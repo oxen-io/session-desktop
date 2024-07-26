@@ -301,8 +301,14 @@ export type QuoteLookupType = {
   [key: string]: MessageModelPropsWithoutConvoProps;
 };
 
+export interface ReturnToConversationProps {
+  key: string;
+  messageId: string;
+}
+
 export type ConversationsStateType = {
   conversationLookup: ConversationLookupType;
+  returnToConversation?: ReturnToConversationProps;
   selectedConversation?: string;
   // NOTE the messages that are in view
   messages: Array<MessageModelPropsWithoutConvoProps>;
@@ -753,12 +759,21 @@ const conversationsSlice = createSlice({
 
     conversationRemoved(state: ConversationsStateType, action: PayloadAction<string>) {
       const { payload: conversationId } = action;
-      const { conversationLookup, selectedConversation } = state;
+      const { conversationLookup, returnToConversation, selectedConversation } = state;
+
+      const conversationWeAreInDeleted = selectedConversation === conversationId;
+      const returningConversationDeleted = returnToConversation
+        ? returnToConversation.key === conversationId
+        : false;
+
       return {
         ...state,
         conversationLookup: omit(conversationLookup, [conversationId]),
-        selectedConversation:
-          selectedConversation === conversationId ? undefined : selectedConversation,
+        returnToConversation:
+          returningConversationDeleted || conversationWeAreInDeleted
+            ? undefined
+            : returnToConversation,
+        selectedConversation: conversationWeAreInDeleted ? undefined : selectedConversation,
       };
     },
 
@@ -835,6 +850,7 @@ const conversationsSlice = createSlice({
       state: ConversationsStateType,
       action: PayloadAction<{
         conversationKey: string;
+        returnToConversation: ReturnToConversationProps | undefined;
         firstUnreadIdOnOpen: string | undefined;
         mostRecentMessageIdOnOpen: string | null;
         initialMessages: Array<MessageModelPropsWithoutConvoProps>;
@@ -860,6 +876,7 @@ const conversationsSlice = createSlice({
         conversationLookup: state.conversationLookup,
         mostRecentMessageId: action.payload.mostRecentMessageIdOnOpen,
         selectedConversation: action.payload.conversationKey,
+        returnToConversation: action.payload.returnToConversation,
         firstUnreadMessageId: action.payload.firstUnreadIdOnOpen,
         messages: action.payload.initialMessages,
         quotes: action.payload.initialQuotes,
@@ -908,6 +925,9 @@ const conversationsSlice = createSlice({
         oldTopMessageId: null,
         oldBottomMessageId: null,
       };
+    },
+    resetReturnConversation(state: ConversationsStateType) {
+      return { ...state, returnToConversation: undefined };
     },
     pushQuotedMessageDetails(
       state: ConversationsStateType,
@@ -1147,6 +1167,7 @@ export const {
   setNextMessageToPlayId,
   updateMentionsMembers,
   resetConversationExternal,
+  resetReturnConversation,
   markConversationInitialLoadingInProgress,
 } = actions;
 
@@ -1160,9 +1181,10 @@ async function unmarkAsForcedUnread(convoId: string) {
 
 export async function openConversationWithMessages(args: {
   conversationKey: string;
+  returnToConversation?: ReturnToConversationProps;
   messageId: string | null;
 }) {
-  const { conversationKey, messageId } = args;
+  const { conversationKey, returnToConversation, messageId } = args;
 
   await DisappearingMessages.destroyExpiredMessages();
   await unmarkAsForcedUnread(conversationKey);
@@ -1178,6 +1200,7 @@ export async function openConversationWithMessages(args: {
   window.inboxStore?.dispatch(
     actions.openConversationExternal({
       conversationKey,
+      returnToConversation,
       firstUnreadIdOnOpen,
       mostRecentMessageIdOnOpen,
       initialMessages,
