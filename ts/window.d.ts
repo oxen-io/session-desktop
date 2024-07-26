@@ -97,6 +97,8 @@ declare global {
     closeDebugLog: () => void;
     getAutoUpdateEnabled: () => boolean;
     setAutoUpdateEnabled: (enabled: boolean) => void;
+    getUiLanguage: () => string;
+    setUiLanguage: (language: string) => void;
     setZoomFactor: (newZoom: number) => void;
     updateZoomFactor: () => void;
 
