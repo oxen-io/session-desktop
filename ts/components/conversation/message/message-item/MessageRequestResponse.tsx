@@ -1,4 +1,3 @@
-import React from 'react';
 import { useConversationUsername } from '../../../../hooks/useParamSelector';
 import { PropsForMessageRequestResponse } from '../../../../models/messageType';
 import { UserUtils } from '../../../../session/utils';
@@ -40,7 +39,7 @@ export const MessageRequestResponse = (props: PropsForMessageRequestResponse) =>
         id={`msg-${messageId}`}
       >
         <SpacerSM />
-        <Text text={msgText} subtle={true} ellipsisOverflow={true} />
+        <Text text={msgText} subtle={true} ellipsisOverflow={false} textAlign="center" />
       </Flex>
     </ReadableMessage>
   );

@@ -1,6 +1,12 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent, SyntheticEvent } from 'react';
 import styled, { CSSProperties } from 'styled-components';
 import { Flex } from './Flex';
+
+const StyledButton = styled.button<{ disabled: boolean }>`
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  min-height: 30px;
+  background-color: var(--transparent-color);
+`;
 
 const StyledInput = styled.input<{
   filledSize: number;
@@ -9,11 +15,10 @@ const StyledInput = styled.input<{
 }>`
   opacity: 0;
   position: absolute;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   width: ${props => props.filledSize + props.outlineOffset}px;
   height: ${props => props.filledSize + props.outlineOffset}px;
 
-  :checked + label:before {
+  &:checked + label:before {
     background: ${props =>
       props.disabled
         ? 'var(--disabled-color)'
@@ -33,7 +38,7 @@ const StyledLabel = styled.label<{
   cursor: pointer;
   color: ${props => (props.disabled ? 'var(--disabled-color)' : 'var(--text-primary-color)')};
 
-  :before {
+  &:before {
     content: '';
     display: inline-block;
     border-radius: 100%;
@@ -71,7 +76,7 @@ export const SessionRadio = (props: SessionRadioProps) => {
     style,
   } = props;
 
-  const clickHandler = (e: ChangeEvent<any>) => {
+  const clickHandler = (e: SyntheticEvent<any>) => {
     if (!disabled && onClick) {
       // let something else catch the event if our click handler is not set
       e.stopPropagation();
@@ -83,37 +88,48 @@ export const SessionRadio = (props: SessionRadioProps) => {
   const outlineOffset = 2;
 
   return (
-    <Flex
-      container={true}
-      flexDirection={radioPosition === 'left' ? 'row' : 'row-reverse'}
-      justifyContent={radioPosition === 'left' ? 'flex-start' : 'flex-end'}
-      style={style}
+    <StyledButton
+      onKeyDown={e => {
+        if (e.code === 'Space') {
+          clickHandler(e);
+        }
+      }}
+      onClick={clickHandler}
+      disabled={disabled}
     >
-      <StyledInput
-        type="radio"
-        name={inputName || ''}
-        value={value}
-        aria-checked={active}
-        checked={active}
-        onChange={clickHandler}
-        filledSize={filledSize * 2}
-        outlineOffset={outlineOffset}
-        disabled={disabled}
-        data-testid={`input-${value.replaceAll(' ', '-')}`} // data-testid cannot have spaces
-      />
-      <StyledLabel
-        role="button"
-        onClick={clickHandler}
-        filledSize={filledSize - 1}
-        outlineOffset={outlineOffset}
-        beforeMargins={beforeMargins}
-        aria-label={label}
-        disabled={disabled}
-        data-testid={`label-${value}`}
+      <Flex
+        container={true}
+        flexDirection={radioPosition === 'left' ? 'row' : 'row-reverse'}
+        justifyContent={radioPosition === 'left' ? 'flex-start' : 'flex-end'}
+        style={{ ...style, position: 'relative' }}
       >
-        {label}
-      </StyledLabel>
-    </Flex>
+        <StyledInput
+          type="radio"
+          name={inputName || ''}
+          value={value}
+          aria-checked={active}
+          checked={active}
+          onChange={clickHandler}
+          tabIndex={-1} // clickHandler is on the parent button, so we need to skip this input while pressing Tab
+          filledSize={filledSize * 2}
+          outlineOffset={outlineOffset}
+          disabled={disabled}
+          data-testid={`input-${value.replaceAll(' ', '-')}`} // data-testid cannot have spaces
+        />
+        <StyledLabel
+          role="button"
+          onClick={clickHandler}
+          filledSize={filledSize - 1}
+          outlineOffset={outlineOffset}
+          beforeMargins={beforeMargins}
+          aria-label={label}
+          disabled={disabled}
+          data-testid={`label-${value}`}
+        >
+          {label}
+        </StyledLabel>
+      </Flex>
+    </StyledButton>
   );
 };
 
@@ -125,12 +141,12 @@ const StyledInputOutlineSelected = styled(StyledInput)`
     outline: none;
   }
 
-  :checked + label:before {
+  &:checked + label:before {
     outline: 1px solid currentColor;
   }
 `;
 const StyledLabelOutlineSelected = styled(StyledLabel)<{ selectedColor: string }>`
-  :before {
+  &:before {
     background: ${props =>
       props.disabled
         ? 'var(--disabled-color)'

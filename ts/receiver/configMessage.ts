@@ -6,7 +6,6 @@ import { Data } from '../data/data';
 import { SettingsKey } from '../data/settings-key';
 import { ConversationInteraction } from '../interactions';
 import { deleteAllMessagesByConvoIdNoConfirmation } from '../interactions/conversationInteractions';
-import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../models/conversationAttributes';
 import { SignalService } from '../protobuf';
 import { ClosedGroup } from '../session';
 import {
@@ -18,7 +17,6 @@ import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { getOpenGroupV2ConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { getSwarmPollingInstance } from '../session/apis/snode_api';
 import { getConversationController } from '../session/conversations';
-import { IncomingMessage } from '../session/messages/incoming/IncomingMessage';
 import { Profile, ProfileManager } from '../session/profile_manager/ProfileManager';
 import { PubKey } from '../session/types';
 import { StringUtils, UserUtils } from '../session/utils';
@@ -35,13 +33,10 @@ import { assertUnreachable } from '../types/sqlSharedTypes';
 import { BlockedNumberController } from '../util';
 import { Registration } from '../util/registration';
 import { ReleasedFeatures } from '../util/releaseFeature';
-import {
-  Storage,
-  getLastProfileUpdateTimestamp,
-  isSignInByLinking,
-  setLastProfileUpdateTimestamp,
-} from '../util/storage';
+import { Storage, isSignInByLinking, setLastProfileUpdateTimestamp } from '../util/storage';
 
+import { SnodeNamespaces } from '../session/apis/snode_api/namespaces';
+import { RetrieveMessageItemWithNamespace } from '../session/apis/snode_api/types';
 // eslint-disable-next-line import/no-unresolved
 import { ConfigWrapperObjectTypes } from '../webworker/workers/browser/libsession_worker_functions';
 import {
@@ -56,19 +51,31 @@ import { addKeyPairToCacheAndDBIfNeeded } from './closedGroups';
 import { HexKeyPair } from './keypairs';
 import { queueAllCachedFromSource } from './receiver';
 import { EnvelopePlus } from './types';
+import { ConversationTypeEnum, CONVERSATION_PRIORITIES } from '../models/types';
 
-function groupByVariant(
-  incomingConfigs: Array<IncomingMessage<SignalService.ISharedConfigMessage>>
-) {
+function groupByNamespace(incomingConfigs: Array<RetrieveMessageItemWithNamespace>) {
   const groupedByVariant: Map<
     ConfigWrapperObjectTypes,
-    Array<IncomingMessage<SignalService.ISharedConfigMessage>>
+    Array<RetrieveMessageItemWithNamespace>
   > = new Map();
 
   incomingConfigs.forEach(incomingConfig => {
-    const { kind } = incomingConfig.message;
+    const { namespace } = incomingConfig;
 
-    const wrapperId = LibSessionUtil.kindToVariant(kind);
+    const wrapperId: ConfigWrapperObjectTypes | null =
+      namespace === SnodeNamespaces.UserProfile
+        ? 'UserConfig'
+        : namespace === SnodeNamespaces.UserContacts
+          ? 'ContactsConfig'
+          : namespace === SnodeNamespaces.UserGroups
+            ? 'UserGroupsConfig'
+            : namespace === SnodeNamespaces.ConvoInfoVolatile
+              ? 'ConvoInfoVolatileConfig'
+              : null;
+
+    if (!wrapperId) {
+      throw new Error('Unexpected wrapperId');
+    }
 
     if (!groupedByVariant.has(wrapperId)) {
       groupedByVariant.set(wrapperId, []);
@@ -80,10 +87,10 @@ function groupByVariant(
 }
 
 async function mergeConfigsWithIncomingUpdates(
-  incomingConfigs: Array<IncomingMessage<SignalService.ISharedConfigMessage>>
+  incomingConfigs: Array<RetrieveMessageItemWithNamespace>
 ): Promise<Map<ConfigWrapperObjectTypes, IncomingConfResult>> {
   // first, group by variant so we do a single merge call
-  const groupedByVariant = groupByVariant(incomingConfigs);
+  const groupedByNamespace = groupByNamespace(incomingConfigs);
 
   const groupedResults: Map<ConfigWrapperObjectTypes, IncomingConfResult> = new Map();
 
@@ -91,15 +98,15 @@ async function mergeConfigsWithIncomingUpdates(
   const publicKey = UserUtils.getOurPubKeyStrFromCache();
 
   try {
-    for (let index = 0; index < groupedByVariant.size; index++) {
-      const variant = [...groupedByVariant.keys()][index];
-      const sameVariant = groupedByVariant.get(variant);
+    for (let index = 0; index < groupedByNamespace.size; index++) {
+      const variant = [...groupedByNamespace.keys()][index];
+      const sameVariant = groupedByNamespace.get(variant);
       if (!sameVariant?.length) {
         continue;
       }
       const toMerge = sameVariant.map(msg => ({
-        data: msg.message.data,
-        hash: msg.messageHash,
+        data: StringUtils.fromBase64ToArray(msg.data),
+        hash: msg.hash,
       }));
       if (window.sessionFeatureFlags.debug.debugLibsessionDumps) {
         window.log.info(
@@ -110,9 +117,7 @@ async function mergeConfigsWithIncomingUpdates(
         for (let dumpIndex = 0; dumpIndex < toMerge.length; dumpIndex++) {
           const element = toMerge[dumpIndex];
           window.log.info(
-            `printDumpsForDebugging: toMerge of ${dumpIndex}:${element.hash}:  ${StringUtils.toHex(
-              element.data
-            )} `,
+            `printDumpsForDebugging: toMerge of ${dumpIndex}:${element.hash}:  ${element.data} `,
             StringUtils.toHex(await GenericWrapperActions.dump(variant))
           );
         }
@@ -122,8 +127,8 @@ async function mergeConfigsWithIncomingUpdates(
       const needsPush = await GenericWrapperActions.needsPush(variant);
       const needsDump = await GenericWrapperActions.needsDump(variant);
       const mergedTimestamps = sameVariant
-        .filter(m => hashesMerged.includes(m.messageHash))
-        .map(m => m.envelopeTimestamp);
+        .filter(m => hashesMerged.includes(m.hash))
+        .map(m => m.timestamp);
       const latestEnvelopeTimestamp = Math.max(...mergedTimestamps);
 
       window.log.debug(
@@ -597,6 +602,8 @@ async function handleLegacyGroupUpdate(latestEnvelopeTimestamp: number) {
 
     const members = fromWrapper.members.map(m => m.pubkeyHex);
     const admins = fromWrapper.members.filter(m => m.isAdmin).map(m => m.pubkeyHex);
+
+    const creationTimestamp = fromWrapper.joinedAtSeconds ? fromWrapper.joinedAtSeconds * 1000 : 0;
     // then for all the existing legacy group in the wrapper, we need to override the field of what we have in the DB with what is in the wrapper
     // We only set group admins on group creation
     const groupDetails: ClosedGroup.GroupInfo = {
@@ -605,10 +612,9 @@ async function handleLegacyGroupUpdate(latestEnvelopeTimestamp: number) {
       members,
       admins,
       activeAt:
-        !!legacyGroupConvo.get('active_at') &&
-        legacyGroupConvo.get('active_at') < latestEnvelopeTimestamp
+        !!legacyGroupConvo.get('active_at') && legacyGroupConvo.get('active_at') > creationTimestamp
           ? legacyGroupConvo.get('active_at')
-          : latestEnvelopeTimestamp,
+          : creationTimestamp,
     };
 
     await ClosedGroup.updateOrCreateClosedGroup(groupDetails);
@@ -858,6 +864,7 @@ async function processMergingResults(results: Map<ConfigWrapperObjectTypes, Inco
             window.log.warn('assertUnreachable failed', e.message);
           }
       }
+
       const variant = LibSessionUtil.kindToVariant(kind);
       try {
         await updateLibsessionLatestProcessedUserTimestamp(
@@ -895,7 +902,7 @@ async function processMergingResults(results: Map<ConfigWrapperObjectTypes, Inco
 }
 
 async function handleConfigMessagesViaLibSession(
-  configMessages: Array<IncomingMessage<SignalService.ISharedConfigMessage>>
+  configMessages: Array<RetrieveMessageItemWithNamespace>
 ) {
   const userConfigLibsession = await ReleasedFeatures.checkIsUserConfigFeatureReleased();
 
@@ -910,14 +917,14 @@ async function handleConfigMessagesViaLibSession(
   window?.log?.debug(
     `Handling our sharedConfig message via libsession_util ${JSON.stringify(
       configMessages.map(m => ({
-        variant: LibSessionUtil.kindToVariant(m.message.kind),
-        hash: m.messageHash,
-        seqno: (m.message.seqno as Long).toNumber(),
+        namespace: m.namespace,
+        hash: m.hash,
       }))
     )}`
   );
 
   const incomingMergeResult = await mergeConfigsWithIncomingUpdates(configMessages);
+
   await processMergingResults(incomingMergeResult);
 }
 
@@ -941,32 +948,6 @@ async function updateOurProfileLegacyOrViaLibSession({
     trigger(configurationMessageReceived, displayName);
   } else {
     window?.log?.warn('Got a configuration message but the display name is empty');
-  }
-}
-
-async function handleOurProfileUpdateLegacy(
-  sentAt: number | Long,
-  configMessage: SignalService.ConfigurationMessage
-) {
-  const userConfigLibsession = await ReleasedFeatures.checkIsUserConfigFeatureReleased();
-  // we want to allow if we are not registered, as we might need to fetch an old config message (can be removed once we released for a weeks the libsession util)
-  if (userConfigLibsession && !isSignInByLinking()) {
-    return;
-  }
-  const latestProfileUpdateTimestamp = getLastProfileUpdateTimestamp();
-  if (!latestProfileUpdateTimestamp || sentAt > latestProfileUpdateTimestamp) {
-    window?.log?.info(
-      `Handling our profileUdpate ourLastUpdate:${latestProfileUpdateTimestamp}, envelope sent at: ${sentAt}`
-    );
-    const { profileKey, profilePicture, displayName } = configMessage;
-
-    await updateOurProfileLegacyOrViaLibSession({
-      sentAt: toNumber(sentAt),
-      displayName,
-      profileUrl: profilePicture,
-      profileKey,
-      priority: null, // passing null to say do not set the priority, as we do not get one from the legacy config message
-    });
   }
 }
 
@@ -1139,7 +1120,6 @@ async function handleConfigurationMessageLegacy(
     return;
   }
 
-  await handleOurProfileUpdateLegacy(envelope.timestamp, configurationMessage);
   await handleGroupsAndContactsFromConfigMessageLegacy(envelope, configurationMessage);
   await removeFromCache(envelope);
 }

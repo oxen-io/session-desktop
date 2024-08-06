@@ -1,5 +1,6 @@
-// TODOLATER move into redux slice
-import { SessionSettingCategory } from '../../components/settings/SessionSettings';
+// TODO move into redux slice
+
+import type { SessionSettingCategory } from '../../types/ReduxTypes';
 
 export const FOCUS_SECTION = 'FOCUS_SECTION';
 export const FOCUS_SETTINGS_SECTION = 'FOCUS_SETTINGS_SECTION';
@@ -71,7 +72,8 @@ export type LeftOverlayMode =
   | 'message'
   | 'open-group'
   | 'closed-group'
-  | 'message-requests';
+  | 'message-requests'
+  | 'invite-a-friend';
 
 export function setLeftOverlayMode(overlayMode: LeftOverlayMode): LeftOverlayModeActionType {
   return {
@@ -159,7 +161,7 @@ export const reducer = (
     case FOCUS_SECTION:
       // if we change to something else than settings, reset the focused settings section
       // eslint-disable-next-line no-case-declarations
-      const castedPayload = (payload as unknown) as SectionType;
+      const castedPayload = payload as unknown as SectionType;
 
       if (castedPayload !== SectionType.Settings) {
         return {
@@ -173,7 +175,7 @@ export const reducer = (
       return {
         ...state,
         focusedSection: payload,
-        focusedSettingsSection: SessionSettingCategory.Privacy,
+        focusedSettingsSection: 'privacy',
       };
     case FOCUS_SETTINGS_SECTION:
       return {

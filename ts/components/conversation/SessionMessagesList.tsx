@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import useKey from 'react-use/lib/useKey';
@@ -7,11 +7,9 @@ import {
   PropsForMessageRequestResponse,
 } from '../../models/messageType';
 import {
-  PropsForCallNotification,
   PropsForExpirationTimer,
   PropsForGroupInvitation,
   PropsForGroupUpdate,
-  PropsForInteractionNotification,
 } from '../../state/ducks/conversations';
 import {
   getOldBottomMessageId,
@@ -26,10 +24,12 @@ import { Message } from './message/message-item/Message';
 import { MessageRequestResponse } from './message/message-item/MessageRequestResponse';
 import { CallNotification } from './message/message-item/notification-bubble/CallNotification';
 
-import { DataExtractionNotification } from './message/message-item/DataExtractionNotification';
+import { IsDetailMessageViewContext } from '../../contexts/isDetailViewContext';
 import { SessionLastSeenIndicator } from './SessionLastSeenIndicator';
 import { TimerNotification } from './TimerNotification';
+import { DataExtractionNotification } from './message/message-item/DataExtractionNotification';
 import { InteractionNotification } from './message/message-item/InteractionNotification';
+import { PropsForCallNotification, PropsForInteractionNotification } from '../../state/ducks/types';
 
 function isNotTextboxEvent(e: KeyboardEvent) {
   return (e?.target as any)?.type === undefined;
@@ -98,7 +98,7 @@ export const SessionMessagesList = (props: {
   }
 
   return (
-    <>
+    <IsDetailMessageViewContext.Provider value={false}>
       {messagesProps.map(messageProps => {
         const messageId = messageProps.message.props.messageId;
         const unreadIndicator = messageProps.showUnreadIndicator ? (
@@ -170,6 +170,6 @@ export const SessionMessagesList = (props: {
 
         return [<Message messageId={messageId} key={messageId} />, ...componentToMerge];
       })}
-    </>
+    </IsDetailMessageViewContext.Provider>
   );
 };

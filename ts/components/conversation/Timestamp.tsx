@@ -1,9 +1,8 @@
-import React from 'react';
 import moment from 'moment';
 
 import useInterval from 'react-use/lib/useInterval';
-import styled from 'styled-components';
 import useUpdate from 'react-use/lib/useUpdate';
+import styled from 'styled-components';
 
 type Props = {
   timestamp?: number;
@@ -44,10 +43,7 @@ export const Timestamp = (props: Props) => {
   // this is a hack to make the date string shorter, looks like moment does not have a localized way of doing this for now.
 
   const dateString = momentFromNow
-    ? momentValue
-        .fromNow()
-        .replace('minutes', 'mins')
-        .replace('minute', 'min')
+    ? momentValue.fromNow().replace('minutes', 'mins').replace('minute', 'min')
     : momentValue.format('lll');
 
   const title = moment(timestamp).format('llll');

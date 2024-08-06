@@ -29,7 +29,6 @@ import { MessageModel } from './message';
 import { MessageAttributesOptionals, MessageDirection } from './messageType';
 
 import { Data } from '../data/data';
-import { OpenGroupRequestCommonType } from '../session/apis/open_group_api/opengroupV2/ApiUtil';
 import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { getOpenGroupV2FromConversationId } from '../session/apis/open_group_api/utils/OpenGroupUtils';
 import { ExpirationTimerUpdateMessage } from '../session/messages/outgoing/controlMessage/ExpirationTimerUpdateMessage';
@@ -42,7 +41,7 @@ import {
   VisibleMessageParams,
 } from '../session/messages/outgoing/visibleMessage/VisibleMessage';
 import { perfEnd, perfStart } from '../session/utils/Performance';
-import { toHex } from '../session/utils/String';
+import { ed25519Str, toHex } from '../session/utils/String';
 import { createTaskWithTimeout } from '../session/utils/TaskWithTimeout';
 import {
   actions as conversationActions,
@@ -74,7 +73,6 @@ import {
   MessageRequestResponse,
   MessageRequestResponseParams,
 } from '../session/messages/outgoing/controlMessage/MessageRequestResponse';
-import { ed25519Str } from '../session/onions/onionPath';
 import { ConfigurationSync } from '../session/utils/job_runners/jobs/ConfigurationSyncJob';
 import { SessionUtilContact } from '../session/utils/libsession/libsession_utils_contacts';
 import { SessionUtilConvoInfoVolatile } from '../session/utils/libsession/libsession_utils_convo_info_volatile';
@@ -99,10 +97,8 @@ import { Reactions } from '../util/reactions';
 import { Registration } from '../util/registration';
 import { Storage } from '../util/storage';
 import {
-  CONVERSATION_PRIORITIES,
   ConversationAttributes,
   ConversationNotificationSetting,
-  ConversationTypeEnum,
   fillConvoAttributesWithDefaults,
   isDirectConversation,
   isOpenOrClosedGroup,
@@ -124,6 +120,8 @@ import { FetchMsgExpirySwarm } from '../session/utils/job_runners/jobs/FetchMsgE
 import { UpdateMsgExpirySwarm } from '../session/utils/job_runners/jobs/UpdateMsgExpirySwarmJob';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { markAttributesAsReadIfNeeded } from './messageFactory';
+import { OpenGroupRequestCommonType } from '../data/types';
+import { ConversationTypeEnum, CONVERSATION_PRIORITIES } from './types';
 
 type InMemoryConvoInfos = {
   mentionedUs: boolean;
@@ -1740,9 +1738,11 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
       return;
     }
     const conversationId = this.id;
+    const isLegacyGroup = this.isClosedGroup() && this.id.startsWith('05');
 
     let friendRequestText;
-    if (!this.isApproved()) {
+    // NOTE: legacy groups are never approved, so we should not cancel notifications
+    if (!this.isApproved() && !isLegacyGroup) {
       window?.log?.info('notification cancelled for unapproved convo', this.idForLogging());
       const hadNoRequestsPrior =
         getConversationController()
@@ -2603,7 +2603,14 @@ export function hasValidOutgoingRequestValues({
 }): boolean {
   const isActive = activeAt && isFinite(activeAt) && activeAt > 0;
 
-  return Boolean(!isMe && isApproved && isPrivate && !isBlocked && !didApproveMe && isActive);
+  // Started a new message, but haven't sent a message yet
+  const emptyConvo = !isMe && !isApproved && isPrivate && !isBlocked && !didApproveMe && !!isActive;
+
+  // Started a new message, and sent a message
+  const sentOutgoingRequest =
+    !isMe && isApproved && isPrivate && !isBlocked && !didApproveMe && !!isActive;
+
+  return emptyConvo || sentOutgoingRequest;
 }
 
 /**

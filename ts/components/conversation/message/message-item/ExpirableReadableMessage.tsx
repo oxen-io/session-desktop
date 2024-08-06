@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useInterval, useMount } from 'react-use';
+import useInterval from 'react-use/lib/useInterval';
+import useMount from 'react-use/lib/useMount';
 import styled from 'styled-components';
+import { useIsDetailMessageView } from '../../../../contexts/isDetailViewContext';
 import { Data } from '../../../../data/data';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { MessageModelType } from '../../../../models/messageType';
@@ -84,7 +86,6 @@ export interface ExpirableReadableMessageProps
   extends Omit<ReadableMessageProps, 'receivedAt' | 'isUnread'> {
   messageId: string;
   isControlMessage?: boolean;
-  isDetailView?: boolean;
 }
 
 function ExpireTimerControlMessage({
@@ -109,6 +110,7 @@ function ExpireTimerControlMessage({
 
 export const ExpirableReadableMessage = (props: ExpirableReadableMessageProps) => {
   const selected = useMessageExpirationPropsById(props.messageId);
+  const isDetailView = useIsDetailMessageView();
 
   const { isControlMessage, onClick, onDoubleClickCapture, role, dataTestId } = props;
 
@@ -135,7 +137,7 @@ export const ExpirableReadableMessage = (props: ExpirableReadableMessageProps) =
   } = selected;
 
   // NOTE we want messages on the left in the message detail view regardless of direction
-  const direction = props.isDetailView ? 'incoming' : _direction;
+  const direction = isDetailView ? 'incoming' : _direction;
   const isIncoming = direction === 'incoming';
 
   return (

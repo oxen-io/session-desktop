@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
-import chai from 'chai';
 import ByteBuffer from 'bytebuffer';
+import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
 // Can't import type as StringUtils.Encoding
-import { Encoding } from '../../../../session/utils/String';
 import { StringUtils } from '../../../../session/utils';
+import { Encoding } from '../../../../session/utils/String';
 
 chai.use(chaiAsPromised as any);
 
@@ -83,9 +83,7 @@ describe('String Utils', () => {
 
     it('can encode huge string', () => {
       const stringSize = 2 ** 16;
-      const testString = Array(stringSize)
-        .fill('0')
-        .join('');
+      const testString = Array(stringSize).fill('0').join('');
 
       const allEncodedings = (['base64', 'hex', 'binary', 'utf8'] as Array<Encoding>).map(e =>
         StringUtils.encode(testString, e)
@@ -145,9 +143,7 @@ describe('String Utils', () => {
 
     it('can decode huge buffer', () => {
       const bytes = 2 ** 16;
-      const bufferString = Array(bytes)
-        .fill('A')
-        .join('');
+      const bufferString = Array(bytes).fill('A').join('');
       const buffer = ByteBuffer.fromUTF8(bufferString);
 
       const encodings = ['base64', 'hex', 'binary', 'utf8'] as Array<Encoding>;
@@ -222,6 +218,51 @@ describe('String Utils', () => {
         expect(typeof decoded === 'string');
         expect(decoded).to.have.length.greaterThan(0);
       });
+    });
+  });
+
+  describe('sanitizeSessionUsername', () => {
+    it('should remove invalid characters', () => {
+      const invalidChars = ['\uFFD2', '\uFFD2\uFFD2', '\uFFD2\uFFD2\uFFD2'];
+
+      invalidChars.forEach(invalidChar => {
+        const validUsername = StringUtils.sanitizeSessionUsername(invalidChar);
+        expect(
+          validUsername,
+          'should return an empty string if there are no valid characters'
+        ).to.equal('');
+      });
+    });
+
+    it('should not remove valid characters', () => {
+      const validChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+
+      validChars.forEach(validChar => {
+        const validUsername = StringUtils.sanitizeSessionUsername(validChar);
+        expect(validUsername).to.equal(validChar);
+      });
+    });
+
+    it('should remove invalid characters and keep valid characters', () => {
+      const input = 'a\uFFD2b\uFFD2c\uFFD2d\uFFD2e\uFFD2f\uFFD2g\uFFD2h\uFFD2i\uFFD2j';
+      const expected = 'abcdefghij';
+      const validUsername = StringUtils.sanitizeSessionUsername(input);
+      expect(validUsername).to.equal(expected);
+    });
+
+    it('should remove invalid characters and keep valid characters with spaces', () => {
+      const input = 'a\uFFD2 b\uFFD2 c\uFFD2 d\uFFD2 e\uFFD2 f\uFFD2 g\uFFD2 h\uFFD2 i\uFFD2 j';
+      const expected = 'a b c d e f g h i j';
+      const validUsername = StringUtils.sanitizeSessionUsername(input);
+      expect(validUsername).to.equal(expected);
+    });
+
+    it('should remove invalid characters and keep valid characters with spaces and special characters', () => {
+      const input =
+        'a\uFFD2 b\uFFD2 c\uFFD2 d\uFFD2 e\uFFD2 f\uFFD2 g\uFFD2 h\uFFD2 i\uFFD2 j\uFFD2 !@#$%^&*()_+';
+      const expected = 'a b c d e f g h i j !@#$%^&*()_+';
+      const validUsername = StringUtils.sanitizeSessionUsername(input);
+      expect(validUsername).to.equal(expected);
     });
   });
 });

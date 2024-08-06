@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { UserUtils } from '../../session/utils';
 
@@ -13,7 +12,7 @@ const StyledPillDividerLine = styled.div`
 const StyledPillSpan = styled.span`
   padding: 6px 15px 5px;
   border-radius: 50px;
-  color: var(--text-primary-color);
+  color: var(--text-secondary-color);
   border: 1px solid var(--border-color);
 `;
 
@@ -21,7 +20,7 @@ const StyledPillDivider = styled.div`
   width: 100%;
   text-align: center;
   display: flex;
-  margin: 35px 0;
+  margin: 0;
 `;
 
 export const YourSessionIDPill = () => {
@@ -41,6 +40,7 @@ const StyledYourSessionIDSelectable = styled.p`
   font-weight: 300;
   font-size: var(--font-size-sm);
   color: var(--text-primary-color);
+  flex-shrink: 0;
 `;
 
 export const YourSessionIDSelectable = () => {

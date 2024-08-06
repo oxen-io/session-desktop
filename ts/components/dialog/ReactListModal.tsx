@@ -1,9 +1,10 @@
 import { isEmpty, isEqual } from 'lodash';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Data } from '../../data/data';
 import { useMessageReactsPropsById } from '../../hooks/useParamSelector';
+import { findAndFormatContact } from '../../models/message';
 import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { UserUtils } from '../../session/utils';
 import {
@@ -13,11 +14,13 @@ import {
 } from '../../state/ducks/modalDialog';
 import {
   useSelectedIsPublic,
+  useSelectedWeAreAdmin,
   useSelectedWeAreModerator,
 } from '../../state/selectors/selectedConversation';
 import { SortedReactionList } from '../../types/Reaction';
 import { nativeEmojiData } from '../../util/emoji';
 import { Reactions } from '../../util/reactions';
+import { SessionWrapperModal } from '../SessionWrapperModal';
 import { Avatar, AvatarSize } from '../avatar/Avatar';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
@@ -48,6 +51,11 @@ const StyledSendersContainer = styled(Flex)`
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0 16px 16px;
+`;
+
+const StyledContactContainer = styled.span`
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const StyledReactionBar = styled(Flex)`
@@ -133,7 +141,7 @@ const ReactionSenders = (props: ReactionSendersProps) => {
           justifyContent={'space-between'}
           alignItems={'center'}
         >
-          <Flex container={true} alignItems={'center'}>
+          <Flex container={true} alignItems={'center'} style={{ overflow: 'hidden' }}>
             <Avatar
               size={AvatarSize.XS}
               pubkey={sender}
@@ -144,11 +152,13 @@ const ReactionSenders = (props: ReactionSendersProps) => {
             {sender === me ? (
               window.i18n('you')
             ) : (
-              <ContactName
-                pubkey={sender}
-                module="module-conversation__user"
-                shouldShowPubkey={false}
-              />
+              <StyledContactContainer>
+                <ContactName
+                  pubkey={sender}
+                  module="module-conversation__user"
+                  shouldShowPubkey={false}
+                />
+              </StyledContactContainer>
             )}
           </Flex>
           {sender === me && (
@@ -175,8 +185,6 @@ const StyledCountText = styled.p`
     color: var(--text-primary);
   }
 `;
-
-window.i18n('emojiReactsCountOthers', { count: 2, emoji: 'nice' });
 
 const CountText = ({ count, emoji }: { count: number; emoji: string }) => {
   return (
@@ -215,7 +223,7 @@ const handleSenders = (senders: Array<string>, me: string) => {
   return updatedSenders;
 };
 
-export const ReactListModal = (props: Props): ReactElement => {
+export const ReactListModal = (props: Props) => {
   const { reaction, messageId } = props;
 
   const dispatch = useDispatch();
@@ -228,6 +236,7 @@ export const ReactListModal = (props: Props): ReactElement => {
 
   const msgProps = useMessageReactsPropsById(messageId);
   const isPublic = useSelectedIsPublic();
+  const weAreAdmin = useSelectedWeAreAdmin();
   const weAreModerator = useSelectedWeAreModerator();
   const me = UserUtils.getOurPubKeyStrFromCache();
 
@@ -322,7 +331,7 @@ export const ReactListModal = (props: Props): ReactElement => {
 
   return (
     <SessionWrapperModal
-      additionalClassName={'reaction-list-modal'}
+      additionalClassName={'reaction-list-modal no-body-padding'}
       showHeader={false}
       onClose={handleClose}
     >
@@ -359,7 +368,7 @@ export const ReactListModal = (props: Props): ReactElement => {
                   </>
                 )}
               </p>
-              {isPublic && weAreModerator && (
+              {isPublic && (weAreAdmin || weAreModerator) && (
                 <SessionButton
                   text={window.i18n('clearAll')}
                   buttonColor={SessionButtonColor.Danger}

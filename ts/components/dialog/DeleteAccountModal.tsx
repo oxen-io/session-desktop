@@ -1,159 +1,17 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { SnodeAPI } from '../../session/apis/snode_api/SNodeAPI';
-import { ed25519Str } from '../../session/onions/onionPath';
-import { forceSyncConfigurationNowIfNeeded } from '../../session/utils/sync/syncUtils';
-import { updateConfirmModal, updateDeleteAccountModal } from '../../state/ducks/modalDialog';
+
+import { updateDeleteAccountModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionSpinner } from '../basic/SessionSpinner';
 import { SpacerLG } from '../basic/Text';
+import { SessionSpinner } from '../loading';
 
-import { Data } from '../../data/data';
-import { deleteAllLogs } from '../../node/logs';
-import { clearInbox } from '../../session/apis/open_group_api/sogsv3/sogsV3ClearInbox';
-import { getAllValidOpenGroupV2ConversationRoomInfos } from '../../session/apis/open_group_api/utils/OpenGroupUtils';
+import {
+  deleteEverythingAndNetworkData,
+  sendConfigMessageAndDeleteEverything,
+} from '../../util/accountManager';
 import { SessionRadioGroup } from '../basic/SessionRadioGroup';
-
-const deleteDbLocally = async () => {
-  window?.log?.info('last message sent successfully. Deleting everything');
-  window.persistStore?.purge();
-  await deleteAllLogs();
-  await Data.removeAll();
-  await Data.close();
-  await Data.removeDB();
-  await Data.removeOtherData();
-  window.localStorage.setItem('restart-reason', 'delete-account');
-};
-
-async function sendConfigMessageAndDeleteEverything() {
-  try {
-    // DELETE LOCAL DATA ONLY, NOTHING ON NETWORK
-    window?.log?.info('DeleteAccount => Sending a last SyncConfiguration');
-
-    // be sure to wait for the message being effectively sent. Otherwise we won't be able to encrypt it for our devices !
-    await forceSyncConfigurationNowIfNeeded(true);
-    window?.log?.info('Last configuration message sent!');
-    await deleteDbLocally();
-    window.restart();
-  } catch (error) {
-    // if an error happened, it's not related to the delete everything on network logic as this is handled above.
-    // this could be a last sync configuration message not being sent.
-    // in all case, we delete everything, and restart
-    window?.log?.error(
-      'Something went wrong deleting all data:',
-      error && error.stack ? error.stack : error
-    );
-    try {
-      await deleteDbLocally();
-    } catch (e) {
-      window?.log?.error(e);
-    } finally {
-      window.restart();
-    }
-  }
-}
-
-async function deleteEverythingAndNetworkData() {
-  try {
-    // DELETE EVERYTHING ON NETWORK, AND THEN STUFF LOCALLY STORED
-    // a bit of duplicate code below, but it's easier to follow every case like that (helped with returns)
-
-    // clear all sogs inboxes (includes message requests)
-    const allRoomInfos = await getAllValidOpenGroupV2ConversationRoomInfos();
-    if (allRoomInfos && allRoomInfos.size > 0) {
-      // clear each inbox per sogs
-      // eslint-disable-next-line no-restricted-syntax
-      for (const roomInfo of allRoomInfos.values()) {
-        try {
-          // eslint-disable-next-line no-await-in-loop
-          const success = await clearInbox(roomInfo);
-          if (!success) {
-            throw Error(`Failed to clear inbox for ${roomInfo.conversationId}`);
-          }
-        } catch (error) {
-          window.log.info('DeleteAccount =>', error);
-          continue;
-        }
-      }
-    }
-
-    // send deletion message to the network
-    const potentiallyMaliciousSnodes = await SnodeAPI.forceNetworkDeletion();
-    if (potentiallyMaliciousSnodes === null) {
-      window?.log?.warn('DeleteAccount => forceNetworkDeletion failed');
-
-      // close this dialog
-      window.inboxStore?.dispatch(updateDeleteAccountModal(null));
-      window.inboxStore?.dispatch(
-        updateConfirmModal({
-          title: window.i18n('clearDataError'),
-          message: window.i18n('clearDataErrorDescriptionGeneric'),
-          okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('clearDeviceOnly'),
-          onClickOk: async () => {
-            await deleteDbLocally();
-            window.restart();
-          },
-          onClickClose: () => {
-            window.inboxStore?.dispatch(updateConfirmModal(null));
-          },
-        })
-      );
-      return;
-    }
-
-    if (potentiallyMaliciousSnodes.length > 0) {
-      const snodeStr = potentiallyMaliciousSnodes.map(ed25519Str);
-      window?.log?.warn(
-        'DeleteAccount => forceNetworkDeletion Got some potentially malicious snodes',
-        snodeStr
-      );
-      // close this dialog
-      window.inboxStore?.dispatch(updateDeleteAccountModal(null));
-      // open a new confirm dialog to ask user what to do
-      window.inboxStore?.dispatch(
-        updateConfirmModal({
-          title: window.i18n('clearDataError'),
-          message: window.i18n('clearDataErrorDescription2', {
-            servicenodeid: potentiallyMaliciousSnodes.join(', '),
-            count: `${potentiallyMaliciousSnodes.length}`,
-          }),
-          messageSub: window.i18n('clearDeviceAndNetworkConfirm'),
-          okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('clearDeviceOnly'),
-          onClickOk: async () => {
-            await deleteDbLocally();
-            window.restart();
-          },
-          onClickClose: () => {
-            window.inboxStore?.dispatch(updateConfirmModal(null));
-          },
-        })
-      );
-      return;
-    }
-
-    // We removed everything on the network successfully (no malicious node!). Now delete the stuff we got locally
-    // without sending a last configuration message (otherwise this one will still be on the network)
-    await deleteDbLocally();
-    window.restart();
-  } catch (error) {
-    // if an error happened, it's not related to the delete everything on network logic as this is handled above.
-    // this could be a last sync configuration message not being sent.
-    // in all case, we delete everything, and restart
-    window?.log?.error(
-      'Something went wrong deleting all data:',
-      error && error.stack ? error.stack : error
-    );
-    try {
-      await deleteDbLocally();
-    } catch (e) {
-      window?.log?.error(e);
-    }
-    window.restart();
-  }
-}
 
 const DEVICE_ONLY = 'device_only';
 const DEVICE_AND_NETWORK = 'device_and_network';
@@ -187,10 +45,13 @@ const DescriptionBeforeAskingConfirmation = (props: {
   );
 };
 
-const DescriptionWhenAskingConfirmation = () => {
+// NODE: strings - check merge conflict
+const DescriptionWhenAskingConfirmation = (props: { deleteMode: DeleteModes }) => {
   return (
     <span className="session-confirm-main-message">
-      {window.i18n('clearDeviceAndNetworkConfirm')}
+      {props.deleteMode === 'device_and_network'
+        ? window.i18n('areYouSureDeleteEntireAccount')
+        : window.i18n('areYouSureDeleteDeviceOnly')}
     </span>
   );
 };
@@ -245,7 +106,7 @@ export const DeleteAccountModal = () => {
       showExitIcon={true}
     >
       {askingConfirmation ? (
-        <DescriptionWhenAskingConfirmation />
+        <DescriptionWhenAskingConfirmation deleteMode={deleteMode} />
       ) : (
         <DescriptionBeforeAskingConfirmation
           deleteMode={deleteMode}

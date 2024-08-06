@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
 import { noop } from 'lodash';
+import { MouseEvent, useState } from 'react';
 
 import * as MIME from '../../../../types/MIME';
 import * as GoogleChrome from '../../../../util/GoogleChrome';
@@ -27,7 +27,7 @@ export type QuotePropsWithoutListener = {
 };
 
 export type QuotePropsWithListener = QuotePropsWithoutListener & {
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (e: MouseEvent<HTMLDivElement>) => void;
 };
 
 export interface QuotedAttachmentType {
@@ -214,7 +214,8 @@ export const QuoteIconContainer = (
   if (MIME.isAudio(contentType)) {
     return <QuoteIcon icon="microphone" />;
   }
-  return null;
+
+  return <QuoteIcon icon="file" />;
 };
 
 export const QuoteText = (
@@ -287,7 +288,6 @@ const QuoteAuthor = (props: QuoteAuthorProps) => {
           pubkey={PubKey.shorten(author)}
           name={authorName}
           profileName={authorProfileName}
-          compact={true}
           shouldShowPubkey={Boolean(props.showPubkeyForAuthor)}
         />
       )}

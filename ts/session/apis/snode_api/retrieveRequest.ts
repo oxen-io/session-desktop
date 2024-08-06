@@ -1,12 +1,14 @@
-import { omit } from 'lodash';
-import { Snode } from '../../../data/data';
+import { isArray, omit } from 'lodash';
+import { Snode } from '../../../data/types';
 import { updateIsOnline } from '../../../state/ducks/onion';
 import { doSnodeBatchRequest } from './batchRequest';
 import { GetNetworkTime } from './getNetworkTime';
 import { SnodeNamespace, SnodeNamespaces } from './namespaces';
 
-import { TTL_DEFAULT } from '../../constants';
+import { DURATION, TTL_DEFAULT } from '../../constants';
 import { UserUtils } from '../../utils';
+import { sleepFor } from '../../utils/Promise';
+import { SnodeResponseError } from '../../utils/errors';
 import {
   RetrieveLegacyClosedGroupSubRequestType,
   RetrieveSubRequestType,
@@ -111,7 +113,7 @@ async function retrieveNextMessages(
   configHashesToBump: Array<string> | null
 ): Promise<RetrieveMessagesResultsBatched> {
   if (namespaces.length !== lastHashes.length) {
-    throw new Error('namespaces and lasthashes does not match');
+    throw new Error('namespaces and last hashes do not match');
   }
 
   const retrieveRequestsParams = await buildRetrieveRequest(
@@ -123,40 +125,40 @@ async function retrieveNextMessages(
   );
   // let exceptions bubble up
   // no retry for this one as this a call we do every few seconds while polling for messages
+  const timeOutMs = 10 * DURATION.SECONDS; // yes this is a long timeout for just messages, but 4s timeouts way to often...
+  const timeoutPromise = async () => sleepFor(timeOutMs);
+  const fetchPromise = async () =>
+    doSnodeBatchRequest(retrieveRequestsParams, targetNode, timeOutMs, associatedWith);
 
-  const results = await doSnodeBatchRequest(
-    retrieveRequestsParams,
-    targetNode,
-    4000,
-    associatedWith
-  );
-  if (!results || !results.length) {
-    window?.log?.warn(
-      `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
-    );
-    throw new Error(
-      `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
-    );
-  }
-
-  // the +1 is to take care of the extra `expire` method added once user config is released
-  if (results.length !== namespaces.length && results.length !== namespaces.length + 1) {
-    throw new Error(
-      `We asked for updates about ${namespaces.length} messages but got results of length ${results.length}`
-    );
-  }
-
-  // do a basic check to know if we have something kind of looking right (status 200 should always be there for a retrieve)
-  const firstResult = results[0];
-
-  if (firstResult.code !== 200) {
-    window?.log?.warn(`retrieveNextMessages result is not 200 but ${firstResult.code}`);
-    throw new Error(
-      `_retrieveNextMessages - retrieve result is not 200 with ${targetNode.ip}:${targetNode.port} but ${firstResult.code}`
-    );
-  }
-
+  // just to make sure that we don't hang for more than timeOutMs
+  const results = await Promise.race([timeoutPromise(), fetchPromise()]);
   try {
+    if (!results || !isArray(results) || !results.length) {
+      window?.log?.warn(
+        `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
+      );
+      throw new SnodeResponseError(
+        `_retrieveNextMessages - sessionRpc could not talk to ${targetNode.ip}:${targetNode.port}`
+      );
+    }
+
+    // the +1 is to take care of the extra `expire` method added once user config is released
+    if (results.length !== namespaces.length && results.length !== namespaces.length + 1) {
+      throw new Error(
+        `We asked for updates about ${namespaces.length} messages but got results of length ${results.length}`
+      );
+    }
+
+    // do a basic check to know if we have something kind of looking right (status 200 should always be there for a retrieve)
+    const firstResult = results[0];
+
+    if (firstResult.code !== 200) {
+      window?.log?.warn(`_retrieveNextMessages result is not 200 but ${firstResult.code}`);
+      throw new Error(
+        `_retrieveNextMessages - retrieve result is not 200 with ${targetNode.ip}:${targetNode.port} but ${firstResult.code}`
+      );
+    }
+
     // we rely on the code of the first one to check for online status
     const bodyFirstResult = firstResult.body;
     if (!window.inboxStore?.getState().onionPaths.isOnline) {
@@ -165,7 +167,8 @@ async function retrieveNextMessages(
 
     GetNetworkTime.handleTimestampOffsetFromNetwork('retrieve', bodyFirstResult.t);
 
-    // merge results with their corresponding namespaces
+    // NOTE: We don't want to sort messages here because the ordering depends on the snode and when it received each message.
+    // The last_hash for that snode has to be the last one we've received from that same snode, othwerwise we end up fetching the same messages over and over again.
     return results.map((result, index) => ({
       code: result.code,
       messages: result.body as RetrieveMessagesResultsContent,

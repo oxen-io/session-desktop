@@ -17,6 +17,15 @@ export const DURATION = {
   WEEKS: days * 7,
 };
 
+export const FILESIZE = {
+  /** 1KB */
+  KB: 1024,
+  /** 1MB */
+  MB: 1024 * 1024,
+  /** 1GB */
+  GB: 1024 * 1024 * 1024,
+};
+
 export const TTL_DEFAULT = {
   /** 20 seconds */
   TYPING_MESSAGE: 20 * DURATION.SECONDS,
@@ -51,8 +60,9 @@ export const CONVERSATION = {
   // Maximum voice message duraton of 5 minutes
   // which equates to 1.97 MB
   MAX_VOICE_MESSAGE_DURATION: 300,
-  MAX_UNREAD_COUNT: 999,
-};
+  MAX_CONVO_UNREAD_COUNT: 999,
+  MAX_GLOBAL_UNREAD_COUNT: 99, // the global one does not look good with 4 digits (999+) so we have a smaller one for it
+} as const;
 
 /**
  * The file server and onion request max upload size is 10MB precisely.
@@ -61,14 +71,11 @@ export const CONVERSATION = {
 export const MAX_ATTACHMENT_FILESIZE_BYTES = 10 * 1000 * 1000;
 
 export const VALIDATION = {
-  MAX_GROUP_NAME_LENGTH: 30,
   CLOSED_GROUP_SIZE_LIMIT: 100,
 };
 
 export const DEFAULT_RECENT_REACTS = ['😂', '🥰', '😢', '😡', '😮', '😈'];
 export const REACT_LIMIT = 6;
-
-export const MAX_USERNAME_BYTES = 64;
 
 export const FEATURE_RELEASE_TIMESTAMPS = {
   DISAPPEARING_MESSAGES_V2: 1710284400000, // 13/03/2024 10:00 Melbourne time
@@ -78,3 +85,12 @@ export const FEATURE_RELEASE_TIMESTAMPS = {
 export const LOCALE_DEFAULTS = {
   app_name: 'Session',
 } as const
+
+export const ONBOARDING_TIMES = {
+  /** 15 seconds */
+  RECOVERY_TIMEOUT: 15 * DURATION.SECONDS,
+  /** 0.3 seconds */
+  RECOVERY_FINISHING: 0.3 * DURATION.SECONDS,
+  /** 0.2 seconds */
+  RECOVERY_FINISHED: 0.2 * DURATION.SECONDS,
+};

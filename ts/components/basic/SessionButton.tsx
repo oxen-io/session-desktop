@@ -1,16 +1,18 @@
-import React, { ReactNode } from 'react';
 import classNames from 'classnames';
+import { ReactNode, RefObject } from 'react';
 import styled from 'styled-components';
 
 export enum SessionButtonType {
   Outline = 'outline',
   Simple = 'simple',
   Solid = 'solid',
+  Ghost = 'ghost',
 }
 
 export enum SessionButtonShape {
   Round = 'round',
   Square = 'square',
+  None = 'none',
 }
 
 // NOTE References ts/themes/colors.tsx
@@ -28,12 +30,12 @@ export enum SessionButtonColor {
   None = 'transparent',
 }
 
-const StyledButton = styled.div<{
+const StyledButton = styled.button<{
   color: string | undefined;
   buttonType: SessionButtonType;
   buttonShape: SessionButtonShape;
 }>`
-  width: auto;
+  width: ${props => (props.buttonType === SessionButtonType.Ghost ? '100%' : 'auto')};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,8 +47,10 @@ const StyledButton = styled.div<{
   transition: var(--default-duration);
   background-repeat: no-repeat;
   overflow: hidden;
-  height: 34px;
-  padding: 0px 18px;
+  height: ${props => (props.buttonType === SessionButtonType.Ghost ? undefined : '34px')};
+  min-height: ${props => (props.buttonType === SessionButtonType.Ghost ? undefined : '34px')};
+  padding: ${props =>
+    props.buttonType === SessionButtonType.Ghost ? '18px 24px 22px' : '0px 18px'};
   background-color: ${props =>
     props.buttonType === SessionButtonType.Solid && props.color
       ? `var(--${props.color}-color)`
@@ -65,7 +69,12 @@ const StyledButton = styled.div<{
   ${props =>
     props.buttonType === SessionButtonType.Solid &&
     'box-shadow: 0px 0px 6px var(--button-solid-shadow-color);'}
-  border-radius: ${props => (props.buttonShape === SessionButtonShape.Round ? '17px' : '6px')};
+  border-radius: ${props =>
+    props.buttonShape === SessionButtonShape.Round
+      ? '17px'
+      : props.buttonShape === SessionButtonShape.Square
+        ? '6px'
+        : '0px'};
 
   .session-icon {
     fill: var(--background-primary-color);
@@ -82,8 +91,8 @@ const StyledButton = styled.div<{
       props.buttonType === SessionButtonType.Solid
         ? 'background-color: var(--button-solid-disabled-color)'
         : props.buttonType === SessionButtonType.Outline
-        ? 'border: 1px solid var(--button-outline-disabled-color)'
-        : ''};
+          ? 'border: 1px solid var(--button-outline-disabled-color)'
+          : ''};
     color: ${props =>
       props.buttonType === SessionButtonType.Solid
         ? 'var(--button-solid-text-color)'
@@ -103,27 +112,35 @@ const StyledButton = styled.div<{
   }
 `;
 
-type Props = {
+export type SessionButtonProps = {
   text?: string;
+  ariaLabel?: string;
   disabled?: boolean;
-  buttonType: SessionButtonType;
-  buttonShape: SessionButtonShape;
+  buttonType?: SessionButtonType;
+  buttonShape?: SessionButtonShape;
   buttonColor?: SessionButtonColor; // will override theme
-  onClick: any;
+  onClick?: any;
   children?: ReactNode;
   margin?: string;
+  reference?: RefObject<HTMLButtonElement>;
+  className?: string;
   dataTestId?: string;
 };
 
-export const SessionButton = (props: Props) => {
+export const SessionButton = (props: SessionButtonProps) => {
   const {
-    buttonType,
-    buttonShape,
+    buttonType = SessionButtonType.Outline,
+    buttonShape = buttonType === SessionButtonType.Ghost
+      ? SessionButtonShape.None
+      : SessionButtonShape.Round,
+    reference,
+    className,
     dataTestId,
     buttonColor,
     text,
-    disabled,
-    onClick,
+    ariaLabel,
+    disabled = false,
+    onClick = null,
     margin,
   } = props;
 
@@ -137,6 +154,7 @@ export const SessionButton = (props: Props) => {
 
   return (
     <StyledButton
+      aria-label={ariaLabel}
       color={buttonColor}
       buttonShape={buttonShape}
       buttonType={buttonType}
@@ -145,10 +163,12 @@ export const SessionButton = (props: Props) => {
         buttonShape,
         buttonType,
         buttonColor ?? '',
-        disabled && 'disabled'
+        disabled && 'disabled',
+        className
       )}
       role="button"
       onClick={onClickFn}
+      ref={reference}
       data-testid={dataTestId}
       style={{ margin }}
     >
@@ -156,10 +176,3 @@ export const SessionButton = (props: Props) => {
     </StyledButton>
   );
 };
-
-SessionButton.defaultProps = {
-  disabled: false,
-  buttonShape: SessionButtonShape.Round,
-  buttonType: SessionButtonType.Outline,
-  onClick: null,
-} as Partial<Props>;

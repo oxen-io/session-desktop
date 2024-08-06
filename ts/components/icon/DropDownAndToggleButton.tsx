@@ -1,10 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
+import { MouseEvent } from 'react';
 import { contextMenu } from 'react-contexify';
+import styled from 'styled-components';
 
 type SProps = {
-  onArrowClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onMainButtonClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onArrowClick: (e: MouseEvent<HTMLDivElement>) => void;
+  onMainButtonClick: (e: MouseEvent<HTMLDivElement>) => void;
   isMuted?: boolean;
   isFullScreen?: boolean;
   iconType: 'microphone' | 'camera' | 'volume';
@@ -18,14 +18,14 @@ const StyledRoundedButton = styled.div<{ isFullScreen: boolean; isMuted: boolean
     props.isMuted
       ? 'var(--call-buttons-background-disabled-color)'
       : props.isFullScreen
-      ? 'var(--call-buttons-action-background-color)'
-      : 'var(--call-buttons-background-color)'};
+        ? 'var(--call-buttons-action-background-color)'
+        : 'var(--call-buttons-background-color)'};
   color: ${props =>
     props.isMuted
       ? 'var(--call-buttons-icon-disabled-color)'
       : props.isFullScreen
-      ? 'var(--call-buttons-action-icon-color)'
-      : 'var(--call-buttons-icon-color)'};
+        ? 'var(--call-buttons-action-icon-color)'
+        : 'var(--call-buttons-icon-color)'};
 
   ${props => props.isFullScreen && 'opacity: 0.4;'}
   &:hover {
@@ -86,12 +86,12 @@ const MicrophoneIcon = (
 
 export const DropDownAndToggleButton = (props: SProps) => {
   const { iconType, isFullScreen = false, onArrowClick, onMainButtonClick, isMuted } = props;
-  const arrowClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+  const arrowClickHandler = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     onArrowClick(e);
   };
 
-  const mainButtonClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+  const mainButtonClickHandler = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     contextMenu.hideAll();
     onMainButtonClick(e);

@@ -2,7 +2,6 @@ import { isBoolean } from 'lodash';
 
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { SettingsKey } from '../../data/settings-key';
-import { Storage } from '../../util/storage';
 
 const SettingsBoolsKeyTrackedInRedux = [
   SettingsKey.someDeviceOutdatedSyncing,
@@ -10,10 +9,11 @@ const SettingsBoolsKeyTrackedInRedux = [
   SettingsKey.hasBlindedMsgRequestsEnabled,
   SettingsKey.hasFollowSystemThemeEnabled,
   SettingsKey.hasShiftSendEnabled,
+  SettingsKey.hideRecoveryPassword,
 ] as const;
 
 export type SettingsState = {
-  settingsBools: Record<typeof SettingsBoolsKeyTrackedInRedux[number], boolean>;
+  settingsBools: Record<(typeof SettingsBoolsKeyTrackedInRedux)[number], boolean>;
 };
 
 export function getSettingsInitialState() {
@@ -24,11 +24,12 @@ export function getSettingsInitialState() {
       hasBlindedMsgRequestsEnabled: false,
       hasFollowSystemThemeEnabled: false,
       hasShiftSendEnabled: false,
+      hideRecoveryPassword: false,
     },
   };
 }
 
-function isTrackedBoolean(key: string): key is typeof SettingsBoolsKeyTrackedInRedux[number] {
+function isTrackedBoolean(key: string): key is (typeof SettingsBoolsKeyTrackedInRedux)[number] {
   return SettingsBoolsKeyTrackedInRedux.indexOf(key as any) !== -1;
 }
 
@@ -44,33 +45,34 @@ const settingsSlice = createSlice({
   // Once the storage is ready,
   initialState: getSettingsInitialState(),
   reducers: {
-    updateAllOnStorageReady(state) {
-      const linkPreview = Storage.get(SettingsKey.settingsLinkPreview, false);
-      const outdatedSync = Storage.get(SettingsKey.someDeviceOutdatedSyncing, false);
-      const hasBlindedMsgRequestsEnabled = Storage.get(
-        SettingsKey.hasBlindedMsgRequestsEnabled,
-        false
-      );
-      const hasFollowSystemThemeEnabled = Storage.get(
-        SettingsKey.hasFollowSystemThemeEnabled,
-        false
-      );
-      const hasShiftSendEnabled = Storage.get(SettingsKey.hasShiftSendEnabled, false);
-      state.settingsBools.someDeviceOutdatedSyncing = isBoolean(outdatedSync)
-        ? outdatedSync
-        : false;
-      state.settingsBools['link-preview-setting'] = isBoolean(linkPreview) ? linkPreview : false; // this is the value of SettingsKey.settingsLinkPreview
-      state.settingsBools.hasBlindedMsgRequestsEnabled = isBoolean(hasBlindedMsgRequestsEnabled)
-        ? hasBlindedMsgRequestsEnabled
-        : false;
+    updateAllOnStorageReady(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        settingsLinkPreview: boolean;
+        someDeviceOutdatedSyncing: boolean;
+        hasBlindedMsgRequestsEnabled: boolean;
+        hasFollowSystemThemeEnabled: boolean;
+        hasShiftSendEnabled: boolean;
+        hideRecoveryPassword: boolean;
+      }>
+    ) {
+      const {
+        hasBlindedMsgRequestsEnabled,
+        hasFollowSystemThemeEnabled,
+        settingsLinkPreview,
+        someDeviceOutdatedSyncing,
+        hasShiftSendEnabled,
+        hideRecoveryPassword,
+      } = payload;
 
-      state.settingsBools.hasFollowSystemThemeEnabled = isBoolean(hasFollowSystemThemeEnabled)
-        ? hasFollowSystemThemeEnabled
-        : false;
-
-      state.settingsBools.hasShiftSendEnabled = isBoolean(hasShiftSendEnabled)
-        ? hasShiftSendEnabled
-        : false;
+      state.settingsBools.someDeviceOutdatedSyncing = someDeviceOutdatedSyncing;
+      state.settingsBools['link-preview-setting'] = settingsLinkPreview;
+      state.settingsBools.hasBlindedMsgRequestsEnabled = hasBlindedMsgRequestsEnabled;
+      state.settingsBools.hasFollowSystemThemeEnabled = hasFollowSystemThemeEnabled;
+      state.settingsBools.hasShiftSendEnabled = hasShiftSendEnabled;
+      state.settingsBools.hideRecoveryPassword = hideRecoveryPassword;
 
       return state;
     },
@@ -97,9 +99,6 @@ const settingsSlice = createSlice({
 });
 
 const { actions, reducer } = settingsSlice;
-export const {
-  updateSettingsBoolValue,
-  deleteSettingsBoolValue,
-  updateAllOnStorageReady,
-} = actions;
+export const { updateSettingsBoolValue, deleteSettingsBoolValue, updateAllOnStorageReady } =
+  actions;
 export const settingsReducer = reducer;

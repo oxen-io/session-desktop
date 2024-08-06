@@ -3,17 +3,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { omit, toNumber } from 'lodash';
 import { ReplyingToMessageProps } from '../../components/conversation/composition/CompositionBox';
 import { QuotedAttachmentType } from '../../components/conversation/message/message-content/quote/Quote';
-import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { Data } from '../../data/data';
-import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
-} from '../../interactions/conversationInteractions';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationNotificationSettingType,
-  ConversationTypeEnum,
-} from '../../models/conversationAttributes';
+import { ConversationNotificationSettingType } from '../../models/conversationAttributes';
 import {
   MessageModelType,
   PropsForDataExtractionNotification,
@@ -26,13 +17,14 @@ import {
   DisappearingMessageType,
 } from '../../session/disappearing_messages/types';
 import { ReactionList } from '../../types/Reaction';
-
-export type CallNotificationType = 'missed-call' | 'started-call' | 'answered-a-call';
-
-export type PropsForCallNotification = {
-  notificationType: CallNotificationType;
-  messageId: string;
-};
+import { resetRightOverlayMode } from './section';
+import { CONVERSATION_PRIORITIES, ConversationTypeEnum } from '../../models/types';
+import {
+  LastMessageStatusType,
+  LastMessageType,
+  PropsForCallNotification,
+  PropsForInteractionNotification,
+} from './types';
 
 export type MessageModelPropsWithoutConvoProps = {
   propsForMessage: PropsForMessageWithoutConvoProps;
@@ -59,8 +51,6 @@ export type ContactPropsMessageDetail = {
   avatarPath?: string | null;
   errors?: Array<Error>;
 };
-
-export type LastMessageStatusType = 'sending' | 'sent' | 'read' | 'error' | undefined;
 
 export type FindAndFormatContactType = {
   pubkey: string;
@@ -179,14 +169,6 @@ export type PropsForQuote = {
   referencedMessageNotFound?: boolean;
 };
 
-export type PropsForInteractionNotification = {
-  notificationType: InteractionNotificationType;
-  convoId: string;
-  messageId: string;
-  receivedAt: number;
-  isUnread: boolean;
-};
-
 export type PropsForMessageWithoutConvoProps = {
   id: string; // messageId
   direction: MessageModelType;
@@ -224,18 +206,6 @@ export type PropsForMessageWithConvoProps = PropsForMessageWithoutConvoProps & {
   isDeletableForEveryone: boolean;
   isBlocked: boolean;
   isDeleted?: boolean;
-};
-
-export type LastMessageType = {
-  status: LastMessageStatusType;
-  text: string | null;
-  interactionType: ConversationInteractionType | null;
-  interactionStatus: ConversationInteractionStatus | null;
-};
-
-export type InteractionNotificationType = {
-  interactionType: ConversationInteractionType;
-  interactionStatus: ConversationInteractionStatus;
 };
 
 /**
@@ -312,7 +282,6 @@ export type ConversationsStateType = {
   messageInfoId: string | undefined;
   showRightPanel: boolean;
   selectedMessageIds: Array<string>;
-  lightBox?: LightBoxOptions;
   quotedMessage?: ReplyingToMessageProps;
   areMoreMessagesBeingFetched: boolean;
 
@@ -353,6 +322,10 @@ export type MentionsMembersType = Array<{
   authorProfileName: string;
 }>;
 
+function buildQuoteId(sender: string, timestamp: number) {
+  return `${timestamp}-${sender}`;
+}
+
 /**
  * Fetches the messages for a conversation to put into redux.
  * @param conversationKey - the id of the conversation
@@ -378,13 +351,11 @@ async function getMessages({
     return { messagesProps: [], quotesProps: {} };
   }
 
-  const {
-    messages: messagesCollection,
-    quotes: quotesCollection,
-  } = await Data.getMessagesByConversation(conversationKey, {
-    messageId,
-    returnQuotes: true,
-  });
+  const { messages: messagesCollection, quotes: quotesCollection } =
+    await Data.getMessagesByConversation(conversationKey, {
+      messageId,
+      returnQuotes: true,
+    });
 
   const messagesProps: Array<MessageModelPropsWithoutConvoProps> = messagesCollection.models.map(
     m => m.getMessageModelProps()
@@ -409,7 +380,7 @@ async function getMessages({
           const timestamp = quotedMessage.propsForMessage.timestamp;
           const sender = quotedMessage.propsForMessage.sender;
           if (timestamp && sender) {
-            quotesProps[`${timestamp}-${sender}`] = quotedMessage;
+            quotesProps[buildQuoteId(sender, timestamp)] = quotedMessage;
           }
         }
       }
@@ -611,10 +582,10 @@ function handleMessageExpiredOrDeleted(
       if (timestamp && sender) {
         const message2Delete = lookupQuote(editedQuotes, editedMessages, timestamp, sender);
         window.log.debug(
-          `Deleting quote {${timestamp}-${sender}} ${JSON.stringify(message2Delete)}`
+          `Deleting quote {${buildQuoteId(sender, timestamp)}} ${JSON.stringify(message2Delete)}`
         );
 
-        delete editedQuotes[`${timestamp}-${sender}`];
+        delete editedQuotes[buildQuoteId(sender, timestamp)];
       }
 
       return {
@@ -866,7 +837,6 @@ const conversationsSlice = createSlice({
         showRightPanel: false,
         selectedMessageIds: [],
 
-        lightBox: undefined,
         messageInfoId: undefined,
         quotedMessage: undefined,
 
@@ -907,19 +877,29 @@ const conversationsSlice = createSlice({
         oldBottomMessageId: null,
       };
     },
+    pushQuotedMessageDetails(
+      state: ConversationsStateType,
+      action: PayloadAction<MessageModelPropsWithoutConvoProps>
+    ) {
+      const { payload } = action;
+      if (state.selectedConversation === payload.propsForMessage.convoId) {
+        const builtId = buildQuoteId(
+          payload.propsForMessage.sender,
+          payload.propsForMessage.timestamp
+        );
+        if (state.quotes[builtId]) {
+          return state;
+        }
+        state.quotes[builtId] = payload;
+      }
+      return state;
+    },
     resetOldTopMessageId(state: ConversationsStateType) {
       state.oldTopMessageId = null;
       return state;
     },
     resetOldBottomMessageId(state: ConversationsStateType) {
       state.oldBottomMessageId = null;
-      return state;
-    },
-    showLightBox(
-      state: ConversationsStateType,
-      action: PayloadAction<LightBoxOptions | undefined>
-    ) {
-      state.lightBox = action.payload;
       return state;
     },
     showScrollToBottomButton(state: ConversationsStateType, action: PayloadAction<boolean>) {
@@ -1113,6 +1093,7 @@ export const {
   resetOldTopMessageId,
   resetOldBottomMessageId,
   markConversationFullyRead,
+  pushQuotedMessageDetails,
   // layout stuff
   showMessageInfoView,
   openRightPanel,
@@ -1120,7 +1101,6 @@ export const {
   addMessageIdToSelection,
   resetSelectedMessageIds,
   toggleSelectedMessageId,
-  showLightBox,
   quoteMessage,
   showScrollToBottomButton,
   quotedMessageToAnimate,
@@ -1164,6 +1144,7 @@ export async function openConversationWithMessages(args: {
       initialQuotes,
     })
   );
+  window.inboxStore?.dispatch(resetRightOverlayMode());
 }
 
 export async function openConversationToSpecificMessage(args: {
@@ -1174,13 +1155,11 @@ export async function openConversationToSpecificMessage(args: {
   const { conversationKey, messageIdToNavigateTo, shouldHighlightMessage } = args;
   await unmarkAsForcedUnread(conversationKey);
 
-  const {
-    messagesProps: messagesAroundThisMessage,
-    quotesProps: quotesAroundThisMessage,
-  } = await getMessages({
-    conversationKey,
-    messageId: messageIdToNavigateTo,
-  });
+  const { messagesProps: messagesAroundThisMessage, quotesProps: quotesAroundThisMessage } =
+    await getMessages({
+      conversationKey,
+      messageId: messageIdToNavigateTo,
+    });
 
   const mostRecentMessageIdOnOpen = await Data.getLastMessageIdInConversation(conversationKey);
 
@@ -1211,23 +1190,17 @@ export function lookupQuote(
   timestamp: number,
   author: string
 ): MessageModelPropsWithoutConvoProps | undefined {
-  let sourceMessage = quotes[`${timestamp}-${author}`];
+  const sourceMessage = quotes[buildQuoteId(author, timestamp)];
 
-  // NOTE If a quote is processed but we haven't triggered a render, the quote might not be in the lookup map yet so we check the messages in memory.
-  if (!sourceMessage) {
-    const quotedMessages = messages.filter(message => {
-      const msgProps = message.propsForMessage;
-      return msgProps.timestamp === timestamp && msgProps.sender === author;
-    });
-
-    if (quotedMessages?.length) {
-      for (const quotedMessage of quotedMessages) {
-        if (quotedMessage) {
-          sourceMessage = quotedMessage;
-        }
-      }
-    }
+  if (sourceMessage) {
+    return sourceMessage;
   }
 
-  return sourceMessage;
+  // NOTE If a quote is processed but we haven't triggered a render, the quote might not be in the lookup map yet so we check the messages in memory.
+  const foundMessageToQuote = messages.find(message => {
+    const msgProps = message.propsForMessage;
+    return msgProps.timestamp === timestamp && msgProps.sender === author;
+  });
+
+  return foundMessageToQuote;
 }

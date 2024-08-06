@@ -1,17 +1,18 @@
-import tls from 'tls';
 import https from 'https';
+import _ from 'lodash';
+import tls from 'tls';
 // eslint-disable-next-line import/no-named-default
 import { default as insecureNodeFetch } from 'node-fetch';
-import _ from 'lodash';
 import pRetry from 'p-retry';
 
-import { sha256 } from '../../crypto';
-import { Constants } from '../..';
 import { SeedNodeAPI } from '.';
-import { allowOnlyOneAtATime } from '../../utils/Promise';
-import { APPLICATION_JSON } from '../../../types/MIME';
+import { Constants } from '../..';
 import { isLinux } from '../../../OS';
-import { Snode } from '../../../data/data';
+import { Snode } from '../../../data/types';
+import { APPLICATION_JSON } from '../../../types/MIME';
+import { sha256 } from '../../crypto';
+import { allowOnlyOneAtATime } from '../../utils/Promise';
+import { GetServicesNodesFromSeedRequest } from '../snode_api/SnodeRequestTypes';
 
 /**
  * Fetch all snodes from seed nodes.
@@ -34,6 +35,7 @@ export async function fetchSnodePoolFromSeedNodeWithRetries(
       port: snode.storage_port,
       pubkey_x25519: snode.pubkey_x25519,
       pubkey_ed25519: snode.pubkey_ed25519,
+      storage_server_version: snode.storage_server_version,
     }));
     window?.log?.info(
       'SeedNodeAPI::fetchSnodePoolFromSeedNodeWithRetries - Refreshed random snode pool with',
@@ -139,6 +141,7 @@ export interface SnodeFromSeed {
   storage_port: number;
   pubkey_x25519: string;
   pubkey_ed25519: string;
+  storage_server_version: Array<number>;
 }
 
 const getSnodeListFromSeednodeOneAtAtime = async (seedNodes: Array<string>) =>
@@ -228,22 +231,21 @@ async function getSnodesFromSeedUrl(urlObj: URL): Promise<Array<any>> {
   // we get all active nodes
   window?.log?.info(`getSnodesFromSeedUrl starting with ${urlObj.href}`);
 
-  const params = {
-    active_only: true,
-    fields: {
-      public_ip: true,
-      storage_port: true,
-      pubkey_x25519: true,
-      pubkey_ed25519: true,
-    },
-  };
-
   const endpoint = 'json_rpc';
   const url = `${urlObj.href}${endpoint}`;
-  const body = {
+  const body: GetServicesNodesFromSeedRequest = {
     jsonrpc: '2.0',
     method: 'get_n_service_nodes',
-    params,
+    params: {
+      active_only: true,
+      fields: {
+        public_ip: true,
+        storage_port: true,
+        pubkey_x25519: true,
+        pubkey_ed25519: true,
+        storage_server_version: true,
+      },
+    },
   };
 
   const sslAgent = await getSslAgentForSeedNode(

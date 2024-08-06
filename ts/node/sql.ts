@@ -12,6 +12,7 @@ import {
   differenceBy,
   forEach,
   fromPairs,
+  intersection,
   isArray,
   isEmpty,
   isNumber,
@@ -49,7 +50,6 @@ import {
 import type { LocalizerDictionary } from '../types/Localizer'; // checked - only node
 import { StorageItem } from './storage_item'; // checked - only node
 
-import { OpenGroupV2Room } from '../data/opengroups';
 import {
   CONFIG_DUMP_TABLE,
   MsgDuplicateSearchOpenGroup,
@@ -65,6 +65,7 @@ import { MessageAttributes } from '../models/messageType';
 import { SignalService } from '../protobuf';
 import { Quote } from '../receiver/types';
 import { DURATION } from '../session/constants';
+import { ed25519Str } from '../session/utils/String';
 import {
   getSQLCipherIntegrityCheck,
   openAndMigrateDatabase,
@@ -78,6 +79,7 @@ import {
   initDbInstanceWith,
   isInstanceInitialized,
 } from './sqlInstance';
+import { OpenGroupV2Room } from '../data/types';
 
 // eslint:disable: function-name non-literal-fs-path
 
@@ -351,9 +353,7 @@ function getById(table: string, id: string, instance?: BetterSqlite3.Database) {
 
 function removeById(table: string, id: string) {
   if (!Array.isArray(id)) {
-    assertGlobalInstance()
-      .prepare(`DELETE FROM ${table} WHERE id = $id;`)
-      .run({ id });
+    assertGlobalInstance().prepare(`DELETE FROM ${table} WHERE id = $id;`).run({ id });
     return;
   }
 
@@ -400,10 +400,34 @@ function updateSwarmNodesForPubkey(pubkey: string, snodeEdKeys: Array<string>) {
     });
 }
 
+function clearOutAllSnodesNotInPool(edKeysOfSnodePool: Array<string>) {
+  const allSwarms = assertGlobalInstance()
+    .prepare(`SELECT * FROM ${NODES_FOR_PUBKEY_TABLE};`)
+    .all();
+
+  allSwarms.forEach(swarm => {
+    try {
+      const json = JSON.parse(swarm.json);
+      if (isArray(json)) {
+        const intersect = intersection(json, edKeysOfSnodePool);
+        if (intersect.length !== json.length) {
+          updateSwarmNodesForPubkey(swarm.pubkey, intersect);
+          console.info(
+            `clearOutAllSnodesNotInPool: updating swarm of ${ed25519Str(swarm.pubkey)} to `,
+            intersect
+          );
+        }
+      }
+    } catch (e) {
+      console.warn(
+        `Failed to parse swarm while iterating in clearOutAllSnodesNotInPool for pk: ${ed25519Str(swarm?.pubkey)}`
+      );
+    }
+  });
+}
+
 function getConversationCount() {
-  const row = assertGlobalInstance()
-    .prepare(`SELECT count(*) from ${CONVERSATIONS_TABLE};`)
-    .get();
+  const row = assertGlobalInstance().prepare(`SELECT count(*) from ${CONVERSATIONS_TABLE};`).get();
   if (!row) {
     throw new Error(`getConversationCount: Unable to get count of ${CONVERSATIONS_TABLE}`);
   }
@@ -530,11 +554,9 @@ function fetchConvoMemoryDetails(convoId: string): SaveConversationReturn {
 
 function removeConversation(id: string | Array<string>) {
   if (!Array.isArray(id)) {
-    assertGlobalInstance()
-      .prepare(`DELETE FROM ${CONVERSATIONS_TABLE} WHERE id = $id;`)
-      .run({
-        id,
-      });
+    assertGlobalInstance().prepare(`DELETE FROM ${CONVERSATIONS_TABLE} WHERE id = $id;`).run({
+      id,
+    });
     return;
   }
 
@@ -688,15 +710,19 @@ function searchConversations(query: string) {
   const rows = assertGlobalInstance()
     .prepare(
       `SELECT * FROM ${CONVERSATIONS_TABLE} WHERE
-      (
-        displayNameInProfile LIKE $displayNameInProfile OR
-        nickname LIKE $nickname
-      ) AND active_at > 0
-     ORDER BY active_at DESC
-     LIMIT $limit`
+    (
+      displayNameInProfile LIKE $displayNameInProfile COLLATE NOCASE OR
+      nickname LIKE $nickname COLLATE NOCASE OR
+      (id LIKE $id AND
+        (displayNameInProfile IS NULL OR displayNameInProfile = '') AND (nickname IS NULL OR nickname = '')
+      )
+    ) AND active_at > 0
+    ORDER BY (COALESCE(NULLIF(nickname, ''), displayNameInProfile) COLLATE NOCASE)
+    LIMIT $limit`
     )
     .all({
       displayNameInProfile: `%${query}%`,
+      id: `%${query}%`,
       nickname: `%${query}%`,
       limit: 50,
     });
@@ -778,9 +804,7 @@ function searchMessagesInConversation(query: string, conversationId: string, lim
 }
 
 function getMessageCount() {
-  const row = assertGlobalInstance()
-    .prepare(`SELECT count(*) from ${MESSAGES_TABLE};`)
-    .get();
+  const row = assertGlobalInstance().prepare(`SELECT count(*) from ${MESSAGES_TABLE};`).get();
 
   if (!row) {
     throw new Error(`getMessageCount: Unable to get count of ${MESSAGES_TABLE}`);
@@ -953,19 +977,15 @@ function saveSeenMessageHash(data: any) {
 }
 
 function cleanLastHashes() {
-  assertGlobalInstance()
-    .prepare(`DELETE FROM ${LAST_HASHES_TABLE} WHERE expiresAt <= $now;`)
-    .run({
-      now: Date.now(),
-    });
+  assertGlobalInstance().prepare(`DELETE FROM ${LAST_HASHES_TABLE} WHERE expiresAt <= $now;`).run({
+    now: Date.now(),
+  });
 }
 
 function cleanSeenMessages() {
-  assertGlobalInstance()
-    .prepare('DELETE FROM seenMessages WHERE expiresAt <= $now;')
-    .run({
-      now: Date.now(),
-    });
+  assertGlobalInstance().prepare('DELETE FROM seenMessages WHERE expiresAt <= $now;').run({
+    now: Date.now(),
+  });
 }
 
 function saveMessages(arrayOfMessages: Array<MessageAttributes>) {
@@ -1738,19 +1758,15 @@ const unprocessed: UnprocessedDataNode = {
   },
 
   getUnprocessedById: (id: string) => {
-    const row = assertGlobalInstance()
-      .prepare('SELECT * FROM unprocessed WHERE id = $id;')
-      .get({
-        id,
-      });
+    const row = assertGlobalInstance().prepare('SELECT * FROM unprocessed WHERE id = $id;').get({
+      id,
+    });
 
     return row;
   },
 
   getUnprocessedCount: () => {
-    const row = assertGlobalInstance()
-      .prepare('SELECT count(*) from unprocessed;')
-      .get();
+    const row = assertGlobalInstance().prepare('SELECT count(*) from unprocessed;').get();
 
     if (!row) {
       throw new Error('getMessageCount: Unable to get count of unprocessed');
@@ -1772,15 +1788,11 @@ const unprocessed: UnprocessedDataNode = {
       console.error('removeUnprocessed only supports single ids at a time');
       throw new Error('removeUnprocessed only supports single ids at a time');
     }
-    assertGlobalInstance()
-      .prepare('DELETE FROM unprocessed WHERE id = $id;')
-      .run({ id });
+    assertGlobalInstance().prepare('DELETE FROM unprocessed WHERE id = $id;').run({ id });
   },
 
   removeAllUnprocessed: () => {
-    assertGlobalInstance()
-      .prepare('DELETE FROM unprocessed;')
-      .run();
+    assertGlobalInstance().prepare('DELETE FROM unprocessed;').run();
   },
 };
 
@@ -1870,9 +1882,7 @@ function removeAll() {
 }
 
 function removeAllConversations() {
-  assertGlobalInstance()
-    .prepare(`DELETE FROM ${CONVERSATIONS_TABLE};`)
-    .run();
+  assertGlobalInstance().prepare(`DELETE FROM ${CONVERSATIONS_TABLE};`).run();
 }
 
 function getMessagesWithVisualMediaAttachments(conversationId: string, limit?: number) {
@@ -2220,9 +2230,7 @@ function removeV2OpenGroupRoom(conversationId: string) {
 
 function getEntriesCountInTable(tbl: string) {
   try {
-    const row = assertGlobalInstance()
-      .prepare(`SELECT count(*) from ${tbl};`)
-      .get();
+    const row = assertGlobalInstance().prepare(`SELECT count(*) from ${tbl};`).get();
     return row['count(*)'];
   } catch (e) {
     console.error(e);
@@ -2387,8 +2395,9 @@ function cleanUpOldOpengroupsOnStart() {
         const messagesInConvoAfter = getMessagesCountByConversation(convoId);
 
         console.info(
-          `Cleaning ${countToRemove} messages older than 6 months in public convo: ${convoId} took ${Date.now() -
-            start}ms. Old message count: ${messagesInConvoBefore}, new message count: ${messagesInConvoAfter}`
+          `Cleaning ${countToRemove} messages older than 6 months in public convo: ${convoId} took ${
+            Date.now() - start
+          }ms. Old message count: ${messagesInConvoBefore}, new message count: ${messagesInConvoAfter}`
         );
 
         // no need to update the `unreadCount` during the migration anymore.
@@ -2472,6 +2481,7 @@ export const sqlNode = {
 
   getSwarmNodesForPubkey,
   updateSwarmNodesForPubkey,
+  clearOutAllSnodesNotInPool,
   getGuardNodes,
   updateGuardNodes,
 

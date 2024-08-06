@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { PropsForExpirationTimer } from '../../state/ducks/conversations';
@@ -174,7 +172,6 @@ function useTextToRender(props: PropsForExpirationTimer) {
       }
 
       return window.i18n('theyChangedTheTimerLegacy', { name: contact, time: timespanText });
-
     case 'fromMe':
     case 'fromSync':
       if (disabled) {
@@ -191,7 +188,6 @@ function useTextToRender(props: PropsForExpirationTimer) {
           : window.i18n('youChangedTheTimer', { time: timespanText, mode });
       }
       return window.i18n('youChangedTheTimerLegacy', { time: timespanText });
-
     default:
       assertUnreachable(type, `TimerNotification: Missing case error "${type}"`);
   }

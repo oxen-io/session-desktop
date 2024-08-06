@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
 
 import { isNumber } from 'lodash';
 import { Item, ItemParams, Menu, useContextMenu } from 'react-contexify';
 import { useDispatch } from 'react-redux';
-import { useClickAway, useMouse } from 'react-use';
+import useClickAway from 'react-use/lib/useClickAway';
+import useMouse from 'react-use/lib/useMouse';
 import styled from 'styled-components';
 import { Data } from '../../../../data/data';
 
 import { MessageInteraction } from '../../../../interactions';
 import { replyToMessage } from '../../../../interactions/conversationInteractions';
-import {
-  deleteMessagesById,
-  deleteMessagesByIdForEveryone,
-} from '../../../../interactions/conversations/unsendingInteractions';
+import { deleteMessagesForX } from '../../../../interactions/conversations/unsendingInteractions';
 import {
   addSenderAsModerator,
   removeSenderFromModerator,
@@ -94,17 +92,15 @@ const DeleteItem = ({ messageId }: { messageId: string }) => {
 
   const isDeletable = useMessageIsDeletable(messageId);
   const isDeletableForEveryone = useMessageIsDeletableForEveryone(messageId);
+  const messageStatus = useMessageStatus(messageId);
+
+  const enforceDeleteServerSide = isPublic && messageStatus !== 'error';
 
   const onDelete = useCallback(() => {
     if (convoId) {
-      if (!isPublic && isDeletable) {
-        void deleteMessagesById([messageId], convoId);
-      }
-      if (isPublic && isDeletableForEveryone) {
-        void deleteMessagesByIdForEveryone([messageId], convoId);
-      }
+      void deleteMessagesForX([messageId], convoId, enforceDeleteServerSide);
     }
-  }, [convoId, isDeletable, isDeletableForEveryone, isPublic, messageId]);
+  }, [convoId, enforceDeleteServerSide, messageId]);
 
   if (!convoId || (isPublic && !isDeletableForEveryone) || (!isPublic && !isDeletable)) {
     return null;

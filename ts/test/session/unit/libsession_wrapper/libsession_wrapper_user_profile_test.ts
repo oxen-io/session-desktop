@@ -3,16 +3,14 @@ import { expect } from 'chai';
 import Sinon from 'sinon';
 
 import { ConversationModel } from '../../../../models/conversation';
-import {
-  ConversationAttributes,
-  ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+import { ConversationAttributes } from '../../../../models/conversationAttributes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { getConversationController } from '../../../../session/conversations';
 import { UserUtils } from '../../../../session/utils';
 import { SessionUtilUserProfile } from '../../../../session/utils/libsession/libsession_utils_user_profile';
 import { TestUtils } from '../../../test-utils';
 import { stubWindowLog } from '../../../test-utils/utils';
+import { ConversationTypeEnum } from '../../../../models/types';
 
 describe('libsession_user_profile', () => {
   stubWindowLog();
@@ -67,9 +65,8 @@ describe('libsession_user_profile', () => {
       Sinon.stub(getConversationController(), 'get').returns(contact);
       Sinon.stub(SessionUtilUserProfile, 'isUserProfileToStoreInWrapper').returns(true);
 
-      const wrapperUserProfile = await SessionUtilUserProfile.insertUserProfileIntoWrapper(
-        ourNumber
-      );
+      const wrapperUserProfile =
+        await SessionUtilUserProfile.insertUserProfileIntoWrapper(ourNumber);
 
       expect(wrapperUserProfile, 'something should be returned from the wrapper').to.not.be.null;
       if (!wrapperUserProfile) {
@@ -123,9 +120,8 @@ describe('libsession_user_profile', () => {
       Sinon.stub(getConversationController(), 'get').returns(contact);
       Sinon.stub(SessionUtilUserProfile, 'isUserProfileToStoreInWrapper').returns(true);
 
-      const wrapperUserProfile = await SessionUtilUserProfile.insertUserProfileIntoWrapper(
-        ourNumber
-      );
+      const wrapperUserProfile =
+        await SessionUtilUserProfile.insertUserProfileIntoWrapper(ourNumber);
 
       expect(wrapperUserProfile, 'something should be returned from the wrapper').to.not.be.null;
       if (!wrapperUserProfile) {

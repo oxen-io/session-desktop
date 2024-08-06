@@ -1,4 +1,3 @@
-import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 
 import { isEmpty } from 'lodash';
@@ -52,7 +51,7 @@ const ReactButton = styled.span`
   cursor: pointer;
   font-size: 24px;
 
-  :hover {
+  &:hover {
     background-color: var(--chat-buttons-background-hover-color);
   }
 `;
@@ -171,7 +170,7 @@ const ExpiresInItem = ({ expirationTimestamp }: { expirationTimestamp?: number |
   );
 };
 
-export const MessageReactBar = ({ action, additionalAction, messageId }: Props): ReactElement => {
+export const MessageReactBar = ({ action, additionalAction, messageId }: Props) => {
   const recentReactions = getRecentReactions();
   const expirationTimestamp = useIsRenderedExpiresInItem(messageId);
 

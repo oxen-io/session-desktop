@@ -1,10 +1,10 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getShowScrollButton } from '../state/selectors/conversations';
 
+import { useSelectedUnreadCount } from '../state/selectors/selectedConversation';
 import { SessionIconButton } from './icon';
-import { Noop } from '../types/Util';
+import { SessionUnreadCount } from './icon/SessionNotificationCount';
 
 const SessionScrollButtonDiv = styled.div`
   position: fixed;
@@ -18,8 +18,9 @@ const SessionScrollButtonDiv = styled.div`
   }
 `;
 
-export const SessionScrollButton = (props: { onClickScrollBottom: Noop }) => {
+export const SessionScrollButton = (props: { onClickScrollBottom: () => void }) => {
   const show = useSelector(getShowScrollButton);
+  const unreadCount = useSelectedUnreadCount();
 
   return (
     <SessionScrollButtonDiv>
@@ -29,7 +30,9 @@ export const SessionScrollButton = (props: { onClickScrollBottom: Noop }) => {
         isHidden={!show}
         onClick={props.onClickScrollBottom}
         dataTestId="scroll-to-bottom-button"
-      />
+      >
+        {Boolean(unreadCount) && <SessionUnreadCount count={unreadCount} />}
+      </SessionIconButton>
     </SessionScrollButtonDiv>
   );
 };

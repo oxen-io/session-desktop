@@ -9,12 +9,12 @@ import { SnodeAPI } from '../../session/apis/snode_api/SNodeAPI';
 import { SnodeNamespaces } from '../../session/apis/snode_api/namespaces';
 import { getConversationController } from '../../session/conversations';
 import { UnsendMessage } from '../../session/messages/outgoing/controlMessage/UnsendMessage';
-import { ed25519Str } from '../../session/onions/onionPath';
 import { PubKey } from '../../session/types';
 import { ToastUtils, UserUtils } from '../../session/utils';
 import { closeRightPanel, resetSelectedMessageIds } from '../../state/ducks/conversations';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { resetRightOverlayMode } from '../../state/ducks/section';
+import { ed25519Str } from '../../session/utils/String';
 
 /**
  * Deletes messages for everyone in a 1-1 or everyone in a closed group conversation.
@@ -303,7 +303,7 @@ const doDeleteSelectedMessages = async ({
   }
 
   const isAllOurs = selectedMessages.every(message => ourDevicePubkey === message.getSource());
-  if (conversation.isPublic()) {
+  if (conversation.isPublic() && deleteForEveryone) {
     await doDeleteSelectedMessagesInSOGS(selectedMessages, conversation, isAllOurs);
     return;
   }
@@ -334,6 +334,24 @@ const doDeleteSelectedMessages = async ({
 
   // #endregion
 };
+
+/**
+ * Either delete for everyone or not, based on the props
+ */
+export async function deleteMessagesForX(
+  messageIds: Array<string>,
+  conversationId: string,
+  /** should only be enforced for messages successfully sent on communities */
+  enforceDeleteServerSide: boolean
+) {
+  if (conversationId) {
+    if (enforceDeleteServerSide) {
+      await deleteMessagesByIdForEveryone(messageIds, conversationId);
+    } else {
+      await deleteMessagesById(messageIds, conversationId);
+    }
+  }
+}
 
 export async function deleteMessagesByIdForEveryone(
   messageIds: Array<string>,

@@ -36,6 +36,9 @@ export type OutgoingConfResult = {
   oldMessageHashes: Array<string>;
 };
 
+/**
+ * Initializes the libsession wrappers for the required user variants if the dumps are not already in the database. It will use an empty dump if the dump is not found.
+ */
 async function initializeLibSessionUtilWrappers() {
   const keypair = await UserUtils.getUserED25519KeyPairBytes();
   if (!keypair || !keypair.privKeyBytes) {
@@ -127,14 +130,14 @@ async function pendingChangesForPubkey(pubkey: string): Promise<Array<OutgoingCo
     }
 
     variantsNeedingPush.add(variant);
-    const { data, seqno, hashes } = await GenericWrapperActions.push(variant);
+    const { data: readyToSendData, seqno, hashes } = await GenericWrapperActions.push(variant);
 
     const kind = variantToKind(variant);
 
     const namespace = await GenericWrapperActions.storageNamespace(variant);
     results.push({
       message: new SharedConfigMessage({
-        data,
+        readyToSendData,
         kind,
         seqno: Long.fromNumber(seqno),
         timestamp: GetNetworkTime.getNowWithNetworkOffset(),

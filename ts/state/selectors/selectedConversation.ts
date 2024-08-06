@@ -1,6 +1,7 @@
 import { isString } from 'lodash';
 import { useSelector } from 'react-redux';
-import { ConversationTypeEnum, isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { useUnreadCount } from '../../hooks/useParamSelector';
+import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
 import {
   DisappearingMessageConversationModeType,
   DisappearingMessageConversationModes,
@@ -16,6 +17,7 @@ import {
   getSelectedMessageIds,
 } from './conversations';
 import { getCanWrite, getModerators, getSubscriberCount } from './sogsRoomInfo';
+import { ConversationTypeEnum } from '../../models/types';
 
 /**
  * Returns the formatted text for notification setting.
@@ -299,6 +301,11 @@ export function useSelectedIsPrivateFriend() {
 
 export function useSelectedIsActive() {
   return useSelector(getIsSelectedActive);
+}
+
+export function useSelectedUnreadCount() {
+  const selectedConversation = useSelectedConversationKey();
+  return useUnreadCount(selectedConversation);
 }
 
 export function useSelectedIsNoteToSelf() {

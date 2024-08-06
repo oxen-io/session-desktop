@@ -1,4 +1,4 @@
-import { OpenGroupV2Room } from '../../../../data/opengroups';
+import { OpenGroupV2Room } from '../../../../data/types';
 import { ConversationModel } from '../../../../models/conversation';
 import { getConversationController } from '../../../conversations';
 import { PromiseUtils, ToastUtils } from '../../../utils';
@@ -134,13 +134,17 @@ export async function joinOpenGroupV2WithUIEvents(
   completeUrl: string,
   showToasts: boolean,
   fromConfigMessage: boolean,
-  uiCallback?: (args: JoinSogsRoomUICallbackArgs) => void
+  uiCallback?: (args: JoinSogsRoomUICallbackArgs) => void,
+  errorHandler?: (error: string) => void
 ): Promise<boolean> {
   try {
     const parsedRoom = parseOpenGroupV2(completeUrl);
     if (!parsedRoom) {
       if (showToasts) {
         ToastUtils.pushToastError('connectToServer', window.i18n('communityEnterUrlErrorInvalid'));
+      }
+      if (errorHandler) {
+        errorHandler(window.i18n('invalidOpenGroupUrl'));
       }
       return false;
     }
@@ -153,6 +157,9 @@ export async function joinOpenGroupV2WithUIEvents(
       await existingConvo.commit();
       if (showToasts) {
         ToastUtils.pushToastError('publicChatExists', window.i18n('communityJoinedAlready'));
+      }
+      if (errorHandler) {
+        errorHandler(window.i18n('publicChatExists'));
       }
       return false;
     }
@@ -179,6 +186,9 @@ export async function joinOpenGroupV2WithUIEvents(
         window.i18n('groupErrorJoin', { group_name: parsedRoom.roomId })
       );
     }
+    if (errorHandler) {
+      errorHandler(window.i18n('connectToServerFail'));
+    }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
   } catch (error) {
@@ -189,6 +199,9 @@ export async function joinOpenGroupV2WithUIEvents(
         'connectToServerFail',
         window.i18n('groupErrorJoin', { group_name: 'unknown' })
       );
+    }
+    if (errorHandler) {
+      errorHandler(window.i18n('connectToServerFail'));
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }

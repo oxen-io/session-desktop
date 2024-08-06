@@ -1,9 +1,9 @@
 import DOMPurify from 'dompurify';
-import React from 'react';
+import { createElement, type ElementType } from 'react';
 
 type ReceivedProps = {
   html: string;
-  tag?: React.ElementType;
+  tag?: ElementType;
   key?: any;
   className?: string;
 };
@@ -14,7 +14,7 @@ export const SessionHtmlRenderer = ({ tag = 'div', key, html, className }: Recei
     FORBID_ATTR: ['script'],
   });
 
-  return React.createElement(tag, {
+  return createElement(tag, {
     key,
     className,
 

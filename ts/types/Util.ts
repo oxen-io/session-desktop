@@ -5,5 +5,3 @@ export type RenderTextCallbackType = (options: {
 }) => JSX.Element;
 
 export type LocalizerType = typeof window.i18n;
-
-export type Noop = () => void;

@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 
 const StyledTypingContainer = styled.div`
@@ -63,9 +62,9 @@ const StyledTypingDot = styled.div<{ index: number }>`
       props.index === 0
         ? 'typing-animation-first'
         : props.index === 1
-        ? 'typing-animation-second'
-        : 'typing-animation-third'}
-    1600ms ease infinite;
+          ? 'typing-animation-second'
+          : 'typing-animation-third'}
+    var(--duration-typing-animation) ease infinite;
 `;
 
 const StyledSpacer = styled.div`

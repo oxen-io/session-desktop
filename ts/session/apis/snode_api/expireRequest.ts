@@ -11,7 +11,7 @@ import {
   uniqBy,
 } from 'lodash';
 import pRetry from 'p-retry';
-import { Snode } from '../../../data/data';
+import { Snode } from '../../../data/types';
 import { getSodiumRenderer } from '../../crypto';
 import { StringUtils, UserUtils } from '../../utils';
 import { fromBase64ToArray, fromHexToArray } from '../../utils/String';
@@ -457,8 +457,9 @@ export async function expireMessagesOnSnode(
   } catch (e) {
     const snodeStr = snode ? `${snode.ip}:${snode.port}` : 'null';
     window?.log?.warn(
-      `[expireMessageOnSnode] ${e.code || ''}${e.message ||
-        e} by ${ourPubKey} via snode:${snodeStr}`
+      `[expireMessageOnSnode] ${e.code || ''}${
+        e.message || e
+      } by ${ourPubKey} via snode:${snodeStr}`
     );
     throw e;
   }

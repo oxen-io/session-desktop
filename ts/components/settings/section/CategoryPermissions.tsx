@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
 
 import useUpdate from 'react-use/lib/useUpdate';
 import { SettingsKey } from '../../../data/settings-key';
@@ -53,54 +52,52 @@ async function toggleStartInTray() {
   }
 }
 
-export const SettingsCategoryPermissions = (props: { hasPassword: boolean | null }) => {
+export const SettingsCategoryPermissions = () => {
   const forceUpdate = useUpdate();
   const isStartInTrayActive = Boolean(window.getSettingValue(SettingsKey.settingsStartInTray));
 
-  if (props.hasPassword !== null) {
-    return (
-      <>
-        <SessionToggleWithDescription
-          onClickToggle={async () => {
-            await window.toggleMediaPermissions();
-            forceUpdate();
-          }}
-          title={window.i18n('permissionsMicrophone')}
-          description={window.i18n('permissionsMicrophoneDescription')}
-          active={Boolean(window.getSettingValue('media-permissions'))}
-          dataTestId="enable-microphone"
-        />
-        <SessionToggleWithDescription
-          onClickToggle={async () => {
-            await toggleCallMediaPermissions(forceUpdate);
-            forceUpdate();
-          }}
-          title={window.i18n('callsVoiceAndVideoBeta')}
-          description={window.i18n('callsVoiceAndVideoToggleDescription')}
-          active={Boolean(window.getCallMediaPermissions())}
-          dataTestId="enable-calls"
-        />
-        <SessionToggleWithDescription
-          onClickToggle={async () => {
-            const old = Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate));
-            await window.setSettingValue(SettingsKey.settingsAutoUpdate, !old);
-            forceUpdate();
-          }}
-          title={window.i18n('permissionsAutoUpdate')}
-          description={window.i18n('permissionsAutoUpdateDescription')}
-          active={Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate))}
-        />
-        <SessionToggleWithDescription
-          onClickToggle={async () => {
-            await toggleStartInTray();
-            forceUpdate();
-          }}
-          title={window.i18n('permissionsKeepInSystemTray')}
-          description={window.i18n('permissionsKeepInSystemTrayDescription')}
-          active={isStartInTrayActive}
-        />
-      </>
-    );
-  }
-  return null;
+  // TODO: strings - verify merge
+  return (
+    <>
+      <SessionToggleWithDescription
+        onClickToggle={async () => {
+          await window.toggleMediaPermissions();
+          forceUpdate();
+        }}
+        title={window.i18n('permissionsMicrophone')}
+        description={window.i18n('permissionsMicrophoneDescription')}
+        active={Boolean(window.getSettingValue('media-permissions'))}
+        dataTestId="enable-microphone"
+      />
+      <SessionToggleWithDescription
+        onClickToggle={async () => {
+          await toggleCallMediaPermissions(forceUpdate);
+          forceUpdate();
+        }}
+        title={window.i18n('callsVoiceAndVideoBeta')}
+        description={window.i18n('callsVoiceAndVideoToggleDescription')}
+        active={Boolean(window.getCallMediaPermissions())}
+        dataTestId="enable-calls"
+      />
+      <SessionToggleWithDescription
+        onClickToggle={async () => {
+          const old = Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate));
+          await window.setSettingValue(SettingsKey.settingsAutoUpdate, !old);
+          forceUpdate();
+        }}
+        title={window.i18n('permissionsAutoUpdate')}
+        description={window.i18n('permissionsAutoUpdateDescription')}
+        active={Boolean(window.getSettingValue(SettingsKey.settingsAutoUpdate))}
+      />
+      <SessionToggleWithDescription
+        onClickToggle={async () => {
+          await toggleStartInTray();
+          forceUpdate();
+        }}
+        title={window.i18n('permissionsKeepInSystemTray')}
+        description={window.i18n('permissionsKeepInSystemTrayDescription')}
+        active={isStartInTrayActive}
+      />
+    </>
+  );
 };

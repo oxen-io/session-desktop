@@ -1,13 +1,13 @@
-import React from 'react';
+import { MouseEvent, ReactNode } from 'react';
 import { contextMenu } from 'react-contexify';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getUnreadConversationRequests } from '../../state/selectors/conversations';
+import { isSearching } from '../../state/selectors/search';
 import { getHideMessageRequestBanner } from '../../state/selectors/userConfig';
 import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
 import { MessageRequestBannerContextMenu } from '../menu/MessageRequestBannerContextMenu';
-import { isSearching } from '../../state/selectors/search';
 
 const StyledMessageRequestBanner = styled.div`
   height: 64px;
@@ -38,14 +38,11 @@ const StyledMessageRequestBannerHeader = styled.span`
   text-overflow: ellipsis;
 `;
 
-const StyledCircleIcon = styled.div`
-  padding-left: var(--margins-xs);
-`;
-
 const StyledUnreadCounter = styled.div`
   font-weight: bold;
   border-radius: var(--margins-sm);
-  background-color: var(--conversation-tab-bubble-background-color);
+  color: var(--unread-messages-alert-text-color);
+  background-color: var(--unread-messages-alert-background-color);
   margin-left: var(--margins-sm);
   min-width: 20px;
   height: 20px;
@@ -61,25 +58,26 @@ const StyledGridContainer = styled.div`
   display: flex;
   width: 36px;
   height: 36px;
+  justify-content: center;
   align-items: center;
   border-radius: 50%;
-  justify-content: center;
   background-color: var(--text-secondary-color);
 `;
 
-export const CirclularIcon = (props: { iconType: SessionIconType; iconSize: SessionIconSize }) => {
+export const CirclularIcon = (props: {
+  iconType: SessionIconType;
+  iconSize: SessionIconSize | number;
+}) => {
   const { iconSize, iconType } = props;
 
   return (
-    <StyledCircleIcon>
-      <StyledGridContainer>
-        <SessionIcon
-          iconType={iconType}
-          iconSize={iconSize}
-          iconColor="var(--background-primary-color)"
-        />
-      </StyledGridContainer>
-    </StyledCircleIcon>
+    <StyledGridContainer>
+      <SessionIcon
+        iconType={iconType}
+        iconSize={iconSize}
+        iconColor="var(--background-primary-color)"
+      />
+    </StyledGridContainer>
   );
 };
 
@@ -104,7 +102,7 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
     });
   };
 
-  const openRequests = (e: React.MouseEvent<HTMLDivElement>) => {
+  const openRequests = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button === 0) {
       handleOnClick();
     }
@@ -121,7 +119,7 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
         }}
         data-testid="message-request-banner"
       >
-        <CirclularIcon iconType="messageRequest" iconSize="medium" />
+        <CirclularIcon iconType="messageRequest" iconSize={22} />
         <StyledMessageRequestBannerHeader>
           {window.i18n('sessionMessageRequests')}
         </StyledMessageRequestBannerHeader>
@@ -136,6 +134,6 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
   );
 };
 
-const Portal = ({ children }: { children: any }) => {
+const Portal = ({ children }: { children: ReactNode }) => {
   return createPortal(children, document.querySelector('.inbox.index') as Element);
 };

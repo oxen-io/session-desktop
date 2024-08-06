@@ -1,7 +1,11 @@
 // eslint-disable-next-line import/no-unresolved
 import {} from 'styled-components/cssprop';
 
-import { Store } from 'redux';
+import { Store } from '@reduxjs/toolkit';
+import { Persistor } from 'redux-persist/es/types';
+
+import { LocalizerType } from './types/Util';
+
 import { ConversationCollection } from './models/conversation';
 import type { StateType } from './state/reducer';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
@@ -98,6 +102,7 @@ declare global {
     getAppInstance: () => string;
     getCommitHash: () => string | undefined;
     getVersion: () => string;
+    getOSRelease: () => string;
     setAutoHideMenuBar: (val: boolean) => void;
     setMenuBarVisibility: (val: boolean) => void;
     contextMenuShown: boolean;

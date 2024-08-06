@@ -1,7 +1,6 @@
-import React from 'react';
-
 import { Item, Submenu } from 'react-contexify';
 import { useDispatch, useSelector } from 'react-redux';
+import { useConvoIdFromContext } from '../../contexts/ConvoIdContext';
 import {
   useAvatarPath,
   useConversationUsername,
@@ -21,8 +20,6 @@ import {
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
 import {
-  ConversationInteractionStatus,
-  ConversationInteractionType,
   approveConvoAndSendResponse,
   blockConvoById,
   clearNickNameByConvoId,
@@ -56,7 +53,10 @@ import { getIsMessageSection } from '../../state/selectors/section';
 import { useSelectedConversationKey } from '../../state/selectors/selectedConversation';
 import { LocalizerToken } from '../../types/Localizer';
 import { SessionButtonColor } from '../basic/SessionButton';
-import { useConvoIdFromContext } from '../leftpane/conversation-list-item/ConvoIdContext';
+import {
+  ConversationInteractionType,
+  ConversationInteractionStatus,
+} from '../../interactions/types';
 
 /** Menu items standardized */
 
@@ -418,6 +418,7 @@ export const DeleteMessagesMenuItem = () => {
  */
 export const DeletePrivateConversationMenuItem = () => {
   const convoId = useConvoIdFromContext();
+  const username = useConversationUsername(convoId) || convoId;
   const isRequest = useIsIncomingRequest(convoId);
   const isPrivate = useIsPrivate(convoId);
   const isMe = useIsMe(convoId);
@@ -429,7 +430,7 @@ export const DeletePrivateConversationMenuItem = () => {
   return (
     <Item
       onClick={() => {
-        showLeavePrivateConversationbyConvoId(convoId);
+        showLeavePrivateConversationbyConvoId(convoId, username);
       }}
     >
       {isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete')}
@@ -556,7 +557,7 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
       label={window.i18n('sessionNotifications') as any}
       // rtl={isRtlMode && false}
     >
-      {(notificationForConvoOptions || []).map(item => {
+      {(notificationForConvoOptions || []).mapzz(item => {
         const disabled = item.value === currentNotificationSetting;
 
         return (

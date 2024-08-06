@@ -2,10 +2,7 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Sinon from 'sinon';
 import { Conversation, ConversationModel } from '../../../../models/conversation';
-import {
-  ConversationAttributes,
-  ConversationTypeEnum,
-} from '../../../../models/conversationAttributes';
+import { ConversationAttributes } from '../../../../models/conversationAttributes';
 import { GetNetworkTime } from '../../../../session/apis/snode_api/getNetworkTime';
 import { DisappearingMessages } from '../../../../session/disappearing_messages';
 import {
@@ -23,6 +20,7 @@ import {
   generateFakeOutgoingPrivateMessage,
   generateVisibleMessage,
 } from '../../../test-utils/utils';
+import { ConversationTypeEnum } from '../../../../models/types';
 
 chai.use(chaiAsPromised as any);
 
@@ -305,9 +303,8 @@ describe('DisappearingMessage', () => {
     });
     it('if the type and expireTimer are undefined then the conversation mode is off', async () => {
       const conversation = new ConversationModel({ ...conversationArgs });
-      const conversationMode = DisappearingMessages.changeToDisappearingConversationMode(
-        conversation
-      );
+      const conversationMode =
+        DisappearingMessages.changeToDisappearingConversationMode(conversation);
 
       expect(conversationMode, 'returns off').to.be.eq('off');
     });

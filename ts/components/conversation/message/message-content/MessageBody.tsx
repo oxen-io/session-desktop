@@ -1,5 +1,5 @@
 import LinkifyIt from 'linkify-it';
-import React from 'react';
+
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -33,7 +33,7 @@ const renderNewLines: RenderTextCallbackType = ({ text: textWithNewLines, key, i
     <AddNewLines
       key={key}
       text={textWithNewLines}
-      renderNonNewLine={isGroup ? renderMentions : renderTextDefault}
+      renderNonNewLine={renderMentions}
       isGroup={isGroup}
     />
   );

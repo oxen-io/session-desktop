@@ -1,8 +1,8 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
-import { join } from 'path';
 import {
   BaseWrapperActionsCalls,
+  BlindingActionsCalls,
   ContactInfoSet,
   ContactsWrapperActionsCalls,
   ConvoInfoVolatileWrapperActionsCalls,
@@ -10,6 +10,7 @@ import {
   UserConfigWrapperActionsCalls,
   UserGroupsWrapperActionsCalls,
 } from 'libsession_util_nodejs';
+import { join } from 'path';
 
 import { getAppRootPath } from '../../../node/getRootPath';
 import { WorkerInterface } from '../../worker_interface';
@@ -30,7 +31,7 @@ const internalCallLibSessionWorker = async ([
       'workers',
       'node',
       'libsession',
-      'libsession.worker.js'
+      'libsession.worker.compiled.js'
     );
 
     libsessionWorkerInterface = new WorkerInterface(libsessionWorkerPath, 1 * 60 * 1000);
@@ -46,6 +47,11 @@ export const GenericWrapperActions = {
   ) =>
     /** base wrapper generic actions */
     callLibSessionWorker([wrapperId, 'init', ed25519Key, dump]) as Promise<void>,
+  /** This function is used to free wrappers from memory only.
+   *
+   * See freeUserWrapper() in libsession.worker.ts */
+  free: async (wrapperId: ConfigWrapperObjectTypes) =>
+    callLibSessionWorker([wrapperId, 'free']) as Promise<void>,
   confirmPushed: async (wrapperId: ConfigWrapperObjectTypes, seqno: number, hash: string) =>
     callLibSessionWorker([wrapperId, 'confirmPushed', seqno, hash]) as ReturnType<
       BaseWrapperActionsCalls['confirmPushed']
@@ -87,6 +93,7 @@ export const UserConfigWrapperActions: UserConfigWrapperActionsCalls = {
   /* Reuse the GenericWrapperActions with the UserConfig argument */
   init: async (ed25519Key: Uint8Array, dump: Uint8Array | null) =>
     GenericWrapperActions.init('UserConfig', ed25519Key, dump),
+  free: async () => GenericWrapperActions.free('UserConfig'),
   confirmPushed: async (seqno: number, hash: string) =>
     GenericWrapperActions.confirmPushed('UserConfig', seqno, hash),
   dump: async () => GenericWrapperActions.dump('UserConfig'),
@@ -135,6 +142,7 @@ export const ContactsWrapperActions: ContactsWrapperActionsCalls = {
   /* Reuse the GenericWrapperActions with the ContactConfig argument */
   init: async (ed25519Key: Uint8Array, dump: Uint8Array | null) =>
     GenericWrapperActions.init('ContactsConfig', ed25519Key, dump),
+  free: async () => GenericWrapperActions.free('ContactsConfig'),
   confirmPushed: async (seqno: number, hash: string) =>
     GenericWrapperActions.confirmPushed('ContactsConfig', seqno, hash),
   dump: async () => GenericWrapperActions.dump('ContactsConfig'),
@@ -171,6 +179,7 @@ export const UserGroupsWrapperActions: UserGroupsWrapperActionsCalls = {
   /* Reuse the GenericWrapperActions with the ContactConfig argument */
   init: async (ed25519Key: Uint8Array, dump: Uint8Array | null) =>
     GenericWrapperActions.init('UserGroupsConfig', ed25519Key, dump),
+  free: async () => GenericWrapperActions.free('UserGroupsConfig'),
   confirmPushed: async (seqno: number, hash: string) =>
     GenericWrapperActions.confirmPushed('UserGroupsConfig', seqno, hash),
   dump: async () => GenericWrapperActions.dump('UserGroupsConfig'),
@@ -244,6 +253,7 @@ export const ConvoInfoVolatileWrapperActions: ConvoInfoVolatileWrapperActionsCal
   /* Reuse the GenericWrapperActions with the ContactConfig argument */
   init: async (ed25519Key: Uint8Array, dump: Uint8Array | null) =>
     GenericWrapperActions.init('ConvoInfoVolatileConfig', ed25519Key, dump),
+  free: async () => GenericWrapperActions.free('ConvoInfoVolatileConfig'),
   confirmPushed: async (seqno: number, hash: string) =>
     GenericWrapperActions.confirmPushed('ConvoInfoVolatileConfig', seqno, hash),
   dump: async () => GenericWrapperActions.dump('ConvoInfoVolatileConfig'),
@@ -332,6 +342,17 @@ export const ConvoInfoVolatileWrapperActions: ConvoInfoVolatileWrapperActionsCal
       'eraseCommunityByFullUrl',
       fullUrlWithOrWithoutPubkey,
     ]) as Promise<ReturnType<ConvoInfoVolatileWrapperActionsCalls['eraseCommunityByFullUrl']>>,
+};
+
+export const BlindingActions: BlindingActionsCalls = {
+  blindVersionPubkey: async (opts: { ed25519SecretKey: Uint8Array }) =>
+    callLibSessionWorker(['Blinding', 'blindVersionPubkey', opts]) as Promise<
+      ReturnType<BlindingActionsCalls['blindVersionPubkey']>
+    >,
+  blindVersionSign: async (opts: { ed25519SecretKey: Uint8Array; sigTimestampSeconds: number }) =>
+    callLibSessionWorker(['Blinding', 'blindVersionSign', opts]) as Promise<
+      ReturnType<BlindingActionsCalls['blindVersionSign']>
+    >,
 };
 
 export const callLibSessionWorker = async (

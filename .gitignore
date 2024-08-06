@@ -50,6 +50,9 @@ test-results/
 coverage/
 stylesheets/dist/
 
-*.worker.js.LICENSE.txt
+*.LICENSE.txt
 ts/webworker/workers/node/**/*.node
 ts/localization/locales.ts
+
+.yarn/**/*.mjs
+.yarn/**/*.cjs

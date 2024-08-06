@@ -2,11 +2,10 @@
 /* eslint-disable no-restricted-syntax */
 import { compact, sample } from 'lodash';
 import pRetry from 'p-retry';
-import { Snode } from '../../../data/data';
+import { Snode } from '../../../data/types';
 import { getSodiumRenderer } from '../../crypto';
-import { ed25519Str } from '../../onions/onionPath';
 import { StringUtils, UserUtils } from '../../utils';
-import { fromBase64ToArray, fromHexToArray } from '../../utils/String';
+import { ed25519Str, fromBase64ToArray, fromHexToArray } from '../../utils/String';
 import { doSnodeBatchRequest } from './batchRequest';
 import { getSwarmFor } from './snodePool';
 import { SnodeSignature } from './snodeSignatures';

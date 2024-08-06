@@ -14,7 +14,7 @@ Please search for any [existing issues](https://github.com/oxen-io/session-deskt
 
 ## Supported platforms
 
-Session requires Windows 10 or later, macOS Catalina (10.15) or later, or a linux distribution with glibc 2.28 or later like Debian 10 or Ubuntu 20.04.
+Session requires Windows 10 or later, macOS Monterey (12) or later, or a linux distribution with glibc 2.28 or later like Debian 10 or Ubuntu 20.04.
 
 ## Build instruction
 
@@ -22,14 +22,15 @@ Build instructions can be found in [Contributing.md](CONTRIBUTING.md).
 
 ## Verifying signatures
 
-
 Get Kee's key and import it:
+
 ```
 wget https://raw.githubusercontent.com/oxen-io/oxen-core/dev/utils/gpg_keys/KeeJef.asc
 gpg --import KeeJef.asc
 ```
 
 Get the signed hash for this release, the SESSION_VERSION needs to be updated for the release you want to verify
+
 ```
 export SESSION_VERSION=1.6.1
 wget https://github.com/oxen-io/session-desktop/releases/download/v$SESSION_VERSION/signatures.asc
@@ -46,11 +47,11 @@ If it does, the hashes are valid but we still have to make the sure the signed h
 
 Make sure the two commands below returns the same hash.
 If they do, files are valid
+
 ```
 sha256sum session-desktop-linux-amd64-$SESSION_VERSION.deb
 grep .deb signatures.asc
 ```
-
 
 ## Debian repository
 
@@ -62,3 +63,7 @@ Copyright 2011 Whisper Systems<br/>
 Copyright 2013-2017 Open Whisper Systems<br/>
 Copyright 2019-2023 The Oxen Project<br/>
 Licensed under the GPLv3: https://www.gnu.org/licenses/gpl-3.0.html<br/>
+
+## Attributions
+
+The IP-to-country mapping data used in this project is provided by [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data).

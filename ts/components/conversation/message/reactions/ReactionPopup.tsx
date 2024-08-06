@@ -1,9 +1,10 @@
-import React, { ReactElement, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Data } from '../../../../data/data';
 import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
-import { isDarkTheme } from '../../../../state/selectors/theme';
+import { useIsDarkTheme } from '../../../../state/selectors/theme';
 import { nativeEmojiData } from '../../../../util/emoji';
 
 export type TipPosition = 'center' | 'left' | 'right';
@@ -53,16 +54,20 @@ export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>
   }
 `;
 
+const StyledEmoji = styled.span`
+  font-size: 36px;
+  margin-left: 8px;
+`;
+
 const StyledContacts = styled.span`
   word-break: break-all;
-
   span {
     word-break: keep-all;
   }
 `;
 
-const StyledOthers = styled.span<{ darkMode: boolean }>`
-  color: ${props => (props.darkMode ? 'var(--primary-color)' : 'var(--text-primary-color)')};
+const StyledOthers = styled.span<{ isDarkTheme: boolean }>`
+  color: ${props => (props.isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)')};
 `;
 
 const generateContactsString = (
@@ -121,7 +126,7 @@ const generateReactionString = (
 };
 
 const Contacts = (contacts: Array<string>, count: number) => {
-  const darkMode = useSelector(isDarkTheme);
+  const isDarkTheme = useIsDarkTheme();
 
   const isYou = contacts[0] === window.i18n('you');
   const reactionPopupKey = useMemo(

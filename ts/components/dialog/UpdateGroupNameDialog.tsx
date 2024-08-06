@@ -1,18 +1,28 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
-import classNames from 'classnames';
 import autoBind from 'auto-bind';
 
-import { Avatar, AvatarSize } from '../avatar/Avatar';
-import { SpacerMD } from '../basic/Text';
-import { updateGroupNameModal } from '../../state/ducks/modalDialog';
+import { motion } from 'framer-motion';
+import { Component } from 'react';
+import styled from 'styled-components';
 import { ConversationModel } from '../../models/conversation';
 import { getConversationController } from '../../session/conversations';
-import { SessionWrapperModal } from '../SessionWrapperModal';
-import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { initiateOpenGroupUpdate } from '../../session/group/open-group';
 import { initiateClosedGroupUpdate } from '../../session/group/closed-group';
+import { initiateOpenGroupUpdate } from '../../session/group/open-group';
+import { updateGroupNameModal } from '../../state/ducks/modalDialog';
+import { THEME_GLOBALS } from '../../themes/globals';
 import { pickFileForAvatar } from '../../types/attachments/VisualAttachment';
+import { SessionWrapperModal } from '../SessionWrapperModal';
+import { Avatar, AvatarSize } from '../avatar/Avatar';
+import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
+import { SpacerMD } from '../basic/Text';
+import LIBSESSION_CONSTANTS from '../../session/utils/libsession/libsession_constants';
+
+const StyledErrorMessage = styled(motion.p)`
+  text-align: center;
+  color: var(--danger-color);
+  display: block;
+  user-select: none;
+`;
 
 type Props = {
   conversationId: string;
@@ -26,7 +36,7 @@ interface State {
   newAvatarObjecturl: string | null;
 }
 
-export class UpdateGroupNameDialog extends React.Component<Props, State> {
+export class UpdateGroupNameDialog extends Component<Props, State> {
   private readonly convo: ConversationModel;
 
   constructor(props: Props) {
@@ -61,6 +71,12 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
       return;
     }
 
+    if (trimmedGroupName.length > LIBSESSION_CONSTANTS.BASE_GROUP_MAX_NAME_LENGTH) {
+      this.onShowError(window.i18n('invalidGroupNameTooLong'));
+
+      return;
+    }
+
     if (
       trimmedGroupName !== this.convo.getRealSessionUsername() ||
       newAvatarObjecturl !== oldAvatarPath
@@ -88,11 +104,6 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
     });
 
     const errorMsg = this.state.errorMessage;
-    const errorMessageClasses = classNames(
-      'error-message',
-      this.state.errorDisplayed ? 'error-shown' : 'error-faded'
-    );
-
     const isAdmin = !this.convo.isPublic();
 
     return (
@@ -104,7 +115,14 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
         {this.state.errorDisplayed ? (
           <>
             <SpacerMD />
-            <p className={errorMessageClasses}>{errorMsg}</p>
+            <StyledErrorMessage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: this.state.errorDisplayed ? 1 : 0 }}
+              transition={{ duration: THEME_GLOBALS['--duration-modal-error-shown'] }}
+              style={{ marginTop: this.state.errorDisplayed ? '0' : '-5px' }}
+            >
+              {errorMsg}
+            </StyledErrorMessage>
             <SpacerMD />
           </>
         ) : null}
@@ -115,7 +133,6 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
         {isAdmin ? (
           <input
             type="text"
-            className="profile-name-input"
             value={this.state.groupName}
             placeholder={window.i18n('groupName')}
             onChange={this.onGroupNameChanged}
@@ -123,6 +140,7 @@ export class UpdateGroupNameDialog extends React.Component<Props, State> {
             required={true}
             aria-required={true}
             autoFocus={true}
+            maxLength={LIBSESSION_CONSTANTS.BASE_GROUP_MAX_NAME_LENGTH}
             data-testid="group-name-input"
           />
         ) : null}

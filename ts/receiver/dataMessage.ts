@@ -13,7 +13,6 @@ import { StringUtils, UserUtils } from '../session/utils';
 import { handleClosedGroupControlMessage } from './closedGroups';
 import { handleMessageJob, toRegularMessage } from './queuedJob';
 
-import { ConversationTypeEnum } from '../models/conversationAttributes';
 import { MessageModel } from '../models/message';
 import {
   createSwarmMessageSentFromNotUs,
@@ -26,6 +25,7 @@ import { isUsFromCache } from '../session/utils/User';
 import { Action, Reaction } from '../types/Reaction';
 import { toLogFormat } from '../types/attachments/Errors';
 import { Reactions } from '../util/reactions';
+import { ConversationTypeEnum } from '../models/types';
 
 function cleanAttachment(attachment: any) {
   return {
@@ -251,7 +251,9 @@ export async function handleSwarmDataMessage({
   }
 
   let msgModel =
-    isSyncedMessage || (envelope.senderIdentity && isUsFromCache(envelope.senderIdentity))
+    isSyncedMessage ||
+    (envelope.senderIdentity && isUsFromCache(envelope.senderIdentity)) ||
+    (envelope.source && isUsFromCache(envelope.source))
       ? createSwarmMessageSentFromUs({
           conversationId: convoIdToAddTheMessageTo,
           messageHash,

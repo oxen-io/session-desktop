@@ -1,4 +1,4 @@
-import React from 'react';
+import { MouseEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
@@ -16,7 +16,9 @@ const StyledKnob = styled.div<{ active: boolean }>`
       ? '-2px 1px 3px var(--toggle-switch-ball-shadow-color);'
       : '2px 1px 3px var(--toggle-switch-ball-shadow-color);'};
 
-  transition: transform var(--default-duration) ease, background-color var(--default-duration) ease;
+  transition:
+    transform var(--default-duration) ease,
+    background-color var(--default-duration) ease;
 
   transform: ${props => (props.active ? 'translateX(25px)' : '')};
 `;
@@ -52,7 +54,7 @@ type Props = {
 export const SessionToggle = (props: Props) => {
   const dispatch = useDispatch();
 
-  const clickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
+  const clickHandler = (event: MouseEvent<HTMLDivElement>) => {
     const stateManager = (e: any) => {
       e.stopPropagation();
       props.onClick();

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { OpenGroupData } from '../../../../data/opengroups';
@@ -38,10 +38,10 @@ export type MessageAvatarSelectorProps = Pick<
   'sender' | 'isSenderAdmin' | 'lastMessageOfSeries'
 >;
 
-type Props = { messageId: string; hideAvatar: boolean; isPrivate: boolean; isDetailView?: boolean };
+type Props = { messageId: string; isPrivate: boolean };
 
 export const MessageAvatar = (props: Props) => {
-  const { messageId, hideAvatar, isPrivate, isDetailView } = props;
+  const { messageId, isPrivate } = props;
 
   const dispatch = useDispatch();
   const selectedConvoKey = useSelectedConversationKey();
@@ -62,7 +62,7 @@ export const MessageAvatar = (props: Props) => {
       return;
     }
     if (isPublic && !PubKey.isBlinded(sender)) {
-      // public chat but session id not blinded. disable showing user details if we do not have an active convo with that user.
+      // public chat but account id not blinded. disable showing user details if we do not have an active convo with that user.
       // an unactive convo with that user means that we never chatted with that id directyly, but only through a sogs
       const convoWithSender = getConversationController().get(sender);
       if (!convoWithSender || !convoWithSender.get('active_at')) {
@@ -137,13 +137,9 @@ export const MessageAvatar = (props: Props) => {
   // The styledAvatar, when rendered needs to have a width with margins included of var(--width-avatar-group-msg-list).
   // This is so that the other message is still aligned when the avatar is not rendered (we need to make up for the space used by the avatar, and we use a margin of width-avatar-group-msg-list)
   return (
-    <StyledAvatar
-      style={{
-        visibility: hideAvatar ? 'hidden' : undefined,
-      }}
-    >
+    <StyledAvatar>
       <Avatar size={AvatarSize.S} onAvatarClick={onMessageAvatarClick} pubkey={sender} />
-      {!isDetailView && isSenderAdmin ? <CrownIcon /> : null}
+      {isSenderAdmin ? <CrownIcon /> : null}
     </StyledAvatar>
   );
 };

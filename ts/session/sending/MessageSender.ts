@@ -6,7 +6,6 @@ import _, { isEmpty, isNil, isNumber, isString, sample, toNumber } from 'lodash'
 import pRetry from 'p-retry';
 import { Data } from '../../data/data';
 import { SignalService } from '../../protobuf';
-import { OpenGroupRequestCommonType } from '../apis/open_group_api/opengroupV2/ApiUtil';
 import { OpenGroupMessageV2 } from '../apis/open_group_api/opengroupV2/OpenGroupMessageV2';
 import {
   sendMessageOnionV4BlindedRequest,
@@ -32,12 +31,12 @@ import { SharedConfigMessage } from '../messages/outgoing/controlMessage/SharedC
 import { UnsendMessage } from '../messages/outgoing/controlMessage/UnsendMessage';
 import { ClosedGroupNewMessage } from '../messages/outgoing/controlMessage/group/ClosedGroupNewMessage';
 import { OpenGroupVisibleMessage } from '../messages/outgoing/visibleMessage/OpenGroupVisibleMessage';
-import { ed25519Str } from '../onions/onionPath';
 import { PubKey } from '../types';
 import { RawMessage } from '../types/RawMessage';
 import { UserUtils } from '../utils';
-import { fromUInt8ArrayToBase64 } from '../utils/String';
+import { ed25519Str, fromUInt8ArrayToBase64 } from '../utils/String';
 import { EmptySwarmError } from '../utils/errors';
+import { OpenGroupRequestCommonType } from '../../data/types';
 
 // ================ SNODE STORE ================
 
@@ -285,11 +284,7 @@ async function sendMessagesDataToSnode(
 }
 
 function encryptionBasedOnConversation(destination: PubKey) {
-  if (
-    getConversationController()
-      .get(destination.key)
-      ?.isClosedGroup()
-  ) {
+  if (getConversationController().get(destination.key)?.isClosedGroup()) {
     return SignalService.Envelope.Type.CLOSED_GROUP_MESSAGE;
   }
   return SignalService.Envelope.Type.SESSION_MESSAGE;
@@ -326,10 +321,8 @@ async function encryptMessageAndWrap(
     ttl,
   } = params;
 
-  const {
-    overRiddenTimestampBuffer,
-    networkTimestamp,
-  } = overwriteOutgoingTimestampWithNetworkTimestamp({ plainTextBuffer });
+  const { overRiddenTimestampBuffer, networkTimestamp } =
+    overwriteOutgoingTimestampWithNetworkTimestamp({ plainTextBuffer });
   const recipient = PubKey.cast(destination);
 
   const { envelopeType, cipherText } = await MessageEncrypter.encrypt(
@@ -349,11 +342,9 @@ async function encryptMessageAndWrap(
 
   const overridenNamespace = !isNil(namespace)
     ? namespace
-    : getConversationController()
-        .get(recipient.key)
-        ?.isClosedGroup()
-    ? SnodeNamespaces.ClosedGroupMessage
-    : SnodeNamespaces.UserMessages;
+    : getConversationController().get(recipient.key)?.isClosedGroup()
+      ? SnodeNamespaces.ClosedGroupMessage
+      : SnodeNamespaces.UserMessages;
 
   return {
     data64,
@@ -388,32 +379,20 @@ async function sendMessagesToSnode(
   try {
     const recipient = PubKey.cast(destination);
 
-    const encryptedAndWrapped = await encryptMessagesAndWrap(
-      params.map(m => ({
-        destination: m.pubkey,
-        plainTextBuffer: m.message.plainTextBuffer(),
-        namespace: m.namespace,
-        ttl: m.message.ttl(),
+    const encryptedAndWrapped: Array<Omit<EncryptAndWrapMessageResults, 'data' | 'isSyncMessage'>> =
+      [];
+
+    params.forEach(m => {
+      const wrapped = {
         identifier: m.message.identifier,
         isSyncMessage: MessageSender.isContentSyncMessage(m.message),
-      }))
-    );
-
-    // first update all the associated timestamps of our messages in DB, if the outgoing messages are associated with one.
-    await Promise.all(
-      encryptedAndWrapped.map(async (m, index) => {
-        // make sure to update the local sent_at timestamp, because sometimes, we will get the just pushed message in the receiver side
-        // before we return from the await below.
-        // and the isDuplicate messages relies on sent_at timestamp to be valid.
-        const found = await Data.getMessageById(m.identifier);
-
-        // make sure to not update the sent timestamp if this a currently syncing message
-        if (found && !found.get('sentSync')) {
-          found.set({ sent_at: encryptedAndWrapped[index].networkTimestamp });
-          await found.commit();
-        }
-      })
-    );
+        namespace: m.namespace,
+        ttl: m.message.ttl(),
+        networkTimestamp: GetNetworkTime.getNowWithNetworkOffset(),
+        data64: ByteBuffer.wrap(m.message.readyToSendData).toString('base64'),
+      };
+      encryptedAndWrapped.push(wrapped);
+    });
 
     const batchResults = await pRetry(
       async () => {
@@ -440,35 +419,6 @@ async function sendMessagesToSnode(
     if (!batchResults || isEmpty(batchResults)) {
       throw new Error('result is empty for sendMessagesToSnode');
     }
-
-    const isDestinationClosedGroup = getConversationController()
-      .get(recipient.key)
-      ?.isClosedGroup();
-
-    await Promise.all(
-      encryptedAndWrapped.map(async (message, index) => {
-        // If message also has a sync message, save that hash. Otherwise save the hash from the regular message send i.e. only closed groups in this case.
-        if (
-          message.identifier &&
-          (message.isSyncMessage || isDestinationClosedGroup) &&
-          batchResults[index] &&
-          !isEmpty(batchResults[index]) &&
-          isString(batchResults[index].body.hash)
-        ) {
-          const hashFoundInResponse = batchResults[index].body.hash;
-          const foundMessage = await Data.getMessageById(message.identifier);
-          if (foundMessage) {
-            await foundMessage.updateMessageHash(hashFoundInResponse);
-            await foundMessage.commit();
-            window?.log?.info(
-              `updated message ${foundMessage.get('id')} with hash: ${foundMessage.get(
-                'messageHash'
-              )}`
-            );
-          }
-        }
-      })
-    );
 
     return batchResults;
   } catch (e) {

@@ -1,9 +1,8 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { CSSProperties } from 'styled-components';
 
 import { resetConversationExternal } from '../../state/ducks/conversations';
-import { recoveryPhraseModal, updateDeleteAccountModal } from '../../state/ducks/modalDialog';
+import { updateDeleteAccountModal } from '../../state/ducks/modalDialog';
 import {
   SectionType,
   setLeftOverlayMode,
@@ -11,127 +10,167 @@ import {
   showSettingsSection,
 } from '../../state/ducks/section';
 import { getFocusedSettingsSection } from '../../state/selectors/section';
-import { SessionIcon } from '../icon';
-import { SessionSettingCategory } from '../settings/SessionSettings';
+import { useHideRecoveryPasswordEnabled } from '../../state/selectors/settings';
+import type { SessionSettingCategory } from '../../types/ReduxTypes';
+import { Flex } from '../basic/Flex';
+import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
 import { LeftPaneSectionHeader } from './LeftPaneSectionHeader';
 
-const StyledSettingsSectionTitle = styled.strong`
-  font-family: var(--font-accent), var(--font-default);
+const StyledSettingsSectionTitle = styled.span`
   font-size: var(--font-size-md);
+  font-weight: 500;
+  flex-grow: 1;
 `;
 
-const StyledSettingsListItem = styled.div<{ active: boolean }>`
+const StyledSettingsListItem = styled(Flex)<{ active: boolean }>`
   background-color: ${props =>
     props.active
       ? 'var(--settings-tab-background-selected-color)'
       : 'var(--settings-tab-background-color)'};
   color: var(--settings-tab-text-color);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   height: 74px;
-  line-height: 1.4;
-  padding: 0px var(--margins-md);
-  flex-shrink: 0;
+  line-height: 1;
   cursor: pointer;
   transition: var(--default-duration) !important;
 
-  :hover {
+  &:hover {
     background: var(--settings-tab-background-hover-color);
   }
 `;
 
-const getCategories = () => {
+const StyledIconContainer = styled.div`
+  width: 34px;
+`;
+
+type Categories = {
+  id: SessionSettingCategory;
+  title: string;
+  icon: {
+    type: SessionIconType;
+    size?: SessionIconSize | number;
+    color?: string;
+    style?: CSSProperties;
+  };
+};
+
+const getCategories = (): Array<Categories> => {
   return [
     {
-      id: SessionSettingCategory.Privacy,
+      id: 'privacy' as const,
       title: window.i18n('sessionPrivacy'),
+      icon: { type: 'padlock', style: { marginTop: '-5px' } },
     },
     {
-      id: SessionSettingCategory.Notifications,
+      id: 'notifications' as const,
       title: window.i18n('sessionNotifications'),
+      icon: { type: 'speaker' },
     },
     {
-      id: SessionSettingCategory.Conversations,
+      id: 'conversations' as const,
       title: window.i18n('sessionConversations'),
+      icon: { type: 'chatBubble' },
     },
     {
-      id: SessionSettingCategory.MessageRequests,
+      id: 'messageRequests' as const,
       title: window.i18n('openMessageRequestInbox'),
+      icon: { type: 'messageRequest' },
     },
     {
-      id: SessionSettingCategory.Appearance,
+      id: 'appearance' as const,
       title: window.i18n('sessionAppearance'),
+      icon: { type: 'paintbrush' },
     },
     {
-      id: SessionSettingCategory.Permissions,
+      id: 'permissions' as const,
       title: window.i18n('sessionPermissions'),
+      icon: { type: 'checkCircle', size: 19 },
     },
     {
-      id: SessionSettingCategory.Help,
+      id: 'help' as const,
       title: window.i18n('sessionHelp'),
+      icon: { type: 'question', size: 19 },
     },
     {
-      id: SessionSettingCategory.RecoveryPhrase,
+      id: 'recoveryPassword' as const,
       title: window.i18n('sessionRecoveryPassword'),
+      icon: { type: 'recoveryPasswordFill', size: 'medium' },
     },
     {
-      id: SessionSettingCategory.ClearData,
+      id: 'clearData' as const,
       title: window.i18n('sessionClearData'),
+      icon: { type: 'delete', size: 19, color: 'var(--danger-color)' },
     },
   ];
 };
 
-const LeftPaneSettingsCategoryRow = (props: {
-  item: { id: SessionSettingCategory; title: string };
-}) => {
+const LeftPaneSettingsCategoryRow = (props: { item: Categories }) => {
   const { item } = props;
-  const { id, title } = item;
+  const { id, title, icon } = item;
   const dispatch = useDispatch();
   const focusedSettingsSection = useSelector(getFocusedSettingsSection);
 
   const dataTestId = `${title.toLowerCase().replace(' ', '-')}-settings-menu-item`;
 
-  const isClearData = id === SessionSettingCategory.ClearData;
+  const isClearData = id === 'clearData';
 
   return (
     <StyledSettingsListItem
-      data-testid={dataTestId}
       key={id}
       active={id === focusedSettingsSection}
       role="link"
+      container={true}
+      flexDirection={'row'}
+      justifyContent={'flex-start'}
+      alignItems={'center'}
+      flexShrink={0}
+      padding={'0px var(--margins-md) 0 var(--margins-sm)'}
       onClick={() => {
         switch (id) {
-          case SessionSettingCategory.MessageRequests:
+          case 'messageRequests':
             dispatch(showLeftPaneSection(SectionType.Message));
             dispatch(setLeftOverlayMode('message-requests'));
             dispatch(resetConversationExternal());
             break;
-          case SessionSettingCategory.RecoveryPhrase:
-            dispatch(recoveryPhraseModal({}));
-            break;
-          case SessionSettingCategory.ClearData:
+          case 'clearData':
             dispatch(updateDeleteAccountModal({}));
             break;
           default:
             dispatch(showSettingsSection(id));
         }
       }}
+      data-testid={dataTestId}
     >
+      <StyledIconContainer>
+        <SessionIcon
+          iconType={icon.type}
+          iconSize={icon.size || 23}
+          iconColor={icon.color || 'var(--text-primary-color)'}
+          style={icon.style}
+        />
+      </StyledIconContainer>
       <StyledSettingsSectionTitle style={{ color: isClearData ? 'var(--danger-color)' : 'unset' }}>
         {title}
       </StyledSettingsSectionTitle>
 
       {id === focusedSettingsSection && (
-        <SessionIcon iconSize="medium" iconType="chevron" iconRotation={270} />
+        <SessionIcon
+          iconSize={'medium'}
+          iconType="chevron"
+          iconColor={'var(--text-primary-color)'}
+          iconRotation={270}
+        />
       )}
     </StyledSettingsListItem>
   );
 };
 
 const LeftPaneSettingsCategories = () => {
-  const categories = getCategories();
+  let categories = getCategories();
+  const hideRecoveryPassword = useHideRecoveryPasswordEnabled();
+
+  if (hideRecoveryPassword) {
+    categories = categories.filter(category => category.id !== 'recoveryPassword');
+  }
 
   return (
     <>

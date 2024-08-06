@@ -1,8 +1,5 @@
-import React from 'react';
 import { toast } from 'react-toastify';
 import { SessionToast, SessionToastType } from '../../components/basic/SessionToast';
-import { SessionIconType } from '../../components/icon';
-import { SessionSettingCategory } from '../../components/settings/SessionSettings';
 import { SectionType, showLeftPaneSection, showSettingsSection } from '../../state/ducks/section';
 
 // if you push a toast manually with toast...() be sure to set the type attribute of the SessionToast component
@@ -38,19 +35,9 @@ export function pushToastInfo(
   );
 }
 
-export function pushToastSuccess(
-  id: string,
-  title: string,
-  description?: string,
-  icon?: SessionIconType
-) {
+export function pushToastSuccess(id: string, title: string, description?: string) {
   toast.success(
-    <SessionToast
-      title={title}
-      description={description}
-      type={SessionToastType.Success}
-      icon={icon}
-    />,
+    <SessionToast title={title} description={description} type={SessionToastType.Success} />,
     { toastId: id, updateId: id }
   );
 }
@@ -141,7 +128,7 @@ export function pushedMissedCall(conversationName: string) {
 
 const openPermissionsSettings = () => {
   window.inboxStore?.dispatch(showLeftPaneSection(SectionType.Settings));
-  window.inboxStore?.dispatch(showSettingsSection(SessionSettingCategory.Permissions));
+  window.inboxStore?.dispatch(showSettingsSection('permissions'));
 };
 
 export function pushedMissedCallCauseOfPermission(conversationName: string) {

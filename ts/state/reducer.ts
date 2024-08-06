@@ -39,7 +39,7 @@ export type StateType = {
   dictionary: DictionaryState;
 };
 
-export const reducers = {
+const reducers = {
   search,
   conversations,
   user,

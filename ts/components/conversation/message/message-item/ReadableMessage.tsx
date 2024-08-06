@@ -1,14 +1,16 @@
 import { debounce, noop } from 'lodash';
-import React, {
+import {
   AriaRole,
+  MouseEvent,
   MouseEventHandler,
+  ReactNode,
   useCallback,
-  useContext,
   useLayoutEffect,
   useState,
 } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useDispatch, useSelector } from 'react-redux';
+import { useScrollToLoadedMessage } from '../../../../contexts/ScrollToLoadedMessage';
 import { Data } from '../../../../data/data';
 import { useHasUnread } from '../../../../hooks/useParamSelector';
 import { getConversationController } from '../../../../session/conversations';
@@ -28,10 +30,9 @@ import {
 } from '../../../../state/selectors/conversations';
 import { getIsAppFocused } from '../../../../state/selectors/section';
 import { useSelectedConversationKey } from '../../../../state/selectors/selectedConversation';
-import { ScrollToLoadedMessageContext } from '../../SessionMessagesListContainer';
 
 export type ReadableMessageProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   messageId: string;
   className?: string;
   receivedAt: number | undefined;
@@ -40,7 +41,7 @@ export type ReadableMessageProps = {
   onDoubleClickCapture?: MouseEventHandler<HTMLElement>;
   role?: AriaRole;
   dataTestId: string;
-  onContextMenu?: (e: React.MouseEvent<HTMLElement>) => void;
+  onContextMenu?: (e: MouseEvent<HTMLElement>) => void;
   isControlMessage?: boolean;
 };
 
@@ -95,7 +96,7 @@ export const ReadableMessage = (props: ReadableMessageProps) => {
   const [didScroll, setDidScroll] = useState(false);
   const quotedMessageToAnimate = useSelector(getQuotedMessageToAnimate);
 
-  const scrollToLoadedMessage = useContext(ScrollToLoadedMessageContext);
+  const scrollToLoadedMessage = useScrollToLoadedMessage();
 
   // if this unread-indicator is rendered,
   // we want to scroll here only if the conversation was not opened to a specific message

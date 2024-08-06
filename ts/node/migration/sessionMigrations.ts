@@ -7,16 +7,14 @@ import {
   UserGroupsWrapperNode,
 } from 'libsession_util_nodejs';
 import { compact, isArray, isEmpty, isNil, isString, map, pick } from 'lodash';
-import {
-  CONVERSATION_PRIORITIES,
-  ConversationAttributes,
-} from '../../models/conversationAttributes';
+import { ConversationAttributes } from '../../models/conversationAttributes';
 import { fromHexToArray } from '../../session/utils/String';
 import { CONFIG_DUMP_TABLE } from '../../types/sqlSharedTypes';
 import {
   CLOSED_GROUP_V2_KEY_PAIRS_TABLE,
   CONVERSATIONS_TABLE,
   GUARD_NODE_TABLE,
+  ITEMS_TABLE,
   LAST_HASHES_TABLE,
   MESSAGES_TABLE,
   NODES_FOR_PUBKEY_TABLE,
@@ -26,7 +24,7 @@ import {
   rebuildFtsTable,
 } from '../database_utility';
 
-import { SettingsKey } from '../../data/settings-key';
+import { SettingsKey, SNODE_POOL_ITEM_ID } from '../../data/settings-key';
 import { sleepFor } from '../../session/utils/Promise';
 import { sqlNode } from '../sql';
 import MIGRATION_HELPERS from './helpers';
@@ -35,6 +33,7 @@ import {
   getLoggedInUserConvoDuringMigration,
   hasDebugEnvVariable,
 } from './utils';
+import { CONVERSATION_PRIORITIES } from '../../models/types';
 
 // eslint:disable: quotemark one-variable-per-declaration no-unused-expression
 
@@ -105,6 +104,7 @@ const LOKI_SCHEMA_VERSIONS = [
   updateToSessionSchemaVersion34,
   updateToSessionSchemaVersion35,
   updateToSessionSchemaVersion36,
+  updateToSessionSchemaVersion37,
 ];
 
 function updateToSessionSchemaVersion1(currentVersion: number, db: BetterSqlite3.Database) {
@@ -1943,6 +1943,25 @@ function updateToSessionSchemaVersion36(currentVersion: number, db: BetterSqlite
       unread,
       sent_at
     );`);
+    writeSessionSchemaVersion(targetVersion, db);
+  })();
+
+  console.log(`updateToSessionSchemaVersion${targetVersion}: success!`);
+}
+
+function updateToSessionSchemaVersion37(currentVersion: number, db: BetterSqlite3.Database) {
+  const targetVersion = 37;
+  if (currentVersion >= targetVersion) {
+    return;
+  }
+
+  console.log(`updateToSessionSchemaVersion${targetVersion}: starting...`);
+
+  db.transaction(() => {
+    console.info(`clearing ${SNODE_POOL_ITEM_ID} cache`);
+    db.prepare(`DELETE FROM ${ITEMS_TABLE} WHERE id = $snodePoolId;`).run({
+      snodePoolId: SNODE_POOL_ITEM_ID,
+    });
     writeSessionSchemaVersion(targetVersion, db);
   })();
 

@@ -1,16 +1,16 @@
 import chai from 'chai';
-import Sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 import { describe } from 'mocha';
+import Sinon from 'sinon';
 
-import { TestUtils } from '../../../test-utils';
 import { Onions, SnodePool } from '../../../../session/apis/snode_api';
+import { TestUtils } from '../../../test-utils';
 
-import * as OnionPaths from '../../../../session/onions/onionPath';
-import { generateFakeSnodes, generateFakeSnodeWithEdKey } from '../../../test-utils/utils';
+import { Snode } from '../../../../data/types';
 import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
 import { SnodeFromSeed } from '../../../../session/apis/seed_node_api/SeedNodeAPI';
-import { Snode } from '../../../../data/data';
+import * as OnionPaths from '../../../../session/onions/onionPath';
+import { generateFakeSnodes, generateFakeSnodeWithEdKey } from '../../../test-utils/utils';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -35,6 +35,7 @@ const fakeSnodePoolFromSeedNode: Array<SnodeFromSeed> = fakeSnodePool.map(m => {
     storage_port: m.port,
     pubkey_x25519: m.pubkey_x25519,
     pubkey_ed25519: m.pubkey_ed25519,
+    storage_server_version: m.storage_server_version,
   };
 });
 

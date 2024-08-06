@@ -1,9 +1,9 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useScrollToLoadedMessage } from '../../contexts/ScrollToLoadedMessage';
 import { getQuotedMessageToAnimate } from '../../state/selectors/conversations';
-import { isDarkTheme } from '../../state/selectors/theme';
-import { ScrollToLoadedMessageContext } from './SessionMessagesListContainer';
+import { useIsDarkTheme } from '../../state/selectors/theme';
 
 const LastSeenBar = styled.div`
   height: 2px;
@@ -24,7 +24,7 @@ const LastSeenText = styled.div`
   margin-inline: 1rem;
 `;
 
-const LastSeenBarContainer = styled.div<{ darkMode?: boolean }>`
+const LastSeenBarContainer = styled.div<{ isDarkTheme?: boolean }>`
   padding-bottom: 35px;
   max-width: 300px;
   align-self: center;
@@ -36,11 +36,11 @@ const LastSeenBarContainer = styled.div<{ darkMode?: boolean }>`
 
   ${LastSeenBar} {
     background-color: ${props =>
-      props.darkMode ? 'var(--primary-color)' : 'var(--text-primary-color)'};
+      props.isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)'};
   }
 
   ${LastSeenText} {
-    color: ${props => (props.darkMode ? 'var(--primary-color)' : 'var(--text-primary-color)')};
+    color: ${props => (props.isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)')};
   }
 `;
 
@@ -49,10 +49,10 @@ export const SessionLastSeenIndicator = (props: {
   didScroll: boolean;
   setDidScroll: (scroll: boolean) => void;
 }) => {
-  const darkMode = useSelector(isDarkTheme);
+  const isDarkTheme = useIsDarkTheme();
   // if this unread-indicator is not unique it's going to cause issues
   const quotedMessageToAnimate = useSelector(getQuotedMessageToAnimate);
-  const scrollToLoadedMessage = useContext(ScrollToLoadedMessageContext);
+  const scrollToLoadedMessage = useScrollToLoadedMessage();
 
   const { messageId, didScroll, setDidScroll } = props;
 
@@ -74,7 +74,7 @@ export const SessionLastSeenIndicator = (props: {
   });
 
   return (
-    <LastSeenBarContainer id="unread-indicator" darkMode={darkMode}>
+    <LastSeenBarContainer id="unread-indicator" isDarkTheme={isDarkTheme}>
       <LastSeenBar />
       <LastSeenText>{window.i18n('messageUnread')}</LastSeenText>
 

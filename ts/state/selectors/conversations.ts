@@ -22,9 +22,8 @@ import { MessageContentSelectorProps } from '../../components/conversation/messa
 import { MessageContentWithStatusSelectorProps } from '../../components/conversation/message/message-content/MessageContentWithStatus';
 import { MessageTextSelectorProps } from '../../components/conversation/message/message-content/MessageText';
 import { GenericReadableMessageSelectorProps } from '../../components/conversation/message/message-item/GenericReadableMessage';
-import { LightBoxOptions } from '../../components/conversation/SessionConversation';
 import { hasValidIncomingRequestValues } from '../../models/conversation';
-import { CONVERSATION_PRIORITIES, isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
 import { LocalizerType } from '../../types/Util';
@@ -38,6 +37,7 @@ import { isUsAnySogsFromCache } from '../../session/apis/open_group_api/sogsv3/k
 import { PubKey } from '../../session/types';
 import { getSelectedConversationKey } from './selectedConversation';
 import { getModeratorsOutsideRedux } from './sogsRoomInfo';
+import { CONVERSATION_PRIORITIES } from '../../models/types';
 
 export const getConversations = (state: StateType): ConversationsStateType => state.conversations;
 
@@ -297,18 +297,12 @@ const _getLeftPaneConversationIds = (
     .map(m => m.id);
 };
 
-const _getPrivateFriendsConversations = (
+const _getContacts = (
   sortedConversations: Array<ReduxConversationType>
 ): Array<ReduxConversationType> => {
   return sortedConversations.filter(convo => {
-    return (
-      convo.isPrivate &&
-      !convo.isMe &&
-      !convo.isBlocked &&
-      convo.isApproved &&
-      convo.didApproveMe &&
-      convo.activeAt !== undefined
-    );
+    // a private conversation not approved is a message request. Include them in the list of contacts
+    return !convo.isBlocked && convo.isPrivate && !convo.isMe;
   });
 };
 
@@ -336,7 +330,6 @@ const _getGlobalUnreadCount = (sortedConversations: Array<ReduxConversationType>
     }
 
     if (
-      globalUnreadCount < 100 &&
       isNumber(conversation.unreadCount) &&
       isFinite(conversation.unreadCount) &&
       conversation.unreadCount > 0 &&
@@ -345,7 +338,6 @@ const _getGlobalUnreadCount = (sortedConversations: Array<ReduxConversationType>
       globalUnreadCount += conversation.unreadCount;
     }
   }
-
   return globalUnreadCount;
 };
 
@@ -439,20 +431,28 @@ export const getUnreadConversationRequests = createSelector(
  * - approved (or message requests are disabled)
  * - active_at is set to something truthy
  */
-
 export const getLeftPaneConversationIds = createSelector(
   getSortedConversations,
   _getLeftPaneConversationIds
 );
 
-const getDirectContacts = createSelector(getSortedConversations, _getPrivateFriendsConversations);
-
-export const getPrivateContactsPubkeys = createSelector(getDirectContacts, state =>
-  state.map(m => m.id)
+export const getLeftPaneConversationIdsCount = createSelector(
+  getLeftPaneConversationIds,
+  (convoIds: Array<string>) => {
+    return convoIds.length;
+  }
 );
 
-export const getDirectContactsCount = createSelector(
-  getDirectContacts,
+/**
+ * Returns all the conversation ids of contacts which are
+ * - private
+ * - not me
+ * - not blocked
+ */
+const getContacts = createSelector(getSortedConversations, _getContacts);
+
+export const getContactsCount = createSelector(
+  getContacts,
   (contacts: Array<ReduxConversationType>) => contacts.length
 );
 
@@ -462,8 +462,8 @@ export type DirectContactsByNameType = {
 };
 
 // make sure that createSelector is called here so this function is memoized
-export const getDirectContactsByName = createSelector(
-  getDirectContacts,
+export const getSortedContacts = createSelector(
+  getContacts,
   (contacts: Array<ReduxConversationType>): Array<DirectContactsByNameType> => {
     const us = UserUtils.getOurPubKeyStrFromCache();
     const extractedContacts = contacts
@@ -474,17 +474,62 @@ export const getDirectContactsByName = createSelector(
           displayName: m.nickname || m.displayNameInProfile,
         };
       });
-    const extractedContactsNoDisplayName = sortBy(
-      extractedContacts.filter(m => !m.displayName),
-      'id'
-    );
-    const extractedContactsWithDisplayName = sortBy(
-      extractedContacts.filter(m => Boolean(m.displayName)),
-      'displayName'
+
+    const contactsStartingWithANumber = sortBy(
+      extractedContacts.filter(
+        m => !m.displayName || (m.displayName && m.displayName[0].match(/^[0-9]+$/))
+      ),
+      m => m.displayName || m.id
     );
 
-    return [...extractedContactsWithDisplayName, ...extractedContactsNoDisplayName];
+    const contactsWithDisplayName = sortBy(
+      extractedContacts.filter(m => !!m.displayName && !m.displayName[0].match(/^[0-9]+$/)),
+      m => m.displayName?.toLowerCase()
+    );
+
+    return [...contactsWithDisplayName, ...contactsStartingWithANumber];
   }
+);
+
+export const getSortedContactsWithBreaks = createSelector(
+  getSortedContacts,
+  (contacts: Array<DirectContactsByNameType>): Array<DirectContactsByNameType | string> => {
+    // add a break wherever needed
+    const unknownSection = 'unknown';
+    let currentChar = '';
+    // if the item is a string we consider it to be a break of that string
+    const contactsWithBreaks: Array<DirectContactsByNameType | string> = [];
+
+    contacts.forEach(m => {
+      if (
+        !!m.displayName &&
+        m.displayName[0].toLowerCase() !== currentChar &&
+        !m.displayName[0].match(/^[0-9]+$/)
+      ) {
+        currentChar = m.displayName[0].toLowerCase();
+        contactsWithBreaks.push(currentChar.toUpperCase());
+      } else if (
+        ((m.displayName && m.displayName[0].match(/^[0-9]+$/)) || !m.displayName) &&
+        currentChar !== unknownSection
+      ) {
+        currentChar = unknownSection;
+        contactsWithBreaks.push('#');
+      }
+
+      contactsWithBreaks.push(m);
+    });
+
+    contactsWithBreaks.unshift({
+      id: UserUtils.getOurPubKeyStrFromCache(),
+      displayName: window.i18n('noteToSelf'),
+    });
+
+    return contactsWithBreaks;
+  }
+);
+
+export const getPrivateContactsPubkeys = createSelector(getSortedContacts, state =>
+  state.map(m => m.id)
 );
 
 export const getGlobalUnreadMessageCount = createSelector(
@@ -505,9 +550,6 @@ export const getSelectedMessageIds = (state: StateType): Array<string> =>
 
 export const getIsMessageSelectionMode = (state: StateType): boolean =>
   Boolean(getSelectedMessageIds(state).length);
-
-export const getLightBoxOptions = (state: StateType): LightBoxOptions | undefined =>
-  state.conversations.lightBox;
 
 export const getQuotedMessage = (state: StateType): ReplyingToMessageProps | undefined =>
   state.conversations.quotedMessage;
@@ -594,6 +636,13 @@ function sortMessages(
 export const getMostRecentMessageId = (state: StateType): string | null => {
   return state.conversations.mostRecentMessageId;
 };
+
+export const getMostRecentOutgoingMessageId = createSelector(
+  getSortedMessagesOfSelectedConversation,
+  (messages: Array<MessageModelPropsWithoutConvoProps>): string | undefined => {
+    return messages.find(m => m.propsForMessage.direction === 'outgoing')?.propsForMessage.id;
+  }
+);
 
 export const getOldestMessageId = createSelector(
   getSortedMessagesOfSelectedConversation,
@@ -724,39 +773,40 @@ export const getMessagePropsByMessageId = createSelector(
   }
 );
 
-export const getMessageReactsProps = createSelector(getMessagePropsByMessageId, (props):
-  | MessageReactsSelectorProps
-  | undefined => {
-  if (!props || isEmpty(props)) {
-    return undefined;
-  }
-
-  const msgProps: MessageReactsSelectorProps = pick(props.propsForMessage, [
-    'convoId',
-    'conversationType',
-    'reacts',
-    'serverId',
-  ]);
-
-  if (msgProps.reacts) {
-    // NOTE we don't want to render reactions that have 'senders' as an object this is a deprecated type used during development 25/08/2022
-    const oldReactions = Object.values(msgProps.reacts).filter(
-      reaction => !Array.isArray(reaction.senders)
-    );
-
-    if (oldReactions.length > 0) {
-      msgProps.reacts = undefined;
-      return msgProps;
+export const getMessageReactsProps = createSelector(
+  getMessagePropsByMessageId,
+  (props): MessageReactsSelectorProps | undefined => {
+    if (!props || isEmpty(props)) {
+      return undefined;
     }
 
-    const sortedReacts = Object.entries(msgProps.reacts).sort((a, b) => {
-      return a[1].index < b[1].index ? -1 : a[1].index > b[1].index ? 1 : 0;
-    });
-    msgProps.sortedReacts = sortedReacts;
-  }
+    const msgProps: MessageReactsSelectorProps = pick(props.propsForMessage, [
+      'convoId',
+      'conversationType',
+      'reacts',
+      'serverId',
+    ]);
 
-  return msgProps;
-});
+    if (msgProps.reacts) {
+      // NOTE we don't want to render reactions that have 'senders' as an object this is a deprecated type used during development 25/08/2022
+      const oldReactions = Object.values(msgProps.reacts).filter(
+        reaction => !Array.isArray(reaction.senders)
+      );
+
+      if (oldReactions.length > 0) {
+        msgProps.reacts = undefined;
+        return msgProps;
+      }
+
+      const sortedReacts = Object.entries(msgProps.reacts).sort((a, b) => {
+        return a[1].index < b[1].index ? -1 : a[1].index > b[1].index ? 1 : 0;
+      });
+      msgProps.sortedReacts = sortedReacts;
+    }
+
+    return msgProps;
+  }
+);
 
 export const getMessageQuoteProps = createSelector(
   getConversationLookup,
@@ -840,45 +890,47 @@ export const getMessageQuoteProps = createSelector(
   }
 );
 
-export const getMessageTextProps = createSelector(getMessagePropsByMessageId, (props):
-  | MessageTextSelectorProps
-  | undefined => {
-  if (!props || isEmpty(props)) {
-    return undefined;
-  }
+export const getMessageTextProps = createSelector(
+  getMessagePropsByMessageId,
+  (props): MessageTextSelectorProps | undefined => {
+    if (!props || isEmpty(props)) {
+      return undefined;
+    }
 
-  const msgProps: MessageTextSelectorProps = pick(props.propsForMessage, [
-    'direction',
-    'status',
-    'text',
-    'isDeleted',
-    'conversationType',
-  ]);
-
-  return msgProps;
-});
-
-export const getMessageAttachmentProps = createSelector(getMessagePropsByMessageId, (props):
-  | MessageAttachmentSelectorProps
-  | undefined => {
-  if (!props || isEmpty(props)) {
-    return undefined;
-  }
-
-  const msgProps: MessageAttachmentSelectorProps = {
-    attachments: props.propsForMessage.attachments || [],
-    ...pick(props.propsForMessage, [
+    const msgProps: MessageTextSelectorProps = pick(props.propsForMessage, [
       'direction',
-      'isTrustedForAttachmentDownload',
-      'timestamp',
-      'serverTimestamp',
-      'sender',
-      'convoId',
-    ]),
-  };
+      'status',
+      'text',
+      'isDeleted',
+      'conversationType',
+    ]);
 
-  return msgProps;
-});
+    return msgProps;
+  }
+);
+
+export const getMessageAttachmentProps = createSelector(
+  getMessagePropsByMessageId,
+  (props): MessageAttachmentSelectorProps | undefined => {
+    if (!props || isEmpty(props)) {
+      return undefined;
+    }
+
+    const msgProps: MessageAttachmentSelectorProps = {
+      attachments: props.propsForMessage.attachments || [],
+      ...pick(props.propsForMessage, [
+        'direction',
+        'isTrustedForAttachmentDownload',
+        'timestamp',
+        'serverTimestamp',
+        'sender',
+        'convoId',
+      ]),
+    };
+
+    return msgProps;
+  }
+);
 
 export const getIsMessageSelected = createSelector(
   getMessagePropsByMessageId,
@@ -894,27 +946,28 @@ export const getIsMessageSelected = createSelector(
   }
 );
 
-export const getMessageContentSelectorProps = createSelector(getMessagePropsByMessageId, (props):
-  | MessageContentSelectorProps
-  | undefined => {
-  if (!props || isEmpty(props)) {
-    return undefined;
+export const getMessageContentSelectorProps = createSelector(
+  getMessagePropsByMessageId,
+  (props): MessageContentSelectorProps | undefined => {
+    if (!props || isEmpty(props)) {
+      return undefined;
+    }
+
+    const msgProps: MessageContentSelectorProps = {
+      ...pick(props.propsForMessage, [
+        'direction',
+        'serverTimestamp',
+        'text',
+        'timestamp',
+        'previews',
+        'quote',
+        'attachments',
+      ]),
+    };
+
+    return msgProps;
   }
-
-  const msgProps: MessageContentSelectorProps = {
-    ...pick(props.propsForMessage, [
-      'direction',
-      'serverTimestamp',
-      'text',
-      'timestamp',
-      'previews',
-      'quote',
-      'attachments',
-    ]),
-  };
-
-  return msgProps;
-});
+);
 
 export const getMessageContentWithStatusesSelectorProps = createSelector(
   getMessagePropsByMessageId,

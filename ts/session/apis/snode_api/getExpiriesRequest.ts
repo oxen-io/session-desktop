@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { isFinite, isNil, isNumber, sample } from 'lodash';
 import pRetry from 'p-retry';
-import { Snode } from '../../../data/data';
+import { Snode } from '../../../data/types';
 import { UserUtils } from '../../utils';
 import { EmptySwarmError } from '../../utils/errors';
 import { SeedNodeAPI } from '../seed_node_api';
@@ -191,8 +191,9 @@ export async function getExpiriesFromSnode({ messageHashes }: GetExpiriesFromSno
   } catch (e) {
     const snodeStr = snode ? `${snode.ip}:${snode.port}` : 'null';
     window?.log?.warn(
-      `[getExpiriesFromSnode] ${e.code ? `${e.code} ` : ''}${e.message ||
-        e} by ${ourPubKey} for ${messageHashes} via snode:${snodeStr}`
+      `[getExpiriesFromSnode] ${e.code ? `${e.code} ` : ''}${
+        e.message || e
+      } by ${ourPubKey} for ${messageHashes} via snode:${snodeStr}`
     );
     throw e;
   }
