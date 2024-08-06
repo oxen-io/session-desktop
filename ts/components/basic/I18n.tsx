@@ -20,6 +20,13 @@ const formattingTagRegex = new RegExp(
   'g'
 );
 
+const supportedCustomTags = ['emoji'];
+
+const customTagRegex = new RegExp(
+  `<(?:${supportedFormattingTags.join('|')})>.*?</(?:${supportedCustomTags.join('|')})>`,
+  'g'
+);
+
 const StyledHtmlRenderer = styled.span<{ darkMode: boolean }>`
   span {
     color: ${props => (props.darkMode ? 'var(--primary-color)' : 'var(--text-primary-color)')};
@@ -50,8 +57,11 @@ export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
     ...([props.token, i18nArgs] as GetMessageArgs<T>)
   );
 
+  const containsFormattingTag = i18nString.match(formattingTagRegex);
+  const containsCustomTag = i18nString.match(customTagRegex);
+
   /** If the string contains a relevant formatting tag, render it as HTML */
-  if (i18nString.match(formattingTagRegex)) {
+  if (containsFormattingTag || containsCustomTag) {
     return (
       <StyledHtmlRenderer darkMode={darkMode}>
         <SessionHtmlRenderer tag={props.as} html={i18nString} />

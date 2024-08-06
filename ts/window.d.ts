@@ -51,6 +51,7 @@ declare global {
       useTestNet: boolean;
       useClosedGroupV3: boolean;
       integrationTestEnv: boolean;
+      replaceLocalizedStringsWithKeys: boolean;
       debug: {
         debugLogging: boolean;
         debugLibsessionDumps: boolean;

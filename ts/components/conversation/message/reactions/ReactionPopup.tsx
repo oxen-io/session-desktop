@@ -92,32 +92,29 @@ const generateReactionString = (
 ) => {
   const name = contacts[0];
   const other_name = contacts[1];
-  const emoji = '';
 
   switch (numberOfReactors) {
     case 1:
       return isYou
-        ? window.i18n('emojiReactsHoverYou', { emoji })
-        : window.i18n('emojiReactsHoverName', { name, emoji });
+        ? window.i18n('emojiReactsHoverYou')
+        : window.i18n('emojiReactsHoverName', { name });
     case 2:
       return isYou
-        ? window.i18n('emojiReactsHoverYouName', { name, emoji })
-        : window.i18n('emojiReactsHoverTwoName', { name, other_name, emoji });
+        ? window.i18n('emojiReactsHoverYouName', { name })
+        : window.i18n('emojiReactsHoverTwoName', { name, other_name });
     case 3:
       return isYou
-        ? window.i18n('emojiReactsHoverYouNameOne', { name, emoji })
-        : window.i18n('emojiReactsHoverTwoNameOne', { name, other_name, emoji });
+        ? window.i18n('emojiReactsHoverYouNameOne', { name })
+        : window.i18n('emojiReactsHoverTwoNameOne', { name, other_name });
     default:
       return isYou
         ? window.i18n('emojiReactsHoverYouNameMultiple', {
             name,
-            emoji,
             count: numberOfReactors - 2,
           })
         : window.i18n('emojiReactsHoverTwoNameMultiple', {
             name,
             other_name,
-            emoji,
             count: numberOfReactors - 2,
           });
   }

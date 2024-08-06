@@ -15,7 +15,7 @@ export const customTag = {
   ),
 };
 
-export const SessionCustomTagRenderer = <Tag extends keyof typeof customTag>({
+export const SessionCustomTag = <Tag extends keyof typeof customTag>({
   tag,
   props,
 }: {
@@ -25,4 +25,6 @@ export const SessionCustomTagRenderer = <Tag extends keyof typeof customTag>({
   return customTag[tag](props);
 };
 
-SessionCustomTagRenderer({ tag: 'emoji', props: { emoji: '' } });
+export const SessionCustomTagRenderer = ({ str }: { str: string }) => {
+  const splitString = str.split();
+};

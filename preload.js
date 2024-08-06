@@ -32,6 +32,7 @@ window.sessionFeatureFlags = {
   useTestNet: isTestNet(),
   integrationTestEnv: isTestIntegration(),
   useClosedGroupV3: false,
+  replaceLocalizedStringsWithKeys: false,
   debug: {
     debugLogging: !_.isEmpty(process.env.SESSION_DEBUG),
     debugLibsessionDumps: !_.isEmpty(process.env.SESSION_DEBUG_LIBSESSION_DUMPS),

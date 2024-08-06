@@ -16,9 +16,10 @@ import {
   PluralString,
 } from '../types/Localizer';
 import { LOCALE_DEFAULTS } from '../session/constants';
+import { updateLocale } from '../state/ducks/dictionary';
 
 export function loadDictionary(locale: Locale) {
-  return import(`../../_locales/${locale}/messages.json`) as Promise<Dictionary>;
+  return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
 }
 
 const timeLocaleMap = {
@@ -144,9 +145,16 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
   if (!locale) {
     throw new Error('i18n: locale parameter is required');
   }
+
   if (!dictionary) {
     throw new Error('i18n: messages parameter is required');
   }
+
+  if (window.inboxStore) {
+    window.inboxStore.dispatch(updateLocale(locale));
+    window.log.info('Loaded dictionary dispatch');
+  }
+  window.log.info('i18n setup');
 
   /**
    * Retrieves a localized message string, substituting variables where necessary.
@@ -165,12 +173,25 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
     ...[token, args]: GetMessageArgs<T>
   ): R {
     try {
-      const inboxStore = window.inboxStore;
+      const {
+        inboxStore,
+        sessionFeatureFlags: { replaceLocalizedStringsWithKeys },
+      } = window;
 
-      const localizedDictionary =
+      if (replaceLocalizedStringsWithKeys) {
+        return token as R;
+      }
+
+      const storedDictionary =
         inboxStore && 'getState' in inboxStore && typeof inboxStore.getState === 'function'
           ? (inboxStore.getState().dictionary.dictionary as LocalizerDictionary)
-          : dictionary;
+          : undefined;
+
+      if (!storedDictionary) {
+        i18nLog(`i18n: Stored dictionary not found, using setup dictionary as fallback`);
+      }
+
+      const localizedDictionary = storedDictionary ?? dictionary;
 
       let localizedString = localizedDictionary[token] as R;
 
