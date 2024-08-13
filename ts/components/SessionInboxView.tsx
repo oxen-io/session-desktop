@@ -55,7 +55,7 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
 moment.locale(window.getLocale());
 
 const StyledGutter = styled.div`
-  width: 380px !important;
+  width: var(--left-panel-width) !important;
   transition: none;
 `;
 

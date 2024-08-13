@@ -115,6 +115,7 @@ export const SettingsCategoryPrivacy = (props: {
           description={window.i18n('passwordDescription')}
           onClick={() => {
             displayPasswordModal('set', props.onPasswordUpdated);
+            forceUpdate();
           }}
           buttonText={window.i18n('passwordSet')}
           dataTestId={'set-password-button'}
@@ -128,6 +129,7 @@ export const SettingsCategoryPrivacy = (props: {
             description={window.i18n('passwordChangeDescription')}
             onClick={() => {
               displayPasswordModal('change', props.onPasswordUpdated);
+              forceUpdate();
             }}
             buttonText={window.i18n('passwordChange')}
             dataTestId="change-password-settings-button"
@@ -136,6 +138,7 @@ export const SettingsCategoryPrivacy = (props: {
             description={window.i18n('passwordRemoveDescription')}
             onClick={() => {
               displayPasswordModal('remove', props.onPasswordUpdated);
+              forceUpdate();
             }}
             buttonColor={SessionButtonColor.Danger}
             buttonText={window.i18n('passwordRemove')}

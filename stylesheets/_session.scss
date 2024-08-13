@@ -184,6 +184,7 @@ label {
   box-shadow: var(--modal-drop-shadow);
 
   overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 
@@ -382,7 +383,7 @@ label {
 }
 
 .session-settings {
-  width: 100%;
+  width: var(--main-panel-content-width);
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -12,7 +12,7 @@ import { SessionWrapperModal } from '../SessionWrapperModal';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
-import { getPasswordHash } from '../../util/storage';
+import { getPasswordHash, Storage } from '../../util/storage';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerSM } from '../basic/Text';
@@ -197,15 +197,25 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
       this.showError();
       return;
     }
-    await window.setPassword(enteredPassword, null);
-    ToastUtils.pushToastSuccess(
-      'setPasswordSuccessToast',
-      window.i18n('passwordSet'),
-      window.i18n('passwordSetDescription')
-    );
+    try {
+      const updatedHash = await window.setPassword(enteredPassword, null);
+      await Storage.put('passHash', updatedHash);
 
-    this.props.onOk();
-    this.closeDialog();
+      ToastUtils.pushToastSuccess(
+        'setPasswordSuccessToast',
+        window.i18n('passwordSet'),
+        window.i18n('passwordSetDescription')
+      );
+
+      this.props.onOk();
+      this.closeDialog();
+    } catch (err) {
+      window.log.error(err);
+      this.setState({
+        error: window.i18n('setPasswordFail'),
+      });
+      this.showError();
+    }
   }
 
   private async handleActionChange(
@@ -236,15 +246,25 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
       this.showError();
       return;
     }
-    await window.setPassword(newPassword, oldPassword);
 
-    ToastUtils.pushToastSuccess(
-      'setPasswordSuccessToast',
-      window.i18n('passwordChangedDescription')
-    );
+    try {
+      const updatedHash = await window.setPassword(newPassword, oldPassword);
+      await Storage.put('passHash', updatedHash);
 
-    this.props.onOk();
-    this.closeDialog();
+      ToastUtils.pushToastSuccess(
+        'setPasswordSuccessToast',
+        window.i18n('passwordChangedDescription'),
+      );
+
+      this.props.onOk();
+      this.closeDialog();
+    } catch (err) {
+      window.log.error(err);
+      this.setState({
+        error: window.i18n('changePasswordFail'),
+      });
+      this.showError();
+    }
   }
 
   private async handleActionRemove(oldPassword: string) {
@@ -257,15 +277,25 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
       this.showError();
       return;
     }
-    await window.setPassword(null, oldPassword);
 
-    ToastUtils.pushToastWarning(
-      'setPasswordSuccessToast',
-      window.i18n('passwordRemovedDescription')
-    );
+    try {
+      await window.setPassword(null, oldPassword);
+      await Storage.remove('passHash');
 
-    this.props.onOk();
-    this.closeDialog();
+      ToastUtils.pushToastWarning(
+        'setPasswordSuccessToast',
+        window.i18n('passwordRemovedDescription'),
+      );
+
+      this.props.onOk();
+      this.closeDialog();
+    } catch (err) {
+      window.log.error(err);
+      this.setState({
+        error: window.i18n('removePasswordFail'),
+      });
+      this.showError();
+    }
   }
 
   private async onEnterPressed(event: any) {
