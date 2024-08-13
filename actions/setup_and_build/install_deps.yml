@@ -1,0 +1,9 @@
+name: 'Install'
+description: 'Install dependencies for Session Desktop'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+      run: yarn install --frozen-lockfile --network-timeout 600000

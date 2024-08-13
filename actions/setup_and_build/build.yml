@@ -1,0 +1,9 @@
+
+name: 'Build'
+description: 'Build & Compile'
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate and concat files
+      shell: bash
+      run: yarn build-everything

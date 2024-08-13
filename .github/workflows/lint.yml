@@ -1,0 +1,35 @@
+# This script will run tests anytime a pull request is added
+name: Lint-
+
+on:
+  pull_request:
+    branches:
+      - clearnet
+      - unstable
+      - release/
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-12, ubuntu-20.04]
+    env:
+      SIGNAL_ENV: production
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - run: git config --global core.autocrlf false
+
+      - name: Checkout git repo
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./actions/setup
+
+      - name: Lint Files
+        run: yarn lint-full
