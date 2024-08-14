@@ -94,8 +94,6 @@ export type Locale = keyof typeof timeLocaleMap;
 
 const enPluralFormRegex = /\{(\w+), plural, one \{(\w+)\} other \{(\w+)\}\}/;
 
-const cardinalPluralFormRegex = /(zero|one|two|few|many|other) \{([^}]*)\}/g;
-
 const cardinalPluralRegex: Record<Intl.LDMLPluralRule, RegExp> = {
   zero: /(zero) \{([^}]*)\}/,
   one: /(one) \{([^}]*)\}/,
@@ -107,7 +105,7 @@ const cardinalPluralRegex: Record<Intl.LDMLPluralRule, RegExp> = {
 
 function getPluralKey(string: PluralString): PluralKey | undefined {
   const match = string.match(enPluralFormRegex);
-  return match ? match[1] : undefined;
+  return match && match[1] ? match[1] : undefined;
 }
 
 function getStringForCardinalRule(
@@ -200,8 +198,10 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
         return token as R;
       }
 
-      /** If a localized string does not have any arguments to substitute it is returned with no changes */
-      if (!args) {
+      /** If a localized string does not have any arguments to substitute it is returned with no
+       * changes. We also need to check if the string contains a curly bracket as if it does
+       * there might be a default arg */
+      if (!args && !localizedString.includes('{')) {
         return localizedString;
       }
 
@@ -213,7 +213,7 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
             `i18n: Attempted to nonexistent pluralKey for plural form string '${localizedString}'`
           );
         } else {
-          const num = args[pluralKey] ?? 0;
+          const num = args?.[pluralKey] ?? 0;
 
           const cardinalRule = new Intl.PluralRules(locale).select(num);
 
@@ -231,8 +231,9 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
       }
 
       /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
+      // @ts-expect-error TODO: Fix this type, now that we have plurals it doesnt quite work
       return localizedString.replace(/\{(\w+)\}/g, (match, arg: keyof typeof args) => {
-        const substitution = args[arg];
+        const substitution: string | undefined = args?.[arg];
 
         if (isUndefined(substitution)) {
           const defaultSubstitution = LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS];
@@ -240,7 +241,8 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
           return isUndefined(defaultSubstitution) ? match : defaultSubstitution;
         }
 
-        return substitution.toString();
+        // TODO: figure out why is was type never and fix the type
+        return (substitution as string).toString();
       }) as R;
     } catch (error) {
       i18nLog(`i18n: ${error.message}`);
