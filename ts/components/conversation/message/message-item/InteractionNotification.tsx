@@ -46,9 +46,13 @@ export const InteractionNotification = (props: PropsForInteractionNotification) 
       break;
     case ConversationInteractionType.Leave:
       text = isCommunity
-        ? window.i18n('communityLeaveError', { community_name: displayName })
+        ? window.i18n('communityLeaveError', {
+            community_name: displayName || window.i18n('communityUnknown'),
+          })
         : isGroup
-          ? window.i18n('groupLeaveErrorFailed', { group_name: displayName })
+          ? window.i18n('groupLeaveErrorFailed', {
+              group_name: displayName || window.i18n('groupUnknown'),
+            })
           : ''; // we cannot fail to do other actions, so not printing anything
       break;
     default:

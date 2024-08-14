@@ -390,6 +390,13 @@ class CompositionBoxInner extends Component<Props, State> {
   private renderCompositionView() {
     const { showEmojiPanel } = this.state;
     const { typingEnabled } = this.props;
+
+    // we can only send a message if the conversation allows writing in it
+    // - we've got a message body
+    // - or we've got a staged attachments
+    const showSendButton =
+      typingEnabled && (!isEmpty(this.state.draft) || !isEmpty(this.props.stagedAttachments));
+
     /* eslint-disable @typescript-eslint/no-misused-promises */
 
     return (
@@ -432,7 +439,7 @@ class CompositionBoxInner extends Component<Props, State> {
         {typingEnabled && (
           <ToggleEmojiButton ref={this.emojiPanelButton} onClick={this.toggleEmojiPanel} />
         )}
-        {typingEnabled && <SendMessageButton onClick={this.onSendMessage} />}
+        {showSendButton && <SendMessageButton onClick={this.onSendMessage} />}
         {typingEnabled && showEmojiPanel && (
           <StyledEmojiPanelContainer role="button" dir={this.props.htmlDirection}>
             <SessionEmojiPanel
@@ -815,11 +822,10 @@ class CompositionBoxInner extends Component<Props, State> {
       return;
     }
 
-    if (!selectedConversation.isPrivate && selectedConversation.left) {
-      ToastUtils.pushYouLeftTheGroup();
-      return;
-    }
-    if (!selectedConversation.isPrivate && selectedConversation.isKickedFromGroup) {
+    if (
+      !selectedConversation.isPrivate &&
+      (selectedConversation.left || selectedConversation.isKickedFromGroup)
+    ) {
       ToastUtils.pushYouLeftTheGroup();
       return;
     }

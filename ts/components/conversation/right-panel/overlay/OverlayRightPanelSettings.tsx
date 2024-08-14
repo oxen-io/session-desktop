@@ -264,8 +264,9 @@ export const OverlayRightPanelSettings = () => {
         lastMessage?.interactionStatus === ConversationInteractionStatus.Error
       ? window.i18n('conversationsDelete')
       : isKickedFromGroup
-        ? // TODO - add group name
-          window.i18n('groupRemovedYou', { group_name: '' })
+        ? window.i18n('groupRemovedYou', {
+            group_name: selectedUsername || window.i18n('groupUnknown'),
+          })
         : left
           ? window.i18n('groupMemberYouLeft')
           : window.i18n('groupLeave');

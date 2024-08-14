@@ -120,7 +120,7 @@ const acceptOpenGroupInvitationV2 = (completeUrl: string, roomName?: string) => 
     updateConfirmModal({
       title: window.i18n('communityJoin'),
       message: window.i18n('communityJoinDescription', {
-        community_name: roomName ?? window.i18n('unknown'),
+        community_name: roomName || window.i18n('unknown'),
       }),
       onClickOk: async () => {
         await joinOpenGroupV2WithUIEvents(completeUrl, true, false);

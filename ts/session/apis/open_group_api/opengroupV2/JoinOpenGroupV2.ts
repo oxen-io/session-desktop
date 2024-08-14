@@ -96,7 +96,9 @@ async function joinOpenGroupV2(
     if (!conversation) {
       window?.log?.warn('Failed to join open group v2');
       // TODO - Check that this is the room name
-      throw new Error(window.i18n('groupErrorJoin', { group_name: roomId }));
+      throw new Error(
+        window.i18n('communityJoinError', { community_name: roomId || window.i18n('unknown') })
+      );
     }
 
     // here we managed to connect to the group.
@@ -182,12 +184,18 @@ export async function joinOpenGroupV2WithUIEvents(
     if (showToasts) {
       // TODO - Check that this is the room name
       ToastUtils.pushToastError(
-        'connectToServerFail',
-        window.i18n('groupErrorJoin', { group_name: parsedRoom.roomId })
+        'communityJoinError',
+        window.i18n('communityJoinError', {
+          community_name: parsedRoom.roomId || window.i18n('unknown'),
+        })
       );
     }
     if (errorHandler) {
-      errorHandler(window.i18n('groupErrorJoin', { group_name: parsedRoom.roomId }));
+      errorHandler(
+        window.i18n('communityJoinError', {
+          community_name: parsedRoom.roomId || window.i18n('unknown'),
+        })
+      );
     }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
@@ -196,12 +204,14 @@ export async function joinOpenGroupV2WithUIEvents(
     if (showToasts) {
       // TODO - Check that this is the room name
       ToastUtils.pushToastError(
-        'connectToServerFail',
-        window.i18n('groupErrorJoin', { group_name: 'unknown' })
+        'communityJoinError',
+        window.i18n('communityJoinError', { community_name: window.i18n('unknown') })
       );
     }
     if (errorHandler) {
-      errorHandler(window.i18n('groupErrorJoin', { group_name: completeUrl })); // we don't have a parsed room, so let's show the whole url in this case
+      errorHandler(
+        window.i18n('communityJoinError', { community_name: window.i18n('unknown') })
+      ); // we don't have a parsed room, so let's show the whole url in this case
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }

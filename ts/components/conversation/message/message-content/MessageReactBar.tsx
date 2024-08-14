@@ -137,7 +137,7 @@ function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
     const weeks = Math.floor(days / 7);
     const daysLeft = days % 7;
     const extraUnit = daysLeft ? ` ${daysLeft}d` : '';
-    return window.i18n('disappearingMessagesCountdownBig', { time_large: `${weeks}w${extraUnit}` });
+    return window.i18n('', { time_large: `${weeks}w${extraUnit}` });
   }
 
   return '...';

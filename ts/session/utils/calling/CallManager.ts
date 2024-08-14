@@ -1296,7 +1296,7 @@ export async function handleMissedCall(
       ToastUtils.pushedMissedCall(displayname);
       break;
     case 'not-approved':
-      ToastUtils.pushedMissedCallNotApproved(displayname);
+      // no toast for this case
       break;
     case 'too-old-timestamp':
       // no toast for this case, the missed call notification is enough
@@ -1304,7 +1304,9 @@ export async function handleMissedCall(
     default:
   }
 
-  await addMissedCallMessage(sender, incomingOfferTimestamp, details);
+  if (reason !== 'not-approved') {
+    await addMissedCallMessage(sender, incomingOfferTimestamp, details);
+  }
 }
 
 async function addMissedCallMessage(

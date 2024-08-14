@@ -98,10 +98,7 @@ export class UpdateGroupNameDialog extends Component<Props, State> {
   public render() {
     const okText = window.i18n('okay');
     const cancelText = window.i18n('cancel');
-    // TODO: String localization - remove
-    const titleText = window.i18n('updateGroupDialogTitle', {
-      name: this.convo.getRealSessionUsername() ?? window.i18n('unknown'),
-    });
+    const titleText = window.i18n('groupInformationSet');
 
     const errorMsg = this.state.errorMessage;
     const isAdmin = !this.convo.isPublic();

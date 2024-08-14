@@ -169,7 +169,7 @@ async function sendToGroupMembers(
 
   window.inboxStore?.dispatch(
     updateConfirmModal({
-      title: window.i18n('groupInviteFailed'),
+      title: window.i18n('groupError'),
       message,
       okText: window.i18n('resend'),
       onClickOk: async () => {

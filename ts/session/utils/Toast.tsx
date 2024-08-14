@@ -139,9 +139,6 @@ export function pushedMissedCallCauseOfPermission(conversationName: string) {
   );
 }
 
-export function pushedMissedCallNotApproved(name: string) {
-  pushToastInfo('missedCall', window.i18n('callsMissedCallFrom', { name }));
-}
 
 export function pushVideoCallPermissionNeeded() {
   pushToastInfo(
@@ -191,10 +188,6 @@ export function pushDeleted() {
 
 export function pushCannotRemoveCreatorFromGroup() {
   pushToastWarning('cannotRemoveCreatorFromGroup', window.i18n('adminCannotBeRemoved'));
-}
-
-export function pushOnlyAdminCanRemove() {
-  pushToastInfo('onlyAdminCanRemoveMembers', window.i18n('onlyAdminCanRemoveMembersDesc'));
 }
 
 export function pushFailedToAddAsModerator() {

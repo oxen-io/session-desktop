@@ -1337,6 +1337,9 @@ export class ConversationModel extends Backbone.Model<ConversationAttributes> {
     if (this.isPrivate()) {
       return window.i18n('anonymous');
     }
+    if (this.isPublic()) {
+      return window.i18n('communityUnknown');
+    }
     return window.i18n('unknown');
   }
 

@@ -59,9 +59,9 @@ export const InteractionItem = (props: InteractionItemProps) => {
   let text = storedLastMessageText || '';
   let errorText = '';
 
-  const name =
-    getConversationController().get(conversationId)?.getNicknameOrRealUsernameOrPlaceholder() ||
-    window.i18n('unknown');
+  const name = getConversationController()
+    .get(conversationId)
+    ?.getNicknameOrRealUsernameOrPlaceholder();
 
   switch (interactionType) {
     case ConversationInteractionType.Hide:
@@ -69,7 +69,9 @@ export const InteractionItem = (props: InteractionItemProps) => {
       break;
     case ConversationInteractionType.Leave:
       errorText = isCommunity
-        ? window.i18n('communityLeaveError', { community_name: name })
+        ? window.i18n('communityLeaveError', {
+            community_name: name || window.i18n('unknown'),
+          })
         : isGroup
           ? window.i18n('groupLeaveErrorFailed', { group_name: name })
           : ''; // this cannot happen

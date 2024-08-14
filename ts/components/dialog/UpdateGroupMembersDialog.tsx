@@ -158,7 +158,7 @@ export const UpdateGroupMembersDialog = (props: Props) => {
 
   const onAdd = (member: string) => {
     if (!weAreAdmin) {
-      ToastUtils.pushOnlyAdminCanRemove();
+      window?.log?.warn('Only group admin can add members!');
       return;
     }
 
@@ -168,8 +168,6 @@ export const UpdateGroupMembersDialog = (props: Props) => {
   const onRemove = (member: string) => {
     if (!weAreAdmin) {
       window?.log?.warn('Only group admin can remove members!');
-
-      ToastUtils.pushOnlyAdminCanRemove();
       return;
     }
     if (convoProps.groupAdmins?.includes(member)) {

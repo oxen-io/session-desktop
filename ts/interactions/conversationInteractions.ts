@@ -276,7 +276,9 @@ export function showLeavePrivateConversationbyConvoId(conversationId: string) {
       title: isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete'),
       message: isMe
         ? window.i18n('noteToSelfHideDescription')
-        : window.i18n('deleteMessagesDescriptionEveryone'),
+        : window.i18n('conversationsDeleteDescription', {
+            name: conversation.getNicknameOrRealUsernameOrPlaceholder(),
+          }),
       onClickOk,
       okText: isMe ? window.i18n('hide') : window.i18n('delete'),
       okTheme: SessionButtonColor.Danger,

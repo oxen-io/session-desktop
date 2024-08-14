@@ -4,6 +4,10 @@ import {
   PropsForGroupUpdate,
   PropsForGroupUpdateType,
 } from '../../../../state/ducks/conversations';
+import {
+  useSelectedDisplayNameInProfile,
+  useSelectedNicknameOrProfileNameOrShortenedPubkey,
+} from '../../../../state/selectors/selectedConversation';
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';
@@ -25,10 +29,10 @@ const ChangeItemKicked = (kicked: Array<string>): string => {
     throw new Error('Group update kicked is missing contacts');
   }
   const names = useConversationsUsernameWithQuoteOrFullPubkey(kicked);
+  const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
   if (arrayContainsUsOnly(kicked)) {
-    // TODO - add group name
-    return window.i18n('groupRemovedYou', { group_name: '' });
+    return window.i18n('groupRemovedYou', { group_name: groupName });
   }
 
   // TODO - support bold

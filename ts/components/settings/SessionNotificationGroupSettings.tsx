@@ -57,10 +57,7 @@ export const SessionNotificationGroupSettings = () => {
     }
     Notifications.addPreviewNotification({
       conversationId: `preview-notification-${Date.now()}`,
-      message:
-        items.find(m => m.value === initialNotificationEnabled)?.label ||
-        window?.i18n?.('messageBody') ||
-        'Message body',
+      message: items.find(m => m.value === initialNotificationEnabled)?.label || 'Message body',
       title: window.i18n('preview'),
       iconUrl: null,
       isExpiringMessage: false,
