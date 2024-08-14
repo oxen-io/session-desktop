@@ -1,14 +1,13 @@
 import React from 'react';
+
+import styled from 'styled-components';
 import type {
   GetMessageArgs,
   I18nProps,
   LocalizerDictionary,
   LocalizerToken,
 } from '../../types/Localizer';
-
-import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { isDarkTheme } from '../../state/selectors/theme';
+import { useIsDarkTheme } from '../../state/selectors/theme';
 import { SessionHtmlRenderer } from './SessionHTMLRenderer';
 
 /** An array of supported html tags to render if found in a string */
@@ -50,7 +49,7 @@ const StyledHtmlRenderer = styled.span<{ darkMode: boolean }>`
  * ```
  */
 export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
-  const darkMode = useSelector(isDarkTheme);
+  const darkMode = useIsDarkTheme();
   const i18nArgs = 'args' in props ? props.args : undefined;
 
   const i18nString = window.i18n<T, LocalizerDictionary[T]>(

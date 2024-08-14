@@ -220,7 +220,7 @@ export const EditProfileDialog = () => {
       setMode('default');
     } catch (err) {
       window.log.error('Profile update error', err);
-      setProfileNameError(window.i18n('unknownError'));
+      setProfileNameError(window.i18n('errorUnknown'));
     } finally {
       setLoading(false);
     }
@@ -274,7 +274,7 @@ export const EditProfileDialog = () => {
   return (
     <StyledEditProfileDialog className="edit-profile-dialog" data-testid="edit-profile-dialog">
       <SessionWrapperModal
-        title={window.i18n('editProfileModalTitle')}
+        title={window.i18n('profile')}
         headerIconButtons={backButton}
         headerReverse={true}
         showExitIcon={true}
@@ -320,7 +320,7 @@ export const EditProfileDialog = () => {
             autoFocus={true}
             disableOnBlurEvent={true}
             type="text"
-            placeholder={window.i18n('enterDisplayName')}
+            placeholder={window.i18n('displayNameEnter')}
             value={profileName}
             onValueChanged={(name: string) => {
               const sanitizedName = sanitizeDisplayNameOrToast(name, setProfileNameError);

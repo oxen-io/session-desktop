@@ -333,10 +333,10 @@ export async function deleteEverythingAndNetworkData() {
       window?.inboxStore?.dispatch(updateDeleteAccountModal(null));
       window?.inboxStore?.dispatch(
         updateConfirmModal({
-          title: window.i18n('dialogClearAllDataDeletionFailedTitle'),
-          message: window.i18n('dialogClearAllDataDeletionFailedDesc'),
+          title: window.i18n('clearDeviceAndNetworkConfirm'),
+          message: window.i18n('clearDataErrorDescriptionGeneric'),
           okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('deviceOnly'),
+          okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {
             await deleteDbLocally();
             window.restart();
@@ -360,13 +360,14 @@ export async function deleteEverythingAndNetworkData() {
       // open a new confirm dialog to ask user what to do
       window?.inboxStore?.dispatch(
         updateConfirmModal({
-          title: window.i18n('dialogClearAllDataDeletionFailedTitle'),
-          message: window.i18n('dialogClearAllDataDeletionFailedMultiple', [
-            potentiallyMaliciousSnodes.join(', '),
-          ]),
-          messageSub: window.i18n('dialogClearAllDataDeletionFailedTitleQuestion'),
+          title: window.i18n('clearDeviceAndNetworkConfirm'),
+          message: window.i18n('clearDataErrorDescription', {
+            count: potentiallyMaliciousSnodes.length,
+            service_node_id: potentiallyMaliciousSnodes.join(', '),
+          }),
+          messageSub: window.i18n('clearDeviceAndNetworkConfirm'),
           okTheme: SessionButtonColor.Danger,
-          okText: window.i18n('deviceOnly'),
+          okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {
             await deleteDbLocally();
             window.restart();

@@ -1,11 +1,6 @@
-import { PubKey } from '../../../../../session/types';
 import { CallNotificationType, PropsForCallNotification } from '../../../../../state/ducks/types';
 
-import {
-  useSelectedConversationKey,
-  useSelectedDisplayNameInProfile,
-  useSelectedNickname,
-} from '../../../../../state/selectors/selectedConversation';
+import { useSelectedNicknameOrProfileNameOrShortenedPubkey } from '../../../../../state/selectors/selectedConversation';
 import { LocalizerToken } from '../../../../../types/Localizer';
 import { SessionIconType } from '../../../../icon';
 import { ExpirableReadableMessage } from '../ExpirableReadableMessage';
@@ -36,19 +31,22 @@ const style = {
 
 export const CallNotification = (props: PropsForCallNotification) => {
   const { messageId, notificationType } = props;
-  const selectedConvoId = useSelectedConversationKey();
 
-  const displayNameInProfile = useSelectedDisplayNameInProfile();
-  const nickname = useSelectedNickname();
-
-  const displayName =
-    nickname || displayNameInProfile || (selectedConvoId && PubKey.shorten(selectedConvoId));
+  const displayName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
   const styleItem = style[notificationType];
 
-  const notificationText = window.i18n(styleItem.notificationTextKey, {
-    name: displayName ?? window.i18n('unknown'),
-  });
+  // have to break it down
+  const notificationText =
+    styleItem.notificationTextKey === 'callsInProgress'
+      ? window.i18n(styleItem.notificationTextKey)
+      : styleItem.notificationTextKey === 'callsMissedCallFrom'
+        ? window.i18n(styleItem.notificationTextKey, {
+            name: displayName ?? window.i18n('unknown'),
+          })
+        : window.i18n(styleItem.notificationTextKey, {
+            name: displayName ?? window.i18n('unknown'),
+          });
 
   const iconType = styleItem.iconType;
   const iconColor = styleItem.iconColor;

@@ -4,18 +4,14 @@ import autoBind from 'auto-bind';
 import { Component } from 'react';
 import { ToastUtils } from '../../session/utils';
 import { sessionPassword } from '../../state/ducks/modalDialog';
-import { LocalizerKeys } from '../../types/LocalizerKeys';
-import type { PasswordAction } from '../../types/ReduxTypes';
 import { LocalizerToken } from '../../types/Localizer';
-import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionWrapperModal } from '../SessionWrapperModal';
-import { matchesHash, validatePassword } from '../../util/passwordUtils';
+import type { PasswordAction } from '../../types/ReduxTypes';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
 import { getPasswordHash, Storage } from '../../util/storage';
-import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerSM } from '../basic/Text';
+import { SessionWrapperModal } from '../SessionWrapperModal';
 
 interface Props {
   passwordAction: PasswordAction;
@@ -75,7 +71,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
         placeholders = [window.i18n('passwordCreate')];
         break;
       default:
-        placeholders = [window.i18n('createPassword'), window.i18n('passwordConfirm')];
+        placeholders = [window.i18n('passwordCreate'), window.i18n('passwordConfirm')];
     }
 
     const confirmButtonText =
@@ -85,10 +81,10 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
       passwordAction === 'change'
         ? 'passwordChange'
         : passwordAction === 'remove'
-        ? 'passwordRemove'
-        : passwordAction === 'enter'
-        ? 'passwordEnter'
-        : 'passwordSet';
+          ? 'passwordRemove'
+          : passwordAction === 'enter'
+            ? 'passwordEnter'
+            : 'passwordSet';
 
     return (
       <SessionWrapperModal title={window.i18n(localizedKeyAction)} onClose={this.closeDialog}>
@@ -212,7 +208,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
     } catch (err) {
       window.log.error(err);
       this.setState({
-        error: window.i18n('setPasswordFail'),
+        error: window.i18n('passwordFailed'),
       });
       this.showError();
     }
@@ -253,7 +249,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
 
       ToastUtils.pushToastSuccess(
         'setPasswordSuccessToast',
-        window.i18n('passwordChangedDescription'),
+        window.i18n('passwordChangedDescription')
       );
 
       this.props.onOk();
@@ -284,7 +280,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
 
       ToastUtils.pushToastWarning(
         'setPasswordSuccessToast',
-        window.i18n('passwordRemovedDescription'),
+        window.i18n('passwordRemovedDescription')
       );
 
       this.props.onOk();

@@ -1,10 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
 import styled from 'styled-components';
-import { Data } from '../../../../data/data';
 import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
-import { useIsDarkTheme } from '../../../../state/selectors/theme';
 import { nativeEmojiData } from '../../../../util/emoji';
 
 export type TipPosition = 'center' | 'left' | 'right';
@@ -66,10 +63,6 @@ const StyledContacts = styled.span`
   }
 `;
 
-const StyledOthers = styled.span<{ isDarkTheme: boolean }>`
-  color: ${props => (props.isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)')};
-`;
-
 const generateContactsString = (
   senders: Array<string>
 ): { contacts: Array<string>; numberOfReactors: number; hasMe: boolean } => {
@@ -101,57 +94,28 @@ const generateReactionString = (
   switch (numberOfReactors) {
     case 1:
       return isYou
-        ? window.i18n('emojiReactsHoverYou')
-        : window.i18n('emojiReactsHoverName', { name });
+        ? window.i18n('emojiReactsHoverYouDesktop')
+        : window.i18n('emojiReactsHoverNameDesktop', { name });
     case 2:
       return isYou
-        ? window.i18n('emojiReactsHoverYouName', { name })
-        : window.i18n('emojiReactsHoverTwoName', { name, other_name });
+        ? window.i18n('emojiReactsHoverYouNameDesktop', { name })
+        : window.i18n('emojiReactsHoverTwoNameDesktop', { name, other_name });
     case 3:
       return isYou
-        ? window.i18n('emojiReactsHoverYouNameOne', { name })
-        : window.i18n('emojiReactsHoverTwoNameOne', { name, other_name });
+        ? window.i18n('emojiReactsHoverYouNameOneDesktop', { name })
+        : window.i18n('emojiReactsHoverTwoNameDesktop', { name, other_name });
     default:
       return isYou
-        ? window.i18n('emojiReactsHoverYouNameMultiple', {
+        ? window.i18n('emojiReactsHoverYouNameMultipleDesktop', {
             name,
             count: numberOfReactors - 2,
           })
-        : window.i18n('emojiReactsHoverTwoNameMultiple', {
+        : window.i18n('emojiReactsHoverTwoNameMultipleDesktop', {
             name,
             other_name,
             count: numberOfReactors - 2,
           });
   }
-};
-
-const Contacts = (contacts: Array<string>, count: number) => {
-  const isDarkTheme = useIsDarkTheme();
-
-  const isYou = contacts[0] === window.i18n('you');
-  const reactionPopupKey = useMemo(
-    () => reactionKey(isYou, contacts.length),
-    [isYou, contacts.length]
-  );
-
-  return (
-    <StyledContacts>
-      {window.i18n(reactionPopupKey, {
-        name: contacts[0],
-        other_name: contacts[1],
-        count: contacts.length,
-        emoji: '',
-      })}{' '}
-      {contacts.length > 3 ? (
-        <StyledOthers darkMode={darkMode}>
-          {window.i18n(contacts.length === 4 ? 'otherSingular' : 'otherPlural', {
-            number: `${count - 3}`,
-          })}
-        </StyledOthers>
-      ) : null}
-      <span>{window.i18n('reactionPopup')}</span>
-    </StyledContacts>
-  );
 };
 
 type Props = {
@@ -163,9 +127,8 @@ type Props = {
   onClick: (...args: Array<any>) => void;
 };
 
-export const ReactionPopup = (props: Props): ReactElement => {
+export const ReactionPopup = (props: Props) => {
   const { emoji, count, senders, tooltipPosition = 'center', onClick } = props;
-  const darkMode = useSelector(isDarkTheme);
 
   const { contacts, hasMe, numberOfReactors } = useMemo(
     () => generateContactsString(senders),
@@ -174,7 +137,7 @@ export const ReactionPopup = (props: Props): ReactElement => {
 
   const reactionString = useMemo(
     () => generateReactionString(hasMe, contacts, numberOfReactors),
-    [hasMe, contacts.length, numberOfReactors]
+    [hasMe, contacts, numberOfReactors]
   );
 
   return (

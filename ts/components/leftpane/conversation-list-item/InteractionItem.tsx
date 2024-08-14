@@ -36,7 +36,10 @@ export const InteractionItem = (props: InteractionItemProps) => {
     if (conversationId) {
       const convo = getConversationController().get(conversationId);
 
-      if (storedLastMessageInteractionStatus !== convo.get('lastMessageInteractionStatus')) {
+      if (
+        convo &&
+        storedLastMessageInteractionStatus !== convo.get('lastMessageInteractionStatus')
+      ) {
         setStoredLastMessageInteractionStatus(convo.get('lastMessageInteractionStatus'));
         setStoredLastMessageText(convo.get('lastMessage'));
       }
@@ -56,23 +59,27 @@ export const InteractionItem = (props: InteractionItemProps) => {
   let text = storedLastMessageText || '';
   let errorText = '';
 
+  const name =
+    getConversationController().get(conversationId)?.getNicknameOrRealUsernameOrPlaceholder() ||
+    window.i18n('unknown');
+
   switch (interactionType) {
     case ConversationInteractionType.Hide:
       // if it's hidden or pending hiding, we don't show any text
       break;
     case ConversationInteractionType.Leave:
       errorText = isCommunity
-        ? window.i18n('leaveCommunityFailed')
+        ? window.i18n('communityLeaveError', { community_name: name })
         : isGroup
-        ? window.i18n('groupErrorLeave')
-        : window.i18n('deleteConversationFailed');
+          ? window.i18n('groupLeaveErrorFailed', { group_name: name })
+          : ''; // this cannot happen
       text =
         interactionStatus === ConversationInteractionStatus.Error
           ? errorText
           : interactionStatus === ConversationInteractionStatus.Start ||
-            interactionStatus === ConversationInteractionStatus.Loading
-          ? window.i18n('leaving')
-          : text;
+              interactionStatus === ConversationInteractionStatus.Loading
+            ? window.i18n('leaving')
+            : text;
       break;
     default:
       assertUnreachable(

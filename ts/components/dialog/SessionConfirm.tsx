@@ -97,7 +97,7 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
     radioOptions?.length ? radioOptions[0].value : ''
   );
 
-  const okText = props.okText || window.i18n('ok');
+  const okText = props.okText || window.i18n('okay');
   const cancelText = props.cancelText || window.i18n('cancel');
   const showHeader = !!props.title;
 

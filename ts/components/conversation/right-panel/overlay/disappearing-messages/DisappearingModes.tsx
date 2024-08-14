@@ -39,21 +39,21 @@ export const DisappearingModes = (props: DisappearingModesProps) => {
           const mode = _mode as DisappearingMessageConversationModeType;
           const optionI18n =
             mode === 'legacy'
-              ? window.i18n('disappearingMessagesModeLegacy')
+              ? '' // TODO: to cleanup when we remove legacy entirely
               : mode === 'deleteAfterRead'
-              ? window.i18n('disappearingMessagesDisappearAfterRead')
-              : mode === 'deleteAfterSend'
-              ? window.i18n('disappearingMessagesDisappearAfterSend')
-              : window.i18n('off');
+                ? window.i18n('disappearingMessagesDisappearAfterRead')
+                : mode === 'deleteAfterSend'
+                  ? window.i18n('disappearingMessagesDisappearAfterSend')
+                  : window.i18n('off');
 
           const subtitleI18n =
             mode === 'legacy'
-              ? window.i18n('disappearingMessagesModeLegacySubtitle')
+              ? '' // TODO: to cleanup when we remove legacy entirely
               : mode === 'deleteAfterRead'
-              ? window.i18n('disappearingMessagesDisappearAfterReadDescription')
-              : mode === 'deleteAfterSend'
-              ? window.i18n('disappearingMessagesDisappearAfterSendDescription')
-              : undefined;
+                ? window.i18n('disappearingMessagesDisappearAfterReadDescription')
+                : mode === 'deleteAfterSend'
+                  ? window.i18n('disappearingMessagesDisappearAfterSendDescription')
+                  : undefined;
 
           return (
             <PanelRadioButton

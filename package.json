@@ -221,7 +221,7 @@
     "sass-loader": "^13.2.2",
     "sinon": "9.0.2",
     "ts-loader": "^9.4.2",
-    "typescript": "^5.1.6",
+    "typescript": "^5.5.4",
     "webpack": "^5.76.3",
     "webpack-cli": "^5.1.4",
     "yarn-deduplicate": "^6.0.2"

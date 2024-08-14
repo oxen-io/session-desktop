@@ -3,7 +3,7 @@ import path from 'path';
 import { app, BrowserWindow, Menu, Tray } from 'electron';
 import { LocalizerDictionary } from '../types/Localizer';
 import { getAppRootPath } from './getRootPath';
-import { LocaleMessagesType } from './locale';
+import { LOCALE_DEFAULTS } from '../session/constants';
 
 let trayContextMenu = null;
 let tray: Tray | null = null;
@@ -80,7 +80,7 @@ export function createTrayIcon(
 
   tray.on('click', trayAny.showWindow);
 
-  tray.setToolTip(messages.sessionMessenger);
+  tray.setToolTip(LOCALE_DEFAULTS.app_name);
   trayAny.updateContextMenu();
 
   return tray;

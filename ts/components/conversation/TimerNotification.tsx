@@ -42,7 +42,7 @@ function useFollowSettingsButtonClick(
   const onExit = () => dispatch(updateConfirmModal(null));
 
   const doIt = () => {
-    const mode =
+    const localizedMode =
       props.expirationMode === 'deleteAfterRead'
         ? window.i18n('disappearingMessagesTypeRead')
         : window.i18n('disappearingMessagesTypeSent');
@@ -50,7 +50,7 @@ function useFollowSettingsButtonClick(
       ? window.i18n('disappearingMessagesFollowSettingOff')
       : window.i18n('disappearingMessagesFollowSettingOn', {
           time: props.timespanText,
-          disappearing_messages_type: mode,
+          disappearing_messages_type: localizedMode,
         });
     const okText = props.disabled ? window.i18n('yes') : window.i18n('set');
     dispatch(
@@ -137,11 +137,10 @@ const FollowSettingsButton = (props: PropsForExpirationTimer) => {
 function useTextToRender(props: PropsForExpirationTimer) {
   const { pubkey, profileName, expirationMode, timespanText, type, disabled } = props;
 
-  const isV2Released = ReleasedFeatures.isDisappearMessageV2FeatureReleasedCached();
   const isPrivate = useSelectedIsPrivate();
   const isMe = useSelectedIsNoteToSelf();
-  const ownSideOnly = isV2Released && isPrivate && !isMe;
-  // when v2 is released, and this is a private chat, the settings are for the outgoing messages of whoever made the change only
+  // when in a 1o1 not NTS, we have a setting per side of the conversation
+  const ownSideOnly = isPrivate && !isMe;
 
   const contact = profileName || pubkey;
   // TODO legacy messages support will be removed in a future release
@@ -157,21 +156,21 @@ function useTextToRender(props: PropsForExpirationTimer) {
       }
 
       if (mode) {
-        return ownSideOnly
-          ? window.i18n('disappearingMessagesChanged', {
-              name: contact,
-              time: timespanText,
-              disappearing_messages_type: mode,
-            })
-          : window.i18n('theyChangedTheTimer', {
-              name: contact,
-              time: timespanText,
-              // TODO: check this mode
-              mode: '',
-            });
+        const localizedMode =
+          props.expirationMode === 'deleteAfterRead'
+            ? window.i18n('disappearingMessagesTypeRead')
+            : window.i18n('disappearingMessagesTypeSent');
+        return window.i18n('disappearingMessagesSet', {
+          name: contact,
+          time: timespanText,
+          disappearing_messages_type: localizedMode,
+        });
       }
 
-      return window.i18n('theyChangedTheTimerLegacy', { name: contact, time: timespanText });
+      return window.i18n('deleteAfterLegacyDisappearingMessagesTheyChangedTimer', {
+        name: contact,
+        time: timespanText,
+      });
     case 'fromMe':
     case 'fromSync':
       if (disabled) {
@@ -180,14 +179,19 @@ function useTextToRender(props: PropsForExpirationTimer) {
           : window.i18n('disappearingMessagesTurnedOff', { name: contact });
       }
       if (mode) {
-        return ownSideOnly
-          ? window.i18n('disappearingMessagesSetYou', {
-              time: timespanText,
-              disappearing_messages_type: mode,
-            })
-          : window.i18n('youChangedTheTimer', { time: timespanText, mode });
+        const localizedMode =
+          props.expirationMode === 'deleteAfterRead'
+            ? window.i18n('disappearingMessagesTypeRead')
+            : window.i18n('disappearingMessagesTypeSent');
+        return window.i18n('disappearingMessagesSetYou', {
+          time: timespanText,
+          disappearing_messages_type: localizedMode,
+        });
       }
-      return window.i18n('youChangedTheTimerLegacy', { time: timespanText });
+      return window.i18n('deleteAfterLegacyDisappearingMessagesTheyChangedTimer', {
+        name: window.i18n('you'),
+        time: timespanText,
+      });
     default:
       assertUnreachable(type, `TimerNotification: Missing case error "${type}"`);
   }

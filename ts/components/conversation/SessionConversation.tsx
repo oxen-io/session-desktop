@@ -241,7 +241,9 @@ export class SessionConversation extends Component<Props, State> {
     const bannerText =
       selectedConversation.hasOutdatedClient &&
       selectedConversation.hasOutdatedClient !== ourDisplayNameInProfile
-        ? window.i18n('disappearingMessagesLegacy', [selectedConversation.hasOutdatedClient])
+        ? window.i18n('disappearingMessagesLegacy', {
+            name: selectedConversation.hasOutdatedClient, // we store this guy's display name in here.
+          })
         : window.i18n('deleteAfterGroupFirstReleaseConfigOutdated');
 
     return (

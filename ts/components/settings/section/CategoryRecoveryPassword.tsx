@@ -193,7 +193,7 @@ export const SettingsCategoryRecoveryPassword = () => {
             marginLeft: isQRVisible ? '-8px' : undefined,
           }}
         >
-          {isQRVisible ? window.i18n('passwordView') : window.i18n('qrView')}
+          {isQRVisible ? window.i18n('recoveryPasswordView') : window.i18n('qrView')}
         </SessionIconButton>
       </SessionSettingsItemWrapper>
       {!hideRecoveryPassword ? (

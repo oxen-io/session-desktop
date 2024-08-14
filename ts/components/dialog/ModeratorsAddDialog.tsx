@@ -64,9 +64,8 @@ export const AddModeratorsDialog = (props: Props) => {
   };
 
   const { i18n } = window;
-  const chatName = convo.getNicknameOrRealUsernameOrPlaceholder();
 
-  const title = `${i18n('addModerators')}: ${chatName}`;
+  const title = i18n('adminPromote');
 
   const onPubkeyBoxChanges = (e: any) => {
     const val = e.target.value;

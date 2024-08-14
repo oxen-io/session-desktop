@@ -49,13 +49,7 @@ export const CopyToClipboardButton = (props: CopyToClipboardButtonProps) => {
     <SessionButton
       aria-label={'copy to clipboard button'}
       {...props}
-      text={
-        !isEmpty(text)
-          ? text
-          : copied
-            ? window.i18n('copiedToClipboard')
-            : window.i18n('editMenuCopy')
-      }
+      text={!isEmpty(text) ? text : copied ? window.i18n('copied') : window.i18n('copy')}
       onClick={onClick}
     />
   );

@@ -72,7 +72,7 @@ export class UpdateGroupNameDialog extends Component<Props, State> {
     }
 
     if (trimmedGroupName.length > LIBSESSION_CONSTANTS.BASE_GROUP_MAX_NAME_LENGTH) {
-      this.onShowError(window.i18n('invalidGroupNameTooLong'));
+      this.onShowError(window.i18n('groupNameEnterShorter'));
 
       return;
     }
@@ -96,7 +96,7 @@ export class UpdateGroupNameDialog extends Component<Props, State> {
   }
 
   public render() {
-    const okText = window.i18n('ok');
+    const okText = window.i18n('okay');
     const cancelText = window.i18n('cancel');
     // TODO: String localization - remove
     const titleText = window.i18n('updateGroupDialogTitle', {

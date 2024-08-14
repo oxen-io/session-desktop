@@ -9,7 +9,7 @@ export function sanitizeDisplayNameOrToast(
 ) {
   try {
     const sanitizedName = sanitizeSessionUsername(displayName);
-    const errorString = !sanitizedName ? window.i18n('displayNameEmpty') : undefined;
+    const errorString = !sanitizedName ? window.i18n('displayNameErrorDescription') : undefined;
     if (dispatch) {
       dispatch(onDisplayNameError(errorString));
     } else {
@@ -34,12 +34,12 @@ export function sanitizeDisplayNameOrToast(
  */
 export const displayNameIsValid = (displayName?: string): string => {
   if (!displayName) {
-    throw new Error(window.i18n('displayNameEmpty'));
+    throw new Error(window.i18n('displayNameErrorDescription'));
   }
 
   const trimName = displayName.trim();
   if (!trimName) {
-    throw new Error(window.i18n('displayNameEmpty'));
+    throw new Error(window.i18n('displayNameErrorDescription'));
   }
 
   return trimName;

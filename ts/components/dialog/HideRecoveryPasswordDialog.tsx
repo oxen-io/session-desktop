@@ -41,7 +41,7 @@ export function HideRecoveryPasswordDialog(props: HideRecoveryPasswordDialogProp
   const leftButtonProps =
     state === 'firstWarning'
       ? {
-          text: window.i18n('continue'),
+          text: window.i18n('theContinue'),
           buttonColor: SessionButtonColor.Danger,
           onClick: () => {
             dispatch(updateHideRecoveryPasswordModel({ state: 'secondWarning' }));

@@ -5,7 +5,7 @@ import { StateType } from '../reducer';
 
 import { UserUtils } from '../../session/utils';
 import { MessageResultProps } from '../../types/message';
-import { MessageResultProps } from '../../components/search/MessageSearchResults';
+
 import { ConversationLookupType } from '../ducks/conversations';
 import { SearchStateType } from '../ducks/search';
 import { getConversationLookup } from './conversations';

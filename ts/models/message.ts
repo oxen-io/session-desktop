@@ -301,18 +301,26 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       );
 
       const source = expireTimerUpdate?.source;
+      const authorName =
+        getConversationController()
+          .get(source || '')
+          ?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('unknown');
 
       if (!expireTimerUpdate || expirationMode === 'off' || !expireTimer || expireTimer === 0) {
         return window.i18n('disappearingMessagesTurnedOff', {
-          name: source
-            ? getConversationController().get(source)?.getNicknameOrRealUsernameOrPlaceholder() ??
-              ''
-            : '',
+          name: authorName,
         });
       }
 
+      const localizedMode =
+        expirationMode === 'deleteAfterRead'
+          ? window.i18n('disappearingMessagesTypeRead')
+          : window.i18n('disappearingMessagesTypeSent');
+
       return window.i18n('disappearingMessagesSet', {
         time: TimerOptions.getAbbreviated(expireTimerUpdate.expireTimer || 0),
+        name: authorName,
+        disappearing_messages_type: localizedMode,
       });
     }
 
@@ -1242,6 +1250,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (!groupUpdate || isEmpty(groupUpdate)) {
       return undefined;
     }
+
     const left: Array<string> | undefined = Array.isArray(groupUpdate.left)
       ? groupUpdate.left
       : groupUpdate.left
@@ -1278,8 +1287,10 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   private getDescription() {
     const groupUpdate = this.getGroupUpdateAsArray();
     if (groupUpdate) {
+      const groupName =
+        this.getConversation()?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('unknown');
       if (arrayContainsUsOnly(groupUpdate.kicked)) {
-        return window.i18n('youGotKickedFromGroup');
+        return window.i18n('groupRemovedYou', { group_name: groupName });
       }
 
       if (arrayContainsUsOnly(groupUpdate.left)) {
@@ -1301,7 +1312,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
 
       if (groupUpdate.name) {
-        return window.i18n('groupNameNew', { groupname: groupUpdate.name });
+        return window.i18n('groupNameNew', { group_name: groupUpdate.name });
       }
 
       if (groupUpdate.joined && groupUpdate.joined.length) {
@@ -1386,11 +1397,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
             case ConversationInteractionType.Leave:
               return isCommunity
                 ? window.i18n('communityLeaveError', {
-                    community_name: this.getConversation()?.getRealSessionUsername(),
+                    community_name: convo.getNicknameOrRealUsernameOrPlaceholder(),
                   })
                 : isGroup
                   ? window.i18n('groupLeaveErrorFailed', {
-                      group_name: this.getConversation()?.getRealSessionUsername(),
+                      group_name: convo.getNicknameOrRealUsernameOrPlaceholder(),
                     })
                   : '';
             default:

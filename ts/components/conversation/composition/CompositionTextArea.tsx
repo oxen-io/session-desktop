@@ -6,6 +6,7 @@ import {
   useSelectedIsBlocked,
   useSelectedIsKickedFromGroup,
   useSelectedIsLeft,
+  useSelectedNicknameOrProfileNameOrShortenedPubkey,
 } from '../../../state/selectors/selectedConversation';
 import { HTMLDirection, useHTMLDirection } from '../../../util/i18n';
 import { updateDraftForConversation } from '../SessionConversationDrafts';
@@ -57,6 +58,7 @@ export const CompositionTextArea = (props: Props) => {
   const isKickedFromGroup = useSelectedIsKickedFromGroup();
   const left = useSelectedIsLeft();
   const isBlocked = useSelectedIsBlocked();
+  const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
   if (!selectedConversationKey) {
     return null;
@@ -64,15 +66,15 @@ export const CompositionTextArea = (props: Props) => {
 
   const makeMessagePlaceHolderText = () => {
     if (isKickedFromGroup) {
-      return window.i18n('youGotKickedFromGroup');
+      return window.i18n('groupRemovedYou', { group_name: groupName });
     }
     if (left) {
-      return window.i18n('youLeftTheGroup');
+      return window.i18n('groupMemberYouLeft');
     }
     if (isBlocked) {
-      return window.i18n('unblockToSend');
+      return window.i18n('blockBlockedDescription');
     }
-    return window.i18n('sendMessage');
+    return window.i18n('message');
   };
 
   const messagePlaceHolder = makeMessagePlaceHolderText();

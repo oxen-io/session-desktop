@@ -73,7 +73,7 @@ export const SessionNicknameDialog = (props: Props) => {
 
       <div className="session-modal__button-group">
         <SessionButton
-          text={window.i18n('ok')}
+          text={window.i18n('okay')}
           buttonType={SessionButtonType.Simple}
           onClick={saveNickname}
           dataTestId="confirm-nickname"

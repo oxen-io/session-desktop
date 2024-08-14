@@ -77,7 +77,7 @@ export const RemoveModeratorsDialog = (props: Props) => {
   const existingMods = convoProps.groupAdmins || [];
   const hasMods = existingMods.length !== 0;
 
-  const title = `${i18n('removeModerators')}: ${convoProps.displayNameInProfile}`;
+  const title = `${i18n('adminRemove')}: ${convoProps.displayNameInProfile}`;
   return (
     <SessionWrapperModal title={title} onClose={closeDialog}>
       <Flex container={true} flexDirection="column" alignItems="center">
@@ -101,7 +101,7 @@ export const RemoveModeratorsDialog = (props: Props) => {
             ))}
           </div>
         ) : (
-          <p>{i18n('noModeratorsToRemove')}</p>
+          <p>{i18n('adminRemoveCommunityNone')}</p>
         )}
 
         <div className="session-modal__button-group">
@@ -109,7 +109,7 @@ export const RemoveModeratorsDialog = (props: Props) => {
             buttonType={SessionButtonType.Simple}
             onClick={removeModsCall}
             disabled={removingInProgress}
-            text={i18n('ok')}
+            text={i18n('okay')}
           />
           <SessionButton
             buttonType={SessionButtonType.Simple}

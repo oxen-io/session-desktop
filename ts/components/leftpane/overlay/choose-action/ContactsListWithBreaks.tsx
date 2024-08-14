@@ -122,7 +122,7 @@ export const ContactsListWithBreaks = () => {
       {contactsCount > 0 ? (
         <ContactListItemSection />
       ) : (
-        <StyledContactsEmpty>{window.i18n('contactsNone')}</StyledContactsEmpty>
+        <StyledContactsEmpty>{window.i18n('contactNone')}</StyledContactsEmpty>
       )}
     </StyledContactSection>
   );

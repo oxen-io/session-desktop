@@ -144,7 +144,7 @@ export async function joinOpenGroupV2WithUIEvents(
         ToastUtils.pushToastError('connectToServer', window.i18n('communityEnterUrlErrorInvalid'));
       }
       if (errorHandler) {
-        errorHandler(window.i18n('invalidOpenGroupUrl'));
+        errorHandler(window.i18n('communityEnterUrlErrorInvalid'));
       }
       return false;
     }
@@ -156,10 +156,10 @@ export async function joinOpenGroupV2WithUIEvents(
       await existingConvo.setIsApproved(true, false);
       await existingConvo.commit();
       if (showToasts) {
-        ToastUtils.pushToastError('publicChatExists', window.i18n('communityJoinedAlready'));
+        ToastUtils.pushToastError('communityJoinedAlready', window.i18n('communityJoinedAlready'));
       }
       if (errorHandler) {
-        errorHandler(window.i18n('publicChatExists'));
+        errorHandler(window.i18n('communityJoinedAlready'));
       }
       return false;
     }
@@ -187,7 +187,7 @@ export async function joinOpenGroupV2WithUIEvents(
       );
     }
     if (errorHandler) {
-      errorHandler(window.i18n('connectToServerFail'));
+      errorHandler(window.i18n('groupErrorJoin', { group_name: parsedRoom.roomId }));
     }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
@@ -201,7 +201,7 @@ export async function joinOpenGroupV2WithUIEvents(
       );
     }
     if (errorHandler) {
-      errorHandler(window.i18n('connectToServerFail'));
+      errorHandler(window.i18n('groupErrorJoin', { group_name: completeUrl })); // we don't have a parsed room, so let's show the whole url in this case
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }

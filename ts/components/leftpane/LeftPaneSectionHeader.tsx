@@ -88,28 +88,28 @@ function getLeftPaneHeaderLabel(
 
   switch (leftOverlayMode) {
     case 'open-group':
-      label = window.i18n('joinOpenGroup');
+      label = window.i18n('communityJoin');
       break;
     case 'closed-group':
-      label = window.i18n('createGroup');
+      label = window.i18n('groupCreate');
       break;
     case 'message':
-      label = window.i18n('newMessage');
+      label = window.i18n('messageNew');
       break;
     case 'message-requests':
-      label = window.i18n('messageRequests');
+      label = window.i18n('sessionMessageRequests');
       break;
     case 'invite-a-friend':
       label = window.i18n('sessionInviteAFriend');
       break;
     case 'choose-action':
     default:
-      label = window.i18n('messagesHeader');
+      label = window.i18n('messages');
   }
 
   switch (focusedSection) {
     case SectionType.Settings:
-      label = window.i18n('settingsHeader');
+      label = window.i18n('sessionSettings');
       break;
     case SectionType.Message:
     default:
@@ -150,18 +150,18 @@ export const LeftPaneBanner = () => {
       >
         <Flex container={true} width={'100%'} alignItems="flex-start">
           {/** TODO: String localization - remove */}
-          <StyledBannerTitle>{window.i18n('recoveryPhraseSecureTitle')}</StyledBannerTitle>
+          <StyledBannerTitle>{window.i18n('recoveryPasswordBannerTitle')}</StyledBannerTitle>
           <SessionIcon
             iconType={isDarkTheme ? 'recoveryPasswordFill' : 'recoveryPasswordOutline'}
             iconSize="medium"
             iconColor="var(--text-primary-color)"
           />
         </Flex>
-        <p>{window.i18n('saveRecoveryPasswordDescription')}</p>
+        <p>{window.i18n('recoveryPasswordBannerDescription')}</p>
         <SpacerMD />
         <SessionButton
           ariaLabel="Reveal recovery phrase button"
-          text={window.i18n('continue')}
+          text={window.i18n('theContinue')}
           onClick={showRecoveryPhraseModal}
           dataTestId="reveal-recovery-phrase"
         />

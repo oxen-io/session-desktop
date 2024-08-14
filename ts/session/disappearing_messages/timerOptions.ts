@@ -1,97 +1,54 @@
-import moment from 'moment';
 import { isCI, isDevProd } from '../../shared/env_vars';
+import { formatAbbreviatedExpireTimer, formatTimeDistance } from '../../util/i18n';
+import { DURATION_SECONDS } from '../constants';
 
 type TimerOptionsEntry = { name: string; value: number };
 export type TimerOptionsArray = Array<TimerOptionsEntry>;
 
-const timerOptionsDurations: Array<{
-  time: number;
-  unit: moment.DurationInputArg2;
-  seconds: number;
-}> = [
-  { time: 0, unit: 'seconds' as moment.DurationInputArg2 },
-  { time: 5, unit: 'seconds' as moment.DurationInputArg2 },
-  { time: 10, unit: 'seconds' as moment.DurationInputArg2 },
-  { time: 30, unit: 'seconds' as moment.DurationInputArg2 },
-  { time: 1, unit: 'minute' as moment.DurationInputArg2 },
-  { time: 5, unit: 'minutes' as moment.DurationInputArg2 },
-  { time: 30, unit: 'minutes' as moment.DurationInputArg2 },
-  { time: 1, unit: 'hour' as moment.DurationInputArg2 },
-  { time: 6, unit: 'hours' as moment.DurationInputArg2 },
-  { time: 12, unit: 'hours' as moment.DurationInputArg2 },
-  { time: 1, unit: 'day' as moment.DurationInputArg2 },
-  { time: 1, unit: 'week' as moment.DurationInputArg2 },
-  { time: 2, unit: 'weeks' as moment.DurationInputArg2 },
-].map(o => {
-  const duration = moment.duration(o.time, o.unit); // 5, 'seconds'
-  return {
-    time: o.time,
-    unit: o.unit,
-    seconds: duration.asSeconds(),
-  };
-});
-
-// TODO - This is copied from the messages.json file as a temporary solution. This will be replaced once time localization is completed.
-type TimerOptionKey =
-  | 'off'
-  | 'timerOption_10_seconds'
-  | 'timerOption_10_seconds_abbreviated'
-  | 'timerOption_12_hours'
-  | 'timerOption_12_hours_abbreviated'
-  | 'timerOption_1_day'
-  | 'timerOption_1_day_abbreviated'
-  | 'timerOption_1_hour'
-  | 'timerOption_1_hour_abbreviated'
-  | 'timerOption_1_minute'
-  | 'timerOption_1_minute_abbreviated'
-  | 'timerOption_1_week'
-  | 'timerOption_1_week_abbreviated'
-  | 'timerOption_2_weeks'
-  | 'timerOption_2_weeks_abbreviated'
-  | 'timerOption_30_minutes'
-  | 'timerOption_30_minutes_abbreviated'
-  | 'timerOption_30_seconds'
-  | 'timerOption_30_seconds_abbreviated'
-  | 'timerOption_5_minutes'
-  | 'timerOption_5_minutes_abbreviated'
-  | 'timerOption_5_seconds'
-  | 'timerOption_5_seconds_abbreviated'
-  | 'timerOption_6_hours'
-  | 'timerOption_6_hours_abbreviated';
-
-function getTimerOptionName(time: number, unit: moment.DurationInputArg2) {
-  return (
-    window.i18n(['timerOption', time, unit].join('_') as TimerOptionKey) ||
-    moment.duration(time, unit).humanize()
-  );
-}
-
-function getTimerOptionAbbreviated(time: number, unit: string) {
-  return window.i18n(['timerOption', time, unit, 'abbreviated'].join('_') as TimerOptionKey);
-}
+const VALUES: Array<number> = [
+  /** off */
+  0,
+  /** 5 seconds */
+  5 * DURATION_SECONDS.SECONDS,
+  /** 10 seconds */
+  10 * DURATION_SECONDS.SECONDS,
+  /** 30 seconds */
+  30 * DURATION_SECONDS.SECONDS,
+  /** 1 minute */
+  1 * DURATION_SECONDS.MINUTES,
+  /** 5 minutes */
+  5 * DURATION_SECONDS.MINUTES,
+  /** 30 minutes */
+  30 * DURATION_SECONDS.MINUTES,
+  /** 1 hour */
+  1 * DURATION_SECONDS.HOURS,
+  /** 6 hours */
+  6 * DURATION_SECONDS.HOURS,
+  /** 12 hours */
+  12 * DURATION_SECONDS.HOURS,
+  /** 1 day */
+  1 * DURATION_SECONDS.DAYS,
+  /** 1 week */
+  1 * DURATION_SECONDS.WEEKS,
+  /** 2 weeks */
+  2 * DURATION_SECONDS.WEEKS,
+];
 
 function getName(seconds = 0) {
-  const o = timerOptionsDurations.find(m => m.seconds === seconds);
-
-  if (o) {
-    return getTimerOptionName(o.time, o.unit);
+  if (seconds >= 0) {
+    return formatTimeDistance(seconds, 0);
   }
+
   return [seconds, 'seconds'].join(' ');
 }
 
 function getAbbreviated(seconds = 0) {
-  const o = timerOptionsDurations.find(m => m.seconds === seconds);
-
-  if (o) {
-    return getTimerOptionAbbreviated(o.time, o.unit);
+  if (seconds >= 0) {
+    return formatAbbreviatedExpireTimer(seconds);
   }
 
   return [seconds, 's'].join('');
 }
-
-const VALUES: Array<number> = timerOptionsDurations.map(t => {
-  return t.seconds;
-});
 
 const filterOutDebugValues = (option: number) => {
   return isDevProd() || isCI() || option > 60; // when not a dev build nor on CI, filter out options with less than 60s

@@ -1,5 +1,4 @@
 import { isString } from 'lodash';
-import { LocaleMessagesType } from './locale';
 import type { LocalizerDictionary } from '../types/Localizer';
 import { LOCALE_DEFAULTS } from '../session/constants';
 

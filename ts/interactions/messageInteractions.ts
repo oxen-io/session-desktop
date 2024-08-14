@@ -69,15 +69,19 @@ export async function removeSenderFromModerator(sender: string, convoId: string)
     const pubKeyToRemove = PubKey.cast(sender);
     const convo = getConversationController().getOrThrow(convoId);
 
+    const userDisplayName =
+      getConversationController().get(sender)?.getNicknameOrRealUsernameOrPlaceholder() ||
+      window.i18n('unknown');
+
     const roomInfo = convo.toOpenGroupV2();
     const res = await sogsV3RemoveAdmins([pubKeyToRemove], roomInfo);
     if (!res) {
       window?.log?.warn('failed to remove moderator:', res);
 
-      ToastUtils.pushFailedToRemoveFromModerator();
+      ToastUtils.pushFailedToRemoveFromModerator(userDisplayName);
     } else {
       window?.log?.info(`${pubKeyToRemove.key} removed from moderators...`);
-      ToastUtils.pushUserRemovedFromModerators();
+      ToastUtils.pushUserRemovedFromModerators(userDisplayName);
     }
   } catch (e) {
     window?.log?.error('Got error while removing moderator:', e);
@@ -97,7 +101,10 @@ export async function addSenderAsModerator(sender: string, convoId: string) {
       ToastUtils.pushFailedToAddAsModerator();
     } else {
       window?.log?.info(`${pubKeyToAdd.key} added to moderators...`);
-      ToastUtils.pushUserAddedToModerators();
+      const userDisplayName =
+        getConversationController().get(sender)?.getNicknameOrRealUsernameOrPlaceholder() ||
+        window.i18n('unknown');
+      ToastUtils.pushUserAddedToModerators(userDisplayName);
     }
   } catch (e) {
     window?.log?.error('Got error while adding moderator:', e);
@@ -113,7 +120,7 @@ const acceptOpenGroupInvitationV2 = (completeUrl: string, roomName?: string) => 
     updateConfirmModal({
       title: window.i18n('communityJoin'),
       message: window.i18n('communityJoinDescription', {
-        communityname: roomName ?? window.i18n('unknown'),
+        community_name: roomName ?? window.i18n('unknown'),
       }),
       onClickOk: async () => {
         await joinOpenGroupV2WithUIEvents(completeUrl, true, false);

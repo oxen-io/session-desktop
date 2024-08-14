@@ -55,7 +55,7 @@ export const QuitModal = (props: QuitModalProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const okText = props.okText || window.i18n('ok');
+  const okText = props.okText || window.i18n('okay');
   const cancelText = props.cancelText || window.i18n('cancel');
 
   const onClickOkHandler = async () => {

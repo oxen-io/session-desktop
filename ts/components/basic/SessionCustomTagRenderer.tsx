@@ -1,6 +1,5 @@
-import React from 'react';
-import { nativeEmojiData } from '../../util/emoji';
 import styled from 'styled-components';
+import { nativeEmojiData } from '../../util/emoji';
 
 const StyledEmoji = styled.span`
   font-size: 36px;

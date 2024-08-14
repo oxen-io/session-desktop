@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ElementType } from 'react';
 import type { Dictionary } from '../localization/locales';
 import { LOCALE_DEFAULTS } from '../session/constants';

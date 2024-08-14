@@ -140,7 +140,7 @@ export const OverlayMessage = () => {
           ? window.i18n('onsErrorUnableToSearch')
           : e instanceof NotFoundError
             ? window.i18n('onsErrorNotRecognized')
-            : window.i18n('failedResolveOns')
+            : window.i18n('onsErrorUnableToSearch')
       );
     } finally {
       setLoading(false);
@@ -179,7 +179,9 @@ export const OverlayMessage = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: THEME_GLOBALS['--default-duration-seconds'] }}
           >
-            <SessionIDDescription>{window.i18n('messageNewDescription')}</SessionIDDescription>
+            <SessionIDDescription>
+              {window.i18n('messageNewDescriptionDesktop')}
+            </SessionIDDescription>
             <HelpDeskButton style={{ display: 'inline-flex' }} />
           </StyledDescriptionContainer>
           <SpacerLG />
@@ -188,8 +190,8 @@ export const OverlayMessage = () => {
 
       {!isEmpty(pubkeyOrOns) ? (
         <SessionButton
-          ariaLabel={window.i18n('continue')}
-          text={window.i18n('continue')}
+          ariaLabel={window.i18n('theContinue')}
+          text={window.i18n('theContinue')}
           disabled={disableNextButton}
           onClick={handleMessageButtonClick}
           dataTestId="next-new-conversation-button"

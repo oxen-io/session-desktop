@@ -50,8 +50,8 @@ const DescriptionWhenAskingConfirmation = (props: { deleteMode: DeleteModes }) =
   return (
     <span className="session-confirm-main-message">
       {props.deleteMode === 'device_and_network'
-        ? window.i18n('areYouSureDeleteEntireAccount')
-        : window.i18n('areYouSureDeleteDeviceOnly')}
+        ? window.i18n('clearDeviceAndNetworkConfirm')
+        : window.i18n('clearDeviceDescription')}
     </span>
   );
 };

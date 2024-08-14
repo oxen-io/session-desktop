@@ -4,7 +4,9 @@ import {
   FormatDistanceStrictOptions,
   FormatDistanceToNowStrictOptions,
   formatDistanceStrict,
+  formatDistanceToNow,
   formatDistanceToNowStrict,
+  subMilliseconds,
 } from 'date-fns';
 import timeLocales from 'date-fns/locale';
 import { isUndefined } from 'lodash';
@@ -15,8 +17,9 @@ import {
   PluralKey,
   PluralString,
 } from '../types/Localizer';
-import { LOCALE_DEFAULTS } from '../session/constants';
+import { DURATION_SECONDS, LOCALE_DEFAULTS } from '../session/constants';
 import { updateLocale } from '../state/ducks/dictionary';
+import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -278,9 +281,12 @@ export const loadEmojiPanelI18n = async () => {
   return undefined;
 };
 
+type First<T extends (...args: any) => any> = Parameters<T>[0];
+type Second<T extends (...args: any) => any> = Parameters<T>[1];
+
 export const formatTimeDistance = (
-  date: Date,
-  baseDate: Date,
+  date: First<typeof formatDistanceStrict>,
+  baseDate: Second<typeof formatDistanceStrict>,
   options?: Omit<FormatDistanceStrictOptions, 'locale'>
 ) => {
   const locale = window.getLocale();
@@ -290,8 +296,37 @@ export const formatTimeDistance = (
   });
 };
 
+/**
+ * Format an expiring/disappearing message timer to its abbreviated form.
+ * Note: we don't localize this, and cannot have a value > 2 weeks
+ * @param date
+ * @param options
+ * @returns
+ */
+export const formatAbbreviatedExpireTimer = (timerSeconds: number) => {
+  // Note: we keep this function in this file even if it is not localizing anything
+  // so we have access to timeLocaleMap.en.
+
+  if (timerSeconds > DURATION_SECONDS.WEEKS * 2) {
+    throw new Error('formatAbbreviatedExpireTimer is not design to handle >2 weeks durations ');
+  }
+
+  const unlocalized = formatDistanceStrict(timerSeconds, 0, {
+    locale: timeLocaleMap.en,
+  });
+  // Pretty dirty, but we don't want to localize the abbreviated durations.
+  // date-fns also doesn't support the 'narrow' syntax for formatDistanceStrict so we just abbreviate
+  // the strings that we know are in english
+  return unlocalized
+    .replace(/weeks?/g, 'w')
+    .replace(/days?/g, 'd')
+    .replace(/hours?/g, 'h')
+    .replace(/minutes?/g, 'm')
+    .replace(/seconds?/g, 's');
+};
+
 export const formatTimeDistanceToNow = (
-  date: Date,
+  date: First<typeof formatDistanceToNowStrict>,
   options?: Omit<FormatDistanceToNowStrictOptions, 'locale'>
 ) => {
   const locale = window.getLocale();
@@ -299,6 +334,12 @@ export const formatTimeDistanceToNow = (
     locale: timeLocaleMap[locale],
     ...options,
   });
+};
+
+export const formatDateDistanceWithOffset = (date: Date): string => {
+  const locale = window.getLocale();
+  const adjustedDate = subMilliseconds(date, GetNetworkTime.getLatestTimestampOffset());
+  return formatDistanceToNow(adjustedDate, { addSuffix: true, locale: timeLocaleMap[locale] });
 };
 
 // RTL Support

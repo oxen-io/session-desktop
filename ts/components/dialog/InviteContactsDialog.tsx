@@ -150,7 +150,7 @@ const InviteContactsDialogInner = (props: Props) => {
 
   const titleText = `${window.i18n('membersInvite')}`;
   const cancelText = window.i18n('cancel');
-  const okText = window.i18n('ok');
+  const okText = window.i18n('okay');
 
   const hasContacts = validContactsForInvite.length > 0;
 

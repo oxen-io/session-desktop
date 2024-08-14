@@ -81,11 +81,6 @@ export function pushMaximumAttachmentsError() {
   pushToastError('maximumAttachments', window.i18n('attachmentsErrorNumber'));
 }
 
-export function pushMessageBodyMissing() {
-  // TODO: String localization - remove
-  pushToastError('messageBodyMissing', window.i18n('messageBodyMissing'));
-}
-
 export function pushCopiedToClipBoard() {
   pushToastInfo('copiedToClipboard', window.i18n('copied'));
 }
@@ -107,7 +102,7 @@ export function pushUserBanFailure() {
 }
 
 export function pushUserUnbanSuccess() {
-  pushToastSuccess('userUnbanned', window.i18n('userUnbanned'));
+  pushToastSuccess('userUnbanned', window.i18n('banUnbanUserUnbanned'));
 }
 
 export function pushUserUnbanFailure() {
@@ -160,8 +155,8 @@ export function pushVideoCallPermissionNeeded() {
 export function pushAudioPermissionNeeded() {
   pushToastInfo(
     'audioPermissionNeeded',
-    window.i18n('permissionsMicrophoneAccessRequired'),
     window.i18n('permissionsMicrophoneAccessRequiredDesktop'),
+    undefined,
     openPermissionsSettings
   );
 }
@@ -191,7 +186,7 @@ export function someDeletionsFailed() {
 }
 
 export function pushDeleted() {
-  pushToastSuccess('deleted', window.i18n('deleteMessagesDeleted'), undefined, 'check');
+  pushToastSuccess('deleted', window.i18n('deleteMessagesDeleted'), undefined);
 }
 
 export function pushCannotRemoveCreatorFromGroup() {
@@ -203,19 +198,24 @@ export function pushOnlyAdminCanRemove() {
 }
 
 export function pushFailedToAddAsModerator() {
-  pushToastWarning('failedToAddAsModerator', window.i18n('failedToAddAsModerator'));
+  pushToastWarning('failedToAddAsModerator', window.i18n('adminPromotionFailed'));
 }
 
-export function pushFailedToRemoveFromModerator() {
-  pushToastWarning('failedToRemoveFromModerator', window.i18n('failedToRemoveFromModerator'));
+export function pushFailedToRemoveFromModerator(name: string) {
+  pushToastWarning(
+    'failedToRemoveFromModerator',
+    window.i18n('adminRemoveFailed', {
+      name,
+    })
+  );
 }
 
-export function pushUserAddedToModerators() {
-  pushToastSuccess('userAddedToModerators', window.i18n('userAddedToModerators'));
+export function pushUserAddedToModerators(name: string) {
+  pushToastSuccess('adminPromotedToAdmin', window.i18n('adminPromotedToAdmin', { name }));
 }
 
-export function pushUserRemovedFromModerators() {
-  pushToastSuccess('userRemovedFromModerators', window.i18n('userRemovedFromModerators'));
+export function pushUserRemovedFromModerators(name: string) {
+  pushToastSuccess('adminRemovedUser', window.i18n('adminRemovedUser', { name }));
 }
 
 export function pushInvalidPubKey() {
@@ -236,10 +236,6 @@ export function pushNoAudioOutputFound() {
 
 export function pushNoMediaUntilApproved() {
   pushToastError('noMediaUntilApproved', window.i18n('messageRequestPendingDescription'));
-}
-
-export function pushMustBeApproved() {
-  pushToastError('mustBeApproved', window.i18n('mustBeApproved'));
 }
 
 export function pushRateLimitHitReactions() {

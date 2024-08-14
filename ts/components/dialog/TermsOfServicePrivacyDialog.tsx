@@ -37,7 +37,7 @@ export function TermsOfServicePrivacyDialog(props: TermsOfServicePrivacyDialogPr
       <Flex container={true} width={'100%'} justifyContent="center" alignItems="center">
         <SessionButton
           ariaLabel={'Terms of service button'}
-          text={window.i18n('termsOfService')}
+          text={window.i18n('onboardingTos')}
           buttonType={SessionButtonType.Ghost}
           onClick={() => {
             void shell.openExternal('https://getsession.org/terms-of-service');
@@ -46,7 +46,7 @@ export function TermsOfServicePrivacyDialog(props: TermsOfServicePrivacyDialogPr
         />
         <SessionButton
           ariaLabel={'Privacy policy button'}
-          text={window.i18n('privacyPolicy')}
+          text={window.i18n('onboardingPrivacy')}
           buttonType={SessionButtonType.Ghost}
           onClick={() => {
             void shell.openExternal('https://getsession.org/privacy-policy');

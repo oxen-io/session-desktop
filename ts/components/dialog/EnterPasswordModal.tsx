@@ -42,14 +42,14 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
   const confirmPassword = () => {
     const passwordValue = passwordInputRef.current?.value;
     if (!passwordValue) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('noGivenPassword'));
+      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordErrorMatch'));
 
       return;
     }
 
-    const isPasswordValid = matchesHash(passwordValue as string, passwordHash);
+    const isPasswordValid = matchesHash(passwordValue, passwordHash);
     if (passwordHash && !isPasswordValid) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('invalidPassword'));
+      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordErrorMatch'));
 
       return;
     }
@@ -75,7 +75,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
 
   return (
     <SessionWrapperModal
-      title={title || window.i18n('enterPassword')}
+      title={title || window.i18n('passwordEnter')}
       onClose={onClose}
       showExitIcon={true}
     >
@@ -87,7 +87,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
             type="password"
             ref={passwordInputRef}
             data-testid="password-input"
-            placeholder={window.i18n('enterPassword')}
+            placeholder={window.i18n('passwordEnter')}
           />
         </div>
 

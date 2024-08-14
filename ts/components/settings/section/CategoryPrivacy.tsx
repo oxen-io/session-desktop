@@ -103,8 +103,8 @@ export const SettingsCategoryPrivacy = (props: {
           await ConfigurationSync.queueNewJobIfNeeded();
           forceUpdate();
         }}
-        title={window.i18n('blindedMsgReqsSettingTitle')}
-        description={window.i18n('messageReqeuestsCommunitiesDescription')}
+        title={window.i18n('messageRequestsCommunities')}
+        description={window.i18n('messageRequestsCommunitiesDescription')}
         active={areBlindedRequestsEnabled}
       />
 

@@ -1,4 +1,3 @@
-import { format, formatDistanceStrict } from 'date-fns';
 import { ipcRenderer } from 'electron';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
@@ -21,6 +20,7 @@ import {
 
 import { isDevProd } from '../../../../../../shared/env_vars';
 import { useSelectedConversationKey } from '../../../../../../state/selectors/selectedConversation';
+import { formatTimeDistance, formatTimeDistanceToNow } from '../../../../../../util/i18n';
 import { Flex } from '../../../../../basic/Flex';
 import { SpacerSM } from '../../../../../basic/Text';
 import { CopyToClipboardIcon } from '../../../../../buttons';
@@ -89,33 +89,23 @@ const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
   if (!isDevProd()) {
     return null;
   }
-
+  // Note: the strings here are hardcoded because we do not share them with other platforms through crowdin
   return (
     <>
-      {convoId ? (
-        <LabelWithInfo label={`${window.i18n('conversationId')}:`} info={convoId} />
-      ) : null}
-      {messageHash ? (
-        <LabelWithInfo label={`${window.i18n('messageHash')}:`} info={messageHash} />
-      ) : null}
-      {serverId ? (
-        <LabelWithInfo label={`${window.i18n('serverId')}:`} info={`${serverId}`} />
-      ) : null}
-      {expirationType ? (
-        <LabelWithInfo label={`${window.i18n('expirationType')}:`} info={expirationType} />
-      ) : null}
+      {convoId ? <LabelWithInfo label={`Conversation ID:`} info={convoId} /> : null}
+      {messageHash ? <LabelWithInfo label={`Message Hash:`} info={messageHash} /> : null}
+      {serverId ? <LabelWithInfo label={`Server ID:`} info={`${serverId}`} /> : null}
+      {expirationType ? <LabelWithInfo label={`Expiration Type:`} info={expirationType} /> : null}
       {expirationDurationMs ? (
         <LabelWithInfo
-          label={`${window.i18n('expirationDuration')}:`}
-          // formatDistanceStrict (date-fns) is not localized yet
-          info={`${formatDistanceStrict(0, Math.floor(expirationDurationMs / 1000))}`}
+          label={`Expiration Duration:`}
+          info={`${formatTimeDistance(Math.floor(expirationDurationMs / 1000), 0)}`}
         />
       ) : null}
       {expirationTimestamp ? (
         <LabelWithInfo
-          label={`${window.i18n('disappears')}:`}
-          // format (date-fns) is not localized yet
-          info={`${format(expirationTimestamp, 'PPpp')}`}
+          label={`Disappears:`}
+          info={`${formatTimeDistanceToNow(expirationTimestamp)}`}
         />
       ) : null}
     </>
@@ -161,8 +151,8 @@ export const MessageInfo = ({ messageId, errors }: { messageId: string; errors: 
           <SpacerSM />
           <LabelWithInfo
             title={window.i18n('helpReportABugExportLogsSaveToDesktopDescription')}
-            label={`${window.i18n('error')}:`}
-            info={errorString || window.i18n('unknownError')}
+            label={`${window.i18n('theError')}:`}
+            info={errorString || window.i18n('errorUnknown')}
             dataColor={'var(--danger-color)'}
             onClick={showDebugLog}
           />

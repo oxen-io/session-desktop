@@ -16,6 +16,7 @@ import {
   useIsPrivateAndFriend,
   useIsPublic,
   useLastMessage,
+  useNicknameOrProfileNameOrShortenedPubkey,
   useNotificationSetting,
   useWeAreAdmin,
 } from '../../hooks/useParamSelector';
@@ -107,6 +108,8 @@ export const DeletePrivateContactMenuItem = () => {
   const isPrivate = useIsPrivate(convoId);
   const isRequest = useIsIncomingRequest(convoId);
 
+  const name = useNicknameOrProfileNameOrShortenedPubkey(convoId);
+
   if (isPrivate && !isRequest) {
     const menuItemText = window.i18n('contactDelete');
 
@@ -118,7 +121,7 @@ export const DeletePrivateContactMenuItem = () => {
       dispatch(
         updateConfirmModal({
           title: menuItemText,
-          message: window.i18n('deleteContactConfirmation'),
+          message: window.i18n('contactDeleteDescription', { name }),
           onClickClose,
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {
@@ -155,9 +158,9 @@ export const LeaveGroupOrCommunityMenuItem = () => {
         {isPublic
           ? window.i18n('communityLeave')
           : lastMessage?.interactionType === ConversationInteractionType.Leave &&
-            lastMessage?.interactionStatus === ConversationInteractionStatus.Error
-          ? window.i18n('conversationsDelete')
-          : window.i18n('groupLeave')}
+              lastMessage?.interactionStatus === ConversationInteractionStatus.Error
+            ? window.i18n('conversationsDelete')
+            : window.i18n('groupLeave')}
       </Item>
     );
   }
@@ -227,7 +230,7 @@ export const RemoveModeratorsMenuItem = (): JSX.Element | null => {
           showRemoveModeratorsByConvoId(convoId);
         }}
       >
-        {window.i18n('removeModerators')}
+        {window.i18n('adminRemove')}
       </Item>
     );
   }
@@ -247,7 +250,7 @@ export const AddModeratorsMenuItem = (): JSX.Element | null => {
           showAddModeratorsByConvoId(convoId);
         }}
       >
-        {window.i18n('addModerators')}
+        {window.i18n('adminPromote')}
       </Item>
     );
   }
@@ -418,7 +421,6 @@ export const DeleteMessagesMenuItem = () => {
  */
 export const DeletePrivateConversationMenuItem = () => {
   const convoId = useConvoIdFromContext();
-  const username = useConversationUsername(convoId) || convoId;
   const isRequest = useIsIncomingRequest(convoId);
   const isPrivate = useIsPrivate(convoId);
   const isMe = useIsMe(convoId);
@@ -430,7 +432,7 @@ export const DeletePrivateConversationMenuItem = () => {
   return (
     <Item
       onClick={() => {
-        showLeavePrivateConversationbyConvoId(convoId, username);
+        showLeavePrivateConversationbyConvoId(convoId);
       }}
     >
       {isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete')}
@@ -546,8 +548,8 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
       n === 'all' || !n
         ? 'notificationsAllMessages'
         : n === 'disabled'
-        ? 'notificationsMute'
-        : 'notificationsMentionsOnly';
+          ? 'notificationsMute'
+          : 'notificationsMentionsOnly';
     return { value: n, name: window.i18n(keyToUse) };
   });
 
@@ -557,7 +559,7 @@ export const NotificationForConvoMenuItem = (): JSX.Element | null => {
       label={window.i18n('sessionNotifications') as any}
       // rtl={isRtlMode && false}
     >
-      {(notificationForConvoOptions || []).mapzz(item => {
+      {(notificationForConvoOptions || []).map(item => {
         const disabled = item.value === currentNotificationSetting;
 
         return (

@@ -134,11 +134,11 @@ export const CreateAccount = () => {
         <OnboardDescription>{window.i18n('displayNameDescription')}</OnboardDescription>
         <SpacerLG />
         <SessionInput
-          ariaLabel={window.i18n('enterDisplayName')}
+          ariaLabel={window.i18n('displayNameEnter')}
           autoFocus={true}
           disableOnBlurEvent={true}
           type="text"
-          placeholder={window.i18n('enterDisplayName')}
+          placeholder={window.i18n('displayNameEnter')}
           value={displayName}
           onValueChanged={(name: string) => {
             const sanitizedName = sanitizeDisplayNameOrToast(name, setDisplayNameError, dispatch);

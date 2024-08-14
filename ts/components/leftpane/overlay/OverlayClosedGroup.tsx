@@ -26,6 +26,7 @@ import { SpacerLG, SpacerMD } from '../../basic/Text';
 import { SessionInput } from '../../inputs';
 import { StyledLeftPaneOverlay } from './OverlayMessage';
 import LIBSESSION_CONSTANTS from '../../../session/utils/libsession/libsession_constants';
+import { ToastUtils } from '../../../session/utils';
 
 const StyledMemberListNoContacts = styled.div`
   text-align: center;
@@ -69,7 +70,7 @@ async function createClosedGroupWithErrorHandling(
   if (groupName.length === 0) {
     ToastUtils.pushToastError('invalidGroupName', window.i18n('groupNameEnterPlease'));
 
-    onError(window.i18n('invalidGroupNameTooShort'));
+    onError(window.i18n('groupNameEnterPlease'));
     return false;
   }
   if (groupName.length > LIBSESSION_CONSTANTS.BASE_GROUP_MAX_NAME_LENGTH) {
@@ -160,7 +161,7 @@ export const OverlayClosedGroup = () => {
         <SessionInput
           autoFocus={true}
           type="text"
-          placeholder={window.i18n('createClosedGroupPlaceholder')}
+          placeholder={window.i18n('groupNameEnter')}
           value={groupName}
           onValueChanged={setGroupName}
           onEnterPressed={onEnterPressed}
@@ -183,7 +184,9 @@ export const OverlayClosedGroup = () => {
         {noContactsForClosedGroup ? (
           <NoContacts />
         ) : searchTerm && !contactsToRender.length ? (
-          <StyledNoResults>{window.i18n('noSearchResults', [searchTerm])}</StyledNoResults>
+          <StyledNoResults>
+            {window.i18n('searchMatchesNoneSpecific', { query: searchTerm })}
+          </StyledNoResults>
         ) : (
           contactsToRender.map((pubkey: string) => (
             <MemberListItem

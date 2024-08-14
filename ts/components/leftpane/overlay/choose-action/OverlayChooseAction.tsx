@@ -68,7 +68,7 @@ export const OverlayChooseAction = () => {
         alignItems={'flex-start'}
       >
         <ActionRow
-          title={window.i18n('newMessage')}
+          title={window.i18n('messageNew')}
           ariaLabel={'New message button'}
           iconType={'chatBubble'}
           iconSize={20}
@@ -76,7 +76,7 @@ export const OverlayChooseAction = () => {
           dataTestId="chooser-new-conversation-button"
         />
         <ActionRow
-          title={window.i18n('createGroup')}
+          title={window.i18n('groupCreate')}
           ariaLabel={'Create a group button'}
           iconType={'group'}
           iconSize={30}
@@ -84,7 +84,7 @@ export const OverlayChooseAction = () => {
           dataTestId="chooser-new-group"
         />
         <ActionRow
-          title={window.i18n('joinOpenGroup')}
+          title={window.i18n('communityJoin')}
           ariaLabel={'Join a community button'}
           iconType={'communities'}
           iconSize={20}

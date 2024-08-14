@@ -255,7 +255,9 @@ export const RestoreAccount = () => {
               />
             </Flex>
             <SpacerSM />
-            <OnboardDescription>{window.i18n('onboardingRecoveryPassword')}</OnboardDescription>
+            <OnboardDescription>
+              {window.i18n('recoveryPasswordRestoreDescription')}
+            </OnboardDescription>
             <SpacerLG />
             <SessionInput
               ariaLabel="Recovery password input"
@@ -296,11 +298,11 @@ export const RestoreAccount = () => {
             <OnboardDescription>{window.i18n('displayNameErrorNew')}</OnboardDescription>
             <SpacerLG />
             <SessionInput
-              ariaLabel={window.i18n('enterDisplayName')}
+              ariaLabel={window.i18n('displayNameEnter')}
               autoFocus={true}
               disableOnBlurEvent={true}
               type="text"
-              placeholder={window.i18n('enterDisplayName')}
+              placeholder={window.i18n('displayNameEnter')}
               value={displayName}
               onValueChanged={(name: string) => {
                 const sanitizedName = sanitizeDisplayNameOrToast(

@@ -72,7 +72,7 @@ const getCategories = (): Array<Categories> => {
     },
     {
       id: 'messageRequests' as const,
-      title: window.i18n('openMessageRequestInbox'),
+      title: window.i18n('sessionMessageRequests'),
       icon: { type: 'messageRequest', ...forcedSize },
     },
     {

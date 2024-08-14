@@ -40,7 +40,7 @@ async function joinOpenGroup(
     );
     return groupCreated;
   }
-  throw new Error(window.i18n('invalidOpenGroupUrl'));
+  throw new Error(window.i18n('communityEnterUrlErrorInvalid'));
 }
 
 export const OverlayCommunity = () => {

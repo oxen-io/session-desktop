@@ -82,7 +82,7 @@ export async function blockConvoById(conversationId: string) {
   await conversation.commit();
   ToastUtils.pushToastSuccess(
     'blocked',
-    window.i18n('blocked', { name: conversation.getNicknameOrRealUsernameOrPlaceholder() ?? '' })
+    window.i18n('blockBlockedUser', { name: conversation.getNicknameOrRealUsernameOrPlaceholder() })
   );
 }
 
@@ -364,7 +364,7 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     window?.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('groupLeave'),
-        message: window.i18n('groupLeaveDescriptionAdmin', { groupname: name ?? '' }),
+        message: window.i18n('groupLeaveDescriptionAdmin', { group_name: name ?? '' }),
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -399,7 +399,7 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     window?.inboxStore?.dispatch(
       updateConfirmModal({
         title: isPublic ? window.i18n('communityLeave') : window.i18n('groupLeave'),
-        message: window.i18n('groupLeaveDescription', { groupname: name ?? '' }),
+        message: window.i18n('groupLeaveDescription', { group_name: name ?? '' }),
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -493,7 +493,7 @@ export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: strin
   window?.inboxStore?.dispatch(
     updateConfirmModal({
       title: window.i18n('deleteMessages'),
-      message: window.i18n('deleteMessagesConfirmation'),
+      message: window.i18n('deleteAfterGroupPR3DeleteMessagesConfirmation'),
       onClickOk,
       okTheme: SessionButtonColor.Danger,
       onClickClose,
@@ -511,7 +511,6 @@ export async function setDisappearingMessagesByConvoId(
   const canSetDisappearing = !conversation.isOutgoingRequest() && !conversation.isIncomingRequest();
 
   if (!canSetDisappearing) {
-    ToastUtils.pushMustBeApproved();
     return;
   }
 

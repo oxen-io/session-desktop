@@ -16,7 +16,7 @@ const toggleCallMediaPermissions = async (triggerUIUpdate: () => void) => {
         title: window.i18n('callsVoiceAndVideoBeta'),
         message: window.i18n('callsVoiceAndVideoModalDescription'),
         okTheme: SessionButtonColor.Danger,
-        okText: window.i18n('continue'),
+        okText: window.i18n('theContinue'),
         onClickOk: async () => {
           await window.toggleCallMediaPermissionsTo(true);
           triggerUIUpdate();
