@@ -98,7 +98,7 @@ export const NoMessageInConversation = () => {
   // TODOLATER use this selector across the whole application (left pane excluded)
   const name = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
-  const messageText = useMemo(() => {
+  const content = useMemo(() => {
     if (isMe) {
       return <I18n token="noteToSelfEmpty" />;
     }
@@ -120,9 +120,7 @@ export const NoMessageInConversation = () => {
 
   return (
     <Container data-testid="empty-conversation-notification">
-      <TextInner>
-        <SessionHtmlRenderer html={messageText} />
-      </TextInner>
+      <TextInner>{content}</TextInner>
     </Container>
   );
 };
