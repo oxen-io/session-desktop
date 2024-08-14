@@ -1,11 +1,8 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
 import styled from 'styled-components';
-import { Data } from '../../../../data/data';
 import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
-import { useIsDarkTheme } from '../../../../state/selectors/theme';
-import { nativeEmojiData } from '../../../../util/emoji';
+import { I18n } from '../../../basic/I18n';
 
 export type TipPosition = 'center' | 'left' | 'right';
 
@@ -54,22 +51,6 @@ export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>
   }
 `;
 
-const StyledEmoji = styled.span`
-  font-size: 36px;
-  margin-left: 8px;
-`;
-
-const StyledContacts = styled.span`
-  word-break: break-all;
-  span {
-    word-break: keep-all;
-  }
-`;
-
-const StyledOthers = styled.span<{ isDarkTheme: boolean }>`
-  color: ${props => (props.isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)')};
-`;
-
 const generateContactsString = (
   senders: Array<string>
 ): { contacts: Array<string>; numberOfReactors: number; hasMe: boolean } => {
@@ -90,68 +71,57 @@ const generateContactsString = (
   return { contacts, hasMe, numberOfReactors };
 };
 
-const generateReactionString = (
+const getI18nComponent = (
   isYou: boolean,
   contacts: Array<string>,
-  numberOfReactors: number
+  numberOfReactors: number,
+  emoji: string
 ) => {
   const name = contacts[0];
   const other_name = contacts[1];
 
   switch (numberOfReactors) {
     case 1:
-      return isYou
-        ? window.i18n('emojiReactsHoverYou')
-        : window.i18n('emojiReactsHoverName', { name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouDesktop" endTagProps={{ emoji }} />
+      ) : (
+        <I18n token="emojiReactsHoverNameDesktop" args={{ name }} endTagProps={{ emoji }} />
+      );
     case 2:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouName', { name })
-        : window.i18n('emojiReactsHoverTwoName', { name, other_name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouNameDesktop" args={{ name }} endTagProps={{ emoji }} />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameDesktop"
+          args={{ name, other_name }}
+          endTagProps={{ emoji }}
+        />
+      );
     case 3:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouNameOne', { name })
-        : window.i18n('emojiReactsHoverTwoNameOne', { name, other_name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouNameOneDesktop" args={{ name }} endTagProps={{ emoji }} />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameOneDesktop"
+          args={{ name, other_name }}
+          endTagProps={{ emoji }}
+        />
+      );
     default:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouNameMultiple', {
-            name,
-            count: numberOfReactors - 2,
-          })
-        : window.i18n('emojiReactsHoverTwoNameMultiple', {
-            name,
-            other_name,
-            count: numberOfReactors - 2,
-          });
+      return isYou ? (
+        <I18n
+          token="emojiReactsHoverYouNameMultipleDesktop"
+          args={{ name, count: numberOfReactors - 2 }}
+          endTagProps={{ emoji }}
+        />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameMultipleDesktop"
+          args={{ name, other_name, count: numberOfReactors - 2 }}
+          endTagProps={{ emoji }}
+        />
+      );
   }
-};
-
-const Contacts = (contacts: Array<string>, count: number) => {
-  const isDarkTheme = useIsDarkTheme();
-
-  const isYou = contacts[0] === window.i18n('you');
-  const reactionPopupKey = useMemo(
-    () => reactionKey(isYou, contacts.length),
-    [isYou, contacts.length]
-  );
-
-  return (
-    <StyledContacts>
-      {window.i18n(reactionPopupKey, {
-        name: contacts[0],
-        other_name: contacts[1],
-        count: contacts.length,
-        emoji: '',
-      })}{' '}
-      {contacts.length > 3 ? (
-        <StyledOthers darkMode={darkMode}>
-          {window.i18n(contacts.length === 4 ? 'otherSingular' : 'otherPlural', {
-            number: `${count - 3}`,
-          })}
-        </StyledOthers>
-      ) : null}
-      <span>{window.i18n('reactionPopup')}</span>
-    </StyledContacts>
-  );
 };
 
 type Props = {
@@ -163,26 +133,22 @@ type Props = {
   onClick: (...args: Array<any>) => void;
 };
 
-export const ReactionPopup = (props: Props): ReactElement => {
-  const { emoji, count, senders, tooltipPosition = 'center', onClick } = props;
-  const darkMode = useSelector(isDarkTheme);
+export const ReactionPopup = (props: Props) => {
+  const { emoji, senders, tooltipPosition = 'center', onClick } = props;
 
   const { contacts, hasMe, numberOfReactors } = useMemo(
     () => generateContactsString(senders),
     [senders]
   );
 
-  const reactionString = useMemo(
-    () => generateReactionString(hasMe, contacts, numberOfReactors),
-    [hasMe, contacts.length, numberOfReactors]
+  const content = useMemo(
+    () => getI18nComponent(hasMe, contacts, numberOfReactors, emoji),
+    [hasMe, contacts, numberOfReactors]
   );
 
   return (
     <StyledPopupContainer tooltipPosition={tooltipPosition} onClick={onClick}>
-      {contacts.length ? <StyledContacts>{Contacts(contacts, count)}</StyledContacts> : null}
-      <StyledEmoji role={'img'} aria-label={nativeEmojiData?.ariaLabels?.[emoji]}>
-        {emoji}
-      </StyledEmoji>
+      {content}
     </StyledPopupContainer>
   );
 };
