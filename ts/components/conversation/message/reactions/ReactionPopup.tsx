@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import styled from 'styled-components';
 import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
-import { nativeEmojiData } from '../../../../util/emoji';
+
+import { I18n } from '../../../basic/I18n';
 
 export type TipPosition = 'center' | 'left' | 'right';
 
@@ -51,18 +52,6 @@ export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>
   }
 `;
 
-const StyledEmoji = styled.span`
-  font-size: 36px;
-  margin-left: 8px;
-`;
-
-const StyledContacts = styled.span`
-  word-break: break-all;
-  span {
-    word-break: keep-all;
-  }
-`;
-
 const generateContactsString = (
   senders: Array<string>
 ): { contacts: Array<string>; numberOfReactors: number; hasMe: boolean } => {
@@ -83,38 +72,56 @@ const generateContactsString = (
   return { contacts, hasMe, numberOfReactors };
 };
 
-const generateReactionString = (
+const getI18nComponent = (
   isYou: boolean,
   contacts: Array<string>,
-  numberOfReactors: number
+  numberOfReactors: number,
+  emoji: string
 ) => {
   const name = contacts[0];
   const other_name = contacts[1];
 
   switch (numberOfReactors) {
     case 1:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouDesktop')
-        : window.i18n('emojiReactsHoverNameDesktop', { name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouDesktop" endTagProps={{ emoji }} />
+      ) : (
+        <I18n token="emojiReactsHoverNameDesktop" args={{ name }} endTagProps={{ emoji }} />
+      );
     case 2:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouNameDesktop', { name })
-        : window.i18n('emojiReactsHoverTwoNameDesktop', { name, other_name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouNameDesktop" args={{ name }} endTagProps={{ emoji }} />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameDesktop"
+          args={{ name, other_name }}
+          endTagProps={{ emoji }}
+        />
+      );
     case 3:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouNameOneDesktop', { name })
-        : window.i18n('emojiReactsHoverTwoNameDesktop', { name, other_name });
+      return isYou ? (
+        <I18n token="emojiReactsHoverYouNameOneDesktop" args={{ name }} endTagProps={{ emoji }} />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameOneDesktop"
+          args={{ name, other_name }}
+          endTagProps={{ emoji }}
+        />
+      );
     default:
-      return isYou
-        ? window.i18n('emojiReactsHoverYouNameMultipleDesktop', {
-            name,
-            count: numberOfReactors - 2,
-          })
-        : window.i18n('emojiReactsHoverTwoNameMultipleDesktop', {
-            name,
-            other_name,
-            count: numberOfReactors - 2,
-          });
+      return isYou ? (
+        <I18n
+          token="emojiReactsHoverYouNameMultipleDesktop"
+          args={{ name, count: numberOfReactors - 2 }}
+          endTagProps={{ emoji }}
+        />
+      ) : (
+        <I18n
+          token="emojiReactsHoverTwoNameMultipleDesktop"
+          args={{ name, other_name, count: numberOfReactors - 2 }}
+          endTagProps={{ emoji }}
+        />
+      );
   }
 };
 
@@ -128,24 +135,21 @@ type Props = {
 };
 
 export const ReactionPopup = (props: Props) => {
-  const { emoji, count, senders, tooltipPosition = 'center', onClick } = props;
+  const { emoji, senders, tooltipPosition = 'center', onClick } = props;
 
   const { contacts, hasMe, numberOfReactors } = useMemo(
     () => generateContactsString(senders),
     [senders]
   );
 
-  const reactionString = useMemo(
-    () => generateReactionString(hasMe, contacts, numberOfReactors),
-    [hasMe, contacts, numberOfReactors]
+  const content = useMemo(
+    () => getI18nComponent(hasMe, contacts, numberOfReactors, emoji),
+    [hasMe, contacts, numberOfReactors, emoji]
   );
 
   return (
     <StyledPopupContainer tooltipPosition={tooltipPosition} onClick={onClick}>
-      {contacts.length ? <StyledContacts>{Contacts(contacts, count)}</StyledContacts> : null}
-      <StyledEmoji role={'img'} aria-label={nativeEmojiData?.ariaLabels?.[emoji]}>
-        {emoji}
-      </StyledEmoji>
+      {content}
     </StyledPopupContainer>
   );
 };

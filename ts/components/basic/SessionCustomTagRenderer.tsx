@@ -6,24 +6,35 @@ const StyledEmoji = styled.span`
   margin-left: 8px;
 `;
 
+export const supportedCustomTags = ['emoji'] as const;
+
+export type CustomTag = (typeof supportedCustomTags)[number];
+
+/**
+ * A dictionary of custom tags and their rendering functions.
+ */
 export const customTag = {
   emoji: ({ emoji }: { emoji: string }) => (
     <StyledEmoji role={'img'} aria-label={nativeEmojiData?.ariaLabels?.[emoji]}>
       {emoji}
     </StyledEmoji>
   ),
-};
+} as const;
 
-export const SessionCustomTag = <Tag extends keyof typeof customTag>({
+export type CustomTagProps<Tag extends CustomTag> = Parameters<(typeof customTag)[Tag]>[0];
+
+/**
+ * Render a custom tag with its props.
+ *
+ * @param tag - The custom tag to render.
+ * @param tagProps - The props to pass to the custom tag.
+ */
+export const SessionCustomTagRenderer = <Tag extends CustomTag>({
   tag,
-  props,
+  tagProps,
 }: {
   tag: Tag;
-  props: Parameters<(typeof customTag)[Tag]>[0];
+  tagProps: CustomTagProps<Tag>;
 }) => {
-  return customTag[tag](props);
-};
-
-export const SessionCustomTagRenderer = ({ str }: { str: string }) => {
-  const splitString = str.split();
+  return customTag[tag](tagProps);
 };
