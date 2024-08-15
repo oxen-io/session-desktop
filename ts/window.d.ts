@@ -4,10 +4,7 @@ import {} from 'styled-components/cssprop';
 import { Store } from '@reduxjs/toolkit';
 import { Persistor } from 'redux-persist/es/types';
 
-import { LocalizerType } from './types/Util';
-
 import { ConversationCollection } from './models/conversation';
-import type { StateType } from './state/reducer';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
 import type { GetMessageArgs, LocalizerDictionary, LocalizerToken } from './types/Localizer';
 import type { Locale } from './util/i18n';

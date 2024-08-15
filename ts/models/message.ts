@@ -2,16 +2,7 @@ import Backbone from 'backbone';
 
 import autoBind from 'auto-bind';
 import filesize from 'filesize';
-import {
-  cloneDeep,
-  debounce,
-  isEmpty,
-  size as lodashSize,
-  map,
-  partition,
-  pick,
-  uniq,
-} from 'lodash';
+import { cloneDeep, debounce, isEmpty, size as lodashSize, partition, pick, uniq } from 'lodash';
 import { SignalService } from '../protobuf';
 import { getMessageQueue } from '../session';
 import { getConversationController } from '../session/conversations';
@@ -95,24 +86,13 @@ import { ConversationModel } from './conversation';
 import { READ_MESSAGE_STATE } from './conversationAttributes';
 import { ConversationInteractionStatus, ConversationInteractionType } from '../interactions/types';
 import { LastMessageStatusType } from '../state/ducks/types';
+import {
+  getJoinedGroupUpdateChangeStr,
+  getKickedGroupUpdateStr,
+  getLeftGroupUpdateChangeStr,
+} from './groupUpdate';
 
 // tslint:disable: cyclomatic-complexity
-
-/**
- * @returns true if the array contains only a single item being 'You', 'you' or our device pubkey
- */
-export function arrayContainsUsOnly(arrayToCheck: Array<string> | undefined) {
-  return (
-    arrayToCheck &&
-    arrayToCheck.length === 1 &&
-    (arrayToCheck[0] === UserUtils.getOurPubKeyStrFromCache() ||
-      arrayToCheck[0].toLowerCase() === 'you')
-  );
-}
-
-export function arrayContainsOneItemOnly(arrayToCheck: Array<string> | undefined) {
-  return arrayToCheck && arrayToCheck.length === 1;
-}
 
 export class MessageModel extends Backbone.Model<MessageAttributes> {
   constructor(attributes: MessageAttributesOptionals & { skipTimerInit?: boolean }) {
@@ -1289,26 +1269,9 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (groupUpdate) {
       const groupName =
         this.getConversation()?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('unknown');
-      if (arrayContainsUsOnly(groupUpdate.kicked)) {
-        return window.i18n('groupRemovedYou', { group_name: groupName });
-      }
 
-      if (arrayContainsUsOnly(groupUpdate.left)) {
-        return window.i18n('groupMemberYouLeft');
-      }
-
-      if (groupUpdate.left && groupUpdate.left.length === 1) {
-        return window.i18n('groupMemberLeft', {
-          name: getConversationController().getContactProfileNameOrShortenedPubKey(
-            groupUpdate.left[0]
-          ),
-        });
-      }
-
-      const messages = [];
-
-      if (!groupUpdate.name && !groupUpdate.joined && !groupUpdate.kicked && !groupUpdate.kicked) {
-        return window.i18n('groupUpdated');
+      if (groupUpdate.left) {
+        return getLeftGroupUpdateChangeStr(groupUpdate.left, groupName, true);
       }
 
       if (groupUpdate.name) {
@@ -1316,28 +1279,15 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
 
       if (groupUpdate.joined && groupUpdate.joined.length) {
-        const names = groupUpdate.joined.map(
-          getConversationController().getContactProfileNameOrShortenedPubKey
-        );
-
-        messages.push(window.i18n('groupMemberNew', { name: names.join(', ') }));
-
-        return messages.join(' ');
+        return getJoinedGroupUpdateChangeStr(groupUpdate.joined, groupName, true);
       }
 
-      if (groupUpdate.kicked && groupUpdate.kicked.length) {
-        const names = map(
-          groupUpdate.kicked,
-          getConversationController().getContactProfileNameOrShortenedPubKey
-        );
-
-        if (names.length > 1) {
-          messages.push(window.i18n('multipleKickedFromTheGroup', { name: names.join(', ') }));
-        } else {
-          messages.push(window.i18n('groupRemoved', { name: names[0] }));
-        }
+      if (groupUpdate.kicked?.length) {
+        return getKickedGroupUpdateStr(groupUpdate.kicked, groupName, true);
       }
-      return messages.join(' ');
+      window.log.warn('did not build a specific change for getDescription of ', groupUpdate);
+
+      return window.i18n('groupUpdated');
     }
 
     if (this.isGroupInvitation()) {

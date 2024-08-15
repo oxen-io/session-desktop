@@ -110,7 +110,10 @@ export function pushUserUnbanFailure() {
 }
 
 export function pushMessageDeleteForbidden() {
-  pushToastError('messageDeletionForbidden', window.i18n('messageDeletionForbidden'));
+  pushToastError(
+    'messageDeletionForbidden',
+    window.i18n('deleteafterMessageDeletionStandardisationmessageDeletionForbidden')
+  );
 }
 
 export function pushUnableToCall() {
@@ -138,7 +141,6 @@ export function pushedMissedCallCauseOfPermission(conversationName: string) {
     { toastId: id, updateId: id, autoClose: 10000 }
   );
 }
-
 
 export function pushVideoCallPermissionNeeded() {
   pushToastInfo(
@@ -187,16 +189,16 @@ export function pushDeleted() {
 }
 
 export function pushCannotRemoveCreatorFromGroup() {
-  pushToastWarning('cannotRemoveCreatorFromGroup', window.i18n('adminCannotBeRemoved'));
+  pushToastWarning('adminCannotBeRemoved', window.i18n('adminCannotBeRemoved'));
 }
 
 export function pushFailedToAddAsModerator() {
-  pushToastWarning('failedToAddAsModerator', window.i18n('adminPromotionFailed'));
+  pushToastWarning('adminPromotionFailed', window.i18n('adminPromotionFailed'));
 }
 
 export function pushFailedToRemoveFromModerator(name: string) {
   pushToastWarning(
-    'failedToRemoveFromModerator',
+    'adminRemoveFailed',
     window.i18n('adminRemoveFailed', {
       name,
     })

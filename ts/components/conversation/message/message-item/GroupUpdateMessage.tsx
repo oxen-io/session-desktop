@@ -1,5 +1,7 @@
-import { useConversationsUsernameWithQuoteOrFullPubkey } from '../../../../hooks/useParamSelector';
-import { arrayContainsUsOnly } from '../../../../models/message';
+import {
+  getKickedGroupUpdateStr,
+  getLeftGroupUpdateChangeStr,
+} from '../../../../models/groupUpdate';
 import {
   PropsForGroupUpdate,
   PropsForGroupUpdateType,
@@ -12,51 +14,38 @@ import { NotificationBubble } from './notification-bubble/NotificationBubble';
 // This component is used to display group updates in the conversation view.
 
 const ChangeItemJoined = (added: Array<string>): string => {
+  const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
+
   if (!added.length) {
-    throw new Error('Group update add is missing contacts');
+    throw new Error('Group update added is missing details');
   }
-  const names = useConversationsUsernameWithQuoteOrFullPubkey(added);
-  return window.i18n('groupMemberNew', {
-    name: names.join(', '),
-  });
+  // this is not ideal, but also might not be changed as part of Strings but,
+  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
+  // to render them correctly.
+  return getLeftGroupUpdateChangeStr(added, groupName, false);
 };
 
 const ChangeItemKicked = (kicked: Array<string>): string => {
   if (!kicked.length) {
-    throw new Error('Group update kicked is missing contacts');
+    throw new Error('Group update kicked is missing details');
   }
-  const names = useConversationsUsernameWithQuoteOrFullPubkey(kicked);
   const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
-
-  if (arrayContainsUsOnly(kicked)) {
-    return window.i18n('groupRemovedYou', { group_name: groupName });
-  }
-
-  // TODO - support bold
-  return kicked.length === 1
-    ? window.i18n('groupRemoved', { name: names[0] })
-    : kicked.length === 2
-      ? window.i18n('groupRemovedTwo', { name: names[0], other_name: names[1] })
-      : window.i18n('groupRemovedMore', { name: names[0], count: names.length });
+  // this is not ideal, but also might not be changed as part of Strings but,
+  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
+  // to render them correctly.
+  return getKickedGroupUpdateStr(kicked, groupName, false);
 };
 
 const ChangeItemLeft = (left: Array<string>): string => {
+  const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
+
   if (!left.length) {
-    throw new Error('Group update remove is missing contacts');
+    throw new Error('Group update left is missing details');
   }
-
-  const names = useConversationsUsernameWithQuoteOrFullPubkey(left);
-
-  if (arrayContainsUsOnly(left)) {
-    return window.i18n('groupMemberYouLeft');
-  }
-
-  // TODO - support bold
-  return left.length === 1
-    ? window.i18n('groupMemberLeft', { name: names[0] })
-    : left.length === 2
-      ? window.i18n('groupMemberLeftTwo', { name: names[0], other_name: names[1] })
-      : window.i18n('groupMemberLeftMore', { name: names[0], count: names.length });
+  // this is not ideal, but also might not be changed as part of Strings but,
+  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
+  // to render them correctly.
+  return getLeftGroupUpdateChangeStr(left, groupName, false);
 };
 
 const ChangeItem = (change: PropsForGroupUpdateType): string => {

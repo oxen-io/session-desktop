@@ -96,9 +96,7 @@ async function joinOpenGroupV2(
     if (!conversation) {
       window?.log?.warn('Failed to join open group v2');
       // TODO - Check that this is the room name
-      throw new Error(
-        window.i18n('communityJoinError', { community_name: roomId || window.i18n('unknown') })
-      );
+      throw new Error(window.i18n('communityJoinError'));
     }
 
     // here we managed to connect to the group.
@@ -183,19 +181,10 @@ export async function joinOpenGroupV2WithUIEvents(
     }
     if (showToasts) {
       // TODO - Check that this is the room name
-      ToastUtils.pushToastError(
-        'communityJoinError',
-        window.i18n('communityJoinError', {
-          community_name: parsedRoom.roomId || window.i18n('unknown'),
-        })
-      );
+      ToastUtils.pushToastError('communityJoinError', window.i18n('communityJoinError'));
     }
     if (errorHandler) {
-      errorHandler(
-        window.i18n('communityJoinError', {
-          community_name: parsedRoom.roomId || window.i18n('unknown'),
-        })
-      );
+      errorHandler(window.i18n('communityJoinError'));
     }
 
     uiCallback?.({ loadingState: 'failed', conversationKey: conversationID });
@@ -203,15 +192,10 @@ export async function joinOpenGroupV2WithUIEvents(
     window?.log?.warn('got error while joining open group:', error.message);
     if (showToasts) {
       // TODO - Check that this is the room name
-      ToastUtils.pushToastError(
-        'communityJoinError',
-        window.i18n('communityJoinError', { community_name: window.i18n('unknown') })
-      );
+      ToastUtils.pushToastError('communityJoinError', window.i18n('communityJoinError'));
     }
     if (errorHandler) {
-      errorHandler(
-        window.i18n('communityJoinError', { community_name: window.i18n('unknown') })
-      ); // we don't have a parsed room, so let's show the whole url in this case
+      errorHandler(window.i18n('communityJoinError'));
     }
     uiCallback?.({ loadingState: 'failed', conversationKey: null });
   }
