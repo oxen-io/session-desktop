@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useIsIncomingRequest, useIsOutgoingRequest } from '../../hooks/useParamSelector';
+import { SessionUtilContact } from '../../session/utils/libsession/libsession_utils_contacts';
 import {
   getSelectedHasMessages,
   hasSelectedConversationIncomingMessages,
@@ -15,8 +16,6 @@ import {
   useSelectedNicknameOrProfileNameOrShortenedPubkey,
 } from '../../state/selectors/selectedConversation';
 import { I18n } from '../basic/I18n';
-import { SessionUtilContact } from '../../session/utils/libsession/libsession_utils_contacts';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 
 const Container = styled.div`
   display: flex;

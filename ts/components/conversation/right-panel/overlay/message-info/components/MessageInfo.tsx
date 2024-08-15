@@ -99,7 +99,7 @@ const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
       {expirationDurationMs ? (
         <LabelWithInfo
           label={`Expiration Duration:`}
-          info={`${formatTimeDistance(Math.floor(expirationDurationMs / 1000), 0)}`}
+          info={`${formatTimeDistance(Math.floor(expirationDurationMs / 1000))}`}
         />
       ) : null}
       {expirationTimestamp ? (

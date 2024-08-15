@@ -36,7 +36,7 @@ const VALUES: Array<number> = [
 
 function getName(seconds = 0) {
   if (seconds >= 0) {
-    return formatTimeDistance(seconds, 0);
+    return formatTimeDistance(seconds);
   }
 
   return [seconds, 'seconds'].join(' ');

@@ -4,10 +4,7 @@ import {
   PropsForGroupUpdate,
   PropsForGroupUpdateType,
 } from '../../../../state/ducks/conversations';
-import {
-  useSelectedDisplayNameInProfile,
-  useSelectedNicknameOrProfileNameOrShortenedPubkey,
-} from '../../../../state/selectors/selectedConversation';
+import { useSelectedNicknameOrProfileNameOrShortenedPubkey } from '../../../../state/selectors/selectedConversation';
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';

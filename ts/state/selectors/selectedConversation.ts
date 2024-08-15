@@ -2,14 +2,13 @@ import { isString } from 'lodash';
 import { useSelector } from 'react-redux';
 import { useUnreadCount } from '../../hooks/useParamSelector';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
+import { ConversationTypeEnum } from '../../models/types';
 import {
   DisappearingMessageConversationModeType,
   DisappearingMessageConversationModes,
 } from '../../session/disappearing_messages/types';
 import { PubKey } from '../../session/types';
 import { UserUtils } from '../../session/utils';
-import { ReleasedFeatures } from '../../util/releaseFeature';
-import { ReduxConversationType } from '../ducks/conversations';
 import { StateType } from '../reducer';
 import {
   getIsMessageSelectionMode,
@@ -17,7 +16,6 @@ import {
   getSelectedMessageIds,
 } from './conversations';
 import { getCanWrite, getModerators, getSubscriberCount } from './sogsRoomInfo';
-import { ConversationTypeEnum } from '../../models/types';
 
 /**
  * Returns the formatted text for notification setting.
@@ -174,43 +172,10 @@ const getSelectedSubscriberCount = (state: StateType): number | undefined => {
   return getSubscriberCount(state, convo.id);
 };
 
-// TODO legacy messages support will be removed in a future release
-const getSelectedConversationExpirationModesWithLegacy = (convo: ReduxConversationType) => {
-  if (!convo) {
-    return undefined;
-  }
-
-  // NOTE this needs to be as any because the number of modes can change depending on if v2 is released or we are in single mode
-  let modes: any = DisappearingMessageConversationModes;
-
-  // Note to Self and Closed Groups only support deleteAfterSend and legacy modes
-  const isClosedGroup = !convo.isPrivate && !convo.isPublic;
-  if (convo?.isMe || isClosedGroup) {
-    modes = [modes[0], ...modes.slice(2)];
-  }
-
-  // Legacy mode is the 2nd option in the UI
-  modes = [modes[0], modes[modes.length - 1], ...modes.slice(1, modes.length - 1)];
-
-  const modesWithDisabledState: Record<string, boolean> = {};
-  // The new modes are disabled by default
-  if (modes && modes.length > 1) {
-    modes.forEach((mode: any) => {
-      modesWithDisabledState[mode] = Boolean(mode !== 'legacy' && mode !== 'off');
-    });
-  }
-
-  return modesWithDisabledState;
-};
-
 export const getSelectedConversationExpirationModes = (state: StateType) => {
   const convo = getSelectedConversation(state);
   if (!convo) {
     return undefined;
-  }
-
-  if (!ReleasedFeatures.isDisappearMessageV2FeatureReleasedCached()) {
-    return getSelectedConversationExpirationModesWithLegacy(convo);
   }
 
   // NOTE this needs to be as any because the number of modes can change depending on if v2 is released or we are in single mode

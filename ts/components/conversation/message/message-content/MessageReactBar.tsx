@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import useBoolean from 'react-use/lib/useBoolean';
 import useInterval from 'react-use/lib/useInterval';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { DURATION } from '../../../../session/constants';
 import { nativeEmojiData } from '../../../../util/emoji';
+import { formatAbbreviatedExpireDoubleTimer } from '../../../../util/i18n';
 import { getRecentReactions } from '../../../../util/storage';
 import { SpacerSM } from '../../../basic/Text';
 import { SessionIcon, SessionIconButton } from '../../../icon';
@@ -96,51 +96,26 @@ function useIsRenderedExpiresInItem(messageId: string) {
   return expiryDetails.expirationTimestamp;
 }
 
-// TODO - sort out all of these times and localize them
-
 function formatTimeLeft({ timeLeftMs }: { timeLeftMs: number }) {
-  const timeLeft = moment(timeLeftMs).utc();
+  const timeLeftSeconds = Math.floor(timeLeftMs / 1000);
 
-  if (timeLeftMs <= 0) {
+  if (timeLeftSeconds <= 0) {
     return `0s`;
   }
 
-  if (timeLeft.isBefore(moment.utc(0).add(1, 'minute'))) {
-    return window.i18n('disappearingMessagesCountdownBig', {
-      time_large: `${timeLeft.seconds()}s`,
+  const parts = formatAbbreviatedExpireDoubleTimer(timeLeftSeconds);
+  if (parts.length === 2) {
+    return window.i18n('disappearingMessagesCountdownBigSmall', {
+      time_large: parts[0],
+      time_small: parts[1],
     });
   }
-
-  if (timeLeft.isBefore(moment.utc(0).add(1, 'hour'))) {
-    const extraUnit = timeLeft.seconds() ? ` ${timeLeft.seconds()}s` : '';
+  if (parts.length === 1) {
     return window.i18n('disappearingMessagesCountdownBig', {
-      time_large: `${timeLeft.minutes()}m${extraUnit}`,
+      time_large: parts[0],
     });
   }
-
-  if (timeLeft.isBefore(moment.utc(0).add(1, 'day'))) {
-    const extraUnit = timeLeft.minutes() ? ` ${timeLeft.minutes()}m` : '';
-    return window.i18n('disappearingMessagesCountdownBig', {
-      time_large: `${timeLeft.hours()}h${extraUnit}`,
-    });
-  }
-
-  if (timeLeft.isBefore(moment.utc(0).add(7, 'day'))) {
-    const extraUnit = timeLeft.hours() ? ` ${timeLeft.hours()}h` : '';
-    return window.i18n('disappearingMessagesCountdownBig', {
-      time_large: `${timeLeft.dayOfYear() - 1}d${extraUnit}`,
-    });
-  }
-
-  if (timeLeft.isBefore(moment.utc(0).add(31, 'day'))) {
-    const days = timeLeft.dayOfYear() - 1;
-    const weeks = Math.floor(days / 7);
-    const daysLeft = days % 7;
-    const extraUnit = daysLeft ? ` ${daysLeft}d` : '';
-    return window.i18n('', { time_large: `${weeks}w${extraUnit}` });
-  }
-
-  return '...';
+  throw new Error('formatTimeLeft unexpected duration given');
 }
 
 const ExpiresInItem = ({ expirationTimestamp }: { expirationTimestamp?: number | null }) => {
