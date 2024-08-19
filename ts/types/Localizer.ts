@@ -15,7 +15,9 @@ type ArgsRecord<T extends Token> = Record<DynamicArgs<Dictionary[T]>, DynamicArg
 
 export type PluralKey = 'count';
 
-export type PluralString = `{${string}, plural, one {${string}} other {${string}}}`;
+export type PluralString = `{${string}, plural, one [${string}] other [${string}]}`;
+
+export type DictionaryWithoutPluralStrings = Omit<Dictionary, PluralString>;
 
 /** The dynamic arguments in a localized string */
 type DynamicArgs<LocalizedString extends string> =

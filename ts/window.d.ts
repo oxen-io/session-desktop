@@ -42,9 +42,13 @@ declare global {
      * window.i18n('greeting', { name: 'Alice' });
      * // => 'Hello, Alice!'
      */
-    i18n: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    i18n: (<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
       ...[token, args]: GetMessageArgs<T>
-    ) => R;
+    ) => R) & {
+      stripped: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+        ...[token, args]: GetMessageArgs<T>
+      ) => R;
+    };
     getLocale: () => Locale;
     log: any;
     sessionFeatureFlags: {

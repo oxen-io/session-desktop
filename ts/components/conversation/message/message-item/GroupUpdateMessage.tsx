@@ -1,4 +1,5 @@
 import {
+  getJoinedGroupUpdateChangeStr,
   getKickedGroupUpdateStr,
   getLeftGroupUpdateChangeStr,
 } from '../../../../models/groupUpdate';
@@ -22,7 +23,7 @@ const ChangeItemJoined = (added: Array<string>): string => {
   // this is not ideal, but also might not be changed as part of Strings but,
   // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
   // to render them correctly.
-  return getLeftGroupUpdateChangeStr(added, groupName, false);
+  return getJoinedGroupUpdateChangeStr(added, groupName, false);
 };
 
 const ChangeItemKicked = (kicked: Array<string>): string => {

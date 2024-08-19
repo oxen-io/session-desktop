@@ -1,5 +1,6 @@
 import { getConversationController } from '../session/conversations';
 import { UserUtils } from '../session/utils';
+import { getI18nFunction } from '../util/i18n';
 
 // to remove after merge with groups
 function usAndXOthers(arr: Array<string>) {
@@ -20,28 +21,31 @@ export function getKickedGroupUpdateStr(
   const othersNames = others.map(
     getConversationController().getContactProfileNameOrShortenedPubKey
   );
+
+  const getString = getI18nFunction(stripTags);
+
   if (us) {
     switch (others.length) {
       case 0:
-        return window.i18n('groupRemovedYou', { group_name: groupName });
+        return getString('groupRemovedYou', { group_name: groupName });
       case 1:
-        return window.i18n('groupRemovedYouTwo', { other_name: othersNames[0] });
+        return getString('groupRemovedYouTwo', { other_name: othersNames[0] });
       default:
-        return window.i18n('groupRemovedYouMultiple', { count: othersNames.length });
+        return getString('groupRemovedYouMultiple', { count: othersNames.length });
     }
   }
   switch (others.length) {
     case 0:
       throw new Error('kicked without anyone in it.');
     case 1:
-      return window.i18n('groupRemoved', { name: othersNames[0] });
+      return getString('groupRemoved', { name: othersNames[0] });
     case 2:
-      return window.i18n('groupRemovedTwo', {
+      return getString('groupRemovedTwo', {
         name: othersNames[0],
         other_name: othersNames[1],
       });
     default:
-      return window.i18n('groupRemovedMore', {
+      return getString('groupRemovedMore', {
         name: others[0],
         count: othersNames.length - 1,
       });
@@ -55,13 +59,15 @@ export function getLeftGroupUpdateChangeStr(
 ) {
   const { others, us } = usAndXOthers(left);
 
+  const getString = getI18nFunction(stripTags);
+
   if (left.length !== 1) {
     throw new Error('left.length should never be more than 1');
   }
 
   return us
-    ? window.i18n('groupMemberYouLeft')
-    : window.i18n('groupMemberLeft', {
+    ? getString('groupMemberYouLeft')
+    : getString('groupMemberLeft', {
         name: getConversationController().getContactProfileNameOrShortenedPubKey(others[0]),
       });
 }
@@ -75,28 +81,31 @@ export function getJoinedGroupUpdateChangeStr(
   const othersNames = others.map(
     getConversationController().getContactProfileNameOrShortenedPubKey
   );
+
+  const getString = getI18nFunction(stripTags);
+
   if (us) {
     switch (others.length) {
       case 0:
-        return window.i18n('groupMemberNew', { name: window.i18n('you') });
+        return getString('groupMemberNew', { name: window.i18n('you') });
       case 1:
-        return window.i18n('groupMemberYouAndOtherNew', { other_name: othersNames[0] });
+        return getString('groupMemberYouAndOtherNew', { other_name: othersNames[0] });
       default:
-        return window.i18n('groupMemberYouAndMoreNew', { count: othersNames.length });
+        return getString('groupMemberYouAndMoreNew', { count: othersNames.length });
     }
   }
   switch (others.length) {
     case 0:
       throw new Error('joined without anyone in it.');
     case 1:
-      return window.i18n('groupMemberNew', { name: othersNames[0] });
+      return getString('groupMemberNew', { name: othersNames[0] });
     case 2:
-      return window.i18n('groupMemberTwoNew', {
+      return getString('groupMemberTwoNew', {
         name: othersNames[0],
         other_name: othersNames[1],
       });
     default:
-      return window.i18n('groupMemberMoreNew', {
+      return getString('groupMemberMoreNew', {
         name: others[0],
         count: othersNames.length - 1,
       });
