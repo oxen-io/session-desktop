@@ -219,7 +219,7 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
             `i18n: Attempted to nonexistent pluralKey for plural form string '${localizedString}'`
           );
         } else {
-          const num = args?.[pluralKey] ?? 0;
+          const num = args?.[pluralKey as keyof typeof args] ?? 0;
 
           const cardinalRule = new Intl.PluralRules(locale).select(num);
 

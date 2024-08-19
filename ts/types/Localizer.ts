@@ -23,9 +23,9 @@ export type DictionaryWithoutPluralStrings = Omit<Dictionary, PluralString>;
 type DynamicArgs<LocalizedString extends string> =
   /** If a string follows the plural format use its plural variable name and recursively check for
    *  dynamic args inside all plural forms */
-  LocalizedString extends `{${infer PluralVar}, plural, one {${infer PluralOne}} other {${infer PluralOther}}}`
+  LocalizedString extends `{${infer PluralVar}, plural, one [${infer PluralOne}] other [${infer PluralOther}]}`
     ? PluralVar | DynamicArgs<PluralOne> | DynamicArgs<PluralOther>
-    : /** If a string segment has follows the variable form parse its variable name and recursively
+    : /** If a string segment follows the variable form parse its variable name and recursively
        * check for more dynamic args */
       // eslint-disable-next-line @typescript-eslint/no-unused-vars -- We dont care about _Pre TODO: see if we can remove this infer
       LocalizedString extends `${infer _Pre}{${infer Var}}${infer Rest}`
