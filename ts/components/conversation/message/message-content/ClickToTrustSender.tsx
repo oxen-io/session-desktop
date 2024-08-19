@@ -5,6 +5,7 @@ import { AttachmentDownloads } from '../../../../session/utils';
 import { updateConfirmModal } from '../../../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../../../basic/SessionButton';
 import { SessionIcon } from '../../../icon';
+import { useMessageAttachments } from '../../../../state/selectors';
 
 const StyledTrustSenderUI = styled.div`
   padding-inline: var(--margins-lg);
@@ -25,6 +26,7 @@ const ClickToDownload = styled.div`
 `;
 
 export const ClickToTrustSender = (props: { messageId: string }) => {
+  const attachments = useMessageAttachments(props.messageId);
   const openConfirmationModal = async (e: any) => {
     e.stopPropagation();
     e.preventDefault();
@@ -110,13 +112,17 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
     );
   };
 
+  const firstMimeType = attachments?.[0].contentType;
+
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <StyledTrustSenderUI onClick={openConfirmationModal}>
       <SessionIcon iconSize="small" iconType="gallery" />
       {/** TODO - Add file type */}
       <ClickToDownload>
-        {window.i18n('attachmentsClickToDownload', { file_type: '' })}
+        {window.i18n('attachmentsClickToDownload', {
+          file_type: firstMimeType || window.i18n('unknown'),
+        })}
       </ClickToDownload>
     </StyledTrustSenderUI>
   );

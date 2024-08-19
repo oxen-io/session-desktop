@@ -370,8 +370,8 @@ export const MessageContextMenu = (props: Props) => {
               messageId={messageId}
             />
           )}
-          {attachments?.length ? (
-            <Item onClick={saveAttachment}>{window.i18n('attachmentsDownload')}</Item>
+          {attachments?.length && attachments.every(m => !m.pending && m.path) ? (
+            <Item onClick={saveAttachment}>{window.i18n('save')}</Item>
           ) : null}
           <Item onClick={copyText}>{window.i18n('copy')}</Item>
           {(isSent || !isOutgoing) && <Item onClick={onReply}>{window.i18n('reply')}</Item>}
