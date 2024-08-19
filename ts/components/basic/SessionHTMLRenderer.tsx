@@ -17,7 +17,6 @@ export const SessionHtmlRenderer = ({ tag = 'div', key, html, className }: Recei
   return createElement(tag, {
     key,
     className,
-
     dangerouslySetInnerHTML: { __html: clean },
   });
 };

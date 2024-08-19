@@ -25,22 +25,27 @@ async function removeMods(convoId: string, modsToRemove: Array<string>) {
     return false;
   }
   window?.log?.info(`asked to remove moderators: ${modsToRemove}`);
-
+  const modsToRemovePubkey = compact(modsToRemove.map(m => PubKey.from(m)));
+  const modsToRemoveNames = modsToRemovePubkey.map(
+    m =>
+      getConversationController().get(m.key)?.getNicknameOrRealUsernameOrPlaceholder() ||
+      window.i18n('unknown')
+  );
   try {
     const convo = getConversationController().get(convoId);
 
     const roomInfos = convo.toOpenGroupV2();
-    const modsToRemovePubkey = compact(modsToRemove.map(m => PubKey.from(m)));
+
     const res = await sogsV3RemoveAdmins(modsToRemovePubkey, roomInfos);
 
     if (!res) {
       window?.log?.warn('failed to remove moderators:', res);
 
-      ToastUtils.pushFailedToRemoveFromModerator();
+      ToastUtils.pushFailedToRemoveFromModerator(modsToRemoveNames);
       return false;
     }
     window?.log?.info(`${modsToRemove} removed from moderators...`);
-    ToastUtils.pushUserRemovedFromModerators();
+    ToastUtils.pushUserRemovedFromModerators(modsToRemoveNames);
     return true;
   } catch (e) {
     window?.log?.error('Got error while removing moderator:', e);

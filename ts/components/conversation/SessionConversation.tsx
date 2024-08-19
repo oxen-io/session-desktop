@@ -398,7 +398,7 @@ export class SessionConversation extends Component<Props, State> {
       });
 
       if (blob.blob.size > MAX_ATTACHMENT_FILESIZE_BYTES) {
-        ToastUtils.pushFileSizeErrorAsByte(MAX_ATTACHMENT_FILESIZE_BYTES);
+        ToastUtils.pushFileSizeErrorAsByte();
         return;
       }
     } catch (error) {

@@ -13,6 +13,9 @@ import {
 } from 'date-fns';
 import timeLocales from 'date-fns/locale';
 import { isUndefined } from 'lodash';
+import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
+import { DURATION_SECONDS, LOCALE_DEFAULTS } from '../session/constants';
+import { updateLocale } from '../state/ducks/dictionary';
 import {
   DictionaryWithoutPluralStrings,
   GetMessageArgs,
@@ -21,10 +24,6 @@ import {
   PluralKey,
   PluralString,
 } from '../types/Localizer';
-import { DURATION_SECONDS, LOCALE_DEFAULTS } from '../session/constants';
-import { updateLocale } from '../state/ducks/dictionary';
-import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
-import { Dictionary } from '../localization/locales';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -232,7 +231,7 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
             return token as R;
           }
 
-          localizedString = pluralString.replaceAll('#', num) as R;
+          localizedString = pluralString.replaceAll('#', `${num}`) as R;
         }
       }
 

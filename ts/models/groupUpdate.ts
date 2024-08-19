@@ -89,9 +89,9 @@ export function getJoinedGroupUpdateChangeStr(
       case 0:
         return getString('groupMemberNew', { name: window.i18n('you') });
       case 1:
-        return getString('groupMemberYouAndOtherNew', { other_name: othersNames[0] });
+        return getString('groupMemberNewYouOther', { other_name: othersNames[0] });
       default:
-        return getString('groupMemberYouAndMoreNew', { count: othersNames.length });
+        return getString('groupMemberNewYouMultiple', { count: othersNames.length });
     }
   }
   switch (others.length) {

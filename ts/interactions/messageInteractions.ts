@@ -78,10 +78,10 @@ export async function removeSenderFromModerator(sender: string, convoId: string)
     if (!res) {
       window?.log?.warn('failed to remove moderator:', res);
 
-      ToastUtils.pushFailedToRemoveFromModerator(userDisplayName);
+      ToastUtils.pushFailedToRemoveFromModerator([userDisplayName]);
     } else {
       window?.log?.info(`${pubKeyToRemove.key} removed from moderators...`);
-      ToastUtils.pushUserRemovedFromModerators(userDisplayName);
+      ToastUtils.pushUserRemovedFromModerators([userDisplayName]);
     }
   } catch (e) {
     window?.log?.error('Got error while removing moderator:', e);

@@ -50,8 +50,11 @@ export const AddModeratorsDialog = (props: Props) => {
 
         ToastUtils.pushFailedToAddAsModerator();
       } else {
+        const userDisplayName =
+          getConversationController().get(pubkey.key)?.getNicknameOrRealUsernameOrPlaceholder() ||
+          window.i18n('unknown');
         window?.log?.info(`${pubkey.key} added as moderator...`);
-        ToastUtils.pushUserAddedToModerators();
+        ToastUtils.pushUserAddedToModerators(userDisplayName);
 
         // clear input box
         setInputBoxValue('');

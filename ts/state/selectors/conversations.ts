@@ -26,7 +26,6 @@ import { hasValidIncomingRequestValues } from '../../models/conversation';
 import { isOpenOrClosedGroup } from '../../models/conversationAttributes';
 import { getConversationController } from '../../session/conversations';
 import { UserUtils } from '../../session/utils';
-import { LocalizerType } from '../../types/Util';
 import { BlockedNumberController } from '../../util';
 import { Storage } from '../../util/storage';
 import { getIntl } from './user';
@@ -220,23 +219,20 @@ export const getSortedMessagesTypesOfSelectedConversation = createSelector(
   }
 );
 
-function getConversationTitle(
-  conversation: ReduxConversationType,
-  testingi18n?: LocalizerType
-): string {
+function getConversationTitle(conversation: ReduxConversationType): string {
   if (conversation.displayNameInProfile) {
     return conversation.displayNameInProfile;
   }
 
   if (isOpenOrClosedGroup(conversation.type)) {
-    return (testingi18n || window.i18n)('unknown');
+    return window.i18n('unknown');
   }
   return conversation.id;
 }
 
 const collator = new Intl.Collator();
 
-export const _getConversationComparator = (testingi18n?: LocalizerType) => {
+export const _getConversationComparator = () => {
   return (left: ReduxConversationType, right: ReduxConversationType): number => {
     // Pin is the first criteria to check
     const leftPriority = left.priority || 0;
@@ -259,8 +255,8 @@ export const _getConversationComparator = (testingi18n?: LocalizerType) => {
     if (leftActiveAt && rightActiveAt && leftActiveAt !== rightActiveAt) {
       return rightActiveAt - leftActiveAt;
     }
-    const leftTitle = getConversationTitle(left, testingi18n).toLowerCase();
-    const rightTitle = getConversationTitle(right, testingi18n).toLowerCase();
+    const leftTitle = getConversationTitle(left).toLowerCase();
+    const rightTitle = getConversationTitle(right).toLowerCase();
 
     return collator.compare(leftTitle, rightTitle);
   };
