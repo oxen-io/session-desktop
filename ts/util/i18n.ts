@@ -212,7 +212,7 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
       }
 
       if (isPluralForm(localizedString)) {
-        const pluralKey = getPluralKey(localizedString) as keyof typeof args;
+        const pluralKey = getPluralKey(localizedString);
 
         if (!pluralKey) {
           i18nLog(
