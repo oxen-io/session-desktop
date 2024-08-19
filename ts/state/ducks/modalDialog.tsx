@@ -155,7 +155,7 @@ const ModalSlice = createSlice({
       return { ...state, hideRecoveryPasswordModalState: action.payload };
     },
     updateOpenUrlModal(state, action: PayloadAction<OpenUrlModalState>) {
-      return { ...state, updateOpenUrlModal: action.payload };
+      return { ...state, openUrlModal: action.payload };
     },
     updateLightBoxOptions(state, action: PayloadAction<LightBoxOptions>) {
       const lightBoxOptions = action.payload;

@@ -25,7 +25,6 @@ const DescriptionBeforeAskingConfirmation = (props: {
   return (
     <>
       <span className="session-confirm-main-message">{window.i18n('clearDataAllDescription')}</span>
-      <span className="session-confirm-main-message">{window.i18n('clearDataAllDescription')}</span>
 
       <SpacerLG />
       <SessionRadioGroup

@@ -6,10 +6,10 @@ import styled from 'styled-components';
 import { RenderTextCallbackType } from '../../../../types/Util';
 import { getEmojiSizeClass, SizeClassType } from '../../../../util/emoji';
 import { LinkPreviews } from '../../../../util/linkPreviews';
-import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
 import { AddMentions } from '../../AddMentions';
 import { AddNewLines } from '../../AddNewLines';
 import { Emojify } from '../../Emojify';
+import { showLinkVisitWarningDialog } from '../../../dialog/OpenUrlModal';
 
 const linkify = LinkifyIt();
 

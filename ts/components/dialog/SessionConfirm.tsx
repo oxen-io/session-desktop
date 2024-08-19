@@ -1,35 +1,16 @@
-import { Dispatch, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';
-import styled from 'styled-components';
 import { useLastMessage } from '../../hooks/useParamSelector';
 import { updateConversationInteractionState } from '../../interactions/conversationInteractions';
 import { ConversationInteractionStatus } from '../../interactions/types';
-import { updateConfirmModal, updateOpenUrlModal } from '../../state/ducks/modalDialog';
+import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 import { SessionRadioGroup, SessionRadioItems } from '../basic/SessionRadioGroup';
 import { SpacerLG } from '../basic/Text';
-import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
 import { SessionSpinner } from '../loading';
-
-const StyledSubText = styled(SessionHtmlRenderer)<{ textLength: number }>`
-  font-size: var(--font-size-md);
-  line-height: 1.5;
-  margin-bottom: var(--margins-lg);
-
-  max-width: ${props =>
-    props.textLength > 90
-      ? '60ch'
-      : '33ch'}; // this is ugly, but we want the dialog description to have multiple lines when a short text is displayed
-`;
-
-const StyledSubMessageText = styled(SessionHtmlRenderer)`
-  // Overrides SASS in this one case
-  margin-top: 0;
-  margin-bottom: var(--margins - md);
-`;
+import { StyledSubMessageText, StyledSubText } from './StyledSubText';
 
 export interface SessionConfirmDialogProps {
   message?: string;
@@ -58,9 +39,6 @@ export interface SessionConfirmDialogProps {
   hideCancel?: boolean;
   okTheme?: SessionButtonColor;
   closeTheme?: SessionButtonColor;
-  sessionIcon?: SessionIconType;
-  iconSize?: SessionIconSize;
-  shouldShowConfirm?: boolean | undefined;
   showExitIcon?: boolean | undefined;
   headerReverse?: boolean;
   conversationId?: string;
@@ -78,9 +56,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
     onClickOk,
     onClickClose,
     hideCancel = false,
-    sessionIcon,
-    iconSize,
-    shouldShowConfirm,
     onClickCancel,
     showExitIcon,
     headerReverse,
@@ -136,10 +111,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
     }
   }, [isLoading, conversationId, lastMessage?.interactionType]);
 
-  if (shouldShowConfirm && !shouldShowConfirm) {
-    return null;
-  }
-
   /**
    * Performs specified on close action then removes the modal.
    */
@@ -160,13 +131,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
       {!showHeader && <SpacerLG />}
 
       <div className="session-modal__centered">
-        {sessionIcon && iconSize && (
-          <>
-            <SessionIcon iconType={sessionIcon} iconSize={iconSize} />
-            <SpacerLG />
-          </>
-        )}
-
         <StyledSubText tag="span" textLength={message.length} html={message} />
         {messageSub && (
           <StyledSubMessageText
@@ -212,13 +176,5 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
         )}
       </div>
     </SessionWrapperModal>
-  );
-};
-
-export const showLinkVisitWarningDialog = (urlToOpen: string, dispatch: Dispatch<any>) => {
-  dispatch(
-    updateOpenUrlModal({
-      urlToOpen,
-    })
   );
 };

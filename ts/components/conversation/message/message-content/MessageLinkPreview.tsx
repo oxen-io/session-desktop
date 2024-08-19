@@ -9,9 +9,9 @@ import {
 } from '../../../../state/selectors';
 import { useIsMessageSelectionMode } from '../../../../state/selectors/selectedConversation';
 import { isImageAttachment } from '../../../../types/Attachment';
-import { showLinkVisitWarningDialog } from '../../../dialog/SessionConfirm';
 import { SessionIcon } from '../../../icon';
 import { Image } from '../../Image';
+import { showLinkVisitWarningDialog } from '../../../dialog/OpenUrlModal';
 
 export type MessageLinkPreviewSelectorProps = Pick<
   MessageRenderingProps,

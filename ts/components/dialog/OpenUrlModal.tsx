@@ -1,23 +1,24 @@
 import { shell } from 'electron';
 import { isEmpty } from 'lodash';
+import { Dispatch } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { MessageInteraction } from '../../interactions';
 import { OpenUrlModalState, updateOpenUrlModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
-import { Flex } from '../basic/Flex';
-import { I18n } from '../basic/I18n';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerMD } from '../basic/Text';
+import { StyledSubText } from './StyledSubText';
 
 const StyledDescriptionContainer = styled.div`
-  max-height: 150px;
+  max-height: 110px;
+  max-width: 500px;
+  padding: var(--margins-md);
   overflow-y: auto;
 `;
 
 export function OpenUrlModal(props: OpenUrlModalState) {
   const dispatch = useDispatch();
-  // console.warn('props', props);
 
   if (!props || isEmpty(props) || !props.urlToOpen) {
     return null;
@@ -42,30 +43,43 @@ export function OpenUrlModal(props: OpenUrlModalState) {
     <SessionWrapperModal
       title={window.i18n('urlOpen')}
       onClose={onClose}
-      showExitIcon={false}
+      showExitIcon={true}
       showHeader={true}
-      additionalClassName="no-body-padding"
     >
-      <StyledDescriptionContainer>
-        <I18n token={'urlOpenDescription'} args={{ url }} />
-      </StyledDescriptionContainer>
+      <div className="session-modal__centered">
+        <StyledDescriptionContainer>
+          <StyledSubText
+            tag="span"
+            textLength={url.length}
+            html={window.i18n('urlOpenDescription', { url })}
+          />
+        </StyledDescriptionContainer>
+      </div>
       <SpacerMD />
-      <Flex container={true} justifyContent="center" alignItems="center" width="100%">
+      <div className="session-modal__button-group">
         <SessionButton
           text={window.i18n('urlOpen')}
           buttonColor={SessionButtonColor.Danger}
-          buttonType={SessionButtonType.Ghost}
+          buttonType={SessionButtonType.Simple}
           onClick={onClickOpen}
           dataTestId="session-confirm-ok-button"
         />
         <SessionButton
           text={window.i18n('urlCopy')}
-          buttonColor={SessionButtonColor.Primary}
-          buttonType={SessionButtonType.Ghost}
+          buttonColor={SessionButtonColor.White}
+          buttonType={SessionButtonType.Simple}
           onClick={onClickCopy}
           dataTestId="session-confirm-cancel-button"
         />
-      </Flex>
+      </div>
     </SessionWrapperModal>
   );
 }
+
+export const showLinkVisitWarningDialog = (urlToOpen: string, dispatch: Dispatch<any>) => {
+  dispatch(
+    updateOpenUrlModal({
+      urlToOpen,
+    })
+  );
+};

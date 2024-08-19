@@ -715,8 +715,6 @@ export async function showLinkSharingConfirmationModalDialog(e: any) {
     if (!alreadyDisplayedPopup) {
       window.inboxStore?.dispatch(
         updateConfirmModal({
-          shouldShowConfirm:
-            !window.getSettingValue(SettingsKey.settingsLinkPreview) && !alreadyDisplayedPopup,
           title: window.i18n('linkPreviewsSend'),
           message: window.i18n('linkPreviewsSendModalDescription'),
           okTheme: SessionButtonColor.Danger,
