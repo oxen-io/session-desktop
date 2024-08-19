@@ -99,15 +99,6 @@ const timeLocaleMap = {
 
 export type Locale = keyof typeof timeLocaleMap;
 
-const cardinalPluralRegex: Record<Intl.LDMLPluralRule, RegExp> = {
-  zero: /zero \[(.*?)\]/g,
-  one: /one \[(.*?)\]/g,
-  two: /two \[(.*?)\]/g,
-  few: /few \[(.*?)\]/g,
-  many: /many \[(.*?)\]/g,
-  other: /other \[(.*?)\]/g,
-};
-
 function getPluralKey<R extends PluralKey | undefined>(string: PluralString): R {
   const match = /{(\w+), plural, one \[.+\] other \[.+\]}/g.exec(string);
   return (match?.[1] ?? undefined) as R;
@@ -117,7 +108,17 @@ function getStringForCardinalRule(
   localizedString: string,
   cardinalRule: Intl.LDMLPluralRule
 ): string | undefined {
-  const match = cardinalPluralRegex[cardinalRule].exec(localizedString);
+  // TODO: investigate if this is the best way to handle regex like this
+  const cardinalPluralRegex: Record<Intl.LDMLPluralRule, RegExp> = {
+    zero: /zero \[(.*?)\]/g,
+    one: /one \[(.*?)\]/g,
+    two: /two \[(.*?)\]/g,
+    few: /few \[(.*?)\]/g,
+    many: /many \[(.*?)\]/g,
+    other: /other \[(.*?)\]/g,
+  };
+  const regex = cardinalPluralRegex[cardinalRule];
+  const match = regex.exec(localizedString);
   return match?.[1] ?? undefined;
 }
 
