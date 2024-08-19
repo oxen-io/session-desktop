@@ -63,7 +63,11 @@ export const MessageStatus = ({ messageId, dataTestId }: Props) => {
   }
 };
 
-const MessageStatusContainer = styled.div<{ isIncoming: boolean; isGroup: boolean }>`
+const MessageStatusContainer = styled.div<{
+  isIncoming: boolean;
+  isGroup: boolean;
+  clickable: boolean;
+}>`
   display: inline-block;
   align-self: ${props => (props.isIncoming ? 'flex-start' : 'flex-end')};
   flex-direction: ${props =>
@@ -73,7 +77,7 @@ const MessageStatusContainer = styled.div<{ isIncoming: boolean; isGroup: boolea
 
   margin-bottom: 2px;
   margin-inline-start: 5px;
-  cursor: pointer;
+  cursor: ${props => (props.clickable ? 'pointer' : 'inherit')};
   display: flex;
   align-items: center;
   margin-inline-start: ${props =>
@@ -153,6 +157,7 @@ const MessageStatusSending = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
       data-testtype="sending"
       isIncoming={false}
       isGroup={false}
+      clickable={false}
     >
       <TextDetails text={window.i18n('sending')} textColor="var(--text-secondary-color)" />
       <IconNormal rotateDuration={2} iconType="sending" />
@@ -192,6 +197,7 @@ const MessageStatusSent = ({ dataTestId, messageId }: Omit<Props, 'isDetailView'
       data-testtype="sent"
       isIncoming={false}
       isGroup={isGroup}
+      clickable={false}
     >
       <TextDetails text={window.i18n('sent')} textColor="var(--text-secondary-color)" />
       <IconForExpiringMessageId messageId={messageId} iconType="circleCheck" />
@@ -220,6 +226,7 @@ const MessageStatusRead = ({
       data-testtype="read"
       isIncoming={isIncoming}
       isGroup={isGroup}
+      clickable={false}
     >
       <TextDetails text={window.i18n('read')} textColor="var(--text-secondary-color)" />
       <IconForExpiringMessageId messageId={messageId} iconType="doubleCheckCircleFilled" />
@@ -241,6 +248,7 @@ const MessageStatusError = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
       onClick={showDebugLog}
       title={window.i18n('messageStatusFailedToSend')}
       isIncoming={false}
+      clickable={true}
       isGroup={isGroup}
     >
       <TextDetails
