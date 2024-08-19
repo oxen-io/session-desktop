@@ -1,12 +1,11 @@
-import { shell } from 'electron';
 import { Dispatch, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';
 import styled from 'styled-components';
 import { useLastMessage } from '../../hooks/useParamSelector';
-import { MessageInteraction } from '../../interactions';
 import { updateConversationInteractionState } from '../../interactions/conversationInteractions';
-import { updateConfirmModal } from '../../state/ducks/modalDialog';
+import { ConversationInteractionStatus } from '../../interactions/types';
+import { updateConfirmModal, updateOpenUrlModal } from '../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
@@ -14,7 +13,6 @@ import { SessionRadioGroup, SessionRadioItems } from '../basic/SessionRadioGroup
 import { SpacerLG } from '../basic/Text';
 import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
 import { SessionSpinner } from '../loading';
-import { ConversationInteractionStatus } from '../../interactions/types';
 
 const StyledSubText = styled(SessionHtmlRenderer)<{ textLength: number }>`
   font-size: var(--font-size-md);
@@ -218,25 +216,9 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
 };
 
 export const showLinkVisitWarningDialog = (urlToOpen: string, dispatch: Dispatch<any>) => {
-  function onClickOk() {
-    void shell.openExternal(urlToOpen);
-  }
-
   dispatch(
-    updateConfirmModal({
-      title: window.i18n('urlOpen'),
-      message: window.i18n('urlOpenDescription', { url: urlToOpen }),
-      okText: window.i18n('open'),
-      okTheme: SessionButtonColor.Primary,
-      cancelText: window.i18n('copy'),
-      showExitIcon: true,
-      onClickOk,
-      onClickClose: () => {
-        dispatch(updateConfirmModal(null));
-      },
-      onClickCancel: () => {
-        MessageInteraction.copyBodyToClipboard(urlToOpen);
-      },
+    updateOpenUrlModal({
+      urlToOpen,
     })
   );
 };

@@ -7,7 +7,7 @@ import { useIconToImageURL } from '../../../hooks/useIconToImageURL';
 import { usePasswordModal } from '../../../hooks/usePasswordModal';
 import { mnDecode } from '../../../session/crypto/mnemonic';
 import {
-  updateHideRecoveryPasswordModel,
+  updateHideRecoveryPasswordModal,
   updateLightBoxOptions,
 } from '../../../state/ducks/modalDialog';
 import { showSettingsSection } from '../../../state/ducks/section';
@@ -201,7 +201,7 @@ export const SettingsCategoryRecoveryPassword = () => {
           title={window.i18n('recoveryPasswordHidePermanently')}
           description={window.i18n('recoveryPasswordHideRecoveryPasswordDescription')}
           onClick={() => {
-            dispatch(updateHideRecoveryPasswordModel({ state: 'firstWarning' }));
+            dispatch(updateHideRecoveryPasswordModal({ state: 'firstWarning' }));
           }}
           buttonText={window.i18n('hide')}
           buttonColor={SessionButtonColor.Danger}

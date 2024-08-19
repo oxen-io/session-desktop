@@ -11,7 +11,7 @@ import { useHotkey } from '../../../hooks/useHotkey';
 import { useOurAvatarPath, useOurConversationUsername } from '../../../hooks/useParamSelector';
 import { ProfileManager } from '../../../session/profile_manager/ProfileManager';
 import LIBSESSION_CONSTANTS from '../../../session/utils/libsession/libsession_constants';
-import { editProfileModal, updateEditProfilePictureModel } from '../../../state/ducks/modalDialog';
+import { editProfileModal, updateEditProfilePictureModal } from '../../../state/ducks/modalDialog';
 import { SessionWrapperModal } from '../../SessionWrapperModal';
 import { Flex } from '../../basic/Flex';
 import { SessionButton } from '../../basic/SessionButton';
@@ -232,7 +232,7 @@ export const EditProfileDialog = () => {
     }
     closeDialog();
     dispatch(
-      updateEditProfilePictureModel({
+      updateEditProfilePictureModal({
         avatarPath,
         profileName,
         ourId,

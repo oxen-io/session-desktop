@@ -128,6 +128,11 @@ export const getHideRecoveryPasswordModalState = createSelector(
   (state: ModalState): HideRecoveryPasswordModalState => state.hideRecoveryPasswordModalState
 );
 
+export const getOpenUrlModalState = createSelector(
+  getModal,
+  (state: ModalState) => state.openUrlModal
+);
+
 export const getLightBoxOptions = createSelector(
   getModal,
   (state: ModalState): LightBoxOptions => state.lightBoxOptions

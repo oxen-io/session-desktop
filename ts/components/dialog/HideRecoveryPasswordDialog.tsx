@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { SettingsKey } from '../../data/settings-key';
-import { updateHideRecoveryPasswordModel } from '../../state/ducks/modalDialog';
+import { updateHideRecoveryPasswordModal } from '../../state/ducks/modalDialog';
 import { showSettingsSection } from '../../state/ducks/section';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { Flex } from '../basic/Flex';
@@ -25,7 +25,7 @@ export function HideRecoveryPasswordDialog(props: HideRecoveryPasswordDialogProp
   const dispatch = useDispatch();
 
   const onClose = () => {
-    dispatch(updateHideRecoveryPasswordModel(null));
+    dispatch(updateHideRecoveryPasswordModal(null));
   };
 
   const onConfirmation = async () => {
@@ -44,7 +44,7 @@ export function HideRecoveryPasswordDialog(props: HideRecoveryPasswordDialogProp
           text: window.i18n('theContinue'),
           buttonColor: SessionButtonColor.Danger,
           onClick: () => {
-            dispatch(updateHideRecoveryPasswordModel({ state: 'secondWarning' }));
+            dispatch(updateHideRecoveryPasswordModal({ state: 'secondWarning' }));
           },
           dataTestId: 'session-confirm-ok-button',
         }

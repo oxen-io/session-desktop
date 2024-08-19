@@ -12,6 +12,7 @@ import {
   getInviteContactModal,
   getLightBoxOptions,
   getOnionPathDialog,
+  getOpenUrlModalState,
   getReactClearAllDialog,
   getReactListDialog,
   getRemoveModeratorsModal,
@@ -39,6 +40,7 @@ import { UpdateGroupMembersDialog } from './UpdateGroupMembersDialog';
 import { UpdateGroupNameDialog } from './UpdateGroupNameDialog';
 import { UserDetailsDialog } from './UserDetailsDialog';
 import { EditProfileDialog } from './edit-profile/EditProfileDialog';
+import { OpenUrlModal } from './OpenUrlModal';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
@@ -59,6 +61,7 @@ export const ModalContainer = () => {
   const reactClearAllModalState = useSelector(getReactClearAllDialog);
   const editProfilePictureModalState = useSelector(getEditProfilePictureModalState);
   const hideRecoveryPasswordModalState = useSelector(getHideRecoveryPasswordModalState);
+  const openUrlModalState = useSelector(getOpenUrlModalState);
   const lightBoxOptions = useSelector(getLightBoxOptions);
 
   return (
@@ -87,6 +90,7 @@ export const ModalContainer = () => {
       {hideRecoveryPasswordModalState && (
         <HideRecoveryPasswordDialog {...hideRecoveryPasswordModalState} />
       )}
+      {openUrlModalState && <OpenUrlModal {...openUrlModalState} />}
       {lightBoxOptions && <LightboxGallery {...lightBoxOptions} />}
     </>
   );

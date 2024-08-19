@@ -24,6 +24,7 @@ export type EditProfileModalState = object | null;
 export type OnionPathModalState = EditProfileModalState;
 export type EnterPasswordModalState = EnterPasswordModalProps | null;
 export type DeleteAccountModalState = EditProfileModalState;
+export type OpenUrlModalState = { urlToOpen: string } | null;
 
 export type SessionPasswordModalState = { passwordAction: PasswordAction; onOk: () => void } | null;
 
@@ -68,6 +69,7 @@ export type ModalState = {
   reactClearAllModalState: ReactModalsState;
   editProfilePictureModalState: EditProfilePictureModalState;
   hideRecoveryPasswordModalState: HideRecoveryPasswordModalState;
+  openUrlModal: OpenUrlModalState;
   lightBoxOptions: LightBoxOptions;
 };
 
@@ -90,6 +92,7 @@ export const initialModalState: ModalState = {
   reactClearAllModalState: null,
   editProfilePictureModalState: null,
   hideRecoveryPasswordModalState: null,
+  openUrlModal: null,
   lightBoxOptions: null,
 };
 
@@ -145,11 +148,14 @@ const ModalSlice = createSlice({
     updateReactClearAllModal(state, action: PayloadAction<ReactModalsState>) {
       return { ...state, reactClearAllModalState: action.payload };
     },
-    updateEditProfilePictureModel(state, action: PayloadAction<EditProfilePictureModalState>) {
+    updateEditProfilePictureModal(state, action: PayloadAction<EditProfilePictureModalState>) {
       return { ...state, editProfilePictureModalState: action.payload };
     },
-    updateHideRecoveryPasswordModel(state, action: PayloadAction<HideRecoveryPasswordModalState>) {
+    updateHideRecoveryPasswordModal(state, action: PayloadAction<HideRecoveryPasswordModalState>) {
       return { ...state, hideRecoveryPasswordModalState: action.payload };
+    },
+    updateOpenUrlModal(state, action: PayloadAction<OpenUrlModalState>) {
+      return { ...state, updateOpenUrlModal: action.payload };
     },
     updateLightBoxOptions(state, action: PayloadAction<LightBoxOptions>) {
       const lightBoxOptions = action.payload;
@@ -189,8 +195,9 @@ export const {
   updateBanOrUnbanUserModal,
   updateReactListModal,
   updateReactClearAllModal,
-  updateEditProfilePictureModel,
-  updateHideRecoveryPasswordModel,
+  updateEditProfilePictureModal,
+  updateHideRecoveryPasswordModal,
+  updateOpenUrlModal,
   updateLightBoxOptions,
 } = actions;
 export const modalReducer = reducer;

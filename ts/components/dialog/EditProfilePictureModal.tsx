@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { clearOurAvatar, uploadOurAvatar } from '../../interactions/conversationInteractions';
 import { ToastUtils } from '../../session/utils';
-import { editProfileModal, updateEditProfilePictureModel } from '../../state/ducks/modalDialog';
+import { editProfileModal, updateEditProfilePictureModal } from '../../state/ducks/modalDialog';
 import type { EditProfilePictureModalProps } from '../../types/ReduxTypes';
 import { pickFileForAvatar } from '../../types/attachments/VisualAttachment';
 import { SessionWrapperModal } from '../SessionWrapperModal';
@@ -75,7 +75,7 @@ export const EditProfilePictureModal = (props: EditProfilePictureModalProps) => 
   const { avatarPath, profileName, ourId } = props;
 
   const closeDialog = () => {
-    dispatch(updateEditProfilePictureModel(null));
+    dispatch(updateEditProfilePictureModal(null));
     dispatch(editProfileModal({}));
   };
 
@@ -95,7 +95,7 @@ export const EditProfilePictureModal = (props: EditProfilePictureModalProps) => 
 
     await uploadProfileAvatar(newAvatarObjectUrl);
     setLoading(false);
-    dispatch(updateEditProfilePictureModel(null));
+    dispatch(updateEditProfilePictureModal(null));
   };
 
   const handleRemove = async () => {
@@ -103,7 +103,7 @@ export const EditProfilePictureModal = (props: EditProfilePictureModalProps) => 
     await clearOurAvatar();
     setNewAvatarObjectUrl(null);
     setLoading(false);
-    dispatch(updateEditProfilePictureModel(null));
+    dispatch(updateEditProfilePictureModal(null));
   };
 
   return (
