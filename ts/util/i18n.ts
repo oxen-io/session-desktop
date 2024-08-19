@@ -14,6 +14,7 @@ import {
 import timeLocales from 'date-fns/locale';
 import { isUndefined } from 'lodash';
 import {
+  DictionaryWithoutPluralStrings,
   GetMessageArgs,
   LocalizerDictionary,
   LocalizerToken,
@@ -23,6 +24,7 @@ import {
 import { DURATION_SECONDS, LOCALE_DEFAULTS } from '../session/constants';
 import { updateLocale } from '../state/ducks/dictionary';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
+import { Dictionary } from '../localization/locales';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -98,32 +100,30 @@ const timeLocaleMap = {
 
 export type Locale = keyof typeof timeLocaleMap;
 
-const enPluralFormRegex = /\{(\w+), plural, one \{(\w+)\} other \{(\w+)\}\}/;
-
 const cardinalPluralRegex: Record<Intl.LDMLPluralRule, RegExp> = {
-  zero: /(zero) \{([^}]*)\}/,
-  one: /(one) \{([^}]*)\}/,
-  two: /(two) \{([^}]*)\}/,
-  few: /(few) \{([^}]*)\}/,
-  many: /(many) \{([^}]*)\}/,
-  other: /(other) \{([^}]*)\}/,
+  zero: /zero \[(.*?)\]/g,
+  one: /one \[(.*?)\]/g,
+  two: /two \[(.*?)\]/g,
+  few: /few \[(.*?)\]/g,
+  many: /many \[(.*?)\]/g,
+  other: /other \[(.*?)\]/g,
 };
 
-function getPluralKey(string: PluralString): PluralKey | undefined {
-  const match = string.match(enPluralFormRegex);
-  return match && match[1] ? match[1] : undefined;
+function getPluralKey<R extends PluralKey | undefined>(string: PluralString): R {
+  const match = /{(\w+), plural, one \[.+\] other \[.+\]}/g.exec(string);
+  return (match?.[1] ?? undefined) as R;
 }
 
 function getStringForCardinalRule(
   localizedString: string,
   cardinalRule: Intl.LDMLPluralRule
 ): string | undefined {
-  const match = localizedString.match(cardinalPluralRegex[cardinalRule]);
-  return match ? match[2] : undefined;
+  const match = cardinalPluralRegex[cardinalRule].exec(localizedString);
+  return match?.[1] ?? undefined;
 }
 
 const isPluralForm = (localizedString: string): localizedString is PluralString =>
-  enPluralFormRegex.test(localizedString);
+  /{\w+, plural, one \[.+\] other \[.+\]}/g.test(localizedString);
 
 /**
  * Logs an i18n message to the console.
@@ -237,19 +237,21 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
       }
 
       /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
-      // @ts-expect-error TODO: Fix this type, now that we have plurals it doesnt quite work
-      return localizedString.replace(/\{(\w+)\}/g, (match, arg: keyof typeof args) => {
-        const substitution: string | undefined = args?.[arg];
+      return (localizedString as DictionaryWithoutPluralStrings[T]).replace(
+        /\{(\w+)\}/g,
+        (match, arg) => {
+          const substitution: string | undefined = args?.[arg as keyof typeof args];
 
-        if (isUndefined(substitution)) {
-          const defaultSubstitution = LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS];
+          if (isUndefined(substitution)) {
+            const defaultSubstitution = LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS];
 
-          return isUndefined(defaultSubstitution) ? match : defaultSubstitution;
+            return isUndefined(defaultSubstitution) ? match : defaultSubstitution;
+          }
+
+          // TODO: figure out why is was type never and fix the type
+          return (substitution as string).toString();
         }
-
-        // TODO: figure out why is was type never and fix the type
-        return (substitution as string).toString();
-      }) as R;
+      ) as R;
     } catch (error) {
       i18nLog(`i18n: ${error.message}`);
       return token as R;
@@ -258,7 +260,34 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
 
   window.getLocale = () => locale;
 
+  /**
+   * Retrieves a localized message string, substituting variables where necessary. Then strips the message of any HTML and custom tags.
+   *
+   * @param token - The token identifying the message to retrieve.
+   * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+   *
+   * @returns The localized message string with substitutions applied. Any HTML and custom tags are removed.
+   *
+   * @example
+   * // The string greeting is 'Hello, {name}! <b>Welcome!</b>' in the current locale
+   * window.i18n.stripped('greeting', { name: 'Alice' });
+   * // => 'Hello, Alice! Welcome!'
+   */
+  getMessage.stripped = <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ): R => {
+    const i18nString = getMessage<T, LocalizerDictionary[T]>(
+      ...([token, args] as GetMessageArgs<T>)
+    );
+
+    return i18nString.replaceAll(/<[^>]*>/g, '') as R;
+  };
+
   return getMessage;
+};
+
+export const getI18nFunction = (stripTags: boolean) => {
+  return stripTags ? window.i18n.stripped : window.i18n;
 };
 
 // eslint-disable-next-line import/no-mutable-exports
