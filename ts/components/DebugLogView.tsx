@@ -5,6 +5,8 @@ import { switchThemeTo } from '../themes/switchTheme';
 import { fetchNodeLog } from '../util/logging';
 import { SessionButton, SessionButtonType } from './basic/SessionButton';
 import { SessionIconButton } from './icon';
+import { CopyToClipboardButton } from './buttons';
+import { Flex } from './basic/Flex';
 
 const StyledContent = styled.div`
   background-color: var(--modal-background-content-color);
@@ -54,7 +56,14 @@ const DebugLogTextArea = (props: { content: string }) => {
 
 const DebugLogButtons = (props: { content: string }) => {
   return (
-    <div className="buttons">
+    <Flex
+      container={true}
+      width={'fit-content'}
+      justifyContent={'flex-start'}
+      alignItems={'center'}
+      flexGap="var(--margins-md)"
+      className="buttons"
+    >
       <SessionButton
         text={window.i18n('helpReportABugExportLogsSaveToDesktop')}
         buttonType={SessionButtonType.Simple}
@@ -66,7 +75,12 @@ const DebugLogButtons = (props: { content: string }) => {
           (window as any).saveLog(props.content);
         }}
       />
-    </div>
+      <CopyToClipboardButton
+        copyContent={props.content}
+        buttonType={SessionButtonType.Simple}
+        hotkey={true}
+      />
+    </Flex>
   );
 };
 
@@ -107,7 +121,7 @@ export const DebugLogView = () => {
   }, []);
 
   return (
-    <SessionTheme>
+    <SessionTheme runSetup={false}>
       <StyledContent>
         <div>
           <SessionIconButton

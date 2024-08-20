@@ -22,10 +22,13 @@ const StyledContent = styled(Flex)`
   }
 
   img:first-child {
+    filter: brightness(0) saturate(100%) invert(75%) sepia(84%) saturate(3272%) hue-rotate(103deg)
+      brightness(106%) contrast(103%);
     margin: var(--margins-2xl) 0 var(--margins-lg);
   }
 
   img:nth-child(2) {
+    filter: var(--session-logo-text-current-filter);
     margin-bottom: var(--margins-xl);
   }
 
@@ -40,13 +43,14 @@ const StyledContent = styled(Flex)`
 
 export const AboutView = () => {
   // Add debugging metadata - environment if not production, app instance name
-  const states = [];
+  const environmentStates = [];
 
   if (window.getEnvironment() !== 'production') {
-    states.push(window.getEnvironment());
+    environmentStates.push(window.getEnvironment());
   }
+
   if (window.getAppInstance()) {
-    states.push(window.getAppInstance());
+    environmentStates.push(window.getAppInstance());
   }
 
   const versionInfo = `v${window.getVersion()}`;
@@ -63,7 +67,7 @@ export const AboutView = () => {
   }, []);
 
   return (
-    <SessionTheme>
+    <SessionTheme runSetup={false}>
       <SessionToastContainer />
       <StyledContent
         container={true}
@@ -83,7 +87,6 @@ export const AboutView = () => {
           width={192}
           height={26}
         />
-
         <CopyToClipboardButton
           className="version"
           text={versionInfo}
@@ -95,11 +98,13 @@ export const AboutView = () => {
           buttonType={SessionButtonType.Simple}
         />
         <CopyToClipboardButton className="os" text={osInfo} buttonType={SessionButtonType.Simple} />
-        <CopyToClipboardButton
-          className="environment"
-          text={states.join(' - ')}
-          buttonType={SessionButtonType.Simple}
-        />
+        {environmentStates.length ? (
+          <CopyToClipboardButton
+            className="environment"
+            text={environmentStates.join(' - ')}
+            buttonType={SessionButtonType.Simple}
+          />
+        ) : null}
         <a href="https://getsession.org">https://getsession.org</a>
         <br />
         <a className="privacy" href="https://getsession.org/privacy-policy">

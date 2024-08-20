@@ -6,6 +6,7 @@ import { SettingsKey } from '../data/settings-key';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
 import { THEME_GLOBALS, setThemeValues } from './globals';
 import { switchThemeTo } from './switchTheme';
+import { Storage } from '../util/storage';
 
 export async function ensureThemeConsistency(): Promise<boolean> {
   const theme = window.Events.getThemeSetting();
@@ -52,10 +53,21 @@ const setupTheme = async () => {
   }
 };
 
-export const SessionTheme = ({ children }: { children: ReactNode }) => {
+export const SessionTheme = ({
+  children,
+  runSetup = true,
+}: {
+  children: ReactNode;
+  /** If we don't have access to some window object functions we may skip theme consistency checks */
+  runSetup?: boolean;
+}) => {
   useMount(() => {
     setThemeValues(THEME_GLOBALS);
-    void setupTheme();
+    if (runSetup) {
+      void Storage.onready(() => {
+        void setupTheme();
+      });
+    }
   });
   return children;
 };
