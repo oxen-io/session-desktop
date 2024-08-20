@@ -1110,9 +1110,7 @@ async function sendOnionRequestSnodeDest(
   });
 }
 
-function getPathString(pathObjArr: Array<{ ip: string; port: number }>): string {
-  return pathObjArr.map(node => `${node.ip}:${node.port}`).join(', ');
-}
+
 
 /**
  * If the fetch throws a retryable error we retry this call with a new path at most 3 times. If another error happens, we return it. If we have a result we just return it.
@@ -1174,7 +1172,6 @@ export const Onions = {
   incrementBadSnodeCountOrDrop,
   decodeOnionResult,
   lokiOnionFetch,
-  getPathString,
   sendOnionRequestSnodeDest,
   processOnionResponse,
   processOnionResponseV4,

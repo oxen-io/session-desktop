@@ -154,11 +154,11 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
     throw new Error('i18n: messages parameter is required');
   }
 
-  if (window.inboxStore) {
+  if (window?.inboxStore) {
     window.inboxStore.dispatch(updateLocale(locale));
-    window.log.info('Loaded dictionary dispatch');
+    i18nLog('Loaded dictionary dispatch');
   }
-  window.log.info('i18n setup');
+  i18nLog('i18n setup');
 
   /**
    * Retrieves a localized message string, substituting variables where necessary.

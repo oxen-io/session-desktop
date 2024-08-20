@@ -95,7 +95,6 @@ async function joinOpenGroupV2(
 
     if (!conversation) {
       window?.log?.warn('Failed to join open group v2');
-      // TODO - Check that this is the room name
       throw new Error(window.i18n('communityJoinError'));
     }
 
@@ -180,7 +179,6 @@ export async function joinOpenGroupV2WithUIEvents(
       return true;
     }
     if (showToasts) {
-      // TODO - Check that this is the room name
       ToastUtils.pushToastError('communityJoinError', window.i18n('communityJoinError'));
     }
     if (errorHandler) {
@@ -191,7 +189,6 @@ export async function joinOpenGroupV2WithUIEvents(
   } catch (error) {
     window?.log?.warn('got error while joining open group:', error.message);
     if (showToasts) {
-      // TODO - Check that this is the room name
       ToastUtils.pushToastError('communityJoinError', window.i18n('communityJoinError'));
     }
     if (errorHandler) {
