@@ -16,16 +16,18 @@ import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { DURATION_SECONDS } from '../session/constants';
 import { updateLocale } from '../state/ducks/dictionary';
 import {
-  ArgsRecordExcludingDefaults,
+  ArgsRecord,
   DictionaryWithoutPluralStrings,
   GetMessageArgs,
   LocalizerDictionary,
   LocalizerToken,
   PluralKey,
   PluralString,
+  SetupI18nReturnType,
 } from '../types/Localizer';
 import { deSanitizeHtmlTags, sanitizeArgs } from '../components/basic/I18n';
 import { LOCALE_DEFAULTS } from '../localization/constants';
+import { en } from '../localization/locales';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -127,8 +129,16 @@ function getStringForCardinalRule(
 const isPluralForm = (localizedString: string): localizedString is PluralString =>
   /{\w+, plural, one \[.+\] other \[.+\]}/g.test(localizedString);
 
-const isStringWithArgs = (localizedString: string): localizedString is any =>
-  localizedString.includes('{');
+/**
+ * Checks if a string contains a dynamic variable.
+ * @param localizedString - The string to check.
+ * @returns `true` if the string contains a dynamic variable, otherwise `false`.
+ *
+ * TODO: Change this to a proper type assertion when the type is fixed.
+ */
+const isStringWithArgs = <R extends DictionaryWithoutPluralStrings[LocalizerToken]>(
+  localizedString: string
+): localizedString is R => localizedString.includes('{');
 
 /**
  * Logs an i18n message to the console.
@@ -139,42 +149,102 @@ const isStringWithArgs = (localizedString: string): localizedString is any =>
 function i18nLog(message: string) {
   // eslint:disable: no-console
   // eslint-disable-next-line no-console
-  (window?.log?.error ?? console.log)(message);
+  (window?.log?.error ?? console.log)(`i18n: ${message}`);
 }
 
-export function getLocale(): Locale {
-  return window?.inboxStore?.getState().dictionary.locale ?? window?.locale;
+/**
+ * Returns the current locale.
+ * @param params - An object containing optional parameters.
+ * @param params.fallback - The fallback locale to use if redux is not available. Defaults to en.
+ */
+export function getLocale(params?: { fallback?: Locale }): Locale {
+  const locale = window?.inboxStore?.getState().dictionary.locale;
+
+  if (locale) {
+    return locale;
+  }
+
+  if (params?.fallback) {
+    i18nLog(`getLocale: No locale found in redux store. Using fallback: ${params.fallback}`);
+    return params.fallback;
+  }
+
+  i18nLog('getLocale: No locale found in redux store. No fallback provided. Using en.');
+  return 'en';
 }
 
-function getDictionary(): LocalizerDictionary {
-  return window?.inboxStore?.getState().dictionary.dictionary;
+/**
+ * Returns the current dictionary.
+ * @param params - An object containing optional parameters.
+ * @param params.fallback - The fallback dictionary to use if redux is not available. Defaults to {@link en}.
+ */
+function getDictionary(params?: { fallback?: LocalizerDictionary }): LocalizerDictionary {
+  const dict = window?.inboxStore?.getState().dictionary.dictionary;
+  if (dict) {
+    return dict;
+  }
+
+  if (params?.fallback) {
+    i18nLog('getDictionary: No dictionary found in redux store. Using fallback.');
+    return params.fallback;
+  }
+
+  i18nLog('getDictionary: No dictionary found in redux store. No fallback provided. Using en.');
+  return en;
 }
 
 /**
  * Sets up the i18n function with the provided locale and messages.
  *
- * @param locale - The locale to use for translations.
- * @param dictionary - A dictionary of localized messages.
+ * @param params - An object containing optional parameters.
+ * @param params.initialLocale - The locale to use for translations. Defaults to 'en'.
+ * @param params.initialDictionary - A dictionary of localized messages. Defaults to {@link en}.
  *
  * @returns A function that retrieves a localized message string, substituting variables where necessary.
  */
-export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
-  if (!locale) {
-    throw new Error('i18n: locale parameter is required');
+export const setupI18n = (params: {
+  initialLocale: Locale;
+  initialDictionary: LocalizerDictionary;
+}): SetupI18nReturnType => {
+  let initialLocale = params.initialLocale;
+  let initialDictionary = params.initialDictionary;
+
+  if (!initialLocale) {
+    initialLocale = 'en';
+    i18nLog(`initialLocale not provided in i18n setup. Falling back to ${initialLocale}`);
   }
 
-  window.locale = locale;
-
-  if (!dictionary) {
-    throw new Error('i18n: messages parameter is required');
+  if (!initialLocale) {
+    initialDictionary = en;
+    i18nLog('initialDictionary not provided in i18n setup. Falling back.');
   }
 
   if (window?.inboxStore) {
-    window.inboxStore.dispatch(updateLocale(locale));
+    window.inboxStore.dispatch(updateLocale(initialLocale));
     i18nLog('Loaded dictionary dispatch');
+  } else {
+    i18nLog('No redux store found. Not dispatching dictionary update.');
   }
-  i18nLog('i18n setup');
 
+  /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.getRawMessage } and {@link window.i18n.getRawMessage } */
+  /**
+   * Retrieves a localized message string, without substituting any variables. This resolves any plural forms using the given args
+   * @param token - The token identifying the message to retrieve.
+   * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+   *
+   * @returns The localized message string with substitutions applied.
+   *
+   * NOTE: This is intended to be used to get the raw string then format it with {@link formatMessageWithArgs}
+   *
+   * @example
+   * // The string greeting is 'Hello, {name}!' in the current locale
+   * window.i18n.getRawMessage('greeting', { name: 'Alice' });
+   * // => 'Hello, {name}!'
+   *
+   * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+   * window.i18n.getRawMessage('search', { count: 1, found_count: 1 });
+   * // => '{found_count} of {count} match'
+   */
   function getRawMessage<T extends LocalizerToken, R extends DictionaryWithoutPluralStrings[T]>(
     ...[token, args]: GetMessageArgs<T>
   ): R | T {
@@ -183,12 +253,12 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
         return token as T;
       }
 
-      const localizedDictionary = getDictionary() ?? dictionary;
+      const localizedDictionary = getDictionary({ fallback: initialDictionary });
 
       let localizedString = localizedDictionary[token] as R;
 
       if (!localizedString) {
-        i18nLog(`i18n: Attempted to get translation for nonexistent key '${token}'`);
+        i18nLog(`Attempted to get translation for nonexistent key: '${token}'`);
         return token as T;
       }
 
@@ -203,21 +273,17 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
         const pluralKey = getPluralKey(localizedString);
 
         if (!pluralKey) {
-          i18nLog(
-            `i18n: Attempted to nonexistent pluralKey for plural form string '${localizedString}'`
-          );
+          i18nLog(`Attempted to nonexistent pluralKey for plural form string '${localizedString}'`);
         } else {
           const num = args?.[pluralKey as keyof typeof args] ?? 0;
 
-          const currentLocale = getLocale() ?? locale;
+          const currentLocale = getLocale() ?? initialLocale;
           const cardinalRule = new Intl.PluralRules(currentLocale).select(num);
 
           const pluralString = getStringForCardinalRule(localizedString, cardinalRule);
 
           if (!pluralString) {
-            i18nLog(
-              `i18n: Plural string not found for cardinal '${cardinalRule}': '${localizedString}'`
-            );
+            i18nLog(`Plural string not found for cardinal '${cardinalRule}': '${localizedString}'`);
             return token as T;
           }
 
@@ -226,25 +292,52 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
       }
       return localizedString;
     } catch (error) {
-      i18nLog(`i18n: ${error.message}`);
+      i18nLog(error.message);
       return token as T;
     }
   }
 
+  /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.formatMessageWithArgs } and {@link window.i18n.formatMessageWithArgs } */
+  /**
+   * Formats a localized message string with arguments and returns the formatted string.
+   * @param rawMessage - The raw message string to format. After using @see {@link getRawMessage} to get the raw string.
+   * @param args - An optional record of substitution variables and their replacement values. This
+   * is required if the string has dynamic variables. This can be optional as a strings args may be defined in @see {@link LOCALE_DEFAULTS}
+   *
+   * @returns The formatted message string.
+   *
+   * @example
+   * // The string greeting is 'Hello, {name}!' in the current locale
+   * window.i18n.getRawMessage('greeting', { name: 'Alice' });
+   * // => 'Hello, {name}!'
+   * window.i18n.formatMessageWithArgs('greeting', { name: 'Alice' });
+   * // => 'Hello, Alice!'
+   *
+   * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+   * window.i18n.getRawMessage('search', { count: 1, found_count: 1 });
+   * // => '{found_count} of {count} match'
+   * window.i18n.formatMessageWithArgs('search', { count: 1, found_count: 1 });
+   * // => '1 of 1 match'
+   */
   function formatMessageWithArgs<
     T extends LocalizerToken,
     R extends DictionaryWithoutPluralStrings[T],
-  >(rawMessage: R, args: ArgsRecordExcludingDefaults<T>): R {
+  >(rawMessage: R, args?: ArgsRecord<T>): R {
     /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
-    return rawMessage.replace(
+    // TODO: remove the type casting once we have a proper DictionaryWithoutPluralStrings type
+    return (rawMessage as `${string}{${string}}${string}`).replace(
       /\{(\w+)\}/g,
-      (match, arg) =>
-        (args?.[arg as keyof typeof args] as string) ??
-        LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS] ??
-        match
+      (match, arg: string) => {
+        const matchedArg = args ? args[arg as keyof typeof args] : undefined;
+
+        return (
+          matchedArg?.toString() ?? LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS] ?? match
+        );
+      }
     ) as R;
   }
 
+  /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.getMessage } and {@link window.i18n } */
   /**
    * Retrieves a localized message string, substituting variables where necessary.
    *
@@ -257,6 +350,10 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
    * // The string greeting is 'Hello, {name}!' in the current locale
    * window.i18n('greeting', { name: 'Alice' });
    * // => 'Hello, Alice!'
+   *
+   * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+   * window.i18n('search', { count: 1, found_count: 1 });
+   * // => '1 of 1 match'
    */
   function getMessage<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>
@@ -264,20 +361,19 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
     try {
       const rawMessage = getRawMessage<T, R>(...([token, args] as GetMessageArgs<T>));
 
-      /** If a localized string does not have any arguments to substitute it is returned with no
-       * changes. We also need to check if the string contains a curly bracket as if it does
-       * there might be a default arg */
-      if (!args && !isStringWithArgs(rawMessage)) {
+      /** If a localized string does not have any arguments to substitute it is returned with no changes. */
+      if (!isStringWithArgs<R>(rawMessage)) {
         return rawMessage;
       }
 
-      return formatMessageWithArgs<T, R>(rawMessage as any, args as any) as R;
+      return formatMessageWithArgs<T, R>(rawMessage, args as ArgsRecord<T>);
     } catch (error) {
-      i18nLog(`i18n: ${error.message}`);
+      i18nLog(error.message);
       return token as R;
     }
   }
 
+  /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.stripped } and {@link window.i18n.stripped } */
   /**
    * Retrieves a localized message string, substituting variables where necessary. Then strips the message of any HTML and custom tags.
    *
@@ -291,9 +387,9 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
    * window.i18n.stripped('greeting', { name: 'Alice' });
    * // => 'Hello, Alice! Welcome!'
    */
-  getMessage.stripped = <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+  function stripped<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>
-  ): R => {
+  ): R | T {
     const sanitizedArgs = args ? sanitizeArgs(args, '\u200B') : undefined;
 
     const i18nString = getMessage<T, LocalizerDictionary[T]>(
@@ -303,12 +399,15 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
     const strippedString = i18nString.replaceAll(/<[^>]*>/g, '');
 
     return deSanitizeHtmlTags(strippedString, '\u200B') as R;
-  };
+  }
 
+  getMessage.stripped = stripped;
   getMessage.getRawMessage = getRawMessage;
   getMessage.formatMessageWithArgs = formatMessageWithArgs;
 
-  return getMessage;
+  i18nLog('Setup Complete');
+
+  return getMessage as SetupI18nReturnType;
 };
 
 // eslint-disable-next-line import/no-mutable-exports
@@ -336,6 +435,13 @@ export const loadEmojiPanelI18n = async () => {
   return undefined;
 };
 
+/**
+ * Formats a duration in milliseconds into a localized human-readable string.
+ *
+ * @param durationMs - The duration in milliseconds.
+ * @param options - An optional object containing formatting options.
+ * @returns A formatted string representing the duration.
+ */
 export const formatTimeDuration = (
   durationMs: number,
   options?: Omit<FormatDistanceStrictOptions, 'locale'>

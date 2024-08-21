@@ -8,16 +8,17 @@ import { LOCALE_DEFAULTS } from '../localization/constants';
 type Token = keyof Dictionary;
 
 /** A dynamic argument that can be used in a localized string */
-type DynamicArg = string | number;
+export type DynamicArg = string | number;
 
 /** A record of dynamic arguments for a specific key in the localization dictionary */
-type ArgsRecord<T extends Token> = Record<DynamicArgs<Dictionary[T]>, DynamicArg>;
+export type ArgsRecord<T extends Token> = Record<DynamicArgs<Dictionary[T]>, DynamicArg>;
 
 export type PluralKey = 'count';
 
 export type PluralString = `{${string}, plural, one [${string}] other [${string}]}`;
 
-export type DictionaryWithoutPluralStrings = Omit<Dictionary, PluralString>;
+// TODO: create a proper type for this
+export type DictionaryWithoutPluralStrings = Dictionary;
 
 /** The dynamic arguments in a localized string */
 type DynamicArgs<LocalizedString extends string> =
@@ -109,4 +110,25 @@ type CustomEndTagProps<T extends Token> =
 export type LocalizerDictionary = Dictionary;
 
 /** A localization dictionary key */
-export type LocalizerToken = keyof LocalizerDictionary;
+export type LocalizerToken = Token;
+
+export type I18nMethods = {
+  /** @see {@link window.i18n.stripped} */
+  stripped: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ) => R;
+  /** @see {@link window.i18n.formatMessageWithArgs */
+  getRawMessage: <T extends LocalizerToken, R extends DictionaryWithoutPluralStrings[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ) => R | T;
+  /** @see {@link window.i18n.formatMessageWithArgs} */
+  formatMessageWithArgs: <T extends LocalizerToken, R extends DictionaryWithoutPluralStrings[T]>(
+    rawMessage: R,
+    args?: ArgsRecord<T>
+  ) => R;
+};
+
+export type SetupI18nReturnType = I18nMethods &
+  (<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ) => R);

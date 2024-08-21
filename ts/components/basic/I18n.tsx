@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Fragment } from 'react';
-import type {
+import {
+  ArgsRecord,
   GetMessageArgs,
   I18nProps,
   LocalizerDictionary,
@@ -110,25 +111,31 @@ const StyledHtmlRenderer = styled.span<{ isDarkTheme: boolean }>`
  */
 export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
   const isDarkMode = useIsDarkTheme();
-  const containsFormattingTags = createSupportedFormattingTagsRegex().test(props.token);
 
   const args = 'args' in props ? props.args : undefined;
-  const i18nArgs = args && containsFormattingTags ? sanitizeArgs(args) : args;
 
-  let i18nString: string = window.i18n<T, LocalizerDictionary[T]>(
-    ...([props.token, i18nArgs] as GetMessageArgs<T>)
+  const rawString = window.i18n.getRawMessage<T, LocalizerDictionary[T]>(
+    ...([props.token, args] as GetMessageArgs<T>)
   );
+
+  const containsFormattingTags = createSupportedFormattingTagsRegex().test(rawString);
+  const cleanArgs = args && containsFormattingTags ? sanitizeArgs(args) : args;
+
+  let i18nString = window.i18n.formatMessageWithArgs<T, LocalizerDictionary[T]>(
+    rawString as LocalizerDictionary[T],
+    cleanArgs as ArgsRecord<T>
+  ) as string;
 
   let startTag: CustomTag | null = null;
   let endTag: CustomTag | null = null;
 
-  /**
-   * @param match - The entire match, including the custom tag.
-   * @param group - The custom tag, without the angle brackets.
-   * @param index - The index of the match in the string.
-   */
   i18nString = i18nString.replace(
     createSupportedCustomTagsRegex(),
+    /**
+     * @param match - The entire match, including the custom tag.
+     * @param group - The custom tag, without the angle brackets.
+     * @param index - The index of the match in the string.
+     */
     (match: string, group: CustomTag, index: number) => {
       if (index === 0) {
         startTag = group;
@@ -148,7 +155,7 @@ export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
     }
   );
 
-  const content = createSupportedFormattingTagsRegex().test(i18nString) ? (
+  const content = containsFormattingTags ? (
     /** If the string contains a relevant formatting tag, render it as HTML */
     <StyledHtmlRenderer isDarkTheme={isDarkMode}>
       <SessionHtmlRenderer tag={props.asTag} html={i18nString} className={props.className} />
