@@ -11,6 +11,7 @@ interface GenericSection<T> {
   type: T;
   mediaItems: Array<MediaItemType>;
 }
+
 type StaticSection = GenericSection<StaticSectionType>;
 type YearMonthSection = GenericSection<YearMonthSectionType> & {
   year: number;
@@ -21,6 +22,7 @@ export const groupMediaItemsByDate = (
   timestamp: number,
   mediaItems: Array<MediaItemType>
 ): Array<Section> => {
+  // TODO: find where this is used and change to use date-fns
   const referenceDateTime = moment.utc(timestamp);
 
   const sortedMediaItem = sortBy(mediaItems, mediaItem => {
@@ -80,6 +82,7 @@ interface GenericMediaItemWithSection<T> {
   type: T;
   mediaItem: MediaItemType;
 }
+
 type MediaItemWithStaticSection = GenericMediaItemWithSection<StaticSectionType>;
 type MediaItemWithYearMonthSection = GenericMediaItemWithSection<YearMonthSectionType> & {
   year: number;

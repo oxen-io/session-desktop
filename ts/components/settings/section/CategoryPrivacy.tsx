@@ -24,7 +24,7 @@ async function toggleLinkPreviews(isToggleOn: boolean, forceUpdate: () => void) 
     window.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('linkPreviewsSend'),
-        message: window.i18n('linkPreviewsSendModalDescription'),
+        i18nMessage: { token: 'linkPreviewsSendModalDescription' },
         okTheme: SessionButtonColor.Danger,
         onClickOk: async () => {
           const newValue = !isToggleOn;

@@ -30,6 +30,7 @@ import { Notifications } from '../util/notifications';
 import { Registration } from '../util/registration';
 import { Storage, isSignInByLinking } from '../util/storage';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
+import { getLocale } from '../util/i18n';
 
 // Globally disable drag and drop
 document.body.addEventListener(
@@ -295,7 +296,7 @@ async function start() {
   function switchBodyToRtlIfNeeded() {
     const rtlLocales = ['fa', 'ar', 'he'];
 
-    const loc = window.getLocale();
+    const loc = getLocale();
     if (rtlLocales.includes(loc) && !document.getElementById('body')?.classList.contains('rtl')) {
       document.getElementById('body')?.classList.add('rtl');
     }

@@ -17,6 +17,7 @@ import { deleteDbLocally } from '../../../util/accountManager';
 import { Flex } from '../../basic/Flex';
 import { SessionButtonColor } from '../../basic/SessionButton';
 import { SessionIconButton } from '../../icon';
+import { I18nProps, LocalizerToken } from '../../../types/Localizer';
 
 /** Min height should match the onboarding step with the largest height this prevents the loading spinner from jumping around while still keeping things centered  */
 const StyledBackButtonContainer = styled(Flex)`
@@ -25,19 +26,19 @@ const StyledBackButtonContainer = styled(Flex)`
 `;
 
 export const BackButtonWithinContainer = ({
-  children,
-  margin,
-  callback,
-  onQuitVisible,
-  shouldQuitOnClick,
-  quitMessage,
-}: {
+                                            children,
+                                            margin,
+                                            callback,
+                                            onQuitVisible,
+                                            shouldQuitOnClick,
+                                            quitI18nMessageArgs,
+                                          }: {
   children: ReactNode;
   margin?: string;
   callback?: () => void;
   onQuitVisible?: () => void;
   shouldQuitOnClick?: boolean;
-  quitMessage?: string;
+  quitI18nMessageArgs?: I18nProps<LocalizerToken>;
 }) => {
   return (
     <StyledBackButtonContainer
@@ -52,7 +53,7 @@ export const BackButtonWithinContainer = ({
           callback={callback}
           onQuitVisible={onQuitVisible}
           shouldQuitOnClick={shouldQuitOnClick}
-          quitMessage={quitMessage}
+          quitI18nMessageArgs={quitI18nMessageArgs}
         />
       </div>
       {children}
@@ -61,15 +62,15 @@ export const BackButtonWithinContainer = ({
 };
 
 export const BackButton = ({
-  callback,
-  onQuitVisible,
-  shouldQuitOnClick,
-  quitMessage,
-}: {
+                             callback,
+                             onQuitVisible,
+                             shouldQuitOnClick,
+                             quitI18nMessageArgs,
+                           }: {
   callback?: () => void;
   onQuitVisible?: () => void;
   shouldQuitOnClick?: boolean;
-  quitMessage?: string;
+  quitI18nMessageArgs?: I18nProps<LocalizerToken>;
 }) => {
   const step = useOnboardStep();
   const restorationStep = useOnboardAccountRestorationStep();
@@ -85,26 +86,26 @@ export const BackButton = ({
       iconRotation={90}
       padding={'0'}
       onClick={() => {
-        if (shouldQuitOnClick && quitMessage) {
+        if (shouldQuitOnClick && quitI18nMessageArgs) {
           if (onQuitVisible) {
             onQuitVisible();
           }
           dispatch(
             updateQuitModal({
               title: window.i18n('warning'),
-              message: quitMessage,
+              i18nMessage: quitI18nMessageArgs,
               okTheme: SessionButtonColor.Danger,
               okText: window.i18n('quitButton'),
               onClickOk: async () => {
                 try {
                   window.log.warn(
-                    '[onboarding] Deleting everything on device but keeping network data'
+                    '[onboarding] Deleting everything on device but keeping network data',
                   );
                   await deleteDbLocally();
                 } catch (error) {
                   window.log.warn(
                     '[onboarding] Something went wrong when deleting all local data:',
-                    error && error.stack ? error.stack : error
+                    error && error.stack ? error.stack : error,
                   );
                 } finally {
                   window.restart();
@@ -113,7 +114,7 @@ export const BackButton = ({
               onClickCancel: () => {
                 window.inboxStore?.dispatch(updateQuitModal(null));
               },
-            })
+            }),
           );
           return;
         }

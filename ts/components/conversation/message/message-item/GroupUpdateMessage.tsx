@@ -1,3 +1,4 @@
+import { isNull } from 'lodash';
 import {
   getJoinedGroupUpdateChangeStr,
   getKickedGroupUpdateStr,
@@ -11,49 +12,46 @@ import { useSelectedNicknameOrProfileNameOrShortenedPubkey } from '../../../../s
 import { assertUnreachable } from '../../../../types/sqlSharedTypes';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';
+import { I18n } from '../../../basic/I18n';
+import { I18nProps, LocalizerToken } from '../../../../types/Localizer';
 
 // This component is used to display group updates in the conversation view.
 
-const ChangeItemJoined = (added: Array<string>): string => {
+const ChangeItemJoined = (added: Array<string>) => {
   const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
   if (!added.length) {
     throw new Error('Group update added is missing details');
   }
-  // this is not ideal, but also might not be changed as part of Strings but,
-  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
-  // to render them correctly.
-  return getJoinedGroupUpdateChangeStr(added, groupName, false);
+
+  return getJoinedGroupUpdateChangeStr(added, groupName);
 };
 
-const ChangeItemKicked = (kicked: Array<string>): string => {
+const ChangeItemKicked = (kicked: Array<string>) => {
   if (!kicked.length) {
     throw new Error('Group update kicked is missing details');
   }
   const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
-  // this is not ideal, but also might not be changed as part of Strings but,
-  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
-  // to render them correctly.
-  return getKickedGroupUpdateStr(kicked, groupName, false);
+
+  return getKickedGroupUpdateStr(kicked, groupName);
 };
 
-const ChangeItemLeft = (left: Array<string>): string => {
+const ChangeItemLeft = (left: Array<string>) => {
   const groupName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
 
   if (!left.length) {
     throw new Error('Group update left is missing details');
   }
-  // this is not ideal, but also might not be changed as part of Strings but,
-  // we return a string containing style tags (<b> etc) here, and a SessionHtmlRenderer is going
-  // to render them correctly.
-  return getLeftGroupUpdateChangeStr(left, groupName, false);
+
+  return getLeftGroupUpdateChangeStr(left, groupName);
 };
 
-const ChangeItem = (change: PropsForGroupUpdateType): string => {
+const ChangeItem = (change: PropsForGroupUpdateType) => {
   const { type } = change;
   switch (type) {
     case 'name':
-      return window.i18n('groupNameNew', { group_name: change.newName });
+      return { token: 'groupNameNew', args: { group_name: change.newName } };
+
     case 'add':
       return ChangeItemJoined(change.added);
 
@@ -64,15 +62,18 @@ const ChangeItem = (change: PropsForGroupUpdateType): string => {
       return ChangeItemKicked(change.kicked);
 
     case 'general':
-      return window.i18n('groupUpdated');
+      return { token: 'groupUpdated' };
     default:
       assertUnreachable(type, `ChangeItem: Missing case error "${type}"`);
-      return '';
+      return null;
   }
 };
 
 export const GroupUpdateMessage = (props: PropsForGroupUpdate) => {
   const { change, messageId } = props;
+
+  // TODO: clean up this typing
+  const changeItem = ChangeItem(change) as I18nProps<LocalizerToken> | null;
 
   return (
     <ExpirableReadableMessage
@@ -81,7 +82,9 @@ export const GroupUpdateMessage = (props: PropsForGroupUpdate) => {
       dataTestId="group-update-message"
       isControlMessage={true}
     >
-      <NotificationBubble notificationText={ChangeItem(change)} iconType="users" />
+      <NotificationBubble iconType="users">
+        {!isNull(changeItem) ? <I18n {...changeItem} /> : null}
+      </NotificationBubble>
     </ExpirableReadableMessage>
   );
 };

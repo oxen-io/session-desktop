@@ -200,7 +200,7 @@ export class SessionConversation extends Component<Props, State> {
       window.inboxStore?.dispatch(
         updateConfirmModal({
           title: window.i18n('warning'),
-          message: window.i18n('recoveryPasswordWarningSendDescription'),
+          i18nMessage: { token: 'recoveryPasswordWarningSendDescription' },
           okTheme: SessionButtonColor.Danger,
           onClickOk: () => {
             void sendAndScroll();

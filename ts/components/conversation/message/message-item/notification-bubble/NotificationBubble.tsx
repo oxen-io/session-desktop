@@ -1,6 +1,6 @@
 import styled from 'styled-components';
+import type { ReactNode } from 'react';
 import { SessionIcon, SessionIconType } from '../../../../icon';
-import { SessionHtmlRenderer } from '../../../../basic/SessionHTMLRenderer';
 
 const NotificationBubbleFlex = styled.div`
   display: flex;
@@ -28,11 +28,11 @@ const NotificationBubbleIconContainer = styled.div`
 `;
 
 export const NotificationBubble = (props: {
-  notificationText: string;
   iconType?: SessionIconType;
   iconColor?: string;
+  children: ReactNode;
 }) => {
-  const { notificationText, iconType, iconColor } = props;
+  const { children, iconType, iconColor } = props;
   return (
     <NotificationBubbleFlex>
       {iconType && (
@@ -45,9 +45,7 @@ export const NotificationBubble = (props: {
           />
         </NotificationBubbleIconContainer>
       )}
-      <NotificationBubbleText>
-        <SessionHtmlRenderer html={notificationText} />
-      </NotificationBubbleText>
+      <NotificationBubbleText>{children}</NotificationBubbleText>
       {iconType && <NotificationBubbleIconContainer />}
     </NotificationBubbleFlex>
   );

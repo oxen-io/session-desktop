@@ -16,6 +16,7 @@ import { UserUtils } from '../utils';
 import { forceSyncConfigurationNowIfNeeded } from '../utils/sync/syncUtils';
 import { getConversationController } from './ConversationController';
 import { ConversationTypeEnum } from '../../models/types';
+import { I18nProps } from '../../types/Localizer';
 
 export async function createClosedGroup(groupName: string, members: Array<string>, isV3: boolean) {
   const setOfMembers = new Set(members);
@@ -91,6 +92,39 @@ export async function createClosedGroup(groupName: string, members: Array<string
   await openConversationWithMessages({ conversationKey: groupPublicKey, messageId: null });
 }
 
+function getMessageArgs(group_name: string, names: Array<string>) {
+  const name = names[0];
+
+  switch (names.length) {
+    case 1:
+      return {
+        token: 'groupInviteFailedUser',
+        args: {
+          group_name,
+          name,
+        },
+      } as I18nProps<'groupInviteFailedUser'>;
+    case 2:
+      return {
+        token: 'groupInviteFailedTwo',
+        args: {
+          group_name,
+          name,
+          other_name: names[1],
+        },
+      } as I18nProps<'groupInviteFailedTwo'>;
+    default:
+      return {
+        token: 'groupInviteFailedMore',
+        args: {
+          group_name,
+          name,
+          count: names.length - 1,
+        },
+      } as I18nProps<'groupInviteFailedMore'>;
+  }
+}
+
 /**
  * Sends a group invite message to each member of the group.
  * @returns Array of promises for group invite messages sent to group members.
@@ -120,7 +154,7 @@ async function sendToGroupMembers(
       window.inboxStore?.dispatch(
         updateConfirmModal({
           title: window.i18n('groupInviteSuccessful'),
-          message: window.i18n('groupInviteSuccessful'),
+          i18nMessage: { token: 'groupInviteSuccessful' },
           hideCancel: true,
           onClickClose: () => {
             window.inboxStore?.dispatch(updateConfirmModal(null));
@@ -149,28 +183,10 @@ async function sendToGroupMembers(
     throw new Error('Some invites failed, we should have found members to resend');
   }
 
-  const message =
-    membersToResend.length === 1
-      ? window.i18n('groupInviteFailedUser', {
-          group_name: groupName,
-          name: namesOfMembersToResend[0],
-        })
-      : membersToResend.length === 2
-        ? window.i18n('groupInviteFailedTwo', {
-            group_name: groupName,
-            name: namesOfMembersToResend[0],
-            other_name: namesOfMembersToResend[1],
-          })
-        : window.i18n('groupInviteFailedMore', {
-            group_name: groupName,
-            name: namesOfMembersToResend[0],
-            count: namesOfMembersToResend.length - 1,
-          });
-
   window.inboxStore?.dispatch(
     updateConfirmModal({
       title: window.i18n('groupError'),
-      message,
+      i18nMessage: getMessageArgs(groupName, namesOfMembersToResend),
       okText: window.i18n('resend'),
       onClickOk: async () => {
         if (membersToResend.length > 0) {

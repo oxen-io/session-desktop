@@ -1,6 +1,6 @@
 import { isString } from 'lodash';
 import type { LocalizerDictionary } from '../types/Localizer';
-import { LOCALE_DEFAULTS } from '../session/constants';
+import { LOCALE_DEFAULTS } from '../localization/constants';
 
 /**
  * Adds the accelerator prefix to the label for the menu item

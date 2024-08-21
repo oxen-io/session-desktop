@@ -56,6 +56,7 @@ const StyledButtonerContainer = styled.div`
 const StyledInputContainer = styled(Flex)`
   ${StyledTextAreaContainer} {
     padding: 0;
+
     div:first-child {
       padding: 0 var(--margins-sm);
     }
@@ -103,7 +104,7 @@ export const OverlayInvite = () => {
             />
           </StyledInputContainer>
           <SpacerMD />
-          <StyledDescription>{window.i18n('shareAccountIdDescription')}</StyledDescription>
+          <StyledDescription>{window.i18n('accountIdCopyDescription')}</StyledDescription>
           <SpacerLG />
           <StyledButtonerContainer>
             <CopyToClipboardButton

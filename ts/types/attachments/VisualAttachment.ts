@@ -2,7 +2,6 @@
 /* global document, URL, Blob */
 
 import { blobToArrayBuffer, dataURLToBlob } from 'blob-util';
-import moment from 'moment';
 import { toLogFormat } from './Errors';
 
 import {
@@ -13,6 +12,7 @@ import { ToastUtils } from '../../session/utils';
 import { GoogleChrome } from '../../util';
 import { autoScaleForAvatar, autoScaleForThumbnail } from '../../util/attachmentsUtil';
 import { isAudio } from '../MIME';
+import { formatTimeDuration } from '../../util/i18n';
 
 export const THUMBNAIL_SIDE = 200;
 export const THUMBNAIL_CONTENT_TYPE = 'image/png';
@@ -119,9 +119,8 @@ export async function getVideoDuration({
     const video = document.createElement('video');
 
     video.addEventListener('loadedmetadata', () => {
-      const duration = moment.duration(video.duration, 'seconds');
-      const durationString = moment.utc(duration.asMilliseconds()).format('m:ss');
-      resolve(durationString);
+      const duration = formatTimeDuration(video.duration / 1000, { unit: 'second' });
+      resolve(duration);
     });
 
     video.addEventListener('error', error => {
@@ -153,9 +152,8 @@ export async function getAudioDuration({
     const audio = document.createElement('audio');
 
     audio.addEventListener('loadedmetadata', () => {
-      const duration = moment.duration(audio.duration, 'seconds');
-      const durationString = moment.utc(duration.asMilliseconds()).format('m:ss');
-      resolve(durationString);
+      const duration = formatTimeDuration(audio.duration / 1000, { unit: 'second' });
+      resolve(duration);
     });
 
     audio.addEventListener('error', error => {

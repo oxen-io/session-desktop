@@ -121,7 +121,7 @@ export const DeletePrivateContactMenuItem = () => {
       dispatch(
         updateConfirmModal({
           title: menuItemText,
-          message: window.i18n('contactDeleteDescription', { name }),
+          i18nMessage: { token: 'contactDeleteDescription', args: { name } },
           onClickClose,
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {

@@ -40,6 +40,7 @@ const MessageRequestList = () => {
 export const OverlayMessageRequest = () => {
   useKey('Escape', closeOverlay);
   const dispatch = useDispatch();
+
   function closeOverlay() {
     dispatch(resetLeftOverlayMode());
   }
@@ -55,15 +56,12 @@ export const OverlayMessageRequest = () => {
    * @returns void
    */
   function handleClearAllRequestsClick() {
-    const { i18n } = window;
-    const title = i18n('clearAll');
-    const message = i18n('messageRequestsClearAllExplanation');
     const onClose = dispatch(updateConfirmModal(null));
 
     dispatch(
       updateConfirmModal({
-        title,
-        message,
+        title: window.i18n('clearAll'),
+        i18nMessage: { token: 'messageRequestsClearAllExplanation' },
         onClose,
         onClickOk: async () => {
           window?.log?.info('Blocking all message requests');

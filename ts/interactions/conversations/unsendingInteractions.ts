@@ -370,7 +370,7 @@ export async function deleteMessagesByIdForEveryone(
   window.inboxStore?.dispatch(
     updateConfirmModal({
       title: window.i18n('clearMessagesForEveryone'),
-      message: moreThanOne ? window.i18n('deleteMessages') : window.i18n('deleteMessage'),
+      i18nMessage: moreThanOne ? { token: 'deleteMessages' } : { token: 'deleteMessage' },
       okText: window.i18n('clearMessagesForEveryone'),
       okTheme: SessionButtonColor.Danger,
       onClickOk: async () => {
@@ -400,7 +400,7 @@ export async function deleteMessagesById(messageIds: Array<string>, conversation
   window.inboxStore?.dispatch(
     updateConfirmModal({
       title: window.i18n('clearMessagesForMe'),
-      message: moreThanOne ? window.i18n('deleteMessages') : window.i18n('deleteMessage'),
+      i18nMessage: moreThanOne ? { token: 'deleteMessages' } : { token: 'deleteMessage' },
       radioOptions: !isMe
         ? [
             { label: window.i18n('clearMessagesForMe'), value: 'clearMessagesForMe' },

@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { updateTermsOfServicePrivacyModal } from '../../state/onboarding/ducks/modals';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
+import { I18n } from '../basic/I18n';
 
 const StyledTermsAndConditions = styled.div`
   text-align: center;
@@ -24,7 +24,7 @@ export const TermsAndConditions = () => {
       onClick={() => dispatch(updateTermsOfServicePrivacyModal({ show: true }))}
       data-testid="open-url"
     >
-      <SessionHtmlRenderer html={window.i18n('onboardingTosPrivacy')} />
+      <I18n token="onboardingTosPrivacy" />
     </StyledTermsAndConditions>
   );
 };

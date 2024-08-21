@@ -40,9 +40,12 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
     window.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('attachmentsAutoDownloadModalTitle'),
-        message: window.i18n('attachmentsAutoDownloadModalDescription', {
-          conversation_name: convo.getContactProfileNameOrShortenedPubKey(),
-        }),
+        i18nMessage: {
+          token: 'attachmentsAutoDownloadModalDescription',
+          args: {
+            conversation_name: convo.getContactProfileNameOrShortenedPubKey(),
+          },
+        },
         closeTheme: SessionButtonColor.Danger,
         onClickOk: async () => {
           convo.set({ isTrustedForAttachmentDownload: true });

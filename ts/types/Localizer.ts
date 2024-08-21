@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ElementType } from 'react';
 import type { Dictionary } from '../localization/locales';
-import { LOCALE_DEFAULTS } from '../session/constants';
 import { CustomTag, CustomTagProps } from '../components/basic/SessionCustomTagRenderer';
+import { LOCALE_DEFAULTS } from '../localization/constants';
 
 /** A localization dictionary key */
 type Token = keyof Dictionary;
@@ -32,7 +32,7 @@ type DynamicArgs<LocalizedString extends string> =
       ? Var | DynamicArgs<Rest>
       : never;
 
-type ArgsRecordExcludingDefaults<T extends Token> = Omit<
+export type ArgsRecordExcludingDefaults<T extends Token> = Omit<
   ArgsRecord<T>,
   keyof typeof LOCALE_DEFAULTS
 >;
@@ -49,7 +49,8 @@ export type GetMessageArgs<T extends Token> = T extends Token
 /** Basic props for all calls of the I18n component */
 type I18nBaseProps<T extends Token> = {
   token: T;
-  as?: ElementType;
+  asTag?: ElementType;
+  className?: string;
   // TODO: investigate making these required when required and not required when not required
   startTagProps?: CustomStartTagProps<T>;
   endTagProps?: CustomEndTagProps<T>;

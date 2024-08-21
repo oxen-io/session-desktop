@@ -24,8 +24,9 @@ import { ConversationInteraction } from '../../interactions';
 import { getConversationController } from '../../session/conversations';
 import { updateConfirmModal } from '../../state/ducks/modalDialog';
 import { SessionButtonColor } from '../basic/SessionButton';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 import { SessionIcon } from '../icon';
+import { I18n } from '../basic/I18n';
+import { I18nProps, LocalizerToken } from '../../types/Localizer';
 
 const FollowSettingButton = styled.button`
   color: var(--primary-color);
@@ -46,17 +47,25 @@ function useFollowSettingsButtonClick(
       props.expirationMode === 'deleteAfterRead'
         ? window.i18n('disappearingMessagesTypeRead')
         : window.i18n('disappearingMessagesTypeSent');
-    const message = props.disabled
-      ? window.i18n('disappearingMessagesFollowSettingOff')
-      : window.i18n('disappearingMessagesFollowSettingOn', {
-          time: props.timespanText,
-          disappearing_messages_type: localizedMode,
-        });
+
+    const i18nMessage = props.disabled
+      ? ({
+          token: 'disappearingMessagesFollowSettingOff',
+        } as I18nProps<'disappearingMessagesFollowSettingOff'>)
+      : ({
+          token: 'disappearingMessagesFollowSettingOn',
+          args: {
+            time: props.timespanText,
+            disappearing_messages_type: localizedMode,
+          },
+        } as I18nProps<'disappearingMessagesFollowSettingOn'>);
+
     const okText = props.disabled ? window.i18n('yes') : window.i18n('set');
+
     dispatch(
       updateConfirmModal({
         title: window.i18n('disappearingMessagesFollowSetting'),
-        message,
+        i18nMessage,
         okText,
         okTheme: SessionButtonColor.Danger,
         onClickOk: async () => {
@@ -134,64 +143,68 @@ const FollowSettingsButton = (props: PropsForExpirationTimer) => {
   );
 };
 
-function useTextToRender(props: PropsForExpirationTimer) {
-  const { pubkey, profileName, expirationMode, timespanText, type, disabled } = props;
+function useTextToRenderI18nProps(props: PropsForExpirationTimer) {
+  const { pubkey, profileName, expirationMode, timespanText: time, type, disabled } = props;
 
   const isPrivate = useSelectedIsPrivate();
   const isMe = useSelectedIsNoteToSelf();
   // when in a 1o1 not NTS, we have a setting per side of the conversation
   const ownSideOnly = isPrivate && !isMe;
 
-  const contact = profileName || pubkey;
-  // TODO legacy messages support will be removed in a future release
-  const mode = isLegacyDisappearingModeEnabled(expirationMode)
-    ? null
-    : expirationMode === 'deleteAfterRead'
+  const name = profileName ?? pubkey;
+
+  // TODO: legacy messages support will be removed in a future release
+  if (isLegacyDisappearingModeEnabled(expirationMode)) {
+    return {
+      token: 'deleteAfterLegacyDisappearingMessagesTheyChangedTimer',
+      args: {
+        name: type === 'fromOther' ? name : window.i18n('you'),
+        time,
+      },
+    };
+  }
+
+  const disappearing_messages_type =
+    expirationMode === 'deleteAfterRead'
       ? window.i18n('disappearingMessagesTypeRead')
       : window.i18n('disappearingMessagesTypeSent');
+
   switch (type) {
     case 'fromOther':
       if (disabled) {
-        return window.i18n('disappearingMessagesTurnedOff', { name: contact });
+        return { token: 'disappearingMessagesTurnedOff', args: { name } };
       }
 
-      if (mode) {
-        const localizedMode =
-          props.expirationMode === 'deleteAfterRead'
-            ? window.i18n('disappearingMessagesTypeRead')
-            : window.i18n('disappearingMessagesTypeSent');
-        return window.i18n('disappearingMessagesSet', {
-          name: contact,
-          time: timespanText,
-          disappearing_messages_type: localizedMode,
-        });
-      }
+      return {
+        token: 'disappearingMessagesSet',
+        args: {
+          name,
+          time,
+          disappearing_messages_type,
+        },
+      };
 
-      return window.i18n('deleteAfterLegacyDisappearingMessagesTheyChangedTimer', {
-        name: contact,
-        time: timespanText,
-      });
     case 'fromMe':
     case 'fromSync':
       if (disabled) {
         return ownSideOnly
-          ? window.i18n('disappearingMessagesTurnedOffYou')
-          : window.i18n('disappearingMessagesTurnedOff', { name: contact });
+          ? { token: 'disappearingMessagesTurnedOffYou' }
+          : {
+              token: 'disappearingMessagesTurnedOff',
+              args: {
+                name,
+              },
+            };
       }
-      if (mode) {
-        const localizedMode =
-          props.expirationMode === 'deleteAfterRead'
-            ? window.i18n('disappearingMessagesTypeRead')
-            : window.i18n('disappearingMessagesTypeSent');
-        return window.i18n('disappearingMessagesSetYou', {
-          time: timespanText,
-          disappearing_messages_type: localizedMode,
-        });
-      }
-      return window.i18n('deleteAfterLegacyDisappearingMessagesTheyChangedTimer', {
-        name: window.i18n('you'),
-        time: timespanText,
-      });
+
+      return {
+        token: 'disappearingMessagesSetYou',
+        args: {
+          time,
+          disappearing_messages_type,
+        },
+      };
+
     default:
       assertUnreachable(type, `TimerNotification: Missing case error "${type}"`);
   }
@@ -201,15 +214,11 @@ function useTextToRender(props: PropsForExpirationTimer) {
 export const TimerNotification = (props: PropsForExpirationTimer) => {
   const { messageId } = props;
 
-  const textToRender = useTextToRender(props);
+  const i18nProps = useTextToRenderI18nProps(props) as I18nProps<LocalizerToken>;
   const isGroupOrCommunity = useSelectedIsGroupOrCommunity();
   const isGroupV2 = useSelectedIsGroupV2();
   // renderOff is true when the update is put to off, or when we have a legacy group control message (as they are not expiring at all)
   const renderOffIcon = props.disabled || (isGroupOrCommunity && !isGroupV2);
-
-  if (!textToRender || textToRender.length === 0) {
-    throw new Error('textToRender invalid key used TimerNotification');
-  }
 
   return (
     <ExpirableReadableMessage
@@ -240,7 +249,7 @@ export const TimerNotification = (props: PropsForExpirationTimer) => {
           </>
         )}
         <TextWithChildren subtle={true}>
-          <SessionHtmlRenderer html={textToRender} />
+          <I18n {...i18nProps} />
         </TextWithChildren>
         <FollowSettingsButton {...props} />
       </Flex>

@@ -5,6 +5,7 @@ import { LocalizerToken } from '../../../../../types/Localizer';
 import { SessionIconType } from '../../../../icon';
 import { ExpirableReadableMessage } from '../ExpirableReadableMessage';
 import { NotificationBubble } from './NotificationBubble';
+import { I18n } from '../../../../basic/I18n';
 
 type StyleType = Record<
   CallNotificationType,
@@ -32,24 +33,9 @@ const style = {
 export const CallNotification = (props: PropsForCallNotification) => {
   const { messageId, notificationType } = props;
 
-  const displayName = useSelectedNicknameOrProfileNameOrShortenedPubkey();
+  const name = useSelectedNicknameOrProfileNameOrShortenedPubkey() ?? window.i18n('unknown');
 
-  const styleItem = style[notificationType];
-
-  // have to break it down
-  const notificationText =
-    styleItem.notificationTextKey === 'callsInProgress'
-      ? window.i18n(styleItem.notificationTextKey)
-      : styleItem.notificationTextKey === 'callsMissedCallFrom'
-        ? window.i18n(styleItem.notificationTextKey, {
-            name: displayName ?? window.i18n('unknown'),
-          })
-        : window.i18n(styleItem.notificationTextKey, {
-            name: displayName ?? window.i18n('unknown'),
-          });
-
-  const iconType = styleItem.iconType;
-  const iconColor = styleItem.iconColor;
+  const { iconColor, iconType, notificationTextKey } = style[notificationType];
 
   return (
     <ExpirableReadableMessage
@@ -58,11 +44,9 @@ export const CallNotification = (props: PropsForCallNotification) => {
       dataTestId={`call-notification-${notificationType}`}
       isControlMessage={true}
     >
-      <NotificationBubble
-        notificationText={notificationText}
-        iconType={iconType}
-        iconColor={iconColor}
-      />
+      <NotificationBubble iconType={iconType} iconColor={iconColor}>
+        <I18n token={notificationTextKey} args={{ name }} />
+      </NotificationBubble>
     </ExpirableReadableMessage>
   );
 };

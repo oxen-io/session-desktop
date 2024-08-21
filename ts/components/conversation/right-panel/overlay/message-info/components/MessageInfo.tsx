@@ -20,7 +20,7 @@ import {
 
 import { isDevProd } from '../../../../../../shared/env_vars';
 import { useSelectedConversationKey } from '../../../../../../state/selectors/selectedConversation';
-import { formatTimeDistance, formatTimeDistanceToNow } from '../../../../../../util/i18n';
+import { formatTimeDuration, formatTimeDistanceToNow } from '../../../../../../util/i18n';
 import { Flex } from '../../../../../basic/Flex';
 import { SpacerSM } from '../../../../../basic/Text';
 import { CopyToClipboardIcon } from '../../../../../buttons';
@@ -99,13 +99,13 @@ const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
       {expirationDurationMs ? (
         <LabelWithInfo
           label={`Expiration Duration:`}
-          info={`${formatTimeDistance(Math.floor(expirationDurationMs / 1000))}`}
+          info={formatTimeDuration(Math.floor(expirationDurationMs))}
         />
       ) : null}
       {expirationTimestamp ? (
         <LabelWithInfo
           label={`Disappears:`}
-          info={`${formatTimeDistanceToNow(expirationTimestamp)}`}
+          info={formatTimeDistanceToNow(expirationTimestamp * 1000)}
         />
       ) : null}
     </>

@@ -40,6 +40,7 @@ import { SessionTheme } from '../themes/SessionTheme';
 import { Storage } from '../util/storage';
 import { NoticeBanner } from './NoticeBanner';
 import { Flex } from './basic/Flex';
+import { getLocale } from '../util/i18n';
 
 function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
   // Yep, we can't index into item without knowing what it is. True. But we want to.
@@ -52,7 +53,7 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
 // does not recognize it with what moment knows which is the closest.
 // i.e. es-419 will return 'es'.
 // We just need to use what we got from moment in getLocale on the updateLocale below
-moment.locale(window.getLocale());
+moment.locale(getLocale());
 
 const StyledGutter = styled.div`
   width: var(--left-panel-width) !important;

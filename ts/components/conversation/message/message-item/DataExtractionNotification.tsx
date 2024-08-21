@@ -2,14 +2,10 @@ import { PropsForDataExtractionNotification } from '../../../../models/messageTy
 import { SignalService } from '../../../../protobuf';
 import { ExpirableReadableMessage } from './ExpirableReadableMessage';
 import { NotificationBubble } from './notification-bubble/NotificationBubble';
+import { I18n } from '../../../basic/I18n';
 
 export const DataExtractionNotification = (props: PropsForDataExtractionNotification) => {
   const { name, type, source, messageId } = props;
-
-  const contentText =
-    type === SignalService.DataExtractionNotification.Type.MEDIA_SAVED
-      ? window.i18n('attachmentsMediaSaved', { name: name ?? source })
-      : window.i18n('screenshotTaken', { name: name ?? source });
 
   return (
     <ExpirableReadableMessage
@@ -18,7 +14,16 @@ export const DataExtractionNotification = (props: PropsForDataExtractionNotifica
       key={`readable-message-${messageId}`}
       isControlMessage={true}
     >
-      <NotificationBubble notificationText={contentText} iconType="save" />
+      <NotificationBubble iconType="save">
+        <I18n
+          token={
+            type === SignalService.DataExtractionNotification.Type.MEDIA_SAVED
+              ? 'attachmentsMediaSaved'
+              : 'screenshotTaken'
+          }
+          args={{ name: name ?? source }}
+        />
+      </NotificationBubble>
     </ExpirableReadableMessage>
   );
 };

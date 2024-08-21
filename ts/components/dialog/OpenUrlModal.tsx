@@ -8,7 +8,7 @@ import { OpenUrlModalState, updateOpenUrlModal } from '../../state/ducks/modalDi
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerMD } from '../basic/Text';
-import { StyledSubText } from './StyledSubText';
+import { StyledI18nSubText } from '../basic/StyledI18nSubText';
 
 const StyledDescriptionContainer = styled.div`
   max-height: 110px;
@@ -28,6 +28,7 @@ export function OpenUrlModal(props: OpenUrlModalState) {
   function onClose() {
     dispatch(updateOpenUrlModal(null));
   }
+
   function onClickOpen() {
     void shell.openExternal(url);
 
@@ -48,10 +49,11 @@ export function OpenUrlModal(props: OpenUrlModalState) {
     >
       <div className="session-modal__centered">
         <StyledDescriptionContainer>
-          <StyledSubText
-            tag="span"
+          <StyledI18nSubText
+            asTag="span"
+            token="urlOpenDescription"
+            args={{ url }}
             textLength={url.length}
-            html={window.i18n('urlOpenDescription', { url })}
           />
         </StyledDescriptionContainer>
       </div>

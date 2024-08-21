@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import moment from 'moment';
 
+import { parseISO } from 'date-fns';
 import * as Attachment from '../../types/Attachment';
 import * as MIME from '../../types/MIME';
 import { SignalService } from '../../protobuf';
@@ -147,7 +147,7 @@ describe('Attachment', () => {
           screenshot: null,
           thumbnail: null,
         };
-        const timestamp = moment('2000-01-01').toDate();
+        const timestamp = parseISO('2000-01-01');
         const actual = Attachment.getSuggestedFilename({
           attachment,
           timestamp,

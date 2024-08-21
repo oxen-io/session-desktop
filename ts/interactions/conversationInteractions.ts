@@ -189,7 +189,7 @@ export const declineConversationWithConfirm = ({
     updateConfirmModal({
       okText: blockContact ? window.i18n('block') : window.i18n('decline'),
       cancelText: window.i18n('cancel'),
-      message: window.i18n('messageRequestsDelete'),
+      i18nMessage: { token: 'messageRequestsDelete' },
       onClickOk: async () => {
         await declineConversationWithoutConfirm({
           conversationId,
@@ -274,11 +274,14 @@ export function showLeavePrivateConversationbyConvoId(conversationId: string) {
   window?.inboxStore?.dispatch(
     updateConfirmModal({
       title: isMe ? window.i18n('noteToSelfHide') : window.i18n('conversationsDelete'),
-      message: isMe
-        ? window.i18n('noteToSelfHideDescription')
-        : window.i18n('conversationsDeleteDescription', {
-            name: conversation.getNicknameOrRealUsernameOrPlaceholder(),
-          }),
+      i18nMessage: isMe
+        ? { token: 'noteToSelfHideDescription' }
+        : {
+            token: 'conversationsDeleteDescription',
+            args: {
+              name: conversation.getNicknameOrRealUsernameOrPlaceholder(),
+            },
+          },
       onClickOk,
       okText: isMe ? window.i18n('hide') : window.i18n('delete'),
       okTheme: SessionButtonColor.Danger,
@@ -366,7 +369,10 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     window?.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('groupLeave'),
-        message: window.i18n('groupLeaveDescriptionAdmin', { group_name: name ?? '' }),
+        i18nMessage: {
+          token: 'groupLeaveDescriptionAdmin',
+          args: { group_name: name ?? '' },
+        },
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -401,7 +407,7 @@ export async function showLeaveGroupByConvoId(conversationId: string, name: stri
     window?.inboxStore?.dispatch(
       updateConfirmModal({
         title: isPublic ? window.i18n('communityLeave') : window.i18n('groupLeave'),
-        message: window.i18n('groupLeaveDescription', { group_name: name ?? '' }),
+        i18nMessage: { token: 'groupLeaveDescription', args: { group_name: name ?? '' } },
         onClickOk,
         okText: window.i18n('leave'),
         okTheme: SessionButtonColor.Danger,
@@ -457,6 +463,7 @@ export async function setNotificationForConvoId(
     await conversation.commit();
   }
 }
+
 export async function clearNickNameByConvoId(conversationId: string) {
   const conversation = getConversationController().get(conversationId);
   await conversation.setNickname(null, true);
@@ -495,7 +502,7 @@ export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: strin
   window?.inboxStore?.dispatch(
     updateConfirmModal({
       title: window.i18n('deleteMessages'),
-      message: window.i18n('deleteAfterGroupPR3DeleteMessagesConfirmation'),
+      i18nMessage: { token: 'deleteAfterGroupPR3DeleteMessagesConfirmation' },
       onClickOk,
       okTheme: SessionButtonColor.Danger,
       onClickClose,
@@ -716,7 +723,7 @@ export async function showLinkSharingConfirmationModalDialog(e: any) {
       window.inboxStore?.dispatch(
         updateConfirmModal({
           title: window.i18n('linkPreviewsSend'),
-          message: window.i18n('linkPreviewsSendModalDescription'),
+          i18nMessage: { token: 'linkPreviewsSendModalDescription' },
           okTheme: SessionButtonColor.Danger,
           onClickOk: async () => {
             await window.setSettingValue(SettingsKey.settingsLinkPreview, true);

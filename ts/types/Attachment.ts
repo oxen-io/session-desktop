@@ -1,6 +1,6 @@
 import { isUndefined, padStart } from 'lodash';
-import moment from 'moment';
 
+import { format } from 'date-fns';
 import { SignalService } from '../protobuf';
 import { isImageTypeSupported, isVideoTypeSupported } from '../util/GoogleChrome';
 import { ATTACHMENT_DEFAULT_MAX_SIDE } from '../util/attachmentsUtil';
@@ -150,6 +150,7 @@ export function isImageAttachment(attachment: AttachmentType): boolean {
     attachment && attachment.contentType && isImageTypeSupported(attachment.contentType)
   );
 }
+
 export function hasImage(attachments?: Array<AttachmentType>): boolean {
   return Boolean(attachments && attachments[0] && (attachments[0].url || attachments[0].pending));
 }
@@ -328,7 +329,7 @@ export const getSuggestedFilename = ({
     return attachment.fileName;
   }
   const prefix = 'session-attachment';
-  const suffix = timestamp ? moment(timestamp).format('-YYYY-MM-DD-HHmmss') : '';
+  const suffix = timestamp ? `-${format(new Date(timestamp), 'yyyy-MM-dd-HHmmss')}` : '';
   const fileType = getFileExtension(attachment);
   const extension = fileType ? `.${fileType}` : '';
   const indexSuffix = index ? `_${padStart(index.toString(), 3, '0')}` : '';

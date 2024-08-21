@@ -1,5 +1,5 @@
 import { isCI, isDevProd } from '../../shared/env_vars';
-import { formatAbbreviatedExpireTimer, formatTimeDistance } from '../../util/i18n';
+import { formatAbbreviatedExpireTimer, formatTimeDuration } from '../../util/i18n';
 import { DURATION_SECONDS } from '../constants';
 
 type TimerOptionsEntry = { name: string; value: number };
@@ -36,7 +36,7 @@ const VALUES: Array<number> = [
 
 function getName(seconds = 0) {
   if (seconds >= 0) {
-    return formatTimeDistance(seconds);
+    return formatTimeDuration(seconds * 1000);
   }
 
   return [seconds, 'seconds'].join(' ');

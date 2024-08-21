@@ -7,8 +7,8 @@ import { showSettingsSection } from '../../state/ducks/section';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 import { SpacerMD } from '../basic/Text';
+import { I18n } from '../basic/I18n';
 
 const StyledDescriptionContainer = styled.div`
   width: 280px;
@@ -79,11 +79,11 @@ export function HideRecoveryPasswordDialog(props: HideRecoveryPasswordDialogProp
       additionalClassName="no-body-padding"
     >
       <StyledDescriptionContainer>
-        <SessionHtmlRenderer
-          html={
+        <I18n
+          token={
             state === 'firstWarning'
-              ? window.i18n('recoveryPasswordHidePermanentlyDescription1')
-              : window.i18n('recoveryPasswordHidePermanentlyDescription2')
+              ? 'recoveryPasswordHidePermanentlyDescription1'
+              : 'recoveryPasswordHidePermanentlyDescription2'
           }
         />
       </StyledDescriptionContainer>

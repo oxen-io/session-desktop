@@ -91,6 +91,7 @@ import {
   getKickedGroupUpdateStr,
   getLeftGroupUpdateChangeStr,
 } from './groupUpdate';
+import { GetMessageArgs, LocalizerToken } from '../types/Localizer';
 
 // tslint:disable: cyclomatic-complexity
 
@@ -1271,19 +1272,25 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         this.getConversation()?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('unknown');
 
       if (groupUpdate.left) {
-        return getLeftGroupUpdateChangeStr(groupUpdate.left, groupName, true);
+        const { token, args } = getLeftGroupUpdateChangeStr(groupUpdate.left, groupName);
+        // TODO: clean up this typing
+        return window.i18n.stripped(...([token, args] as GetMessageArgs<LocalizerToken>));
       }
 
       if (groupUpdate.name) {
         return window.i18n('groupNameNew', { group_name: groupUpdate.name });
       }
 
-      if (groupUpdate.joined && groupUpdate.joined.length) {
-        return getJoinedGroupUpdateChangeStr(groupUpdate.joined, groupName, true);
+      if (groupUpdate.joined?.length) {
+        const { token, args } = getJoinedGroupUpdateChangeStr(groupUpdate.joined, groupName);
+        // TODO: clean up this typing
+        return window.i18n.stripped(...([token, args] as GetMessageArgs<LocalizerToken>));
       }
 
       if (groupUpdate.kicked?.length) {
-        return getKickedGroupUpdateStr(groupUpdate.kicked, groupName, true);
+        const { token, args } = getKickedGroupUpdateStr(groupUpdate.kicked, groupName);
+        // TODO: clean up this typing
+        return window.i18n.stripped(...([token, args] as GetMessageArgs<LocalizerToken>));
       }
       window.log.warn('did not build a specific change for getDescription of ', groupUpdate);
 

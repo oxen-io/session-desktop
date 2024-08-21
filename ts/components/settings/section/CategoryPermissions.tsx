@@ -14,7 +14,7 @@ const toggleCallMediaPermissions = async (triggerUIUpdate: () => void) => {
     window.inboxStore?.dispatch(
       updateConfirmModal({
         title: window.i18n('callsVoiceAndVideoBeta'),
-        message: window.i18n('callsVoiceAndVideoModalDescription'),
+        i18nMessage: { token: 'callsVoiceAndVideoModalDescription' },
         okTheme: SessionButtonColor.Danger,
         okText: window.i18n('theContinue'),
         onClickOk: async () => {

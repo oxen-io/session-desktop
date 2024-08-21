@@ -19,7 +19,6 @@ import { getCurrentRecoveryPhrase } from '../../../util/storage';
 import { QRCodeLogoProps, SessionQRCode } from '../../SessionQRCode';
 import { AnimatedFlex } from '../../basic/Flex';
 import { SessionButtonColor } from '../../basic/SessionButton';
-import { SessionHtmlRenderer } from '../../basic/SessionHTMLRenderer';
 import { SpacerMD, SpacerSM } from '../../basic/Text';
 import { CopyToClipboardIcon } from '../../buttons/CopyToClipboardButton';
 import { SessionIconButton } from '../../icon';
@@ -30,6 +29,7 @@ import {
 } from '../SessionSettingListItem';
 import { useHotkey } from '../../../hooks/useHotkey';
 import { getIsModalVisble } from '../../../state/selectors/modal';
+import { I18n } from '../../basic/I18n';
 
 const StyledSettingsItemContainer = styled.div`
   p {
@@ -126,9 +126,7 @@ export const SettingsCategoryRecoveryPassword = () => {
           iconSize: 18,
           iconColor: 'var(--text-primary-color)',
         }}
-        description={
-          <SessionHtmlRenderer tag="p" html={window.i18n('recoveryPasswordDescription')} />
-        }
+        description={<I18n asTag="p" token="recoveryPasswordDescription" />}
         inline={false}
       >
         <SpacerMD />

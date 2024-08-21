@@ -1,7 +1,9 @@
 import styled from 'styled-components';
-import { SessionHtmlRenderer } from '../basic/SessionHTMLRenderer';
 
-export const StyledSubText = styled(SessionHtmlRenderer)<{ textLength: number }>`
+/**
+ * @deprecated Use {@link StyledI18nSubText} instead.
+ */
+export const StyledSubText = styled('span')<{ textLength: number }>`
   font-size: var(--font-size-md);
   line-height: 1.5;
   margin-bottom: var(--margins-lg);
@@ -12,7 +14,10 @@ export const StyledSubText = styled(SessionHtmlRenderer)<{ textLength: number }>
       : '33ch'}; // this is ugly, but we want the dialog description to have multiple lines when a short text is displayed
 `;
 
-export const StyledSubMessageText = styled(SessionHtmlRenderer)`
+/**
+ * @deprecated Use {@link StyledI18nSubMessageText} instead.
+ */
+export const StyledSubMessageText = styled('span')`
   // Overrides SASS in this one case
   margin-top: 0;
   margin-bottom: var(--margins-md);

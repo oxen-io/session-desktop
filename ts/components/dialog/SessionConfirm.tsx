@@ -10,11 +10,15 @@ import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/S
 import { SessionRadioGroup, SessionRadioItems } from '../basic/SessionRadioGroup';
 import { SpacerLG } from '../basic/Text';
 import { SessionSpinner } from '../loading';
-import { StyledSubMessageText, StyledSubText } from './StyledSubText';
+import { I18nProps, LocalizerToken } from '../../types/Localizer';
+
+import { StyledI18nSubText } from '../basic/StyledI18nSubText';
 
 export interface SessionConfirmDialogProps {
-  message?: string;
-  messageSub?: string;
+  // message?: string;
+  // messageSub?: string;
+  i18nMessage?: I18nProps<LocalizerToken>;
+  i18nMessageSub?: I18nProps<LocalizerToken>;
   title?: string;
   radioOptions?: SessionRadioItems;
   onOk?: any;
@@ -48,8 +52,8 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
   const dispatch = useDispatch();
   const {
     title = '',
-    message = '',
-    messageSub = '',
+    i18nMessage,
+    i18nMessageSub,
     radioOptions,
     okTheme,
     closeTheme = SessionButtonColor.Danger,
@@ -131,15 +135,14 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
       {!showHeader && <SpacerLG />}
 
       <div className="session-modal__centered">
-        <StyledSubText tag="span" textLength={message.length} html={message} />
-        {messageSub && (
-          <StyledSubMessageText
-            tag="span"
+        {i18nMessage ? <StyledI18nSubText {...i18nMessage} textLength={64} /> : null}
+        {i18nMessageSub ? (
+          <StyledI18nSubText
+            {...i18nMessageSub}
             className="session-confirm-sub-message"
-            html={messageSub}
+            textLength={64}
           />
-        )}
-
+        ) : null}
         {radioOptions && chosenOption !== '' ? (
           <SessionRadioGroup
             group="session-confirm-radio-group"
@@ -153,7 +156,6 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
             }}
           />
         ) : null}
-
         <SessionSpinner loading={isLoading} />
       </div>
 

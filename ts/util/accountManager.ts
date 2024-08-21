@@ -334,7 +334,7 @@ export async function deleteEverythingAndNetworkData() {
       window?.inboxStore?.dispatch(
         updateConfirmModal({
           title: window.i18n('clearDeviceAndNetworkConfirm'),
-          message: window.i18n('clearDataErrorDescriptionGeneric'),
+          i18nMessage: { token: 'clearDataErrorDescriptionGeneric' },
           okTheme: SessionButtonColor.Danger,
           okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {
@@ -361,11 +361,14 @@ export async function deleteEverythingAndNetworkData() {
       window?.inboxStore?.dispatch(
         updateConfirmModal({
           title: window.i18n('clearDeviceAndNetworkConfirm'),
-          message: window.i18n('clearDataErrorDescription', {
-            count: potentiallyMaliciousSnodes.length,
-            service_node_id: potentiallyMaliciousSnodes.join(', '),
-          }),
-          messageSub: window.i18n('clearDeviceAndNetworkConfirm'),
+          i18nMessage: {
+            token: 'clearDataErrorDescription',
+            args: {
+              count: potentiallyMaliciousSnodes.length,
+              service_node_id: potentiallyMaliciousSnodes.join(', '),
+            },
+          },
+          i18nMessageSub: { token: 'clearDeviceAndNetworkConfirm' },
           okTheme: SessionButtonColor.Danger,
           okText: window.i18n('clearDeviceOnly'),
           onClickOk: async () => {

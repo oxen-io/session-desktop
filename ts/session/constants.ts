@@ -97,10 +97,6 @@ export const FEATURE_RELEASE_TIMESTAMPS = {
   USER_CONFIG: 1690761600000, // Monday July 31st at 10am Melbourne time
 };
 
-export const LOCALE_DEFAULTS = {
-  app_name: 'Session',
-} as const;
-
 export const ONBOARDING_TIMES = {
   /** 15 seconds */
   RECOVERY_TIMEOUT: 15 * DURATION.SECONDS,

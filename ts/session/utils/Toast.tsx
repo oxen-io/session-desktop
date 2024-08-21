@@ -100,7 +100,7 @@ export function pushUserUnbanFailure() {
 export function pushMessageDeleteForbidden() {
   pushToastError(
     'messageDeletionForbidden',
-    window.i18n.stripped('deleteafterMessageDeletionStandardisationmessageDeletionForbidden')
+    window.i18n.stripped('deleteAfterMessageDeletionStandardisationMessageDeletionForbidden')
   );
 }
 

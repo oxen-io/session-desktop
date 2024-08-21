@@ -205,7 +205,7 @@ export const RestoreAccount = () => {
     <BackButtonWithinContainer
       margin={'2px 0 0 -36px'}
       shouldQuitOnClick={step !== AccountRestoration.RecoveryPassword}
-      quitMessage={window.i18n('onboardingBackLoadAccount')}
+      quitI18nMessageArgs={{ token: 'onboardingBackLoadAccount' }}
       onQuitVisible={() => {
         if (!abortController.signal.aborted) {
           abortController.abort();

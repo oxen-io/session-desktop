@@ -3,7 +3,7 @@ import path from 'path';
 import { app, BrowserWindow, Menu, Tray } from 'electron';
 import { LocalizerDictionary } from '../types/Localizer';
 import { getAppRootPath } from './getRootPath';
-import { LOCALE_DEFAULTS } from '../session/constants';
+import { LOCALE_DEFAULTS } from '../localization/constants';
 
 let trayContextMenu = null;
 let tray: Tray | null = null;
