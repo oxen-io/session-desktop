@@ -12,6 +12,7 @@ import { getPasswordHash, Storage } from '../../util/storage';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerSM } from '../basic/Text';
 import { SessionWrapperModal } from '../SessionWrapperModal';
+import { isEmpty } from 'lodash';
 
 interface Props {
   passwordAction: PasswordAction;
@@ -55,6 +56,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
 
   public render() {
     const { passwordAction } = this.props;
+    const { currentPasswordEntered } = this.state;
     let placeholders: Array<string> = [];
     switch (passwordAction) {
       case 'change':
@@ -132,6 +134,12 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
             buttonColor={passwordAction === 'remove' ? SessionButtonColor.Danger : undefined}
             buttonType={SessionButtonType.Simple}
             onClick={this.setPassword}
+            disabled={
+              (passwordAction === 'change' ||
+                passwordAction === 'set' ||
+                passwordAction === 'remove') &&
+              isEmpty(currentPasswordEntered)
+            }
           />
           {passwordAction !== 'enter' && (
             <SessionButton
@@ -166,9 +174,14 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
    * Returns false and set the state error field in the input is not a valid password
    * or returns true
    */
-  private validatePassword(firstPassword: string) {
+  private validatePassword(enteredPassword: string) {
+    if (isEmpty(enteredPassword)) {
+      // Note, we don't want to display an error when the password is empty, but just drop the action
+      window.log.info('validatePassword needs a password to be given');
+      return false;
+    }
     // if user did not fill the first password field, we can't do anything
-    const errorFirstInput = validatePassword(firstPassword);
+    const errorFirstInput = validatePassword(enteredPassword);
     if (errorFirstInput !== null) {
       this.setState({
         error: errorFirstInput,
@@ -264,6 +277,11 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
   }
 
   private async handleActionRemove(oldPassword: string) {
+    if (isEmpty(oldPassword)) {
+      // Note, we want to drop "Enter" when no passwords are entered.
+      window.log.info('handleActionRemove: no password given. dropping');
+      return;
+    }
     // We don't validate oldPassword on change: this is validate on the validatePasswordHash below
     const isValidWithStoredInDB = this.validatePasswordHash(oldPassword);
     if (!isValidWithStoredInDB) {
