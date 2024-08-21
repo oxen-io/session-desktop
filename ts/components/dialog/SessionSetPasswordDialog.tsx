@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 
 import autoBind from 'auto-bind';
+import { isEmpty } from 'lodash';
 import { Component } from 'react';
 import { ToastUtils } from '../../session/utils';
 import { sessionPassword } from '../../state/ducks/modalDialog';
@@ -12,7 +13,6 @@ import { getPasswordHash, Storage } from '../../util/storage';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerSM } from '../basic/Text';
 import { SessionWrapperModal } from '../SessionWrapperModal';
-import { isEmpty } from 'lodash';
 
 interface Props {
   passwordAction: PasswordAction;

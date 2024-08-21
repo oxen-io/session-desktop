@@ -26,13 +26,13 @@ const StyledBackButtonContainer = styled(Flex)`
 `;
 
 export const BackButtonWithinContainer = ({
-                                            children,
-                                            margin,
-                                            callback,
-                                            onQuitVisible,
-                                            shouldQuitOnClick,
-                                            quitI18nMessageArgs,
-                                          }: {
+  children,
+  margin,
+  callback,
+  onQuitVisible,
+  shouldQuitOnClick,
+  quitI18nMessageArgs,
+}: {
   children: ReactNode;
   margin?: string;
   callback?: () => void;
@@ -62,11 +62,11 @@ export const BackButtonWithinContainer = ({
 };
 
 export const BackButton = ({
-                             callback,
-                             onQuitVisible,
-                             shouldQuitOnClick,
-                             quitI18nMessageArgs,
-                           }: {
+  callback,
+  onQuitVisible,
+  shouldQuitOnClick,
+  quitI18nMessageArgs,
+}: {
   callback?: () => void;
   onQuitVisible?: () => void;
   shouldQuitOnClick?: boolean;
@@ -99,13 +99,13 @@ export const BackButton = ({
               onClickOk: async () => {
                 try {
                   window.log.warn(
-                    '[onboarding] Deleting everything on device but keeping network data',
+                    '[onboarding] Deleting everything on device but keeping network data'
                   );
                   await deleteDbLocally();
                 } catch (error) {
                   window.log.warn(
                     '[onboarding] Something went wrong when deleting all local data:',
-                    error && error.stack ? error.stack : error,
+                    error && error.stack ? error.stack : error
                   );
                 } finally {
                   window.restart();
@@ -114,7 +114,7 @@ export const BackButton = ({
               onClickCancel: () => {
                 window.inboxStore?.dispatch(updateQuitModal(null));
               },
-            }),
+            })
           );
           return;
         }
