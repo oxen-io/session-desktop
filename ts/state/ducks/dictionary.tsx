@@ -22,7 +22,6 @@ const dictionarySlice = createSlice({
         .then(dictionary => {
           state.dictionary = dictionary;
           state.locale = action.payload;
-          window.locale = action.payload;
         })
         .catch(e => {
           window.log.error('Failed to load dictionary', e);

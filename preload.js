@@ -232,7 +232,7 @@ if (config.proxyUrl) {
 window.nodeSetImmediate = setImmediate;
 
 const data = require('./ts/data/dataInit');
-const { setupi18n } = require('./ts/util/i18n');
+const { setupI18n } = require('./ts/util/i18n');
 window.Signal = data.initData();
 
 const { getConversationController } = require('./ts/session/conversations/ConversationController');
@@ -255,7 +255,7 @@ window.getSeedNodeList = () =>
       ];
 
 const { locale: localFromEnv } = config;
-window.i18n = setupi18n(localFromEnv || 'en', localeMessages);
+window.i18n = setupI18n({ initialLocale: localFromEnv, initialDictionary: localeMessages });
 
 window.addEventListener('contextmenu', e => {
   const editable = e && e.target.closest('textarea, input, [contenteditable="true"]');

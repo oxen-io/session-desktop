@@ -6,7 +6,13 @@ import { Persistor } from 'redux-persist/es/types';
 
 import { ConversationCollection } from './models/conversation';
 import { PrimaryColorStateType, ThemeStateType } from './themes/constants/colors';
-import type { GetMessageArgs, LocalizerDictionary, LocalizerToken } from './types/Localizer';
+import {
+  GetMessageArgs,
+  I18nMethods,
+  LocalizerDictionary,
+  LocalizerToken,
+  SetupI18nReturnType,
+} from './types/Localizer';
 import type { Locale } from './util/i18n';
 
 export interface LibTextsecure {
@@ -27,6 +33,8 @@ declare global {
     clipboard: any;
     getSettingValue: (id: string, comparisonValue?: any) => any;
     setSettingValue: (id: string, value: any) => Promise<void>;
+
+    /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.getMessage } and {@link window.i18n } */
     /**
      * Retrieves a localized message string, substituting variables where necessary.
      *
@@ -35,22 +43,79 @@ declare global {
      *
      * @returns The localized message string with substitutions applied.
      *
-     * @link [i18n](./util/i18n.ts)
-     *
      * @example
      * // The string greeting is 'Hello, {name}!' in the current locale
      * window.i18n('greeting', { name: 'Alice' });
      * // => 'Hello, Alice!'
+     *
+     * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+     * window.i18n('search', { count: 1, found_count: 1 });
+     * // => '1 of 1 match'
      */
     i18n: (<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
       ...[token, args]: GetMessageArgs<T>
     ) => R) & {
-      stripped: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
-        ...[token, args]: GetMessageArgs<T>
-      ) => R;
+      /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.getRawMessage } and {@link window.i18n.getRawMessage } */
+      /**
+       * Retrieves a localized message string, without substituting any variables. This resolves any plural forms using the given args
+       * @param token - The token identifying the message to retrieve.
+       * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+       *
+       * @returns The localized message string with substitutions applied.
+       *
+       * NOTE: This is intended to be used to get the raw string then format it with {@link formatMessageWithArgs}
+       *
+       * @example
+       * // The string greeting is 'Hello, {name}!' in the current locale
+       * window.i18n.getRawMessage('greeting', { name: 'Alice' });
+       * // => 'Hello, {name}!'
+       *
+       * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+       * window.i18n.getRawMessage('search', { count: 1, found_count: 1 });
+       * // => '{found_count} of {count} match'
+       */
+      getRawMessage: I18nMethods['getRawMessage'];
+
+      /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.formatMessageWithArgs } and {@link window.i18n.formatMessageWithArgs } */
+      /**
+       * Formats a localized message string with arguments and returns the formatted string.
+       * @param rawMessage - The raw message string to format. After using @see {@link getRawMessage} to get the raw string.
+       * @param args - An optional record of substitution variables and their replacement values. This
+       * is required if the string has dynamic variables. This can be optional as a strings args may be defined in @see {@link LOCALE_DEFAULTS}
+       *
+       * @returns The formatted message string.
+       *
+       * @example
+       * // The string greeting is 'Hello, {name}!' in the current locale
+       * window.i18n.getRawMessage('greeting', { name: 'Alice' });
+       * // => 'Hello, {name}!'
+       * window.i18n.formatMessageWithArgs('greeting', { name: 'Alice' });
+       * // => 'Hello, Alice!'
+       *
+       * // The string search is '{count, plural, one [{found_count} of # match] other [{found_count} of # matches]}' in the current locale
+       * window.i18n.getRawMessage('search', { count: 1, found_count: 1 });
+       * // => '{found_count} of {count} match'
+       * window.i18n.formatMessageWithArgs('search', { count: 1, found_count: 1 });
+       * // => '1 of 1 match'
+       */
+      formatMessageWithArgs: I18nMethods['formatMessageWithArgs'];
+
+      /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.stripped } and {@link window.i18n.stripped } */
+      /**
+       * Retrieves a localized message string, substituting variables where necessary. Then strips the message of any HTML and custom tags.
+       *
+       * @param token - The token identifying the message to retrieve.
+       * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+       *
+       * @returns The localized message string with substitutions applied. Any HTML and custom tags are removed.
+       *
+       * @example
+       * // The string greeting is 'Hello, {name}! <b>Welcome!</b>' in the current locale
+       * window.i18n.stripped('greeting', { name: 'Alice' });
+       * // => 'Hello, Alice! Welcome!'
+       */
+      stripped: I18nMethods['stripped'];
     };
-    /** NOTE: This locale is a readonly backup of the locale in the store. Use {@link getLocale} instead. */
-    locale: Readonly<Locale>;
     log: any;
     sessionFeatureFlags: {
       useOnionRequests: boolean;
