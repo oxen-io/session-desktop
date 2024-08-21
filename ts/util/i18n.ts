@@ -12,11 +12,11 @@ import {
   subMilliseconds,
 } from 'date-fns';
 import timeLocales from 'date-fns/locale';
-import { isUndefined } from 'lodash';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
-import { DURATION_SECONDS, LOCALE_DEFAULTS } from '../session/constants';
+import { DURATION_SECONDS } from '../session/constants';
 import { updateLocale } from '../state/ducks/dictionary';
 import {
+  ArgsRecordExcludingDefaults,
   DictionaryWithoutPluralStrings,
   GetMessageArgs,
   LocalizerDictionary,
@@ -24,6 +24,8 @@ import {
   PluralKey,
   PluralString,
 } from '../types/Localizer';
+import { deSanitizeHtmlTags, sanitizeArgs } from '../components/basic/I18n';
+import { LOCALE_DEFAULTS } from '../localization/constants';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -125,6 +127,9 @@ function getStringForCardinalRule(
 const isPluralForm = (localizedString: string): localizedString is PluralString =>
   /{\w+, plural, one \[.+\] other \[.+\]}/g.test(localizedString);
 
+const isStringWithArgs = (localizedString: string): localizedString is any =>
+  localizedString.includes('{');
+
 /**
  * Logs an i18n message to the console.
  * @param message - The message to log.
@@ -135,6 +140,14 @@ function i18nLog(message: string) {
   // eslint:disable: no-console
   // eslint-disable-next-line no-console
   (window?.log?.error ?? console.log)(message);
+}
+
+export function getLocale(): Locale {
+  return window?.inboxStore?.getState().dictionary.locale ?? window?.locale;
+}
+
+function getDictionary(): LocalizerDictionary {
+  return window?.inboxStore?.getState().dictionary.dictionary;
 }
 
 /**
@@ -150,6 +163,8 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
     throw new Error('i18n: locale parameter is required');
   }
 
+  window.locale = locale;
+
   if (!dictionary) {
     throw new Error('i18n: messages parameter is required');
   }
@@ -160,48 +175,21 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
   }
   i18nLog('i18n setup');
 
-  /**
-   * Retrieves a localized message string, substituting variables where necessary.
-   *
-   * @param token - The token identifying the message to retrieve.
-   * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
-   *
-   * @returns The localized message string with substitutions applied.
-   *
-   * @example
-   * // The string greeting is 'Hello, {name}!' in the current locale
-   * window.i18n('greeting', { name: 'Alice' });
-   * // => 'Hello, Alice!'
-   */
-  function getMessage<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+  function getRawMessage<T extends LocalizerToken, R extends DictionaryWithoutPluralStrings[T]>(
     ...[token, args]: GetMessageArgs<T>
-  ): R {
+  ): R | T {
     try {
-      const {
-        inboxStore,
-        sessionFeatureFlags: { replaceLocalizedStringsWithKeys },
-      } = window;
-
-      if (replaceLocalizedStringsWithKeys) {
-        return token as R;
+      if (window?.sessionFeatureFlags?.replaceLocalizedStringsWithKeys) {
+        return token as T;
       }
 
-      const storedDictionary =
-        inboxStore && 'getState' in inboxStore && typeof inboxStore.getState === 'function'
-          ? (inboxStore.getState().dictionary.dictionary as LocalizerDictionary)
-          : undefined;
-
-      if (!storedDictionary) {
-        i18nLog(`i18n: Stored dictionary not found, using setup dictionary as fallback`);
-      }
-
-      const localizedDictionary = storedDictionary ?? dictionary;
+      const localizedDictionary = getDictionary() ?? dictionary;
 
       let localizedString = localizedDictionary[token] as R;
 
       if (!localizedString) {
         i18nLog(`i18n: Attempted to get translation for nonexistent key '${token}'`);
-        return token as R;
+        return token as T;
       }
 
       /** If a localized string does not have any arguments to substitute it is returned with no
@@ -221,7 +209,8 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
         } else {
           const num = args?.[pluralKey as keyof typeof args] ?? 0;
 
-          const cardinalRule = new Intl.PluralRules(locale).select(num);
+          const currentLocale = getLocale() ?? locale;
+          const cardinalRule = new Intl.PluralRules(currentLocale).select(num);
 
           const pluralString = getStringForCardinalRule(localizedString, cardinalRule);
 
@@ -229,36 +218,65 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
             i18nLog(
               `i18n: Plural string not found for cardinal '${cardinalRule}': '${localizedString}'`
             );
-            return token as R;
+            return token as T;
           }
 
           localizedString = pluralString.replaceAll('#', `${num}`) as R;
         }
       }
+      return localizedString;
+    } catch (error) {
+      i18nLog(`i18n: ${error.message}`);
+      return token as T;
+    }
+  }
 
-      /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
-      return (localizedString as DictionaryWithoutPluralStrings[T]).replace(
-        /\{(\w+)\}/g,
-        (match, arg) => {
-          const substitution: string | undefined = args?.[arg as keyof typeof args];
+  function formatMessageWithArgs<
+    T extends LocalizerToken,
+    R extends DictionaryWithoutPluralStrings[T],
+  >(rawMessage: R, args: ArgsRecordExcludingDefaults<T>): R {
+    /** Find and replace the dynamic variables in a localized string and substitute the variables with the provided values */
+    return rawMessage.replace(
+      /\{(\w+)\}/g,
+      (match, arg) =>
+        (args?.[arg as keyof typeof args] as string) ??
+        LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS] ??
+        match
+    ) as R;
+  }
 
-          if (isUndefined(substitution)) {
-            const defaultSubstitution = LOCALE_DEFAULTS[arg as keyof typeof LOCALE_DEFAULTS];
+  /**
+   * Retrieves a localized message string, substituting variables where necessary.
+   *
+   * @param token - The token identifying the message to retrieve.
+   * @param args - An optional record of substitution variables and their replacement values. This is required if the string has dynamic variables.
+   *
+   * @returns The localized message string with substitutions applied.
+   *
+   * @example
+   * // The string greeting is 'Hello, {name}!' in the current locale
+   * window.i18n('greeting', { name: 'Alice' });
+   * // => 'Hello, Alice!'
+   */
+  function getMessage<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ): R | T {
+    try {
+      const rawMessage = getRawMessage<T, R>(...([token, args] as GetMessageArgs<T>));
 
-            return isUndefined(defaultSubstitution) ? match : defaultSubstitution;
-          }
+      /** If a localized string does not have any arguments to substitute it is returned with no
+       * changes. We also need to check if the string contains a curly bracket as if it does
+       * there might be a default arg */
+      if (!args && !isStringWithArgs(rawMessage)) {
+        return rawMessage;
+      }
 
-          // TODO: figure out why is was type never and fix the type
-          return (substitution as string).toString();
-        }
-      ) as R;
+      return formatMessageWithArgs<T, R>(rawMessage as any, args as any) as R;
     } catch (error) {
       i18nLog(`i18n: ${error.message}`);
       return token as R;
     }
   }
-
-  window.getLocale = () => locale;
 
   /**
    * Retrieves a localized message string, substituting variables where necessary. Then strips the message of any HTML and custom tags.
@@ -276,18 +294,21 @@ export const setupi18n = (locale: Locale, dictionary: LocalizerDictionary) => {
   getMessage.stripped = <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>
   ): R => {
+    const sanitizedArgs = args ? sanitizeArgs(args, '\u200B') : undefined;
+
     const i18nString = getMessage<T, LocalizerDictionary[T]>(
-      ...([token, args] as GetMessageArgs<T>)
+      ...([token, sanitizedArgs] as GetMessageArgs<T>)
     );
 
-    return i18nString.replaceAll(/<[^>]*>/g, '') as R;
+    const strippedString = i18nString.replaceAll(/<[^>]*>/g, '');
+
+    return deSanitizeHtmlTags(strippedString, '\u200B') as R;
   };
 
-  return getMessage;
-};
+  getMessage.getRawMessage = getRawMessage;
+  getMessage.formatMessageWithArgs = formatMessageWithArgs;
 
-export const getI18nFunction = (stripTags: boolean) => {
-  return stripTags ? window.i18n.stripped : window.i18n;
+  return getMessage;
 };
 
 // eslint-disable-next-line import/no-mutable-exports
@@ -298,7 +319,7 @@ export const loadEmojiPanelI18n = async () => {
     return undefined;
   }
 
-  const lang = window.getLocale();
+  const lang = getLocale();
   if (lang !== 'en') {
     try {
       const langData = await import(`@emoji-mart/data/i18n/${lang}.json`);
@@ -315,14 +336,13 @@ export const loadEmojiPanelI18n = async () => {
   return undefined;
 };
 
-export const formatTimeDistance = (
-  durationSeconds: number,
-  baseDate: Date = new Date(0),
+export const formatTimeDuration = (
+  durationMs: number,
   options?: Omit<FormatDistanceStrictOptions, 'locale'>
 ) => {
-  const locale = window.getLocale();
+  const locale = getLocale();
 
-  return formatDistanceStrict(new Date(durationSeconds * 1000), baseDate, {
+  return formatDistanceStrict(new Date(durationMs), new Date(0), {
     locale: timeLocaleMap[locale],
     ...options,
   });
@@ -456,7 +476,7 @@ export const formatTimeDistanceToNow = (
   durationSeconds: number,
   options?: Omit<FormatDistanceToNowStrictOptions, 'locale'>
 ) => {
-  const locale = window.getLocale();
+  const locale = getLocale();
   return formatDistanceToNowStrict(durationSeconds * 1000, {
     locale: timeLocaleMap[locale],
     ...options,
@@ -464,7 +484,7 @@ export const formatTimeDistanceToNow = (
 };
 
 export const formatDateDistanceWithOffset = (date: Date): string => {
-  const locale = window.getLocale();
+  const locale = getLocale();
   const adjustedDate = subMilliseconds(date, GetNetworkTime.getLatestTimestampOffset());
   return formatDistanceToNow(adjustedDate, { addSuffix: true, locale: timeLocaleMap[locale] });
 };

@@ -49,7 +49,8 @@ declare global {
         ...[token, args]: GetMessageArgs<T>
       ) => R;
     };
-    getLocale: () => Locale;
+    /** NOTE: This locale is a readonly backup of the locale in the store. Use {@link getLocale} instead. */
+    locale: Readonly<Locale>;
     log: any;
     sessionFeatureFlags: {
       useOnionRequests: boolean;
