@@ -343,10 +343,11 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
     const { currentPasswordEntered, currentPasswordConfirmEntered, currentPasswordRetypeEntered } =
       this.state;
 
-    // Trim leading / trailing whitespace for UX
-    const firstPasswordEntered = (currentPasswordEntered || '').trim();
-    const secondPasswordEntered = (currentPasswordConfirmEntered || '').trim();
-    const thirdPasswordEntered = (currentPasswordRetypeEntered || '').trim();
+    // Note: don't trim anything. If the user entered a space as a first/last
+    // char and saved it as is in his password manager, so be it.
+    const firstPasswordEntered = currentPasswordEntered || '';
+    const secondPasswordEntered = currentPasswordConfirmEntered || '';
+    const thirdPasswordEntered = currentPasswordRetypeEntered || '';
 
     switch (passwordAction) {
       case 'set': {
