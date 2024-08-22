@@ -15,8 +15,6 @@ import { I18nProps, LocalizerToken } from '../../types/Localizer';
 import { StyledI18nSubText } from '../basic/StyledI18nSubText';
 
 export interface SessionConfirmDialogProps {
-  // message?: string;
-  // messageSub?: string;
   i18nMessage?: I18nProps<LocalizerToken>;
   i18nMessageSub?: I18nProps<LocalizerToken>;
   title?: string;
@@ -135,13 +133,9 @@ export const SessionConfirm = (props: SessionConfirmDialogProps) => {
       {!showHeader && <SpacerLG />}
 
       <div className="session-modal__centered">
-        {i18nMessage ? <StyledI18nSubText {...i18nMessage} textLength={64} /> : null}
+        {i18nMessage ? <StyledI18nSubText {...i18nMessage} /> : null}
         {i18nMessageSub ? (
-          <StyledI18nSubText
-            {...i18nMessageSub}
-            className="session-confirm-sub-message"
-            textLength={64}
-          />
+          <StyledI18nSubText {...i18nMessageSub} className="session-confirm-sub-message" />
         ) : null}
         {radioOptions && chosenOption !== '' ? (
           <SessionRadioGroup

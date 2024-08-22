@@ -84,7 +84,6 @@ export const AddModeratorsDialog = (props: Props) => {
       }}
     >
       <Flex container={true} flexDirection="column" alignItems="center">
-        <p>Add Moderator:</p>
         <SessionHeaderSearchInput
           type="text"
           isDarkTheme={isDarkTheme}

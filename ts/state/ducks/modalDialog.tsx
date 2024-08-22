@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { BlockOrUnblockModalState } from '../../components/dialog/blockOrUnblock/BlockOrUnblockModalState';
 import { EnterPasswordModalProps } from '../../components/dialog/EnterPasswordModal';
 import { HideRecoveryPasswordDialogProps } from '../../components/dialog/HideRecoveryPasswordDialog';
 import { SessionConfirmDialogProps } from '../../components/dialog/SessionConfirm';
@@ -54,6 +55,7 @@ export type ModalState = {
   confirmModal: ConfirmModalState;
   inviteContactModal: InviteContactModalState;
   banOrUnbanUserModal: BanOrUnbanUserModalState;
+  blockOrUnblockModal: BlockOrUnblockModalState;
   removeModeratorsModal: RemoveModeratorsModalState;
   addModeratorsModal: AddModeratorsModalState;
   groupNameModal: UpdateGroupNameModalState;
@@ -79,6 +81,7 @@ export const initialModalState: ModalState = {
   addModeratorsModal: null,
   removeModeratorsModal: null,
   banOrUnbanUserModal: null,
+  blockOrUnblockModal: null,
   groupNameModal: null,
   groupMembersModal: null,
   userDetailsModal: null,
@@ -108,6 +111,9 @@ const ModalSlice = createSlice({
     },
     updateBanOrUnbanUserModal(state, action: PayloadAction<BanOrUnbanUserModalState | null>) {
       return { ...state, banOrUnbanUserModal: action.payload };
+    },
+    updateBlockOrUnblockModal(state, action: PayloadAction<BlockOrUnblockModalState | null>) {
+      return { ...state, blockOrUnblockModal: action.payload };
     },
     updateAddModeratorsModal(state, action: PayloadAction<AddModeratorsModalState | null>) {
       return { ...state, addModeratorsModal: action.payload };
@@ -193,6 +199,7 @@ export const {
   sessionPassword,
   updateDeleteAccountModal,
   updateBanOrUnbanUserModal,
+  updateBlockOrUnblockModal,
   updateReactListModal,
   updateReactClearAllModal,
   updateEditProfilePictureModal,

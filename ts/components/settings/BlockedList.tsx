@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
+import { useDispatch } from 'react-redux';
 import useUpdate from 'react-use/lib/useUpdate';
 import styled from 'styled-components';
 import { useSet } from '../../hooks/useSet';
-import { ToastUtils } from '../../session/utils';
+import { updateBlockOrUnblockModal } from '../../state/ducks/modalDialog';
 import { BlockedNumberController } from '../../util';
 import { MemberListItem } from '../MemberListItem';
 import { SessionButton, SessionButtonColor } from '../basic/SessionButton';
@@ -76,6 +77,7 @@ const NoBlockedContacts = () => {
 };
 
 export const BlockedContactsList = () => {
+  const dispatch = useDispatch();
   const [expanded, setExpanded] = useState(false);
   const {
     uniqueValues: selectedIds,
@@ -98,15 +100,17 @@ export const BlockedContactsList = () => {
 
   async function unBlockThoseUsers() {
     if (selectedIds.length) {
-      await BlockedNumberController.unblockAll(selectedIds);
-      emptySelected();
-      ToastUtils.pushToastSuccess(
-        'unblocked',
-        window.i18n('blockUnblockedUser', {
-          name: selectedIds.join(', '),
+      dispatch(
+        updateBlockOrUnblockModal({
+          action: 'unblock',
+          pubkeys: selectedIds,
+          onConfirmed: () => {
+            // annoying, but until that BlockedList is in redux, we need to force a refresh of this component when a change is made.
+            emptySelected();
+            forceUpdate();
+          },
         })
       );
-      forceUpdate();
     }
   }
 

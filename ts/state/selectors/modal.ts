@@ -63,6 +63,11 @@ export const getBanOrUnbanUserModalState = createSelector(
   (state: ModalState): BanOrUnbanUserModalState => state.banOrUnbanUserModal
 );
 
+export const getBlockOrUnblockUserModalState = createSelector(
+  getModal,
+  (state: ModalState) => state.blockOrUnblockModal
+);
+
 export const getUpdateGroupNameModal = createSelector(
   getModal,
   (state: ModalState): UpdateGroupNameModalState => state.groupNameModal

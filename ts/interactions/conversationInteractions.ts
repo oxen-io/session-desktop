@@ -9,6 +9,7 @@ import { SessionButtonColor } from '../components/basic/SessionButton';
 import { getCallMediaPermissionsSettings } from '../components/settings/SessionSettings';
 import { Data } from '../data/data';
 import { SettingsKey } from '../data/settings-key';
+import { ConversationTypeEnum } from '../models/types';
 import { uploadFileToFsWithOnionV4 } from '../session/apis/file_server_api/FileServerApi';
 import { OpenGroupUtils } from '../session/apis/open_group_api/utils';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
@@ -30,6 +31,7 @@ import {
   changeNickNameModal,
   updateAddModeratorsModal,
   updateBanOrUnbanUserModal,
+  updateBlockOrUnblockModal,
   updateConfirmModal,
   updateGroupMembersModal,
   updateGroupNameModal,
@@ -40,13 +42,12 @@ import { MIME } from '../types';
 import { IMAGE_JPEG } from '../types/MIME';
 import { processNewAttachment } from '../types/MessageAttachment';
 import { urlToBlob } from '../types/attachments/VisualAttachment';
-import { BlockedNumberController } from '../util/blockedNumberController';
 import { encryptProfile } from '../util/crypto/profileEncrypter';
 import { ReleasedFeatures } from '../util/releaseFeature';
 import { Storage, setLastProfileUpdateTimestamp } from '../util/storage';
 import { UserGroupsWrapperActions } from '../webworker/workers/browser/libsession_worker_interface';
-import { ConversationTypeEnum } from '../models/types';
 import { ConversationInteractionStatus, ConversationInteractionType } from './types';
+import { BlockedNumberController } from '../util';
 
 export async function copyPublicKeyByConvoId(convoId: string) {
   if (OpenGroupUtils.isOpenGroupV2(convoId)) {
@@ -67,51 +68,21 @@ export async function copyPublicKeyByConvoId(convoId: string) {
 }
 
 export async function blockConvoById(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
-
-  if (!conversation.id || conversation.isPublic()) {
-    return;
-  }
-
-  // I don't think we want to reset the approved fields when blocking a contact
-  // if (conversation.isPrivate()) {
-  //   await conversation.setIsApproved(false);
-  // }
-
-  await BlockedNumberController.block(conversation.id);
-  await conversation.commit();
-  ToastUtils.pushToastSuccess(
-    'blocked',
-    window.i18n('blockBlockedUser', { name: conversation.getNicknameOrRealUsernameOrPlaceholder() })
+  window.inboxStore?.dispatch(
+    updateBlockOrUnblockModal({
+      action: 'block',
+      pubkeys: [conversationId],
+    })
   );
 }
 
 export async function unblockConvoById(conversationId: string) {
-  const conversation = getConversationController().get(conversationId);
-
-  if (!conversation) {
-    // we assume it's a block contact and not group.
-    // this is to be able to unlock a contact we don't have a conversation with.
-    await BlockedNumberController.unblockAll([conversationId]);
-    ToastUtils.pushToastSuccess(
-      'unblocked',
-      window.i18n('blockUnblockedUser', {
-        name: conversationId,
-      })
-    );
-    return;
-  }
-  if (!conversation.id || conversation.isPublic()) {
-    return;
-  }
-  await BlockedNumberController.unblockAll([conversationId]);
-  ToastUtils.pushToastSuccess(
-    'unblocked',
-    window.i18n('blockUnblockedUser', {
-      name: conversation.getNicknameOrRealUsernameOrPlaceholder() ?? '',
+  window.inboxStore?.dispatch(
+    updateBlockOrUnblockModal({
+      action: 'unblock',
+      pubkeys: [conversationId],
     })
   );
-  await conversation.commit();
 }
 
 /**
@@ -155,7 +126,7 @@ export async function declineConversationWithoutConfirm({
   // this will update the value in the wrapper if needed but not remove the entry if we want it gone. The remove is done below with removeContactFromWrapper
   await conversationToDecline.commit();
   if (blockContact) {
-    await blockConvoById(conversationId);
+    await BlockedNumberController.block(conversationId);
   }
   // when removing a message request, without blocking it, we actually have no need to store the conversation in the wrapper. So just remove the entry
 

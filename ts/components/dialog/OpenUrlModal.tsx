@@ -9,11 +9,10 @@ import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerMD } from '../basic/Text';
 import { StyledI18nSubText } from '../basic/StyledI18nSubText';
+import { StyledModalDescriptionContainer } from './shared/ModalDescriptionContainer';
 
-const StyledDescriptionContainer = styled.div`
+const StyledScrollDescriptionContainer = styled(StyledModalDescriptionContainer)`
   max-height: 110px;
-  max-width: 500px;
-  padding: var(--margins-md);
   overflow-y: auto;
 `;
 
@@ -48,14 +47,9 @@ export function OpenUrlModal(props: OpenUrlModalState) {
       showHeader={true}
     >
       <div className="session-modal__centered">
-        <StyledDescriptionContainer>
-          <StyledI18nSubText
-            asTag="span"
-            token="urlOpenDescription"
-            args={{ url }}
-            textLength={url.length}
-          />
-        </StyledDescriptionContainer>
+        <StyledScrollDescriptionContainer>
+          <StyledI18nSubText asTag="span" token="urlOpenDescription" args={{ url }} />
+        </StyledScrollDescriptionContainer>
       </div>
       <SpacerMD />
       <div className="session-modal__button-group">

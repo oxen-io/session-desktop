@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import {
   getAddModeratorsModal,
   getBanOrUnbanUserModalState,
+  getBlockOrUnblockUserModalState,
   getChangeNickNameDialog,
   getConfirmModal,
   getDeleteAccountModalState,
@@ -41,6 +42,7 @@ import { UpdateGroupNameDialog } from './UpdateGroupNameDialog';
 import { UserDetailsDialog } from './UserDetailsDialog';
 import { EditProfileDialog } from './edit-profile/EditProfileDialog';
 import { OpenUrlModal } from './OpenUrlModal';
+import { BlockOrUnblockDialog } from './blockOrUnblock/BlockOrUnblockDialog';
 
 export const ModalContainer = () => {
   const confirmModalState = useSelector(getConfirmModal);
@@ -57,6 +59,7 @@ export const ModalContainer = () => {
   const sessionPasswordModalState = useSelector(getSessionPasswordDialog);
   const deleteAccountModalState = useSelector(getDeleteAccountModalState);
   const banOrUnbanUserModalState = useSelector(getBanOrUnbanUserModalState);
+  const blockOrUnblockModalState = useSelector(getBlockOrUnblockUserModalState);
   const reactListModalState = useSelector(getReactListDialog);
   const reactClearAllModalState = useSelector(getReactClearAllDialog);
   const editProfilePictureModalState = useSelector(getEditProfilePictureModalState);
@@ -67,6 +70,7 @@ export const ModalContainer = () => {
   return (
     <>
       {banOrUnbanUserModalState && <BanOrUnBanUserDialog {...banOrUnbanUserModalState} />}
+      {blockOrUnblockModalState && <BlockOrUnblockDialog {...blockOrUnblockModalState} />}
       {inviteModalState && <InviteContactsDialog {...inviteModalState} />}
       {addModeratorsModalState && <AddModeratorsDialog {...addModeratorsModalState} />}
       {removeModeratorsModalState && <RemoveModeratorsDialog {...removeModeratorsModalState} />}

@@ -29,7 +29,7 @@ type DynamicArgs<LocalizedString extends string> =
     : /** If a string segment follows the variable form parse its variable name and recursively
        * check for more dynamic args */
       // eslint-disable-next-line @typescript-eslint/no-unused-vars -- We dont care about _Pre TODO: see if we can remove this infer
-      LocalizedString extends `${infer _Pre}{${infer Var}}${infer Rest}`
+      LocalizedString extends `${string}{${infer Var}}${infer Rest}`
       ? Var | DynamicArgs<Rest>
       : never;
 

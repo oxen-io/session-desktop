@@ -76,6 +76,19 @@ export function useConversationsUsernameWithQuoteOrFullPubkey(pubkeys: Array<str
   });
 }
 
+export function useConversationsNicknameRealNameOrShortenPubkey(pubkeys: Array<string>) {
+  return useSelector((state: StateType) => {
+    return pubkeys.map(pk => {
+      if (pk === UserUtils.getOurPubKeyStrFromCache() || pk.toLowerCase() === 'you') {
+        return window.i18n('you');
+      }
+      const convo = state.conversations.conversationLookup[pk];
+
+      return convo?.nickname || convo?.displayNameInProfile || PubKey.shorten(pk);
+    });
+  });
+}
+
 export function useOurConversationUsername() {
   return useConversationUsername(UserUtils.getOurPubKeyStrFromCache());
 }

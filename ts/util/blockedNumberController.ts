@@ -29,7 +29,7 @@ export class BlockedNumberController {
    *
    * @param user The user to block.
    */
-  public static async block(user: string | PubKey): Promise<void> {
+  public static async block(user: string): Promise<void> {
     // The reason we add all linked device to block number set instead of checking if any device of a user is in the `isBlocked` function because
     // `isBlocked` is used synchronously in the code. To check if any device is blocked needs it to be async, which would mean all calls to `isBlocked` will also need to be async and so on
     // This is too much of a hassle at the moment as some UI code will have to be migrated to work with this async call.
@@ -78,7 +78,7 @@ export class BlockedNumberController {
     }
   }
 
-  public static async setBlocked(user: string | PubKey, blocked: boolean): Promise<void> {
+  public static async setBlocked(user: string, blocked: boolean): Promise<void> {
     if (blocked) {
       return BlockedNumberController.block(user);
     }
