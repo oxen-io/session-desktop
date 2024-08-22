@@ -117,6 +117,10 @@ export type I18nMethods = {
   stripped: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>
   ) => R;
+  /** @see {@link window.i18n.inEnglish} */
+  inEnglish: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+    ...[token, args]: GetMessageArgs<T>
+  ) => R | T;
   /** @see {@link window.i18n.formatMessageWithArgs */
   getRawMessage: <T extends LocalizerToken, R extends DictionaryWithoutPluralStrings[T]>(
     ...[token, args]: GetMessageArgs<T>
