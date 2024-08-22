@@ -5,6 +5,7 @@ import csv
 import re
 import glob
 import argparse
+import json
 
 # This allows for importing from the localization and util directories NOTE: Auto importing tools will also prepend the import paths with "tools." this will not work and needs to be removed from import paths
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
