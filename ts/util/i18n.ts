@@ -259,7 +259,15 @@ export const setupI18n = (params: {
 
       if (!localizedString) {
         i18nLog(`Attempted to get translation for nonexistent key: '${token}'`);
-        return token as T;
+
+        localizedString = en[token] as R;
+
+        if (!localizedString) {
+          i18nLog(
+            `Attempted to get translation for nonexistent key: '${token}' in fallback dictionary`
+          );
+          return token as T;
+        }
       }
 
       /** If a localized string does not have any arguments to substitute it is returned with no
