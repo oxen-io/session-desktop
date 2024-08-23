@@ -6,7 +6,7 @@ const url = require('url');
 
 const os = require('os');
 
-const { setupI18n } = require('./ts/util/i18n');
+const { setupI18n } = require('./ts/util/i18n/i18n');
 
 const config = url.parse(window.location.toString(), true).query;
 const { locale } = config;
@@ -16,7 +16,7 @@ window._ = require('lodash');
 
 window.getVersion = () => config.version;
 window.theme = config.theme;
-window.i18n = setupI18n({ initialLocale: locale, initialDictionary: localeMessages });
+window.i18n = setupI18n({ locale, translationDictionary: localeMessages });
 
 // got.js appears to need this to successfully submit debug logs to the cloud
 window.nodeSetImmediate = setImmediate;

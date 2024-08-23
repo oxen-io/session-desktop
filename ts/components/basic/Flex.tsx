@@ -1,6 +1,6 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
 import styled from 'styled-components';
-import { HTMLDirection } from '../../util/i18n';
+import { HTMLDirection } from '../../util/i18n/rtlSupport';
 
 export interface FlexProps {
   children?: any;

@@ -6,10 +6,10 @@ import useInterval from 'react-use/lib/useInterval';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
 import { DURATION } from '../../../../session/constants';
 import { nativeEmojiData } from '../../../../util/emoji';
-import { formatAbbreviatedExpireDoubleTimer } from '../../../../util/i18n';
 import { getRecentReactions } from '../../../../util/storage';
 import { SpacerSM } from '../../../basic/Text';
 import { SessionIcon, SessionIconButton } from '../../../icon';
+import { formatAbbreviatedExpireDoubleTimer } from '../../../../util/i18n/formater/expirationTimer';
 
 type Props = {
   action: (...args: Array<any>) => void;

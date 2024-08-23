@@ -4,7 +4,7 @@
 /* eslint-disable import/no-mutable-exports  */
 import { init, I18n } from 'emoji-mart';
 import { FixedBaseEmoji, NativeEmojiData } from '../types/Reaction';
-import { loadEmojiPanelI18n } from './i18n';
+import { loadEmojiPanelI18n } from './i18n/emojiPanelI18n';
 
 export type SizeClassType = 'default' | 'small' | 'medium' | 'large' | 'jumbo';
 

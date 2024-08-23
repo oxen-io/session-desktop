@@ -21,13 +21,13 @@ import {
 } from '../../../../state/selectors/conversations';
 import { useSelectedIsPrivate } from '../../../../state/selectors/selectedConversation';
 import { canDisplayImagePreview } from '../../../../types/Attachment';
-import { formatFullDate } from '../../../../util/i18n';
 import { MessageAttachment } from './MessageAttachment';
 import { MessageAvatar } from './MessageAvatar';
 import { MessageHighlighter } from './MessageHighlighter';
 import { MessageLinkPreview } from './MessageLinkPreview';
 import { MessageQuote } from './MessageQuote';
 import { MessageText } from './MessageText';
+import { formatFullDate } from '../../../../util/i18n/formater/generics';
 
 export type MessageContentSelectorProps = Pick<
   MessageRenderingProps,

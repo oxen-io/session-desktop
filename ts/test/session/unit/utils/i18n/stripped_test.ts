@@ -3,9 +3,16 @@
 
 import { expect } from 'chai';
 import { initI18n, testDictionary } from './util';
+import { resetTranslationDictionary } from '../../../../../util/i18n/translationDictionaries';
 
 describe('stripped', () => {
-  const i18n = initI18n(testDictionary);
+  let i18n;
+  beforeEach(() => {
+    i18n = initI18n(testDictionary);
+  });
+  afterEach(() => {
+    resetTranslationDictionary();
+  });
 
   it('returns the stripped message for a token', () => {
     const message = i18n.stripped('greeting', { name: 'Alice' });

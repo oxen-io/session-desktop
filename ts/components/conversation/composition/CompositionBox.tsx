@@ -37,7 +37,6 @@ import {
   StagedAttachmentImportedType,
   StagedPreviewImportedType,
 } from '../../../util/attachmentsUtil';
-import { HTMLDirection } from '../../../util/i18n';
 import { LinkPreviews } from '../../../util/linkPreviews';
 import { CaptionEditor } from '../../CaptionEditor';
 import { Flex } from '../../basic/Flex';
@@ -58,6 +57,7 @@ import {
 } from './CompositionButtons';
 import { CompositionTextArea } from './CompositionTextArea';
 import { cleanMentions, mentionsRegex } from './UserMentions';
+import { HTMLDirection } from '../../../util/i18n/rtlSupport';
 
 export interface ReplyingToMessageProps {
   convoId: string;

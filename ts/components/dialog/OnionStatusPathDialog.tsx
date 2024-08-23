@@ -22,7 +22,7 @@ import { THEME_GLOBALS } from '../../themes/globals';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { SessionIcon, SessionIconButton } from '../icon';
 import { SessionSpinner } from '../loading';
-import { getLocale } from '../../util/i18n';
+import { getLocale } from '../../util/i18n/shared';
 
 export type StatusLightType = {
   glowStartDelay: number;

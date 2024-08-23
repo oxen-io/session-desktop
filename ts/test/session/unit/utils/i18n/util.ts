@@ -1,6 +1,6 @@
-import { setupI18n } from '../../../../../util/i18n';
 import { en } from '../../../../../localization/locales';
 import type { LocalizerDictionary } from '../../../../../types/Localizer';
+import { setupI18n } from '../../../../../util/i18n/i18n';
 
 export const testDictionary = {
   greeting: 'Hello, {name}!',
@@ -12,5 +12,5 @@ export const testDictionary = {
 } as const;
 
 export function initI18n(dictionary: Record<string, string> = en) {
-  return setupI18n({ initialLocale: 'en', initialDictionary: dictionary as LocalizerDictionary });
+  return setupI18n({ locale: 'en', translationDictionary: dictionary as LocalizerDictionary });
 }

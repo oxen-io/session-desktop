@@ -1,5 +1,6 @@
 import { isCI, isDevProd } from '../../shared/env_vars';
-import { formatAbbreviatedExpireTimer, formatTimeDuration } from '../../util/i18n';
+import { formatAbbreviatedExpireTimer } from '../../util/i18n/formater/expirationTimer';
+import { formatTimeDuration } from '../../util/i18n/formater/generics';
 import { DURATION_SECONDS } from '../constants';
 
 type TimerOptionsEntry = { name: string; value: number };

@@ -31,7 +31,6 @@ import { StateType } from '../state/reducer';
 import { SessionMainPanel } from './SessionMainPanel';
 
 import { SettingsKey } from '../data/settings-key';
-import { initialDictionaryState } from '../state/ducks/dictionary';
 import { getSettingsInitialState, updateAllOnStorageReady } from '../state/ducks/settings';
 import { initialSogsRoomInfoState } from '../state/ducks/sogsRoomInfo';
 import { useHasDeviceOutdatedSyncing } from '../state/selectors/settings';
@@ -46,7 +45,6 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
 
   return fromPairs(pairs);
 }
-
 
 const StyledGutter = styled.div`
   width: var(--left-panel-width) !important;
@@ -80,7 +78,6 @@ function createSessionInboxStore() {
     call: initialCallState,
     sogsRoomInfo: initialSogsRoomInfoState,
     settings: getSettingsInitialState(),
-    dictionary: initialDictionaryState,
   };
 
   return createStore(initialState);

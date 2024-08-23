@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { isEmpty, isEqual } from 'lodash';
 import styled, { CSSProperties } from 'styled-components';
 import { THEME_GLOBALS } from '../../themes/globals';
-import { useHTMLDirection } from '../../util/i18n';
 import { AnimatedFlex, Flex } from '../basic/Flex';
 import { SpacerMD } from '../basic/Text';
 import { SessionIconButton } from '../icon';
+import { useHTMLDirection } from '../../util/i18n/rtlSupport';
 
 type TextSizes = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 

@@ -3,9 +3,16 @@
 
 import { expect } from 'chai';
 import { initI18n, testDictionary } from './util';
+import { resetTranslationDictionary } from '../../../../../util/i18n/translationDictionaries';
 
 describe('formatMessageWithArgs', () => {
-  const i18n = initI18n(testDictionary);
+  let i18n;
+  beforeEach(() => {
+    i18n = initI18n(testDictionary);
+  });
+  afterEach(() => {
+    resetTranslationDictionary();
+  });
 
   it('returns the message with args for a message', () => {
     const message = i18n('Hello, {name}!', { name: 'Alice' });

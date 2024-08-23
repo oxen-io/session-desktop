@@ -51,10 +51,10 @@ import { NoMessageInConversation } from './SubtleNotification';
 import { ConversationHeaderWithDetails } from './header/ConversationHeader';
 
 import { isAudio } from '../../types/MIME';
-import { HTMLDirection } from '../../util/i18n';
 import { NoticeBanner } from '../NoticeBanner';
 import { SessionSpinner } from '../loading';
 import { RightPanel, StyledRightPanelContainer } from './right-panel/RightPanel';
+import { HTMLDirection } from '../../util/i18n/rtlSupport';
 
 const DEFAULT_JPEG_QUALITY = 0.85;
 

@@ -5,7 +5,7 @@ import formatFileSize from 'filesize';
 import { useSelectedConversationKey } from '../../../state/selectors/selectedConversation';
 import { saveAttachmentToDisk } from '../../../util/attachmentsUtil';
 import { MediaItemType } from '../../lightbox/LightboxGallery';
-import { formatWithLocale } from '../../../util/i18n';
+import { formatWithLocale } from '../../../util/i18n/formater/generics';
 
 type Props = {
   // Required

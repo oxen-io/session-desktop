@@ -3,9 +3,17 @@
 
 import { expect } from 'chai';
 import { initI18n, testDictionary } from './util';
+import { resetTranslationDictionary } from '../../../../../util/i18n/translationDictionaries';
 
 describe('getMessage', () => {
-  const i18n = initI18n(testDictionary);
+  let i18n;
+  beforeEach(() => {
+    i18n = initI18n(testDictionary);
+  });
+
+  afterEach(() => {
+    resetTranslationDictionary();
+  });
 
   it('returns the message for a token', () => {
     const message = i18n('greeting', { name: 'Alice' });

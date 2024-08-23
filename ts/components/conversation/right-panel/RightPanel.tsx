@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { useRightOverlayMode } from '../../../hooks/useUI';
-import { isRtlBody } from '../../../util/i18n';
 import { Flex } from '../../basic/Flex';
 import { OverlayRightPanelSettings } from './overlay/OverlayRightPanelSettings';
 import { OverlayDisappearingMessages } from './overlay/disappearing-messages/OverlayDisappearingMessages';
 import { OverlayMessageInfo } from './overlay/message-info/OverlayMessageInfo';
+import { isRtlBody } from '../../../util/i18n/rtlSupport';
 
 export const StyledRightPanelContainer = styled.div`
   position: absolute;

@@ -19,14 +19,15 @@ import {
 
 import { isDevProd } from '../../../../../../shared/env_vars';
 import { useSelectedConversationKey } from '../../../../../../state/selectors/selectedConversation';
-import {
-  formatTimeDuration,
-  formatTimeDistanceToNow,
-  formatWithLocale,
-} from '../../../../../../util/i18n';
+
 import { Flex } from '../../../../../basic/Flex';
 import { SpacerSM } from '../../../../../basic/Text';
 import { CopyToClipboardIcon } from '../../../../../buttons';
+import {
+  formatTimeDistanceToNow,
+  formatTimeDuration,
+  formatWithLocale,
+} from '../../../../../../util/i18n/formater/generics';
 
 export const MessageInfoLabel = styled.label<{ color?: string }>`
   font-size: var(--font-size-lg);

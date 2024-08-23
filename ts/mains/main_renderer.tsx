@@ -30,7 +30,7 @@ import { Notifications } from '../util/notifications';
 import { Registration } from '../util/registration';
 import { Storage, isSignInByLinking } from '../util/storage';
 import { getOppositeTheme, isThemeMismatched } from '../util/theme';
-import { getLocale } from '../util/i18n';
+import { getLocale } from '../util/i18n/shared';
 
 // Globally disable drag and drop
 document.body.addEventListener(

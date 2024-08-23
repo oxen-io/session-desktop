@@ -8,10 +8,10 @@ import {
   useSelectedIsLeft,
   useSelectedNicknameOrProfileNameOrShortenedPubkey,
 } from '../../../state/selectors/selectedConversation';
-import { HTMLDirection, useHTMLDirection } from '../../../util/i18n';
 import { updateDraftForConversation } from '../SessionConversationDrafts';
 import { renderEmojiQuickResultRow, searchEmojiForQuery } from './EmojiQuickResult';
 import { renderUserMentionRow, styleForCompositionBoxSuggestions } from './UserMentions';
+import { HTMLDirection, useHTMLDirection } from '../../../util/i18n/rtlSupport';
 
 const sendMessageStyle = (dir?: HTMLDirection) => {
   return {

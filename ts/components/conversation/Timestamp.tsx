@@ -2,7 +2,8 @@ import useInterval from 'react-use/lib/useInterval';
 import useUpdate from 'react-use/lib/useUpdate';
 import styled from 'styled-components';
 import { CONVERSATION } from '../../session/constants';
-import { formatFullDate, getConversationItemString } from '../../util/i18n';
+import { getConversationItemString } from '../../util/i18n/formater/conversationItemTimestamp';
+import { formatFullDate } from '../../util/i18n/formater/generics';
 
 type Props = {
   timestamp?: number;

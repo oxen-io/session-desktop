@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { DURATION } from '../../../../session/constants';
-import { formatFullDate, formatRelativeWithLocale } from '../../../../util/i18n';
+import { formatFullDate, formatRelativeWithLocale } from '../../../../util/i18n/formater/generics';
 
 const DateBreakContainer = styled.div``;
 

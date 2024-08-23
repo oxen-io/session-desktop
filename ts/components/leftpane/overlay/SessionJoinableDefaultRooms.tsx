@@ -6,13 +6,13 @@ import { parseOpenGroupV2 } from '../../../session/apis/open_group_api/opengroup
 import { sogsV3FetchPreviewBase64 } from '../../../session/apis/open_group_api/sogsv3/sogsV3FetchFile';
 import { DefaultRoomsState, updateDefaultBase64RoomData } from '../../../state/ducks/defaultRooms';
 import { StateType } from '../../../state/reducer';
-import { useHTMLDirection } from '../../../util/i18n';
 import { Avatar, AvatarSize } from '../../avatar/Avatar';
 import { Flex } from '../../basic/Flex';
 import { H4 } from '../../basic/Heading';
 import { PillContainerHoverable, StyledPillContainerHoverable } from '../../basic/PillContainer';
 import { SpacerXS } from '../../basic/Text';
 import { SessionSpinner } from '../../loading';
+import { useHTMLDirection } from '../../../util/i18n/rtlSupport';
 
 export type JoinableRoomProps = {
   completeUrl: string;
