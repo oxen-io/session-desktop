@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Du kan aktivera behörigheten \"Röst- och videosamtal\" i sekretessinställningarna.",
   "callsReconnecting": "Återansluter…",
   "callsRinging": "Ringer...",
-  "callsSessionCall": "Session-samtal",
   "callsSettings": "Samtal (Beta)",
   "callsVoiceAndVideo": "Röst- och videosamtal",
   "callsVoiceAndVideoBeta": "Röst- och videosamtal (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Skapa konto",
   "onboardingAccountCreated": "Konto Skapat",
   "onboardingAccountExists": "Jag har ett konto",
-  "onboardingBackAccountCreation": "Du kan inte gå tillbaka längre. För att avbryta din kontoskapning måste Session avslutas.",
-  "onboardingBackLoadAccount": "Du kan inte gå tillbaka längre. För att sluta ladda ditt konto måste Session avslutas.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Att skapa ett konto är omedelbart, gratis och anonymt",
   "onboardingBubbleNoPhoneNumber": "Du behöver inte ens ett telefonnummer för att registrera dig.",
   "onboardingBubblePrivacyInYourPocket": "Integritet i din ficka.",
@@ -706,7 +703,6 @@
   "set": "Ange",
   "settingsRestartDescription": "Du måste starta om {app_name} för att tillämpa dina nya inställningar.",
   "share": "Dela",
-  "shareAccountIdDescription": "Bjud in din vän att chatta med dig på Session genom att dela ditt Account ID med dem.",
   "shareAccountIdDescriptionCopied": "Dela med dina vänner var du än brukar prata med dem — flytta sedan konversationen hit.",
   "shareExtensionDatabaseError": "Det finns ett problem med att öppna databasen. Starta om appen och försök igen.",
   "shareToSession": "Dela till {app_Name}",
@@ -749,3 +745,4 @@
   "yes": "Ja",
   "you": "Du"
 }
+

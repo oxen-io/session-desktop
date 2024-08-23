@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Voit aktivoida \"Ääni- ja videopuhelut\" -käyttöoikeuden yksityisyysasetuksista.",
   "callsReconnecting": "Yhdistetään uudelleen…",
   "callsRinging": "Soi...",
-  "callsSessionCall": "Session-puhelu",
   "callsSettings": "Puhelut (beta)",
   "callsVoiceAndVideo": "Ääni- ja videopuhelut",
   "callsVoiceAndVideoBeta": "Ääni- ja videopuhelut (beta)",
@@ -556,8 +555,6 @@
   "onboardingAccountCreate": "Luo tili",
   "onboardingAccountCreated": "Tili luotu",
   "onboardingAccountExists": "Minulla on tili",
-  "onboardingBackAccountCreation": "Et voi mennä pidemmälle taaksepäin. Tili luomisen peruuttamiseksi Session on suljettava.",
-  "onboardingBackLoadAccount": "Et voi mennä pidemmälle taaksepäin. Tilin lataamisen lopettamiseksi Session on suljettava.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Tilin luominen on hetkessä valmis, ilmaista ja anonyymiä.",
   "onboardingBubbleNoPhoneNumber": "Et tarvitse edes puhelinnumeroa rekisteröityäksesi.",
   "onboardingBubblePrivacyInYourPocket": "Yksityisyys taskukokoisena.",
@@ -699,7 +696,6 @@
   "set": "Aseta",
   "settingsRestartDescription": "Sinun on käynnistettävä {app_name} uudelleen, jotta uudet asetuksesi tulevat voimaan.",
   "share": "Jaa",
-  "shareAccountIdDescription": "Kutsu ystäväsi keskustelemaan kanssasi Sessionissa jakamalla heidän kanssaan Account ID:si.",
   "shareAccountIdDescriptionCopied": "Jaa ystävien kanssa missä yleensä puhut heidän kanssaan - siirrä sitten keskustelu tänne.",
   "shareExtensionDatabaseError": "Ongelma avattaessa tietokantaa. Käynnistä sovellus uudelleen ja yritä uudelleen.",
   "show": "Näytä",
@@ -741,3 +737,4 @@
   "yes": "Kyllä",
   "you": "Sinä"
 }
+

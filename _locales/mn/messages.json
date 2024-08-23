@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Таныг зөвшөөрөх бол \"Дуу ба Видео Дуудлага\" зөвшөөрлийг Нууцлалын Тохиргоонд тохируулах боломжтой.",
   "callsReconnecting": "Сэргээж байна...",
   "callsRinging": "Дуудлага дугарч байна...",
-  "callsSessionCall": "Session дуудлага",
   "callsSettings": "Дуудлага (Beta)",
   "callsVoiceAndVideo": "Дуу болон видео дуудлага",
   "callsVoiceAndVideoBeta": "Дуу болон видео дуудлага (Beta)",
@@ -558,8 +557,6 @@
   "onboardingAccountCreate": "Бүртгэл үүсгэх",
   "onboardingAccountCreated": "Бүртгэл үүсгэгдсэн",
   "onboardingAccountExists": "Надад бүртгэл байгаа",
-  "onboardingBackAccountCreation": "Цааш буцааж чадахгүй. Аккаунт үүсгэлийг цуцлахын тулд Session програмыг зогсолт болгох шаардлагатай.",
-  "onboardingBackLoadAccount": "Цааш буцааж чадахгүй. Таны аккаунт ачаалахаа зогсоохын тулд Session програмыг зогсолт болгох шаардлагатай.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Бүртгэл үүсгэх нь шуурхай, үнэ төлбөргүй, нууцлалыг хангасан",
   "onboardingBubbleNoPhoneNumber": "Танд бүртгүүлэхийн тулд утасны дугаар ч хэрэггүй.",
   "onboardingBubblePrivacyInYourPocket": "Таны халаасанд байгаа нууцлал",
@@ -701,7 +698,6 @@
   "set": "Тохируулах",
   "settingsRestartDescription": "Шинэ тохиргоог хэрэгжүүлэхийн тулд {app_name}-ийг дахин эхлүүлнэ үү.",
   "share": "Хуваалцах",
-  "shareAccountIdDescription": "Бүртгэлийн ID-аа хуваалцаж найзаа Session дээр чатлахыг урь.",
   "shareAccountIdDescriptionCopied": "Найзуудтайгаа хаана ч байгаа яриагаа энд шилжүүлээрэй.",
   "shareExtensionDatabaseError": "Өгөгдлийн бааз нээхэд асуудал гарлаа. Програмыг дахин эхлүүлээд оролдоно уу.",
   "shareToSession": "{app_Name}-д хуваалцах",
@@ -744,3 +740,4 @@
   "yes": "Тийм",
   "you": "Та"
 }
+

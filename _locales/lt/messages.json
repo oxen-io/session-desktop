@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Jūs galite įjungti leidimą \"Balso ir vaizdo skambučiai\" privatumo nustatymuose.",
   "callsReconnecting": "Atjungta...",
   "callsRinging": "Skambinama…",
-  "callsSessionCall": "Session skambutis",
   "callsSettings": "Skambučiai (Beta)",
   "callsVoiceAndVideo": "Balso ir vaizdo skambučiai",
   "callsVoiceAndVideoBeta": "Balso ir vaizdo skambučiai (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Sukurti paskyrą",
   "onboardingAccountCreated": "Paskyra sukurta",
   "onboardingAccountExists": "Aš turiu paskyrą",
-  "onboardingBackAccountCreation": "Negalite grįžti toliau. Norėdami atšaukti savo paskyros kūrimą, Session turi užsidaryti.",
-  "onboardingBackLoadAccount": "Negalite grįžti toliau. Norėdami sustabdyti paskyros įkėlimą, Session turi užsidaryti.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Sukurti paskyrą yra momentinis, nemokamas ir anonimiškas ",
   "onboardingBubbleNoPhoneNumber": "Jums net nereikia telefono numerio registracijai.",
   "onboardingBubblePrivacyInYourPocket": "Privatumas tavo kišenėje.",
@@ -708,7 +705,6 @@
   "set": "Nustatyti",
   "settingsRestartDescription": "Norėdami taikyti naujus nustatymus, privalote paleisti iš naujo {app_name}.",
   "share": "Bendrinti",
-  "shareAccountIdDescription": "Pakvieskite savo draugą į pokalbį Session dalindamiesi su jais savo Account ID.",
   "shareAccountIdDescriptionCopied": "Pasidalinkite su draugais ten, kur jie kalbasi — tada perkelkite pokalbį čia.",
   "shareExtensionDatabaseError": "Įvyko klaida atidarant duomenų bazę. Perkraukite programėlę ir bandykite dar kartą.",
   "shareToSession": "Bendrinti su {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Taip",
   "you": "Jūs"
 }
+

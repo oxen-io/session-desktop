@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Možete omogućiti dopuštenje za „Audio i Video pozive” u Postavkama privatnosti.",
   "callsReconnecting": "Ponovno povezivanje...",
   "callsRinging": "Zvoni...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "Pozivi (Beta)",
   "callsVoiceAndVideo": "Audio i video pozivi",
   "callsVoiceAndVideoBeta": "Audio i video pozivi (Beta)",
@@ -559,8 +558,6 @@
   "onboardingAccountCreate": "Stvori račun",
   "onboardingAccountCreated": "Račun Kreiran",
   "onboardingAccountExists": "Imam račun",
-  "onboardingBackAccountCreation": "Ne možete se vratiti unatrag. Da biste otkazali kreiranje računa, Session mora prestati s radom.",
-  "onboardingBackLoadAccount": "Ne možete se vratiti unatrag. Da biste zaustavili učitavanje svog računa, Session mora prestati s radom.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Otvaranje računa je trenutačno, besplatno i anonimno ",
   "onboardingBubbleNoPhoneNumber": "Za prijavu vam čak nije potreban telefonski broj.",
   "onboardingBubblePrivacyInYourPocket": "Privatnost u vašem džepu.",
@@ -704,7 +701,6 @@
   "set": "Postavi",
   "settingsRestartDescription": "Morate ponovno pokrenuti {app_name} da biste primijenili nove postavke.",
   "share": "Podijeli",
-  "shareAccountIdDescription": "Pozovite prijatelja na chatanje sa Session-om dijeljenjem svog Account ID-ja s njima.",
   "shareAccountIdDescriptionCopied": "Podijelite sa svojim prijateljima gdje obično razgovarate s njima - a zatim premjestite razgovor ovdje.",
   "shareExtensionDatabaseError": "Postoji problem s otvaranjem baze podataka. Ponovo pokrenite aplikaciju i pokušajte ponovno.",
   "shareToSession": "Podijeli sa {app_Name}",
@@ -747,3 +743,4 @@
   "yes": "Da",
   "you": "Vi"
 }
+

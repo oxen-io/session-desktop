@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "شما ویڈیو و کال پرمیشن ونجان سیٹنگا سی ایں براتی اے انارہ۔",
   "callsReconnecting": "پارانچکاں...",
   "callsRinging": "برنگینگ...",
-  "callsSessionCall": "سیشن کال",
   "callsSettings": "کالز (بیٹا)",
   "callsVoiceAndVideo": "وائس اور ویڈیو کالز",
   "callsVoiceAndVideoBeta": "وائس اور ویڈیو کالز (بیٹا)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "حساب بناؤ",
   "onboardingAccountCreated": "Account Created",
   "onboardingAccountExists": "مانی اکاؤنٹ اے",
-  "onboardingBackAccountCreation": "شما ناہزشتہ تہارے شارتہ ممیدہ۔ اکون ناہ تابت تہارا ختم کنند رنگین Session کنارہ۔",
-  "onboardingBackLoadAccount": "شما ممیدہ تہارا قتل کنند Session کنارہ۔",
   "onboardingBubbleCreatingAnAccountIsEasy": "حساب بنانا فوری، مفت، اور گمنام ہے ",
   "onboardingBubbleNoPhoneNumber": "شمے ناہ کانینٹ موبائل نمبر ہامینٹ انسکر ہونے۔",
   "onboardingBubblePrivacyInYourPocket": "اپ کی جیب میں نجی تحفظ.",
@@ -708,7 +705,6 @@
   "set": "سیٹ",
   "settingsRestartDescription": "ما گپ درخواست قبول کردی {app_name} شروعین کار کنت کہ نویں تنظیماتاں اپنا بیوت.",
   "share": "پھریبندو",
-  "shareAccountIdDescription": "اپنے دوست کو Session میں شامل ہونے کے لئے اپنا اکاؤنٹ آئی ڈی شئیر کر کے دعوت دیں۔",
   "shareAccountIdDescriptionCopied": "لیستی گپتاری ککیانتو انتظام کھیت",
   "shareExtensionDatabaseError": "ڈیٹا بیس کو باز کردن میں ایشو. براہ کرم ایپلیکیشن کی دوبارہ شروع کریں و پہ دوبارہ کوشش کریں.",
   "shareToSession": "{app_Name} کباز کرا",
@@ -751,3 +747,4 @@
   "yes": "ہاں",
   "you": "شما"
 }
+

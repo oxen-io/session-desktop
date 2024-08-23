@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "プライバシー設定で「音声とビデオ通話」の許可を有効にできます。",
   "callsReconnecting": "再接続しています...",
   "callsRinging": "呼び出し中...",
-  "callsSessionCall": "Session通話",
   "callsSettings": "通話 (ベータ版)",
   "callsVoiceAndVideo": "音声とビデオ通話",
   "callsVoiceAndVideoBeta": "音声通話とビデオ通話 (ベータ版)",
@@ -555,8 +554,6 @@
   "onboardingAccountCreate": "アカウントを作成",
   "onboardingAccountCreated": "アカウントが作成されました",
   "onboardingAccountExists": "アカウントをお持ちですか？",
-  "onboardingBackAccountCreation": "これ以上戻れません。アカウント作成をキャンセルするには、Sessionを終了する必要があります。",
-  "onboardingBackLoadAccount": "これ以上戻れません。アカウントの読み込みを中止するには、Sessionを終了する必要があります。",
   "onboardingBubbleCreatingAnAccountIsEasy": "アカウントの作成は即座に、無料で、匿名です",
   "onboardingBubbleNoPhoneNumber": "電話番号は必要ありません。",
   "onboardingBubblePrivacyInYourPocket": "ポケットの中のプライバシー。",
@@ -697,7 +694,6 @@
   "set": "セット",
   "settingsRestartDescription": "新しい設定を適用するために {app_name} を再起動する必要があります.",
   "share": "共有",
-  "shareAccountIdDescription": "アカウントIDを共有して友達にSessionでのチャットを招待しましょう。",
   "shareAccountIdDescriptionCopied": "いつもどこでも友達と共有してください — ここで会話を移動します。",
   "shareExtensionDatabaseError": "データベースを開く際に問題が発生しました。アプリを再起動して再度お試しください。",
   "shareToSession": "{app_Name}に共有",
@@ -738,3 +734,4 @@
   "yes": "はい",
   "you": "あなた"
 }
+

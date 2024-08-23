@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "تۆ دەتوانی دەسەڵاتی \"پەیوەندی دەنگی و ڤیدیۆ\" بکەیەوە لە رێکخستنی تایبەتی.",
   "callsReconnecting": "کردنەوە بەتەقیەیە...",
   "callsRinging": "لەبارە...",
-  "callsSessionCall": "پەیامی ڕووداو",
   "callsSettings": "پەیوەندیدانەکان (بهێڵه‌ی نوێ)",
   "callsVoiceAndVideo": "پەیوەندیە دەنگی و ڤیدیۆکان",
   "callsVoiceAndVideoBeta": "پەیوەندیە دەنگی و ڤیدیۆ (Beta)",
@@ -560,8 +559,6 @@
   "onboardingAccountCreate": "دروستکردنی هەژمار",
   "onboardingAccountCreated": "هەژمار درووستکرا",
   "onboardingAccountExists": "حسابێکم هەیە",
-  "onboardingBackAccountCreation": "تۆ ناتوانیت بگەڕێیتەوە. بۆ ڕەتکردنەوەی دروستکردنی ئەژمێرت، پایەی پێویستە بەھۆلی Session بێ.",
-  "onboardingBackLoadAccount": "تۆ ناتوانیت بگەڕێیتەوە. بۆ ڕوکاوکردنەوەی بارکردنی ئەژمێرت، پایەی پێویستە دیساوا بەھۆلی Session بێ.",
   "onboardingBubbleCreatingAnAccountIsEasy": "دروستکردنی هەژمارەکی خێرا، بێ بەرامبەر، و ناشناسە",
   "onboardingBubbleNoPhoneNumber": "تۆ هیچ ژمارەی ھەڵفتی بەکار نایەیت بۆ تۆماربوون.",
   "onboardingBubblePrivacyInYourPocket": "پاراستن لە جێبەکەتدا.",
@@ -704,7 +701,6 @@
   "sessionSettings": "کانف.*?) دابنێ. هاوکێشە ، دان بە کۆنفرمەکردنی بەکوپی دەنێ. تەرکیبەکانی داپەش-پلانە دێ بەرز بتە. süstee دانە بەرەڤداستور ئەپە دییانە ^ کانسەش.",
   "set": "دان راوکردن",
   "share": "هاوبەشی زاد",
-  "shareAccountIdDescription": "بانێ ئەم شانەت بۆ چات کردن لە Session بە پێگەشتنی شناسیەتی حسابەکەتان.",
   "shareAccountIdDescriptionCopied": "هاوبەشەكە وەكFAB وێبی هرێ ئاڵۆزە.",
   "shareExtensionDatabaseError": "کێشەیەک نەکەی پلەکەی پێناسەکە. تکایە بەرنامەکە دووبارە بکردنەوە و دووبارە هەوڵبدەوە.",
   "show": "پیشان دان بەز.",
@@ -746,3 +742,4 @@
   "yes": "بەڵێ",
   "you": "تۆ"
 }
+

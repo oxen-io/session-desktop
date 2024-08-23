@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Unaweza kuwezesha ruhusa ya \"Simu za Sauti na Video\" katika Mipangilio ya Faragha.",
   "callsReconnecting": "Kuungana Tena…",
   "callsRinging": "kupigia...",
-  "callsSessionCall": "wito wa Session",
   "callsSettings": "Simu (Beta)",
   "callsVoiceAndVideo": "Sauti na Simu za Video",
   "callsVoiceAndVideoBeta": "Sauti na Simu za Video (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Unda akaunti",
   "onboardingAccountCreated": "Akaunti Imesasishwa",
   "onboardingAccountExists": "Nina akaunti",
-  "onboardingBackAccountCreation": "Huwezi kwenda nyuma zaidi. Ili kufuta kuundwa kwa akaunti yako, Session inahitaji kufungwa.",
-  "onboardingBackLoadAccount": "Huwezi kwenda nyuma zaidi. Ili kusitisha kupakia akaunti yako, Session inahitaji kufungwa.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Kuunda akaunti ni haraka, bila malipo, na bila jina ",
   "onboardingBubbleNoPhoneNumber": "Hata huhitaji nambari ya simu kujisajili.",
   "onboardingBubblePrivacyInYourPocket": "Faragha mfukoni mwako.",
@@ -708,7 +705,6 @@
   "set": "Weka",
   "settingsRestartDescription": "Lazima uanzishe tena {app_name} ili kutumia mipangilio yako mipya.",
   "share": "Shiriki",
-  "shareAccountIdDescription": "Mwalike rafiki yako azungumze nawe kwenye Session kwa kushirikisha Kitambulisho chako cha Akaunti.",
   "shareAccountIdDescriptionCopied": "Shiriki na marafiki zako popote unapo kawaida kuzungumza nao — kisha hamishiana mazungumzo hapa.",
   "shareExtensionDatabaseError": "Kuna tatizo la kufungua hifadhidata. Tafadhali anzisha programu upya na ujaribu tena.",
   "shareToSession": "Shiriki kwa {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ndio",
   "you": "Wewe"
 }
+

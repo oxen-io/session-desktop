@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "თქვენ შეგიძლიათ ჩართოთ \"ხმოვანი და ვიდეო ზარების\" უფლება კონფიდენციალობის პარამეტრებში.",
   "callsReconnecting": "კვლავ დაკავშირება…",
   "callsRinging": "დარეკვა...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "ზარები (Beta)",
   "callsVoiceAndVideo": "ხმოვანი და ვიდეო ზარები",
   "callsVoiceAndVideoBeta": "ხმოვანი და ვიდეო ზარები (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "განცხადების შექმნა",
   "onboardingAccountCreated": "ანგარიში შექმნილია",
   "onboardingAccountExists": "მე მაქვს ანგარიში",
-  "onboardingBackAccountCreation": "თქვენ ვერ დაბრუნდებით უფრო უკან. ანგარიშის შექმნის გაუქმებისთვის საჭიროა გახვიდეთ Session-დან.",
-  "onboardingBackLoadAccount": "თქვენ ვერ დაბრუნდებით უფრო უკან. ანგარიშის ჩატვირთვის შეწყვეტისთვის საჭიროა გახვიდეთ Session-დან.",
   "onboardingBubbleCreatingAnAccountIsEasy": "განცხადების შექმნა სწრაფი, უფასო და ანონიმურია ",
   "onboardingBubbleNoPhoneNumber": "თქვენ არც ტელეფონის ნომერი არ გჭირდებათ რეგისტრაციისთვის.",
   "onboardingBubblePrivacyInYourPocket": "პირადი თქვენს ჯიბეში.",
@@ -708,7 +705,6 @@
   "set": "მითითება",
   "settingsRestartDescription": "თქვენ უნდა გადატვირთოთ {app_name} თქვენი ახალი პარამეტრებისთვის.",
   "share": "გაზიარება",
-  "shareAccountIdDescription": "მოუწვიე მეგობარი ჩატის დასაწყებად, გაუზიარეთ მათ თქვენი Account ID.",
   "shareAccountIdDescriptionCopied": "გაზიარეთ თქვენი მეგობრებთან, სადაც მათთან საუბრობთ, შემდეგ გადადით საუბარში აქ.",
   "shareExtensionDatabaseError": "ტრენტის ბაზაზე გაერთიანებაა პრობლემა. გთხოვთ, ხელახლა დაიწყეთ აპლიკაცია და სცადეთ თავიდან.",
   "shareToSession": "გააზიარეთ {app_Name}-თან",
@@ -751,3 +747,4 @@
   "yes": "Yes",
   "you": "თქვენ"
 }
+

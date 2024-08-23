@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Anda boleh mengaktifkan kebenaran \"Panggilan Suara dan Video\" dalam Tetapan Privasi.",
   "callsReconnecting": "Menyambungkan semula…",
   "callsRinging": "Sedang Berbunyi...",
-  "callsSessionCall": "Panggilan Sesi",
   "callsSettings": "Panggilan (Beta)",
   "callsVoiceAndVideo": "Panggilan Suara dan Video",
   "callsVoiceAndVideoBeta": "Panggilan Suara dan Video (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Buat akaun",
   "onboardingAccountCreated": "Akaun Dicipta",
   "onboardingAccountExists": "Saya ada akaun",
-  "onboardingBackAccountCreation": "Anda tidak boleh kembali lebih jauh. Untuk membatalkan pembuatan akaun anda, Session perlu berhenti.",
-  "onboardingBackLoadAccount": "Anda tidak boleh kembali lebih jauh. Untuk menghentikan pemuatan akaun anda, Session perlu berhenti.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Membuat akaun adalah serta-merta, percuma dan tanpa nama",
   "onboardingBubbleNoPhoneNumber": "Anda tidak perlu nombor telefon untuk mendaftar.",
   "onboardingBubblePrivacyInYourPocket": "Privasi di dalam poket anda.",
@@ -707,7 +704,6 @@
   "set": "Tetapkan",
   "settingsRestartDescription": "Anda mesti memulakan semula {app_name} untuk menerapkan tetapan baru anda.",
   "share": "Kongsi",
-  "shareAccountIdDescription": "Jemput rakan anda untuk berbual dengan anda di Session dengan berkongsi ID Akaun anda dengan mereka.",
   "shareAccountIdDescriptionCopied": "Kongsi dengan rakan-rakan anda di mana sahaja anda biasanya bercakap dengan mereka — kemudian pindahkan perbualan ke sini.",
   "shareExtensionDatabaseError": "Terdapat masalah membuka pangkalan data. Sila mulakan semula aplikasi dan cuba lagi.",
   "show": "Paparkan",
@@ -749,3 +745,4 @@
   "yes": "Ya",
   "you": "Anda"
 }
+

@@ -141,7 +141,6 @@
   "callsPermissionsRequiredDescription": "Ungavula imvume ethi \"Voice and Video Calls\" kwi-Privacy Settings.",
   "callsReconnecting": "Ukuqhagamshelanisa kwakhona",
   "callsRinging": "Kuyaqhosha...",
-  "callsSessionCall": "Umnxeba we-Session",
   "callsSettings": "Iitsalela (Beta)",
   "callsVoiceAndVideo": "Iifowuni zeSandi neeVidiyo",
   "callsVoiceAndVideoBeta": "Iifowuni zeSandi neeVidiyo (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Yenza iakhawunti",
   "onboardingAccountCreated": "Iakhawunti yenziwe",
   "onboardingAccountExists": "Ndinayo iakhawunti",
-  "onboardingBackAccountCreation": "Awungekhe ubuyisele umva ngakumbi. Ukusuka kokuqhawula ukudala iakhawunti yakho, i-Session kufuneka ivalwe.",
-  "onboardingBackLoadAccount": "Awungekhe ubuyisele umva ngakumbi. Ukusuka kokuqhawula ukulayisha i-akhawunti yakho, i-Session kufuneka ivalwe.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Ukudala i-akhawunti kuyakhawuleza, simahla, kwaye ayichanisanga",
   "onboardingBubbleNoPhoneNumber": "Awudingi kwanombolo yefowuni ukubhalisa.",
   "onboardingBubblePrivacyInYourPocket": "Ubumfihlo kwipokotho yakho.",
@@ -706,7 +703,6 @@
   "set": "Miselani",
   "settingsRestartDescription": "Kufuneka uqale kwakhona {app_name} ukufaka isicelo setshedulo sakho esitsha.",
   "share": "Share",
-  "shareAccountIdDescription": "Mema umhlobo wakho ukuba athethe kunye nawe kwi-Session ngokwabelana nge-ID yakho",
   "shareAccountIdDescriptionCopied": "Share with your friends wherever you usually speak with them — then move the conversation here.",
   "shareExtensionDatabaseError": "Kukho ingxaki ekuvuleni i-database. Nceda uqale kwakhona uze uzame kwakhona.",
   "shareToSession": "Share to {app_Name}",
@@ -749,3 +745,4 @@
   "yes": "Ewe",
   "you": "Gwe"
 }
+

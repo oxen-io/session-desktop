@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Dovoljenje za 'Glasovne klice in videoposnetke' lahko omogočite v nastavitvah zasebnosti.",
   "callsReconnecting": "Povezovanje...",
   "callsRinging": "Zvoni ...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "Klici (Beta)",
   "callsVoiceAndVideo": "Glasvni in video klici",
   "callsVoiceAndVideoBeta": "Glasvni in video klici (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Ustvari račun",
   "onboardingAccountCreated": "Račun ustvarjen",
   "onboardingAccountExists": "Imam račun",
-  "onboardingBackAccountCreation": "Ne morete se vrniti nazaj. Če želite prekiniti ustvarjanje računa, mora Session zapreti.",
-  "onboardingBackLoadAccount": "Ne morete se vrniti nazaj. Če želite ustaviti nalaganje vašega računa, mora Session zapreti.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Ustvarjanje računa je takojšnje, brezplačno in anonimno",
   "onboardingBubbleNoPhoneNumber": "Za prijavo ni potreben telefonski številka.",
   "onboardingBubblePrivacyInYourPocket": "Zasebnost v vašem žepu.",
@@ -707,7 +704,6 @@
   "set": "Nastavi",
   "settingsRestartDescription": "Za uporabo novih nastavitev morate znova zagnati {app_name}.",
   "share": "Deli",
-  "shareAccountIdDescription": "Povabite svojega prijatelja k pogovoru v Session tako, da z njim delite svoj Account ID.",
   "shareAccountIdDescriptionCopied": "Delite s prijatelji, kjer običajno komunicirate — nato pa premaknite pogovor tukaj.",
   "shareExtensionDatabaseError": "Prišlo je do težave pri odpiranju baze podatkov. Znova zaženite aplikacijo in poskusite znova.",
   "shareToSession": "Deli z {app_Name}",
@@ -750,3 +746,4 @@
   "yes": "Da",
   "you": "Vi"
 }
+

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { isString } from 'lodash';
 
 const ERRORS = {
   TYPE: 'Password must be a string',
@@ -19,7 +20,7 @@ export const matchesHash = (phrase: string | null, hash: string) =>
   phrase && sha512(phrase.trim()) === hash.trim();
 
 export const validatePassword = (phrase: string) => {
-  if (typeof phrase !== 'string') {
+  if (!isString(phrase)) {
     return window?.i18n ? window?.i18n('passwordError') : ERRORS.TYPE;
   }
 

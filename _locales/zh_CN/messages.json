@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "你可以在隐私设置中启用 \"语音和视频通话\" 权限。",
   "callsReconnecting": "重连中...",
   "callsRinging": "响铃中...",
-  "callsSessionCall": "Session呼叫",
   "callsSettings": "呼叫 (Beta)",
   "callsVoiceAndVideo": "语音和视频通话",
   "callsVoiceAndVideoBeta": "语音和视频通话(Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "创建账号",
   "onboardingAccountCreated": "账户已创建",
   "onboardingAccountExists": "我已有账号",
-  "onboardingBackAccountCreation": "你无法再返回了。为了取消账户创建，Session 需要退出。",
-  "onboardingBackLoadAccount": "你无法再返回了。为了停止加载账户，Session 需要退出。",
   "onboardingBubbleCreatingAnAccountIsEasy": "创建账户是立即的、免费的和匿名的",
   "onboardingBubbleNoPhoneNumber": "你甚至不需要电话号码就能注册。",
   "onboardingBubblePrivacyInYourPocket": "隐私在您的口袋中。",
@@ -708,7 +705,6 @@
   "set": "会话设置",
   "settingsRestartDescription": "您必须重新启动{app_name}以应用您的新设置。",
   "share": "分享",
-  "shareAccountIdDescription": "通过分享您的帐号ID来邀请好友在Session上与您聊天。",
   "shareAccountIdDescriptionCopied": "与您的朋友分享您通常与他们交谈的地方——然后将对话移动到这里。",
   "shareExtensionDatabaseError": "打开数据库时出现问题。请重新启动应用程序并重试。",
   "shareToSession": "分享到 {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "是",
   "you": "您"
 }
+

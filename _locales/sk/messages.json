@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "\"Hlasové a videohovory\" môžete povoliť v nastaveniach súkromia.",
   "callsReconnecting": "Opätovné pripájanie…",
   "callsRinging": "Zvonenie...",
-  "callsSessionCall": "Session hovor",
   "callsSettings": "Hovory (Beta)",
   "callsVoiceAndVideo": "Hlasové a video hovory",
   "callsVoiceAndVideoBeta": "Hlasové a video hovory (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Vytvoriť účet",
   "onboardingAccountCreated": "Účet bol vytvorený",
   "onboardingAccountExists": "Mám účet",
-  "onboardingBackAccountCreation": "Nemôžete ísť späť. Ak chcete zrušiť vytváranie účtu, je potrebné ukončiť Session.",
-  "onboardingBackLoadAccount": "Nemôžete ísť späť. Ak chcete zastaviť načítanie účtu, je potrebné ukončiť Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Vytvorenie účtu je okamžité, bezplatné a anonymné",
   "onboardingBubbleNoPhoneNumber": "Dokonca ani nepotrebujete telefónne číslo, aby ste sa zaregistrovali.",
   "onboardingBubblePrivacyInYourPocket": "Súkromie vo vašom vrecku.",
@@ -707,7 +704,6 @@
   "set": "Nastaviť",
   "settingsRestartDescription": "Ak chcete použiť nové nastavenia, musíte reštartovať {app_name}.",
   "share": "Zdieľať",
-  "shareAccountIdDescription": "Pozvite svojho priateľa, aby s vami chatoval v Session zdieľaním svojho Account ID s ním.",
   "shareAccountIdDescriptionCopied": "Podeľte sa oň so svojimi priateľmi tam, kde s nimi zvyčajne komunikujete — a potom sem presuňte konverzáciu.",
   "shareExtensionDatabaseError": "Nastal problém s otvorením databázy. Reštartujte aplikáciu a skúste to znova.",
   "show": "Zobraziť",
@@ -749,3 +745,4 @@
   "yes": "Áno",
   "you": "Vy"
 }
+

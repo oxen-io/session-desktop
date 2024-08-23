@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Jy kan die toestemming vir \"Stem- en Video-oproepe\" aktiveer in Privaatheidsinstellings.",
   "callsReconnecting": "Herverbinding…",
   "callsRinging": "Lui...",
-  "callsSessionCall": "Sesion-oproep",
   "callsSettings": "Oproepe (Beta)",
   "callsVoiceAndVideo": "Stem- en video-oproepe",
   "callsVoiceAndVideoBeta": "Stem- en video-oproepe (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Skep rekening",
   "onboardingAccountCreated": "rekening geskep",
   "onboardingAccountExists": "Ek het 'n rekening",
-  "onboardingBackAccountCreation": "Jy kan nie verder teruggaan nie. Om jou rekening skepping te kanselleer, moet Session sluit.",
-  "onboardingBackLoadAccount": "Jy kan nie verder teruggaan nie. Om te stop met laai van jou rekening, moet Session sluit.",
   "onboardingBubbleCreatingAnAccountIsEasy": "'n Rekening skep is onmiddellik, gratis en anoniem",
   "onboardingBubbleNoPhoneNumber": "Jy het nie eers 'n telefoonnommer nodig om in te teken nie.",
   "onboardingBubblePrivacyInYourPocket": "Privaatheid in jou sak.",
@@ -708,7 +705,6 @@
   "set": "Stel",
   "settingsRestartDescription": "Jy moet {app_name} herbegin om jou nuwe instellings toe te pas.",
   "share": "Deel",
-  "shareAccountIdDescription": "Nooi jou vriend om op Session met jou te gesels deur jou Rekening ID met hulle te deel.",
   "shareAccountIdDescriptionCopied": "Deel met jou vriende waar jy gewoonlik met hulle praat - en skuif die gesprek hier.",
   "shareExtensionDatabaseError": "Daar is 'n probleem met die oopmaak van die databasis. Herlaai asseblief die toepassing en probeer weer.",
   "shareToSession": "Deel aan {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ja",
   "you": "Jy"
 }
+

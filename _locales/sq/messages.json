@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Ju mund të aktivizoni lejen \"Thirrje Zëri dhe Video\" në cilësimet e privatësisë.",
   "callsReconnecting": "Rilidhet…",
   "callsRinging": "Po bie zilja...",
-  "callsSessionCall": "Thirrje përmes Session-i",
   "callsSettings": "Thirrje (Beta)",
   "callsVoiceAndVideo": "Thirrje me Zë dhe Video",
   "callsVoiceAndVideoBeta": "Thirrje me Zë dhe Video (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Krijo llogari",
   "onboardingAccountCreated": "Llogaria e krijuar",
   "onboardingAccountExists": "Kam një llogari",
-  "onboardingBackAccountCreation": "Ju nuk mund të ktheheni më tej. Për të anuluar krijimin e llogarisë suaj, Session duhet të mbyllet.",
-  "onboardingBackLoadAccount": "Ju nuk mund të ktheheni më tej. Për të ndaluar ngarkimin e llogarisë suaj, Session duhet të mbyllet.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Krijimi i një llogarie është i menjëhershëm, falas dhe anonim ",
   "onboardingBubbleNoPhoneNumber": "Ju nuk keni nevojë për një numër telefoni për tu regjistruar.",
   "onboardingBubblePrivacyInYourPocket": "Privatësia në xhepin tuaj.",
@@ -708,7 +705,6 @@
   "set": "Vendos",
   "settingsRestartDescription": "Duhet të rifilloni {app_name} për të zbatuar cilësimet e reja.",
   "share": "Shpërndaje",
-  "shareAccountIdDescription": "Ftoni shokët tuaj të bisedojnë me ju në Session duke ndarë Account ID tuaj me ta.",
   "shareAccountIdDescriptionCopied": "Shpërndani me miqtë tuaj kudo që flisni zakonisht me ta — pastaj zhvendosni bisedën këtu.",
   "shareExtensionDatabaseError": "Ka një problem në hapjen e bazës së të dhënave. Ju lutem rindizni aplikacionin dhe provoni përsëri.",
   "shareToSession": "Shpërndaje në {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Po",
   "you": "Ju"
 }
+

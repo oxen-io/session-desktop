@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Oprávnění pro \"Hovory a videohovory\" můžete povolit v nastavení Soukromí.",
   "callsReconnecting": "Opětovné připojení…",
   "callsRinging": "Vyzvání...",
-  "callsSessionCall": "Session volání",
   "callsSettings": "Hovory (Beta)",
   "callsVoiceAndVideo": "Hlasové hovory a videohovory",
   "callsVoiceAndVideoBeta": "Hlasové a video hovory (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Vytvořit účet",
   "onboardingAccountCreated": "<b>Účet vytvořen</b>",
   "onboardingAccountExists": "Mám účet",
-  "onboardingBackAccountCreation": "Dále se nemůžete vrátit. Pokud chcete zrušit vytváření účtu, musí se Session ukončit.",
-  "onboardingBackLoadAccount": "Dále se nemůžete vrátit. Pokud chcete zastavit načítání svého účtu, musí se Session ukončit.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Vytvoření účtu je okamžité, zdarma a anonymní",
   "onboardingBubbleNoPhoneNumber": "K registraci nepotřebujete ani telefonní číslo.",
   "onboardingBubblePrivacyInYourPocket": "Soukromí ve vaší kapse.",
@@ -708,7 +705,6 @@
   "set": "Nastavit",
   "settingsRestartDescription": "Pro použití nových nastavení musíte restartovat {app_name}.",
   "share": "Sdílet",
-  "shareAccountIdDescription": "Pozvěte svého přítele k chatu na Session sdílením svého Account ID s nimi.",
   "shareAccountIdDescriptionCopied": "Sdílejte se svými přáteli tam, kde s nimi obvykle mluvíte — a pak konverzaci přesuňte sem.",
   "shareExtensionDatabaseError": "Při otevírání databáze se vyskytl problém. Prosím, restartujte aplikaci a zkuste to znovu.",
   "shareToSession": "Sdílet do {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ano",
   "you": "Vy"
 }
+

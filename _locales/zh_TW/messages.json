@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "您可以在隱私權設定中啟用「語音和視訊通話」權限。",
   "callsReconnecting": "正在重新連線…",
   "callsRinging": "響鈴中...",
-  "callsSessionCall": "Session 通話",
   "callsSettings": "通話 (Beta)",
   "callsVoiceAndVideo": "語音和視訊通話",
   "callsVoiceAndVideoBeta": "語音和視訊通話 (測試版)",
@@ -559,8 +558,6 @@
   "onboardingAccountCreate": "建立帳號",
   "onboardingAccountCreated": "帳號已建立",
   "onboardingAccountExists": "我已有帳戶",
-  "onboardingBackAccountCreation": "您無法再往回了。為取消您的帳戶創建，Session 需要退出。",
-  "onboardingBackLoadAccount": "您無法再往回了。為停止加載您的帳戶，Session 需要退出。",
   "onboardingBubbleCreatingAnAccountIsEasy": "創建帳戶是即時、免費的，且是匿名的",
   "onboardingBubbleNoPhoneNumber": "您甚至不需要電話號碼即可註冊。",
   "onboardingBubblePrivacyInYourPocket": "隱私在您口袋裡。",
@@ -704,7 +701,6 @@
   "set": "設定",
   "settingsRestartDescription": "您必須重新啓動 {app_name} 以應用您的新設定。",
   "share": "分享",
-  "shareAccountIdDescription": "分享您的帳號ID來邀請好友在Session上聊天。",
   "shareAccountIdDescriptionCopied": "在任何慣常與朋友交談的地方與他們分享, 然後將對話移到這裏。",
   "shareExtensionDatabaseError": "打開資料庫時出現問題。請重新啟動應用程式並重試。",
   "shareToSession": "分享到 {app_Name}",
@@ -747,3 +743,4 @@
   "yes": "是",
   "you": "你"
 }
+

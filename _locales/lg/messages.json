@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Osobola okukakasa obwa \"Obumanyiddwako n'Obwezokuba\" ku by'akabondo.",
   "callsReconnecting": "Okumujjirako...",
   "callsRinging": "Tesudde",
-  "callsSessionCall": "Kuyita Kwa Session",
   "callsSettings": "Calls (Beta)",
   "callsVoiceAndVideo": "Emmboozi ne Bidiyo Bye Werezebwa",
   "callsVoiceAndVideoBeta": "Emmboozi ne Bidiyo Bye Werezebwa (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Kilira Account",
   "onboardingAccountCreated": "Account Yekubwako",
   "onboardingAccountExists": "Nina akaawunti",
-  "onboardingBackAccountCreation": "Tolemwa mukufuluma. Okuyiza kupawaaka akawalilizo, Session ekyo kutwale n'egivaamu.",
-  "onboardingBackLoadAccount": "Toyinza kwenda mbu ogyanso. Okuyinya kugyakyusa akawunyiyo, Session ye:entiala kugivaamu.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Okutandika akaunti kiko kyangu, ku bwerere, era tekuli na muntu amukubira kyenkana.",
   "onboardingBubbleNoPhoneNumber": "Toyetaaga wafoona okusibu",
   "onboardingBubblePrivacyInYourPocket": "Katibako n’omukumi",
@@ -705,7 +702,6 @@
   "set": "Tereka",
   "settingsRestartDescription": "Olina okukozizza {app_name} okusobozesa settings empya.",
   "share": "Gabana",
-  "shareAccountIdDescription": "Yingira enjuuyi ku Session ng'ogabana nabo Account ID.",
   "shareAccountIdDescriptionCopied": "Gabana n'emikwano gyo gy'oba ogiyogera nabo bulijjo — lwezo mulange eno okutandika okunyumya.",
   "shareExtensionDatabaseError": "Waliwo okusoomoozebwa ofula database. Kebera app ekobeera.",
   "shareToSession": "Gabana ku {app_Name}",
@@ -748,3 +744,4 @@
   "yes": "Nedda",
   "you": "Ggwe"
 }
+

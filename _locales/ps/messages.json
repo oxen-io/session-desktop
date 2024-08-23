@@ -141,7 +141,6 @@
   "callsPermissionsRequiredDescription": "تاسو کولی شئ په محرمیت ترتیباتو کې \"غږ او ویډیو زنګونه\" اجازه فعال کړئ.",
   "callsReconnecting": "د بیا نښلولو هڅه...",
   "callsRinging": "رنيګ کول...",
-  "callsSessionCall": "Session تلیفون",
   "callsSettings": "کالونه (بیټا)",
   "callsVoiceAndVideo": "د زوګ او ویډیو زنګونه",
   "callsVoiceAndVideoBeta": "زوګ او ویډیو زنګونه (Beta)",
@@ -558,8 +557,6 @@
   "onboardingAccountCreate": "گروه جوړ کړئ",
   "onboardingAccountCreated": "حساب جوړ شو",
   "onboardingAccountExists": "زه حساب لرم",
-  "onboardingBackAccountCreation": "تاسو نشئ کولی نور بیرته لاړ شئ. د خپل حساب جوړولو لغوه کولو لپاره، Session اړتیا لري چې وتړل شي.",
-  "onboardingBackLoadAccount": "تاسو نشئ کولی نور بیرته لاړ شئ. د خپل حساب بارولو بندولو لپاره، Session اړتیا لري چې وتړل شي.",
   "onboardingBubbleCreatingAnAccountIsEasy": "پری کول",
   "onboardingBubbleNoPhoneNumber": "تاسو حتی د لاسلیک کولو لپاره د تلیفون شمېرې ته اړتیا نلرئ.",
   "onboardingBubblePrivacyInYourPocket": "محرمیت ستاسو په جیب کې.",
@@ -703,7 +700,6 @@
   "set": "تنظیمول",
   "settingsRestartDescription": "تاسو باید خپل {app_name} بیا پیل کړئ ترڅو ستاسو نوي تنظیمات وکاریږي.",
   "share": "شریکول",
-  "shareAccountIdDescription": "خپل ملګری ته بلنه وړاندې کړئ چې ستاسو سره Session کې چیټ وکړي.",
   "shareAccountIdDescriptionCopied": "خپلو ملګرو ته چیرته چې تاسو معمولا ورسره خبرې کوئ شریک کړئ - بیا خبرې دلته راولی.",
   "shareExtensionDatabaseError": "د ډیټابیس په پرانیستلو کې ستونزه شته. مهرباني وکړئ ایپ بیا پیل کړئ او بیا هڅه وکړئ.",
   "show": "ښودل",
@@ -745,3 +741,4 @@
   "yes": "هو",
   "you": "تاسو"
 }
+

@@ -54,10 +54,12 @@ export const AboutView = () => {
   }
 
   const versionInfo = `v${window.getVersion()}`;
-  const systemInfo = window.i18n('systemInformationDesktop', [window.getOSRelease()]);
-  const commitInfo = window.i18n('commitHashDesktop', [
-    window.getCommitHash() || window.i18n('unknown'),
-  ]);
+  const systemInfo = window.i18n('systemInformationDesktop', {
+    information: window.getOSRelease(),
+  });
+  const commitInfo = window.i18n('commitHashDesktop', {
+    hash: window.getCommitHash() || window.i18n('unknown'),
+  });
 
   useEffect(() => {
     if (window.theme) {

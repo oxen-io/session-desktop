@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Вы можете включить разрешение «Аудио- и видео- звонки» в настройках конфиденциальности.",
   "callsReconnecting": "Переподключение…",
   "callsRinging": "Звоним...",
-  "callsSessionCall": "Вызов Session",
   "callsSettings": "Звонки (бета)",
   "callsVoiceAndVideo": "Голосовые и видео вызовы",
   "callsVoiceAndVideoBeta": "Голосовые и видео вызовы (бета)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Создать аккаунт",
   "onboardingAccountCreated": "Аккаунт создан",
   "onboardingAccountExists": "У меня есть аккаунт",
-  "onboardingBackAccountCreation": "Вы не можете вернуться назад. Чтобы отменить создание учетной записи, необходимо выйти из Session.",
-  "onboardingBackLoadAccount": "Вы не можете вернуться назад. Чтобы прекратить загрузку вашей учетной записи, необходимо выйти из Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Создание аккаунта мгновенно, бесплатно и анонимно",
   "onboardingBubbleNoPhoneNumber": "Для регистрации вам даже не нужен номер телефона.",
   "onboardingBubblePrivacyInYourPocket": "Конфиденциальность у вас в кармане.",
@@ -707,7 +704,6 @@
   "set": "Задать",
   "settingsRestartDescription": "Вы должны перезапустить {app_name}, чтобы применить новые настройки.",
   "share": "Поделиться",
-  "shareAccountIdDescription": "Пригласите своего друга в Session, поделившись с ним вашим Account ID.",
   "shareAccountIdDescriptionCopied": "Поделитесь с друзьями там, где вы обычно с ними беседуете, а затем начните общение здесь.",
   "shareExtensionDatabaseError": "Возникла проблема с открытием базы данных. Пожалуйста, перезапустите приложение и попробуйте снова.",
   "show": "Показать",
@@ -749,3 +745,4 @@
   "yes": "Да",
   "you": "Вы"
 }
+

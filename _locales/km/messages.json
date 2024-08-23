@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "អ្នកអាចបើកការអនុញ្ញាត \"ការហៅទូរស័ព្ទ និងវីដេអូ\" ក្នុងការកំណត់ឯកជនភាព។",
   "callsReconnecting": "កំពុងភ្ជាប់ឡើងវិញ…",
   "callsRinging": "កំពុងរោទ៍...",
-  "callsSessionCall": "ការហៅចេញSession",
   "callsSettings": "ការហៅ (បេតា)",
   "callsVoiceAndVideo": "ការហៅជាសំឡេង និងជា​វីដេអូ",
   "callsVoiceAndVideoBeta": "ការហៅជាសំឡេង និងជា​វីដេអូ (បេតា)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Create account",
   "onboardingAccountCreated": "បានបង្កើត​គណនី",
   "onboardingAccountExists": "ខ្ញុំមានគណនីមួយ",
-  "onboardingBackAccountCreation": "អ្នកមិនអាចថយក្រោយបន្ថែមទៀតបានទេ។ ដើម្បីបោះបង់ការបង្កើតគណនី Session ត្រូវទាំងបញ្ចប់ផ្នែកនេះ។",
-  "onboardingBackLoadAccount": "អ្នកមិនអាចថយក្រោយបន្ថែមទៀតបានទេ។ ដើម្បីបញ្ឈប់ការស្ទាកអង្គភាពរបស់អ្នក, Session ត្រូវចូលឋាន.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Creating an account is instant, free, and anonymous ",
   "onboardingBubbleNoPhoneNumber": "អ្នកមិនចាំបាច់ចូលប្រព័ន្ធទៅតាមលេខលេខទូរស័ព្ទទេ.",
   "onboardingBubblePrivacyInYourPocket": "ឯកជនភាពនៅក្នុងហោប៉ៅរបស់អ្នក។",
@@ -708,7 +705,6 @@
   "set": "កំណត់",
   "settingsRestartDescription": "អ្នក​ត្រូវចាប់ផ្តើម {app_name} ឡើងਵੀញ ដើម្បីអនុវត្តការកំណត់ថ្មីរបស់អ្នក។",
   "share": "ចែករំលែក",
-  "shareAccountIdDescription": "អញ្ជើញមិត្តរបស់អ្នកមកជជែកជាមួយអ្នកតាមរយៈការចែករំលែក Account ID របស់អ្នកទៅកាន់ពួកគេ។",
   "shareAccountIdDescriptionCopied": "ចែករំលែកជាមួយមិត្តភក្តិរបស់អ្នកនៅទីកន្លែងដែលអ្នកភាគច្រើននិយាយជាមួយពួកគេនិងបន្ទាប់មកផ្លាស់ប្តូរប្រសាសន៍មកទីនេះ។",
   "shareExtensionDatabaseError": "There is an issue opening the database. Please restart the app and try again.",
   "show": "បង្ហាញ",
@@ -750,3 +746,4 @@
   "yes": "បាទ",
   "you": "អ្នក"
 }
+

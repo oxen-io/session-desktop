@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "\"Hääl- ja videokõnede\" loa saate anda privaatsussätetes.",
   "callsReconnecting": "Taasühendamine…",
   "callsRinging": "Heliseb...",
-  "callsSessionCall": "Sessioni kõne",
   "callsSettings": "Kõned (beta)",
   "callsVoiceAndVideo": "Hääl- ja videokõned",
   "callsVoiceAndVideoBeta": "Hääl- ja videokõned (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Loo konto",
   "onboardingAccountCreated": "Konto loodud",
   "onboardingAccountExists": "Mul on konto",
-  "onboardingBackAccountCreation": "Te ei saa tagasi minna. Konto loomise tühistamiseks peab Session sulgema.",
-  "onboardingBackLoadAccount": "Te ei saa tagasi minna. Konto laadimise peatamiseks peab Session sulgema.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Konto loomine on kohene, tasuta ja anonüümne",
   "onboardingBubbleNoPhoneNumber": "Registreerumiseks ei ole isegi vaja telefoninumbrit.",
   "onboardingBubblePrivacyInYourPocket": "Privaatsus teie taskus.",
@@ -706,7 +703,6 @@
   "set": "Määra",
   "settingsRestartDescription": "Uute seadete rakendamiseks peate taaskäivitama {app_name}.",
   "share": "Jaga",
-  "shareAccountIdDescription": "Kutsu oma sõpra vestlema sinuga Sessionis, jagades oma Account ID nendega.",
   "shareAccountIdDescriptionCopied": "Jaga oma sõpradega seal, kus te tavaliselt suhtlete — seejärel liikuge siia vestlema.",
   "shareExtensionDatabaseError": "Andmebaasi avamisel esines probleem. Palun taaskäivitage rakendus ja proovige uuesti.",
   "show": "Näita",
@@ -748,3 +744,4 @@
   "yes": "Jah",
   "you": "Sina"
 }
+

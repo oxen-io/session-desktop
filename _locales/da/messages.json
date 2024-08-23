@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Du kan aktivere tilladelsen \"Stemme- og videoopkald\" i Privatlivsindstillinger.",
   "callsReconnecting": "Genopretter...",
   "callsRinging": "Ringer...",
-  "callsSessionCall": "Sessionopkald",
   "callsSettings": "Opkald (Beta)",
   "callsVoiceAndVideo": "Lyd- og videoopkald",
   "callsVoiceAndVideoBeta": "Lyd- og videoopkald (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Opret konto",
   "onboardingAccountCreated": "Konto oprettet",
   "onboardingAccountExists": "Jeg har en konto",
-  "onboardingBackAccountCreation": "Du kan ikke gå længere tilbage. For at annullere din kontooprettelse skal Session lukkes.",
-  "onboardingBackLoadAccount": "Du kan ikke gå længere tilbage. For at stoppe indlæsningen af din konto skal Session lukkes.",
   "onboardingBubbleCreatingAnAccountIsEasy": "At oprette en konto er øjeblikkeligt, gratis og anonymt ",
   "onboardingBubbleNoPhoneNumber": "Du behøver ikke engang et telefonnummer for at tilmelde dig.",
   "onboardingBubblePrivacyInYourPocket": "Privatliv i din lomme.",
@@ -706,7 +703,6 @@
   "set": "Indstil",
   "settingsRestartDescription": "Du skal genstarte {app_name} for at anvende dine nye indstillinger.",
   "share": "Del",
-  "shareAccountIdDescription": "Invite din ven til at chatte med dig på Session ved at dele din Account ID med dem.",
   "shareAccountIdDescriptionCopied": "Del med dine venner, uanset hvor du normalt taler med dem — og fortsæt samtalen her.",
   "shareExtensionDatabaseError": "Der er et problem med at åbne databasen. Genstart appen og prøv igen.",
   "shareToSession": "Del til {app_Name}",
@@ -749,3 +745,4 @@
   "yes": "Ja",
   "you": "Du"
 }
+

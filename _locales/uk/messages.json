@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Ви можете увімкнути дозвіл \"Голосові та відеодзвінки\" в налаштуваннях конфіденційності.",
   "callsReconnecting": "Повторне з'єднання…",
   "callsRinging": "Виклик...",
-  "callsSessionCall": "Дзвінок Session",
   "callsSettings": "Дзвінки (Beta)",
   "callsVoiceAndVideo": "Голосові та відеодзвінки",
   "callsVoiceAndVideoBeta": "Голосові та відеодзвінки (бета-версія)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Створити обліковий запис",
   "onboardingAccountCreated": "Ідентифікатор облікового запису скопійовано",
   "onboardingAccountExists": "Я маю обліковий запис",
-  "onboardingBackAccountCreation": "Ви не можете повернутися далі. Для скасування створення облікового запису Session потрібно закрити.",
-  "onboardingBackLoadAccount": "Ви не можете повернутися далі. Для припинення завантаження вашого облікового запису Session потрібно закрити.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Створення облікового запису займає миттєво, безкоштовно і анонімно",
   "onboardingBubbleNoPhoneNumber": "Для реєстрації навіть не потрібен номер телефону.",
   "onboardingBubblePrivacyInYourPocket": "Конфіденційність у вашій кишені.",
@@ -708,7 +705,6 @@
   "set": "Встановити",
   "settingsRestartDescription": "Вам необхідно перезапустити {app_name}, щоб застосувати нові налаштування.",
   "share": "Поділитися",
-  "shareAccountIdDescription": "Запросіть свого друга поспілкуватися з вами в Session, поділившись з ним вашим Account ID.",
   "shareAccountIdDescriptionCopied": "Поширюйте своїм друзям там, де ви зазвичай спілкуєтеся з ними, — потім перенесіть розмову сюди.",
   "shareExtensionDatabaseError": "Виникла проблема при відкритті бази даних. Будь ласка, перезапустіть програму і повторіть спробу.",
   "shareToSession": "Поділитися до {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Так",
   "you": "Ви"
 }
+

@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "Siz \"Ovozli va Video Qo'ng'iroqlar\" ruxsatini Maxfiylik Sozlamalarida yoqishingiz mumkin.",
   "callsReconnecting": "Qayta ulanish...",
   "callsRinging": "Qo'ng'iroq qilinmoqda...",
-  "callsSessionCall": "Session qo'ng'iroq",
   "callsSettings": "Qo'ng'iroqlar (Beta)",
   "callsVoiceAndVideo": "Ovozli va video qo'ng'iroqlar",
   "callsVoiceAndVideoBeta": "Ovozli va video qo'ng'iroqlar (Beta)",
@@ -553,8 +552,6 @@
   "onboardingAccountCreate": "Hisobni yaratish",
   "onboardingAccountCreated": "Akkaunt yaratilgan",
   "onboardingAccountExists": "Menda hisob mavjud",
-  "onboardingBackAccountCreation": "Siz ortga qaytolmaysiz. Hisob yaratishni bekor qilish uchun Sessionni to'xtatish kerak.",
-  "onboardingBackLoadAccount": "Siz ortga qaytolmaysiz. Hisobingizni yuklashni to'xtatish uchun, Sessionni to'xtatish kerak.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Hisob yaratish bir zumda, bepul va anonimdir ",
   "onboardingBubbleNoPhoneNumber": "Ro'yxatdan o'tish uchun sizga telefon raqami kerak emas.",
   "onboardingBubblePrivacyInYourPocket": "Xavfsizlik - sizning cho`ntagingizda.",
@@ -696,7 +693,6 @@
   "sessionSettings": "Tamir",
   "set": "Belgilash",
   "share": "Bo'lishish",
-  "shareAccountIdDescription": "Hisob ID ni ulashish orqali Session da suhbatlashishi uchun do'stingizni taklif qiling.",
   "shareAccountIdDescriptionCopied": "Do'stlaringiz bilan odatda gaplashayotgan joyingizda bo'lishing - keyin suhbatni bu yerga o'tkazing.",
   "shareExtensionDatabaseError": "Ma'lumotlar bazasini ochishda muammo yuzaga keldi. Iltimos, ilovani qayta yoqing va qayta urinib ko'ring.",
   "show": "Ochish",
@@ -738,3 +734,4 @@
   "yes": "Ha",
   "you": "Siz"
 }
+

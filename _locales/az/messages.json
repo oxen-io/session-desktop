@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Gizlilik Ayarlarında \"Səsli və Video Zənglər\" icazəsini fəallaşdıra bilərsiniz.",
   "callsReconnecting": "Yenidən bağlantı qurulur…",
   "callsRinging": "Zəng edilir...",
-  "callsSessionCall": "Session Zəngi",
   "callsSettings": "Zənglər (Beta)",
   "callsVoiceAndVideo": "Səsli və görüntülü zənglər ",
   "callsVoiceAndVideoBeta": "Səsli və görüntülü zənglər (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Hesab yarat",
   "onboardingAccountCreated": "Hesab yaradıldı",
   "onboardingAccountExists": "Hesabım var",
-  "onboardingBackAccountCreation": "Daha geriyə gedə bilməzsiniz. Hesab yaratmaq prosessini ləğv etmək üçün Sessiyanı bağlamalıyıq.",
-  "onboardingBackLoadAccount": "Daha geriyə gedə bilməzsiniz. Hesab yükləmə prosesini dayandırmaq üçün Sessiyanı bağlamalıyıq.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Hesab yaratmaq dərhal, pulsuz və anonimdir",
   "onboardingBubbleNoPhoneNumber": "Qeydiyyat üçün telefon nömrəsinə belə ehtiyacınız yoxdur.",
   "onboardingBubblePrivacyInYourPocket": "Cibinizdə gizlilik.",
@@ -708,7 +705,6 @@
   "set": "Ayarla",
   "settingsRestartDescription": "Yeni ayarları tətbiq etmək üçün {app_name} yenidən başlatmalısınız.",
   "share": "Paylaş",
-  "shareAccountIdDescription": "Dostunu Session-da səninlə söhbət etmək üçün hesab ID-ni paylaşaraq dəvət edin.",
   "shareAccountIdDescriptionCopied": "Dostlarınızla harada adətən danışsanız paylaşın — sonra söhbəti buraya köçürün.",
   "shareExtensionDatabaseError": "Verilənlər bazasını açarkən problem yaranıb. Zəhmət olmasa tətbiqi yenidən başladın və bir daha cəhd edin.",
   "shareToSession": "{app_Name}-ə paylaş",
@@ -751,3 +747,4 @@
   "yes": "Bəli",
   "you": "Siz"
 }
+

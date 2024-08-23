@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "You can enable the \"Voice and Video Calls\" permission in Privacy Settings.",
   "callsReconnecting": "ပြန်ဆက်စပ်နေသည်…",
   "callsRinging": "ခေါ်နေသည်...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "ခေါ်ဆိုမှု(Beta)",
   "callsVoiceAndVideo": "အသံနှင့်ဗီဒီယိုကော",
   "callsVoiceAndVideoBeta": "အသံနှင့်ဗီဒီယိုကော (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "အကောင့်ကို ဖန်တီးပါ",
   "onboardingAccountCreated": "အကောင့် ဖန်တီးပြီးပါပြီ",
   "onboardingAccountExists": "ငါးကောင်ရှိတယ်",
-  "onboardingBackAccountCreation": "You cannot go back further. In order to cancel your account creation, Session needs to quit.",
-  "onboardingBackLoadAccount": "You cannot go back further. In order to stop loading your account, Session needs to quit.",
   "onboardingBubbleCreatingAnAccountIsEasy": "အကောင့်တစ်ခုဖန်တီးခြင်းသည် ချက်ချင်းပြုလုပ်နိုင်ပြီး အခမဲ့နှင့် အမည်မဖော်သင့်မှု ဖြစ်ပါသည်。",
   "onboardingBubbleNoPhoneNumber": "You don't even need a phone number to sign up.",
   "onboardingBubblePrivacyInYourPocket": "အိတ်ကပ်ထဲမှ ကိုယ်ရေးလုံခြုံမှု",
@@ -708,7 +705,6 @@
   "set": "သတ်မှတ်မည်",
   "settingsRestartDescription": "သင့် အဆင်ပြေမှုကို အသုံးချရန် {app_name} ကို ပြန်စပြီး ကိရိယာများကို အသုံးပြုပြီးနောက် ပြန်လည်တင်ဆက်ထားပါ။",
   "share": "မျှဝေမည်",
-  "shareAccountIdDescription": "သင့် သူငယ်ချင်းကို ချိတ်ဆက်ရန် သင့် Account ID ကို၏အကုသာရရန် ဖိတ်ကြားပါ။",
   "shareAccountIdDescriptionCopied": "သင့်သူငယ်ခ်င်းကို မေးမြန်းရာမှာ စသည်မျှဝေ လောလောဆယ်တော့ ဒီနေရာတွင်စာဆက်ပြောပါ",
   "shareExtensionDatabaseError": "ဒေတာဘေ့စ် ပြဿနာရှိပါသည်။ အက်ပလီကေးရှင်းကို ပြန်ပြေးပါ။",
   "shareToSession": "{app_Name} ထိမှီမည်",
@@ -751,3 +747,4 @@
   "yes": "ဟုတ်ကဲ့",
   "you": "သင်"
 }
+

@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "Podes activar o permiso \"Voz e videochamadas\" na Configuración de Privacidade.",
   "callsReconnecting": "Restablecendo…",
   "callsRinging": "Soando...",
-  "callsSessionCall": "Chamada de Session",
   "callsSettings": "Chamadas (Beta)",
   "callsVoiceAndVideo": "Chamadas de voz e vídeo",
   "callsVoiceAndVideoBeta": "Chamadas de voz e vídeo (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Crear conta",
   "onboardingAccountCreated": "Conta creada",
   "onboardingAccountExists": "Teño unha conta",
-  "onboardingBackAccountCreation": "Non podes retroceder máis. Para cancelar a creación da túa conta, Session debe pecharse.",
-  "onboardingBackLoadAccount": "Non podes retroceder máis. Para deixar de cargar a túa conta, Session debe pecharse.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Crear unha conta é instantáneo, gratuíto e anónimo",
   "onboardingBubbleNoPhoneNumber": "Nin sequera necesitas un número de teléfono para rexistrarte.",
   "onboardingBubblePrivacyInYourPocket": "Privacidade no teu peto.",
@@ -706,7 +703,6 @@
   "set": "Establecer",
   "settingsRestartDescription": "Debes reiniciar {app_name} para aplicar a túa nova configuración.",
   "share": "Partillar",
-  "shareAccountIdDescription": "Convida a túa amizade a chatear contigo en Session partillando o teu Account ID con eles.",
   "shareAccountIdDescriptionCopied": "Partilla con teus amigos onde normalmente falas con eles, logo move a conversa aquí.",
   "shareExtensionDatabaseError": "Hai un problema ao abrir a base de datos. Por favor, reinicia a aplicación e tenta de novo.",
   "shareToSession": "Partillar a {app_Name}",
@@ -749,3 +745,4 @@
   "yes": "Si",
   "you": "Ti"
 }
+

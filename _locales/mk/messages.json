@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Може да го овозможите дозволата за „Гласовни и видео повици“ во Поставките за приватност.",
   "callsReconnecting": "Повторно поврзување…",
   "callsRinging": "Звонење...",
-  "callsSessionCall": "Session повик",
   "callsSettings": "Повици (Бета)",
   "callsVoiceAndVideo": "Гласовни и видео повици",
   "callsVoiceAndVideoBeta": "Гласовни и видео повици (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Креирај сметка",
   "onboardingAccountCreated": "Акаунт креиран",
   "onboardingAccountExists": "Имам сметка",
-  "onboardingBackAccountCreation": "Не можете да се враќате понатаму. За да го откажете креирањето на сметката, Session треба да се исклучи.",
-  "onboardingBackLoadAccount": "Не можете да се враќате понатаму. За да престанете да ја вчитувате вашата сметка, Session треба да се исклучи.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Креирањето на сметка е моментално, бесплатно и анонимно ",
   "onboardingBubbleNoPhoneNumber": "Не ви е потребен ниту телефонски број за да се регистрирате.",
   "onboardingBubblePrivacyInYourPocket": "Приватност во вашиот џеб.",
@@ -708,7 +705,6 @@
   "set": "Постави",
   "settingsRestartDescription": "Морате повторно да го вклучите {app_name} за да ги примените новите поставки.",
   "share": "Сподели",
-  "shareAccountIdDescription": "Поканете го пријателот да разговара со вас на сесија споделувајќи ја вашата ИД на сметка",
   "shareAccountIdDescriptionCopied": "Сподели со твоите пријатели каде што вообичаено разговараш со нив — потоа премести ја конверзацијата овде.",
   "shareExtensionDatabaseError": "Има проблем при отворање на базата на податоци. Рестартирајте ја апликацијата и обидете се повторно.",
   "shareToSession": "Сподели во {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Да",
   "you": "Вие"
 }
+

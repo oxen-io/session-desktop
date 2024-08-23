@@ -107,7 +107,7 @@ export const createTemplate = (
           type: 'separator',
         },
         {
-          label: messages.showDebugLog,
+          label: messages.debugLog,
           click: () => {
             saveDebugLog('save-debug-log');
           },

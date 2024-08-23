@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "நீங்கள் 'குரல் மற்றும் காணொளி அழைப்புகள்' அனுமதியை தனியுரிமை அமைப்புகளில் இயக்கலாம்.",
   "callsReconnecting": "மீண்டும் இணைக்கப்படுகிறது…",
   "callsRinging": "முழக்கம்...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "அழைப்புகள் (பீட்டா)",
   "callsVoiceAndVideo": "குரல் மற்றும் காணொளி அழைப்புகள்",
   "callsVoiceAndVideoBeta": "குரல் மற்றும் காணொளி அழைப்புகள் (பீட்டா)",
@@ -557,8 +556,6 @@
   "onboardingAccountCreate": "கணக்கை உருவாக்கு",
   "onboardingAccountCreated": "கணக்கு உருவாக்கப்பட்டது",
   "onboardingAccountExists": "எனக்கு கணக்கு உள்ளது",
-  "onboardingBackAccountCreation": "நீங்கள் மேலும் பின்னுக்கு செல்ல முடியாது. உங்கள் கணக்கு உருவாக்கலை ரத்து செய்ய Sessionடை மூடவேண்டும்.",
-  "onboardingBackLoadAccount": "நீங்கள் மேலும் பின்னுக்கு செல்ல முடியாது. உங்கள் கணக்கை ஏற்ற முடிக்க Session மூடவேண்டும்.",
   "onboardingBubbleCreatingAnAccountIsEasy": "கணக்கை உருவாக்குவது உடனடியாகவும், இலவசமாகவும், இரகசியமாகவும் உள்ளது ",
   "onboardingBubbleNoPhoneNumber": "உரிமம் பெறுவதற்கு நீங்கள் தொலைபேசி எண் தேவையில்லை.",
   "onboardingBubblePrivacyInYourPocket": "உங்கள் கையிலே தனியுரிமை.",
@@ -702,7 +699,6 @@
   "set": "அமை",
   "settingsRestartDescription": "உங்கள் புதிய அமைப்புகளை புதுப்பிக்க {app_name} -ஐ மறுதொடக்கம் செய்யவேண்டி உள்ளது.",
   "share": "பகிர்",
-  "shareAccountIdDescription": "உங்கள் கணக்கு ஐடியைப் பகிர்வதன் மூலம் நீங்கள் பேச உங்கள் நண்பரை அழைக்கவும்.",
   "shareAccountIdDescriptionCopied": "உங்கள் நண்பர்களுடன் எங்குச் சென்று பேசுவது உங்களுக்குத் தெரியும் — பின்னர் உரையாடலை இங்கு நகர்த்தவும்.",
   "shareExtensionDatabaseError": "தரவுத்தொகுப்பை திறப்பதில் சிக்கல் உள்ளது. பயன்பாட்டை மீண்டும் ஆரம்பித்து முயற்சிக்கவும்.",
   "shareToSession": "{app_Name} க்கு பகிர்க",
@@ -745,3 +741,4 @@
   "yes": "ஆம்",
   "you": "நீங்கள்"
 }
+

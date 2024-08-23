@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "คุณสามารถเปิดการอนุญาต \"การโทรด้วยเสียงและวิดีโอ\" ได้ในการตั้งค่าความเป็นส่วนตัว",
   "callsReconnecting": "กำลังเชื่อมใหม่…",
   "callsRinging": "กำลังส่งเสียง...",
-  "callsSessionCall": "สาย Session",
   "callsSettings": "การโทร (เบต้า)",
   "callsVoiceAndVideo": "การโทรด้วยเสียงและวิดีโอ.",
   "callsVoiceAndVideoBeta": "การโทรด้วยเสียงและวิดีโอ (Beta).",
@@ -553,8 +552,6 @@
   "onboardingAccountCreate": "Create account",
   "onboardingAccountCreated": "สร้างบัญชีแล้ว",
   "onboardingAccountExists": "ฉันมีบัญชี",
-  "onboardingBackAccountCreation": "คุณไม่สามารถย้อนกลับไปอีกได้ ในการยกเลิกการสร้างบัญชีของคุณ Session จำเป็นต้องออกจากระบบ",
-  "onboardingBackLoadAccount": "คุณไม่สามารถย้อนกลับไปอีกได้ ในการหยุดการโหลดบัญชีของคุณ Session จำเป็นต้องออกจากระบบ",
   "onboardingBubbleCreatingAnAccountIsEasy": "Creating an account is instant, free, and anonymous ",
   "onboardingBubbleNoPhoneNumber": "คุณไม่จำเป็นต้องมีหมายเลขโทรศัพท์เพื่อสมัคร",
   "onboardingBubblePrivacyInYourPocket": "ความเป็นส่วนตัวในกระเป๋าคุณ",
@@ -688,7 +685,6 @@
   "set": "ตั้งค่า",
   "settingsRestartDescription": "คุณต้องรีสตาร์ท {app_name} เพื่อใช้งานการตั้งค่าใหม่ของคุณ",
   "share": "แบ่งปัน",
-  "shareAccountIdDescription": "เชิญเพื่อนของคุณมาแชทกับคุณใน Session ด้วยการแชร์ Account ID ของคุณกับพวกเขา",
   "shareAccountIdDescriptionCopied": "แบ่งปันกับเพื่อน ๆ ของคุณไม่ว่าพวกเขาจะอยู่ที่ไหนแล้วจึงย้ายการสนทนามาที่นี่",
   "shareExtensionDatabaseError": "เกิดปัญหาในการเปิดฐานข้อมูล กรุณารีสตาร์ทแอปพลิเคชันแล้วลองอีกครั้ง",
   "shareToSession": "แบ่งปันไปยัง {app_Name}",
@@ -729,3 +725,4 @@
   "yes": "ใช่",
   "you": "คุณ"
 }
+

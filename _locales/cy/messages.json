@@ -141,7 +141,6 @@
   "callsPermissionsRequiredDescription": "Gallwch alluogi'r caniatâd \"Galwadau Llais a Fideo\" yn y Gosodiadau Preifatrwydd.",
   "callsReconnecting": "Aildrefnu…",
   "callsRinging": "Canu...",
-  "callsSessionCall": "Galwad Session",
   "callsSettings": "Galwadau (Beta)",
   "callsVoiceAndVideo": "Galwadau Llais a Fideo",
   "callsVoiceAndVideoBeta": "Galwadau Llais a Fideo (Beta)",
@@ -557,8 +556,6 @@
   "onboardingAccountCreate": "Creu cyfrif",
   "onboardingAccountCreated": "Crëwyd cyfrif",
   "onboardingAccountExists": "Mae gen i gyfrif",
-  "onboardingBackAccountCreation": "Ni allwch fynd yn ôl ymhellach. Er mwyn canslo creu eich cyfrif, mae'n rhaid i Session gau.",
-  "onboardingBackLoadAccount": "Ni allwch fynd yn ôl ymhellach. Er mwyn atal llwytho eich cyfrif, mae'n rhaid i Session gau.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Mae creu cyfrif yn syth, yn rhad ac am ddim, ac yn anhysbys",
   "onboardingBubbleNoPhoneNumber": "Nid oes angen eich rhif ffôn hyd yn oed i gofrestru.",
   "onboardingBubblePrivacyInYourPocket": "Preifatrwydd yn eich poced.",
@@ -702,7 +699,6 @@
   "set": "Gosod",
   "settingsRestartDescription": "Mae’n rhaid i chi ailgychwyn {app_name} i gymhwyso'r gosodiadau newydd.",
   "share": "Rhannu",
-  "shareAccountIdDescription": "Gwahodd dy ffrind i sgwrsio gyda ti ar Session drwy rannu dy ID Cyfrif gyda nhw.",
   "shareAccountIdDescriptionCopied": "Rhannwch gyda'ch ffrindiau ble bynnag yr ydych chi fel arfer yn siarad gyda nhw — yna symudwch y sgwrs yma.",
   "shareExtensionDatabaseError": "Mae problem wrth agor y gronfa ddata. Ailgychwyn yr ap a rhowch gynnig arall arni os gwelwch yn dda.",
   "shareToSession": "Rhannu i {app_Name}",
@@ -745,3 +741,4 @@
   "yes": "Iawn",
   "you": "Chi"
 }
+

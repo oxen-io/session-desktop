@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "آپ رازداری کی ترتیبات میں \"وائس اور ویڈیو کالز\" کی اجازت کو فعال کر سکتے ہیں۔",
   "callsReconnecting": "دوبارہ جڑ رہا ہے...",
   "callsRinging": "رنگ ہو رہا ہے...",
-  "callsSessionCall": "سیشن کال",
   "callsSettings": "کالز (بیٹا)",
   "callsVoiceAndVideo": "وائس اور ویڈیو کالز",
   "callsVoiceAndVideoBeta": "وائس اور ویڈیو کالز (بیٹا)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "اکاؤنٹ بنائیں",
   "onboardingAccountCreated": "اکاؤنٹ بنایا گیا",
   "onboardingAccountExists": "میرے پاس ایک اکاؤنٹ ہے",
-  "onboardingBackAccountCreation": "آپ مزید واپس نہیں جا سکتے۔ اکاؤنٹ کی تخلیق کو منسوخ کرنے کے لیے، Session کو بند کرنا ہوگا۔",
-  "onboardingBackLoadAccount": "آپ مزید واپس نہیں جا سکتے۔ اپنا اکاؤنٹ لوڈ کرنے سے روکنے کے لیے، Session کو بند کرنا ہوگا۔",
   "onboardingBubbleCreatingAnAccountIsEasy": "ایک اکاؤنٹ بنانا فوری، مفت، اور گمنام ہے",
   "onboardingBubbleNoPhoneNumber": "آپ کو سائن اپ کرنے کے لیے فون نمبر کی بھی ضرورت نہیں۔",
   "onboardingBubblePrivacyInYourPocket": "آپ کی جیب میں پرائیویسی۔",
@@ -708,7 +705,6 @@
   "set": "سیٹ",
   "settingsRestartDescription": "آپ کو نئی سیٹنگز کے اطلاق کے لئے {app_name} کو دوبارہ شروع کرنا ضروری ہے۔",
   "share": "شیئر",
-  "shareAccountIdDescription": "اپنے دوست کو اپنی Account ID شئیر کر کے Session پر آپ کے ساتھ بات چیت کرنے کی دعوت دیں۔",
   "shareAccountIdDescriptionCopied": "اپنے دوستوں کے ساتھ جہاں آپ معمول کے مطابق بات کرتے ہیں شیئر کریں — پھر یہاں گفتگو کو منتقل کریں۔",
   "shareExtensionDatabaseError": "ڈیٹا بیس کھولنے میں مسئلہ ہے۔ براہ کرم ایپ کو دوبارہ شروع کریں اور دوبارہ کوشش کریں۔",
   "shareToSession": "{app_Name} پر شیئر کریں",
@@ -751,3 +747,4 @@
   "yes": "جی ہاں",
   "you": "آپ"
 }
+

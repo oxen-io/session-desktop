@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Za ku iya kunna damar \"Kiraye-Kirayen Murya da Bidiyo\" a cikin Saitunan Sirri.",
   "callsReconnecting": "Ana haɗawa da... ",
   "callsRinging": "Ana kara kira...",
-  "callsSessionCall": "Banga Sessionê",
   "callsSettings": "Kira (Beta)",
   "callsVoiceAndVideo": "Kiran Muryar da Bidiyo",
   "callsVoiceAndVideoBeta": "Kiran Muryar da Bidiyo (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Ƙirƙiri asusu",
   "onboardingAccountCreated": "Asusun An Kirkira",
   "onboardingAccountExists": "Ina da lissafi",
-  "onboardingBackAccountCreation": "Ba za ku iya komawa baya ba. Domin dakatar da ƙirƙirar asusunka, Session yana buƙatar rufe.",
-  "onboardingBackLoadAccount": "Ba za ku iya komawa baya ba. Domin dakatar da lodin asusunku, Session yana buƙatar rufe.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Ƙirƙirar asusu yana sauri, kyauta, kuma ba a bayyana suna",
   "onboardingBubbleNoPhoneNumber": "Ba kwa buƙatar lambar wayar hannu don yin rajista.",
   "onboardingBubblePrivacyInYourPocket": "Sirri a cikin aljihunka.",
@@ -708,7 +705,6 @@
   "set": "Saita",
   "settingsRestartDescription": "Dole ne ku sake farawa {app_name} don aiwatar da sabbin saitunan ku.",
   "share": "Parve bike",
-  "shareAccountIdDescription": "Gayyaci abokinka don hira da kai a Session ta hanyar raba Account ID ɗinka tare da su.",
   "shareAccountIdDescriptionCopied": "Raba tare da abokan ku a duk inda kuka saba magana da su — sai ku koma nan ku ci gaba da magana.",
   "shareExtensionDatabaseError": "Akwai matsala wajen buɗe bayanan. Da fatan a sake kunna manhaja kumat saka gwadawa.",
   "shareToSession": "Raba zuwa {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Na'am",
   "you": "Kai"
 }
+

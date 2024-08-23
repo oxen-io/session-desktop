@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Engedélyezni tudja a \"Hang és videó hívásokat\" a Biztonsági beállításokban.",
   "callsReconnecting": "Újracsatlakozás…",
   "callsRinging": "Kicseng...",
-  "callsSessionCall": "Session hívás",
   "callsSettings": "Hívások (Beta)",
   "callsVoiceAndVideo": "Hang és videó hívások",
   "callsVoiceAndVideoBeta": "Hang és videó hívások (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Fiók létrehozása",
   "onboardingAccountCreated": "Fiók Létrehozva",
   "onboardingAccountExists": "Van már fiókom",
-  "onboardingBackAccountCreation": "Már nem léphet vissza. A fiók létrehozásának törléséhez a Session bezárása szükséges.",
-  "onboardingBackLoadAccount": "Már nem léphet vissza. A fiók betöltésének megállításához a Session bezárása szükséges.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Fiók létrehozása azonnal, ingyenesen és névtelenül",
   "onboardingBubbleNoPhoneNumber": "Még telefonszámra sincs szükséged a regisztrációhoz.",
   "onboardingBubblePrivacyInYourPocket": "Adatvédelem a zsebedben.",
@@ -705,7 +702,6 @@
   "set": "Beállít",
   "settingsRestartDescription": "Újra kell indítanod a {app_name}-t a beállítások érvényesítéséhez.",
   "share": "Megosztás",
-  "shareAccountIdDescription": "Hívd meg barátodat, hogy a Sessionon csevegjen veled az Account ID-d megosztásával.",
   "shareAccountIdDescriptionCopied": "Ossza meg barátaival ott, ahol általában beszélgetni szokott velük - majd helyezze át a beszélgetést ide.",
   "shareExtensionDatabaseError": "Hiba történt az adatbázis megnyitásakor. Indítsa újra az alkalmazást, majd próbálja újra.",
   "shareToSession": "Megosztás {app_Name} alkalmazásba",
@@ -748,3 +744,4 @@
   "yes": "Igen",
   "you": "Te"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Gaitu dezakezu \"Ahots eta bideo deien\" baimena Pribatutasun Ezarpenetan.",
   "callsReconnecting": "Berriro konektatzen…",
   "callsRinging": "Deika...",
-  "callsSessionCall": "Session Deia",
   "callsSettings": "Calls (Beta)",
   "callsVoiceAndVideo": "Ahots eta Bideo Deiak",
   "callsVoiceAndVideoBeta": "Ahots eta Bideo Deiak (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Kontua sortu",
   "onboardingAccountCreated": "Kontua sortuta",
   "onboardingAccountExists": "Kontu bat daukat",
-  "onboardingBackAccountCreation": "Ezin duzu gehiago atzera egin. Zure kontuaren sorkuntza bertan behera uzteko, Session-ek itxi behar du.",
-  "onboardingBackLoadAccount": "Ezin duzu gehiago atzera egin. Zure kontuaren kargatzea gelditzeko, Session-ek itxi behar du.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Kontu bat sortzea berehalakoa, doakoa eta anonimoa da",
   "onboardingBubbleNoPhoneNumber": "Ez duzu telefono zenbakirik behar izena emateko.",
   "onboardingBubblePrivacyInYourPocket": "Pribatutasuna zure poltsikoan.",
@@ -708,7 +705,6 @@
   "set": "Ezarri",
   "settingsRestartDescription": "{app_name} berrabiarazi behar duzu zure ezarpen berriak aplikatzeko.",
   "share": "Partekatu",
-  "shareAccountIdDescription": "Gonbida ezazu zure laguna zure Kontu IDa partekatuz Sessionen zurekin txateatzeko.",
   "shareAccountIdDescriptionCopied": "Partekatu zure lagunekin non normalean hitz egiten duzun — gero ekarri elkarrizketa hona.",
   "shareExtensionDatabaseError": "Hautaketa Datu-basea irekitzeko arazo bat dago. Mesedez, berrabiarazi aplikazioa eta saiatu berriro.",
   "shareToSession": "Partekatu {app_Name}n",
@@ -751,3 +747,4 @@
   "yes": "Bai",
   "you": "Zuk"
 }
+

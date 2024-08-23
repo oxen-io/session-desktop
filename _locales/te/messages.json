@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "మీరు గోప్యతా సెట్టింగ్‌లలో \"వాయిస్ మరియు విడియో కాల్‌లు\" అనుమతి ప్రారంభించవచ్చు.",
   "callsReconnecting": "మళ్లీ కనెక్ట్ అవుతోంది…",
   "callsRinging": "మోగిస్తోంది...",
-  "callsSessionCall": "Session కాల్ ",
   "callsSettings": "కాల్స్ (బీటా)",
   "callsVoiceAndVideo": "వాయిస్ మరియు వీడియో కాల్స్",
   "callsVoiceAndVideoBeta": "వాయిస్ మరియు వీడియో కాల్స్ (బీటా)",
@@ -559,8 +558,6 @@
   "onboardingAccountCreate": "అకౌంట్ సృష్టించు",
   "onboardingAccountCreated": "ఖాతా సృష్టించబడింది",
   "onboardingAccountExists": "నాకు ఖాతా ఉంది",
-  "onboardingBackAccountCreation": "మీరు వెనక్కి వెళ్ళలేరు. ఖాతా సృష్టిని రద్దు చేయడానికి, Session మూసివేయాలి.",
-  "onboardingBackLoadAccount": "మీరు వెనక్కి వెళ్ళలేరు. మీ ఖాతా లోడ్ చేయడాన్ని నిలిపివేయడానికి, Session మూసివేయాలి.",
   "onboardingBubbleCreatingAnAccountIsEasy": "అకౌంట్ సృష్టించడం తక్షణం, ఉచితం మరియు అనామకం",
   "onboardingBubbleNoPhoneNumber": "సైన్ అప్ చేయడానికి మీకు ఫోన్ నంబర్ కూడా అవసరం లేదు.",
   "onboardingBubblePrivacyInYourPocket": "మీ జేబులో గోప్యత.",
@@ -704,7 +701,6 @@
   "set": "సెట్",
   "settingsRestartDescription": "మీ కొత్త సెట్టింగ్స్‌ని ఉపయోగించాలంటే, మీరు {app_name}ను రీస్టార్ట్ చేయాలి.",
   "share": "పంచుకోండి",
-  "shareAccountIdDescription": "మీ స్నేహితునితో చాట్ చేయడానికి మీ ఖాతా IDని పంచడం ద్వారా మీ స్నేహితున్ని Sessionలో ఆహ్వానించండి.",
   "shareAccountIdDescriptionCopied": "మీ స్నేహితులతో ఎక్కడైనా మీరు సాధారణంగా మాట్లాడే చోట కలుసుకోండి - తరువాత సంభాషణను ఇక్కడకు తరలించండి.",
   "shareExtensionDatabaseError": "డేటాబేస్ ను ఓపెన్ చేయడానికి సమస్య ఉంది. దయచేసి యాప్ ని రీస్టార్ట్ చేసి మళ్ళీ ప్రయత్నించండి.",
   "shareToSession": "{app_Name} కు పంచుకోండి",
@@ -747,3 +743,4 @@
   "yes": "అవును",
   "you": "మీరు"
 }
+

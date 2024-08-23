@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Maaari mong i-enable ang pahintulot na \"Mga Voice at Video Call\" sa Privacy Settings.",
   "callsReconnecting": "Muling kumukonekta…",
   "callsRinging": "Tumutunog...",
-  "callsSessionCall": "Session na Tawag",
   "callsSettings": "Mga Tawag (Beta)",
   "callsVoiceAndVideo": "Mga Voice at Video Call",
   "callsVoiceAndVideoBeta": "Mga Voice at Video Call (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Lumikha ng account",
   "onboardingAccountCreated": "Nagawa na ang Account",
   "onboardingAccountExists": "May account na ako",
-  "onboardingBackAccountCreation": "Hindi ka maaaring bumalik pa. Upang kanselahin ang iyong paglikha ng account, kinakailangang mag-quit ang Session.",
-  "onboardingBackLoadAccount": "Hindi ka maaaring bumalik pa. Upang itigil ang pag-load ng iyong account, kinakailangang mag-quit ang Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Ang paglikha ng account ay instant, libre, at anonymous",
   "onboardingBubbleNoPhoneNumber": "Hindi mo kailangan ng numero ng telepono para mag-sign up.",
   "onboardingBubblePrivacyInYourPocket": "Privacy sa bulsa mo.",
@@ -708,7 +705,6 @@
   "set": "Itakda",
   "settingsRestartDescription": "Dapat mong i-restart ang {app_name} upang ipatupad ang iyong mga bagong setting.",
   "share": "I-share",
-  "shareAccountIdDescription": "Imbitahan ang kaibigan mo na makipag-chat sa iyo sa Session sa pamamagitan ng pagbabahagi ng iyong Account ID.",
   "shareAccountIdDescriptionCopied": "I-share sa iyong mga kaibigan kahit saan mo sila karaniwang kinakausap — pagkatapos ay ilipat ang pag-uusap dito.",
   "shareExtensionDatabaseError": "May isyu sa pagbukas ng database. Pakirestart ang app at subukang muli.",
   "shareToSession": "I-share sa {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Oo",
   "you": "Ikaw"
 }
+

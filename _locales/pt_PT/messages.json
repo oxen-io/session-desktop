@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Pode ativar a permissão de \"Chamadas de voz e vídeo\" nas Configurações de Privacidade.",
   "callsReconnecting": "A restabelecer a ligação…",
   "callsRinging": "A tocar...",
-  "callsSessionCall": "Chamada do Session",
   "callsSettings": "Chamadas (Beta)",
   "callsVoiceAndVideo": "Chamadas de Voz/Vídeo",
   "callsVoiceAndVideoBeta": "Chamadas de Voz/Vídeo (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Criar Conta",
   "onboardingAccountCreated": "Conta Criada",
   "onboardingAccountExists": "Eu já tenho uma conta",
-  "onboardingBackAccountCreation": "Não pode retroceder mais. Para cancelar a criação da sua conta, o Session terá que ser encerrado.",
-  "onboardingBackLoadAccount": "Não pode retroceder mais. Para parar de carregar a sua conta, o Session terá que ser encerrado.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Criar uma conta é instantâneo, gratuito e anônimo",
   "onboardingBubbleNoPhoneNumber": "Nem precisa de um número de telefone para se inscrever.",
   "onboardingBubblePrivacyInYourPocket": "Privacidade no seu bolso.",
@@ -708,7 +705,6 @@
   "set": "Configurar",
   "settingsRestartDescription": "Tem que reiniciar o {app_name} de modo a aplicar as novas configurações.",
   "share": "Partilhar",
-  "shareAccountIdDescription": "Convide o seu amigo para conversar com você no Session compartilhando seu ID de Conta com eles.",
   "shareAccountIdDescriptionCopied": "Compartilhe com seus amigos onde você geralmente conversa com eles — depois mova a conversa para cá.",
   "shareExtensionDatabaseError": "Há um problema ao abrir o banco de dados. Por favor, reinicie o app e tente novamente.",
   "shareToSession": "Compartilhar para {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Sim",
   "you": "Você"
 }
+

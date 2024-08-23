@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Դուք կարող եք միացնել «Ձայնային և տեսազանգերի» թույլտվությունը Գաղտնիության կարգավորումներում։",
   "callsReconnecting": "Վերամիացում…",
   "callsRinging": "Զանգահարում է...",
-  "callsSessionCall": "Session Զանգ",
   "callsSettings": "Զանգեր (Բետա)",
   "callsVoiceAndVideo": "Ձայնային և տեսազանգեր",
   "callsVoiceAndVideoBeta": "Ձայնային և տեսազանգեր (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Գրանցվել",
   "onboardingAccountCreated": "Հաշիվը ստեղծված է",
   "onboardingAccountExists": "Ես հաշիվ ունեմ",
-  "onboardingBackAccountCreation": "Դուք չեք կարող հետ գնալ։ Ձեր հաշվի ստեղծումը չեղարկելու համար Session-ը պետք է ավարտել։",
-  "onboardingBackLoadAccount": "Դուք չեք կարող հետ գնալ։ Ձեր հաշվի բեռնաթափումը դադարեցնելու համար Session-ը պետք է ավարտել։",
   "onboardingBubbleCreatingAnAccountIsEasy": "Հաշիվ ստեղծելը հապավոտ, անվճար և անանուն է ",
   "onboardingBubbleNoPhoneNumber": "Դուք նույնիսկ հեռախոսահամար չունեք գրանցվելու համար։",
   "onboardingBubblePrivacyInYourPocket": "Գաղտնիություն ձեր գրպանում:",
@@ -708,7 +705,6 @@
   "set": "Սահմանել",
   "settingsRestartDescription": "Ձեր նոր կարգավորումներն կիրառելու համար դուք պետք է վերագործարկեք {app_name}։",
   "share": "Կիսվել",
-  "shareAccountIdDescription": "Հրավիրե՛ք ձեր ընկերոջը զրուցելու Session-ում՝ կիսվելով ձեր Account ID-ով:",
   "shareAccountIdDescriptionCopied": "Կիսվեք ձեր ընկերների հետ որտեղ սովորաբար խոսում եք նրանց հետ - ապա տեղափոխեք զրույցը այստեղ։",
   "shareExtensionDatabaseError": "Տվյալների բազան բացելու հետ խնդիր է առաջացել: Խնդրում ենք կրկին փորձեք:",
   "shareToSession": "Կիսվել {app_Name}-ի հետ",
@@ -751,3 +747,4 @@
   "yes": "Այո",
   "you": "Դուք"
 }
+

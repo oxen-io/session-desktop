@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "شما می‌توانید مجوز «تماس‌های صوتی و تصویری» را در تنظیمات حریم خصوصی فعال کنید.",
   "callsReconnecting": "در حال اتصال دوباره...",
   "callsRinging": "در حال زنگ خوردن...",
-  "callsSessionCall": "تماس Session",
   "callsSettings": "تماس‌ها (بتا)",
   "callsVoiceAndVideo": "تماس‌های صوتی و تصویری",
   "callsVoiceAndVideoBeta": "تماس‌های صوتی و تصویری (بتا)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "ایجاد حساب کاربری",
   "onboardingAccountCreated": "حساب ساخته شد",
   "onboardingAccountExists": "I have an account",
-  "onboardingBackAccountCreation": "نمی‌توانید بیشتر به عقب برگردید. برای لغو ساخت حساب، نیاز به بستن Session است.",
-  "onboardingBackLoadAccount": "نمی‌توانید بیشتر به عقب برگردید. برای متوقف کردن بارگیری حساب، نیاز به بستن Session است.",
   "onboardingBubbleCreatingAnAccountIsEasy": "ساخت یک حساب کاربری فوری، رایگان و ناشناس است ",
   "onboardingBubbleNoPhoneNumber": "برای ثبت نام حتی به شماره تلفن نیاز ندارید.",
   "onboardingBubblePrivacyInYourPocket": "حریم خصوصی در جیب شما.",
@@ -708,7 +705,6 @@
   "set": "تنظیم",
   "settingsRestartDescription": "برای اعمال تنظیمات جدید نیاز است {app_name} را دوباره راه‌اندازی کنید.",
   "share": "به اشتراک گذاری",
-  "shareAccountIdDescription": "دعوت از دوستتان برای گفتگو در Session با اشتراک گذاری شناسه حساب کاربری خود با وی.",
   "shareAccountIdDescriptionCopied": "با دوستان خود به اشتراک بگذارید هرجا که معمولاً با آنها صحبت می‌کنید — سپس مکالمه را به اینجا منتقل کنید.",
   "shareExtensionDatabaseError": "مشکلی در باز کردن پایگاه داده وجود دارد. لطفا اپلیکیشن را ریستارت کنید و دوباره تلاش کنید.",
   "shareToSession": "اشتراک گذاری به {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "بله",
   "you": "شما"
 }
+

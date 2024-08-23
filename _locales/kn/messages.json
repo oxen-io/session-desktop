@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "ನೀವು <b>ಪ್ರೈವೆಸಿ ಸೆಟ್ಟಿಂಗ್ಗಳಲ್ಲಿ</b>  \"ವಾಯ್ಸ್ ಮತ್ತು ವಿಡಿಯೋ ಕಾಲ್ಸ್\" ಅನುಮತಿಯನ್ನು ಕಾರ್ಯಕ್ರಮಗೊಳಿಸಬಹುದು.",
   "callsReconnecting": "ಮರು ಸಂಪರ್ಕಗೊಳ್ಳುತ್ತಿದೆ…",
   "callsRinging": "ರಿಂಗಿಂಗ್...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "ಕಾಲುಗಳು (ಬೀಟಾ)",
   "callsVoiceAndVideo": "ವಾಯ್ಸ್ ಮತ್ತು ವೀಡಿಯೋ ಕರೆಗಳು",
   "callsVoiceAndVideoBeta": "ವಾಯ್ಸ್ ಮತ್ತು ವೀಡಿಯೋ ಕರೆಗಳು (ಬೀಟಾ)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "ಖಾತೆ ರಚಿಸಿ",
   "onboardingAccountCreated": "ಖಾತೆ ರಚಿಸಲಾಗಿದೆ",
   "onboardingAccountExists": "ನನಗೆ ಖಾತೆಯಿದೆ",
-  "onboardingBackAccountCreation": "ನೀವು ಹಿಂದೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಖಾತೆ ರಚನೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು, <b>Session</b> ಅನ್ನು ತ್ವರಿತವಾಗಿ ಮುಗಿಯಬೇಕು.",
-  "onboardingBackLoadAccount": "ನೀವು ಹಿಂದೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ.  ನಿಮ್ಮ ಖಾತೆ ಲೋಡ್ ಮಾಡಿಸೋ ಪ್ರಕ್ರಿಯೆಯನ್ನು ನಿಲ್ಲಿಸಲು, <b>Session</b> ಅನ್ನು ತ್ವರಿತವಾಗಿ ಮುಗಿಯಬೇಕು.",
   "onboardingBubbleCreatingAnAccountIsEasy": "ಖಾತೆಯನ್ನು ರಚಿಸುವುದು ತಕ್ಷಣ, ಉಚಿತ, ಮತ್ತು ಅಜ್ಞಾತವಾಗಿದೆ",
   "onboardingBubbleNoPhoneNumber": "ನೀವು ಸೈನ್ ಅಪ್ ಮಾಡಲು ಫೋನ್ ನಂಬರ್ಅವಶ್ಯಕವಿಲ್ಲ.",
   "onboardingBubblePrivacyInYourPocket": "ನಿಮ್ಮ ಜೇಬಿನಲ್ಲಿ ಖಾಸಗಿತನ.",
@@ -706,7 +703,6 @@
   "set": "ಸೆಟ್",
   "settingsRestartDescription": "ನಿಮ್ಮ ಹೊಸ ಸೆಟ್ಟಿಂಗ್ಗಳನ್ನು ಅನ್ವಯಿಸಲು ನೀವು {app_name} ಅನ್ನು ಪುನರಾರಂಭಿಸಬೇಕು.",
   "share": "ಹಂಚು",
-  "shareAccountIdDescription": "ನಿಮ್ಮ ಖಾತೆ ID ನಿರ್ಮಿಸಿ ನಿಮ್ಮ ಸ್ನೇಹಿತನಿಗೆ ಚಾಟ್ ಮಾಡಲು ನೀವು ಅವರನ್ನು ಆಮಂತ್ರಿಸಿ.",
   "shareAccountIdDescriptionCopied": "ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಜೊತೆಗೆ ಮಾತನಾಡುವ ನಿಮ್ಮ ಸ್ನೇಹಿತರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ ಮತ್ತು ನಂತರ ಸಂಭಾಷಣೆಯನ್ನು ಇಲ್ಲಿ ಪ್ರಾರಂಭಿಸಿ.",
   "shareExtensionDatabaseError": "ಡೇಟಾಬೇಸ್ ತೆರೆಯುವುದರಲ್ಲಿ ಸಮಸ್ಯೆ巌ಧ. ಡ್ಯಾಷ್ ಅಪ್ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.",
   "shareToSession": "{app_Name} ಗೆ ಹಂಚು",
@@ -749,3 +745,4 @@
   "yes": "ಹೌದು",
   "you": "ನೀವು"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Jūs varat aktivizēt atļauju ‘Balss un video zvani’ konfidencialitātes iestatījumos.",
   "callsReconnecting": "Atjauno savienojumu…",
   "callsRinging": "Zvanu...",
-  "callsSessionCall": "Session zvans",
   "callsSettings": "Zvani (Beta)",
   "callsVoiceAndVideo": "Balss un video zvani",
   "callsVoiceAndVideoBeta": "Balss un video zvani (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Izveidot kontu",
   "onboardingAccountCreated": "Konts izveidots",
   "onboardingAccountExists": "Man ir konts",
-  "onboardingBackAccountCreation": "Jūs nevarat iet tālāk atpakaļ. Lai atceltu jūsu konta izveidi, Session ir jābeidz.",
-  "onboardingBackLoadAccount": "Jūs nevarat iet tālāk atpakaļ. Lai apturētu konta ielādi, Session ir jābeidz.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Kontu izveide ir tūlītēja, bezmaksas un anonīma",
   "onboardingBubbleNoPhoneNumber": "Jums pat nav vajadzīgs tālruņa numurs, lai reģistrētos.",
   "onboardingBubblePrivacyInYourPocket": "Privātums tavā kabatā.",
@@ -704,7 +701,6 @@
   "set": "Iestatīt",
   "settingsRestartDescription": "Lai lietotu jaunus iestatījumus, jums jārestartē {app_name}.",
   "share": "Dalīties",
-  "shareAccountIdDescription": "Uzaiciniet savu draugu tērzēt ar jums Session, daloties ar savu konta ID ar viņiem.",
   "shareAccountIdDescriptionCopied": "Dalies ar saviem draugiem, kur tu parasti saraksties ar viņiem — pēc tam pārcel sarunu šeit.",
   "shareExtensionDatabaseError": "Radās problēma, atverot datubāzi. Lūdzu, restartējiet lietotni un mēģiniet vēlreiz.",
   "shareToSession": "Dalīties ar {app_Name}",
@@ -747,3 +743,4 @@
   "yes": "Jā",
   "you": "Jūs"
 }
+

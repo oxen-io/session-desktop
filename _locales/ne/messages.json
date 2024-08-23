@@ -129,7 +129,6 @@
   "callsPermissionsRequired": "कल अनुमतिहरू आवश्यक छन्",
   "callsReconnecting": "फेरी जडान हुँदैछ…",
   "callsRinging": "रिङिङ...",
-  "callsSessionCall": "सत्र कल",
   "callsSettings": "कलहरू (बीटा)",
   "callsVoiceAndVideoToggleDescription": "भ्वाइस र भिडियो कलहरू सक्षम गर्नुहोस् र अरू प्रयोगकर्ताहरूको लागि सक्षम गर्नुहोस्",
   "cameraErrorNotFound": "क्यामेरा फेला परेन",
@@ -623,7 +622,6 @@
   "sessionSettings": "सेटिङहरू",
   "set": "सेट",
   "share": "साझा गर्नुहोस् ",
-  "shareAccountIdDescription": "तपाईंको मित्रलाई तपाईंसँग च्याट गर्न Session मा सम्मिलित गराउन आफ्नो खाता आईडी साझा गर्नुहोस्।",
   "shareAccountIdDescriptionCopied": "जहाँ तपाईंले प्राय: तिनीहरूसँग कुरा गर्नुहुन्छ, त्यहाँ आफ्ना साथीहरूसँग साझा गर्नुहोस् — अनि कुराकानीलाई यहाँ सार्नुहोस्।",
   "shareExtensionDatabaseError": "डाटाबेस खोल्नमा समस्या छ। कृपया एप पुनः सुरु गर्नुहोस् अनि फेरि प्रयास गर्नुहोस्।",
   "show": "देखाउनुहोस्",
@@ -655,3 +653,4 @@
   "waitFewMinutes": "यसले केहि मिनेट लिन सक्दछ।",
   "waitOneMoment": "एक क्षण पर्खनुहोस्..."
 }
+

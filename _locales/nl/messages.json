@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "U kunt de machtiging \"Spraak- en video-oproepen\" inschakelen in de privacy-instellingen.",
   "callsReconnecting": "Herverbinden...",
   "callsRinging": "Gaat over...",
-  "callsSessionCall": "Session-oproep",
   "callsSettings": "Gesprekken (Beta)",
   "callsVoiceAndVideo": "Spraak- en video-oproepen",
   "callsVoiceAndVideoBeta": "Spraak- en video-oproepen (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Create Account",
   "onboardingAccountCreated": "Account aangemaakt",
   "onboardingAccountExists": "Ik heb een account",
-  "onboardingBackAccountCreation": "U kunt niet verder teruggaan. Om de aanmaak van uw account te annuleren, moet Session afsluiten.",
-  "onboardingBackLoadAccount": "U kunt niet verder teruggaan. Om te stoppen met het laden van uw account, moet Session afsluiten.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Een account aanmaken is direct, gratis en anoniem",
   "onboardingBubbleNoPhoneNumber": "U heeft zelfs geen telefoonnummer nodig om u aan te melden.",
   "onboardingBubblePrivacyInYourPocket": "Privacy in je zak.",
@@ -708,7 +705,6 @@
   "set": "Instellen",
   "settingsRestartDescription": "Je moet {app_name} opnieuw starten om je nieuwe instellingen toe te passen.",
   "share": "Delen",
-  "shareAccountIdDescription": "Nodig je vriend uit om met je te chatten op Session door je Account ID met hen te delen.",
   "shareAccountIdDescriptionCopied": "Deel met je vrienden waar je normaal gesproken contact mee hebt - en vervolg vervolgens het gesprek hier.",
   "shareExtensionDatabaseError": "Er is een probleem bij het openen van de database. Herstart de app en probeer het opnieuw.",
   "shareToSession": "Delen met {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ja",
   "you": "U"
 }
+

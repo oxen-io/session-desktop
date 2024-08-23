@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Vi povas ebligi la permeson \"Voĉaj kaj Video Alvokoj\" en privatecaj agordoj.",
   "callsReconnecting": "Rekonektante…",
   "callsRinging": "Sonorante...",
-  "callsSessionCall": "Session-alvoko",
   "callsSettings": "Vokoj (Beto)",
   "callsVoiceAndVideo": "Voĉaj kaj Videaj Vokoj",
   "callsVoiceAndVideoBeta": "Voĉaj kaj Videaj Vokoj (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Krei konton",
   "onboardingAccountCreated": "Konto kreita.",
   "onboardingAccountExists": "Mi havas konton",
-  "onboardingBackAccountCreation": "Vi ne povas reeniri. Por nuligi vian kreadon de konto, Session devas fermiĝi.",
-  "onboardingBackLoadAccount": "Vi ne povas reeniri. Por halti ŝarĝadon de via konto, Session devas fermiĝi.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Krei konton estas tuj, senpage, kaj anonime ",
   "onboardingBubbleNoPhoneNumber": "Vi eĉ ne bezonas telefonnumeron por registriĝi.",
   "onboardingBubblePrivacyInYourPocket": "Privateco en via poŝo.",
@@ -708,7 +705,6 @@
   "set": "Fiksu",
   "settingsRestartDescription": "Vi devas rekomenci {app_name} por apliki viajn novajn agordojn.",
   "share": "Kunhavigi",
-  "shareAccountIdDescription": "Invitu vian amikon babili kun vi en Session dividante vian Account ID kun ili.",
   "shareAccountIdDescriptionCopied": "Kunhavigu kun viaj amikoj kien ajn vi kutime parolas kun ili — tiam movu la konversacion ĉi tie.",
   "shareExtensionDatabaseError": "Okazis problemo dum malfermo de la datumbazo. Bonvolu restartigi la aplikon kaj reprovi.",
   "shareToSession": "Kunhavigi al {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Jes",
   "you": "Vi"
 }
+

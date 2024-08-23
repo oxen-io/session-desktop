@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "You can enable the \"Voice and Video Calls\" permission in Privacy Settings.",
   "callsReconnecting": "পুনরায় সংযুক্ত হচ্ছে...",
   "callsRinging": "রিং হচ্ছে...",
-  "callsSessionCall": "Session Call",
   "callsSettings": "কলস (বেটা)",
   "callsVoiceAndVideo": "ভয়েস এবং ভিডিও কল",
   "callsVoiceAndVideoBeta": "ভয়েস এবং ভিডিও কল (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "অ্যাকাউন্ট তৈরি করুন",
   "onboardingAccountCreated": "অ্যাকাউন্ট তৈরি হয়েছে",
   "onboardingAccountExists": "আমার একটি অ্যাকাউন্ট আছে",
-  "onboardingBackAccountCreation": "You cannot go back further. In order to cancel your account creation, Session needs to quit.",
-  "onboardingBackLoadAccount": "You cannot go back further. In order to stop loading your account, Session needs to quit.",
   "onboardingBubbleCreatingAnAccountIsEasy": "একটি অ্যাকাউন্ট তৈরি করা তাৎক্ষণিক, বিনামূল্যে এবং বেনামী ",
   "onboardingBubbleNoPhoneNumber": "You don't even need a phone number to sign up.",
   "onboardingBubblePrivacyInYourPocket": "আপনার পকেটে গোপনীয়তা।",
@@ -708,7 +705,6 @@
   "set": "সেট করুন",
   "settingsRestartDescription": "আপনার নতুন সেটিংস প্রয়োগ করতে আপনাকে {app_name} পুনরায় চালু করতে হবে।",
   "share": "শেয়ার করুন",
-  "shareAccountIdDescription": "Account ID শেয়ার করে সেশনে আপনার বন্ধুকে চ্যাট করার জন্য আমন্ত্রণ জানান।",
   "shareAccountIdDescriptionCopied": "আপনার বন্ধুদের সাথে সেখানেই শেয়ার করুন যেখানে আপনি সাধারণত কথা বলেন — তারপর কথোপকথনটি এখানে সরান।",
   "shareExtensionDatabaseError": "ডাটাবেস খুলতে একটি সমস্যা আছে। দয়া করে অ্যাপ পুনরায় চালু করুন এবং আবার চেষ্টা করুন।",
   "shareToSession": "{app_Name} এ শেয়ার করুন",
@@ -751,3 +747,4 @@
   "yes": "হ্যাঁ",
   "you": "তুমি"
 }
+

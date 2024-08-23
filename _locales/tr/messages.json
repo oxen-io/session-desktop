@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "'Sesli ve Görüntülü Arama' iznini Gizlilik Ayarlarından etkinleştirebilirsiniz.",
   "callsReconnecting": "Yeniden bağlanıyor…",
   "callsRinging": "Çalıyor...",
-  "callsSessionCall": "Session Araması",
   "callsSettings": "Aramalar (Beta)",
   "callsVoiceAndVideo": "Sesli ve Görüntülü Aramalar",
   "callsVoiceAndVideoBeta": "Sesli ve Görüntülü Aramalar (Deneme Aşamasında)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Hesap oluştur",
   "onboardingAccountCreated": "Hesap Oluşturuldu",
   "onboardingAccountExists": "Hesabım var",
-  "onboardingBackAccountCreation": "Daha ileriye gidemezsiniz. Hesap oluşturmayı iptal etmek için Session'ın kapanması gerekir.",
-  "onboardingBackLoadAccount": "Daha ileriye gidemezsiniz. Hesabınızı yüklemeyi durdurmak için Session'ın kapanması gerekir.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Hesap oluşturmak anında, ücretsiz ve anonimdir",
   "onboardingBubbleNoPhoneNumber": "Kayıt olmak için telefon numarasına bile ihtiyacınız yok.",
   "onboardingBubblePrivacyInYourPocket": "Cebinizdeki gizlilik.",
@@ -708,7 +705,6 @@
   "set": "Set",
   "settingsRestartDescription": "Yeni ayarların uygulanması için {app_name}'i yeniden başlatmanız gerekiyor.",
   "share": "Paylaş",
-  "shareAccountIdDescription": "Arkadaşınızı Hesap ID'nizi paylaşarak Session'da sizinle sohbet etmeye davet edin.",
   "shareAccountIdDescriptionCopied": "Arkadaşlarınızla genellikle nerede konuştuğunuzu paylaşın ve ardından sohbeti buraya taşıyın.",
   "shareExtensionDatabaseError": "Veritabanını açarken bir sorun oluştu. Lütfen uygulamayı yeniden başlatıp tekrar deneyin.",
   "shareToSession": "{app_Name} ile paylaşın",
@@ -751,3 +747,4 @@
   "yes": "Evet",
   "you": "Siz"
 }
+

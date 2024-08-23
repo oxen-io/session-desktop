@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Вы можаце ўключыць дазвол «Галасавыя і відэазванкі» у наладах прыватнасці.",
   "callsReconnecting": "Паўторнае падключэнне…",
   "callsRinging": "Званок...",
-  "callsSessionCall": "Выклік Session",
   "callsSettings": "Званкі (бэта)",
   "callsVoiceAndVideo": "Галасавыя і відэазванкі",
   "callsVoiceAndVideoBeta": "Галасавыя і відэазванкі (бэта)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Стварыць уліковы запіс",
   "onboardingAccountCreated": "Уліковы запіс створаны",
   "onboardingAccountExists": "У мяне ёсць уліковы запіс",
-  "onboardingBackAccountCreation": "Вы не можаце вярнуцца далей. Каб адмяніць стварэнне ўліковага запісу, неабходна зачыніць Session.",
-  "onboardingBackLoadAccount": "Вы не можаце вярнуцца далей. Каб спыніць загрузку ўліковага запісу, неабходна зачыніць Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Стварэнне ўліковага запісу хуткае, бясплатнае і ананімнае",
   "onboardingBubbleNoPhoneNumber": "Для рэгістрацыі вам нават не патрэбен тэлефонны нумар.",
   "onboardingBubblePrivacyInYourPocket": "Прыватнасць у вашай кішэні.",
@@ -708,7 +705,6 @@
   "set": "Задаць",
   "settingsRestartDescription": "Вам неабходна перазапусціць {app_name} для прымянення новых налад.",
   "share": "Абагуліць",
-  "shareAccountIdDescription": "Запрасіце сябра пагутарыць у Session, пры дапамозе вашага Account ID.",
   "shareAccountIdDescriptionCopied": "Падзяліцеся сваім ID акаўнта з сябрамі ў месцы, дзе вы звычайна з імі размаўляеце, а потым перанясіце гутарку сюды.",
   "shareExtensionDatabaseError": "Узнікла праблема адкрыцця базы даных. Перазапусціце праграму і паўтарыце спробу.",
   "shareToSession": "Абагуліць у {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Так",
   "you": "Вы"
 }
+

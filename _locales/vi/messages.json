@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Bạn có thể bật quyền \"Gọi giọng nói và video\" trong cài đặt Quyền riêng tư.",
   "callsReconnecting": "Đang kết nối lại…",
   "callsRinging": "Đang đổ chuông...",
-  "callsSessionCall": "Cuộc gọi Session",
   "callsSettings": "Cuộc gọi (Beta)",
   "callsVoiceAndVideo": "Cuộc gọi thoại và video",
   "callsVoiceAndVideoBeta": "Các cuộc gọi giọng nói và video (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Tạo tài khoản",
   "onboardingAccountCreated": "Đã tạo tài khoản",
   "onboardingAccountExists": "Tôi có tài khoản",
-  "onboardingBackAccountCreation": "Bạn không thể quay lại được nữa. Để hủy tạo tài khoản của bạn, Session cần thoát.",
-  "onboardingBackLoadAccount": "Bạn không thể quay lại được nữa. Để dừng tải tài khoản của bạn, Session cần thoát.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Tạo một tài khoản thì ngay lập tức, miễn phí và ẩn danh.",
   "onboardingBubbleNoPhoneNumber": "Bạn thậm chí không cần số điện thoại để đăng ký.",
   "onboardingBubblePrivacyInYourPocket": "Riêng tư trong túi của bạn.",
@@ -707,7 +704,6 @@
   "set": "Thiết Lập",
   "settingsRestartDescription": "Bạn phải khởi động lại {app_name} để áp dụng các cài đặt mới của mình.",
   "share": "Chia sẻ",
-  "shareAccountIdDescription": "Mời bạn bè để trò chuyện với bạn trên Session bằng cách chia sẻ Account ID của bạn với họ.",
   "shareAccountIdDescriptionCopied": "Chia sẻ với bạn bè của bạn bất cứ nơi nào bạn thường nói chuyện với họ — sau đó chuyển cuộc trò chuyện đến đây.",
   "shareExtensionDatabaseError": "Có vấn đề khi mở cơ sở dữ liệu. Vui lòng khởi động lại ứng dụng và thử lại.",
   "show": "Hiển thị",
@@ -749,3 +745,4 @@
   "yes": "Có",
   "you": "Bạn"
 }
+

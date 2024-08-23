@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "يمكنك تفعيل صَلاحِيَة \"المكالمات الصوتية والمرئية\" في إعدادات الخصوصية.",
   "callsReconnecting": "جار إعادة الاتصال…",
   "callsRinging": "يرن حاليا...",
-  "callsSessionCall": "مكالمة Session",
   "callsSettings": "المكالمات (نسخة تجريبية)",
   "callsVoiceAndVideo": "المكالمات الصوتية و المرئية",
   "callsVoiceAndVideoBeta": "المكالمات الصوتية والمرئية (تجريبي)",
@@ -560,8 +559,6 @@
   "onboardingAccountCreate": "إنشاء حساب",
   "onboardingAccountCreated": "تم إنشاء الحساب",
   "onboardingAccountExists": "لدي حساب",
-  "onboardingBackAccountCreation": "لا يمكنك الرجوع أكثر. لإلغاء إنشاء حسابك، يجب إغلاق Session.",
-  "onboardingBackLoadAccount": "لا يمكنك الرجوع أكثر. لإيقاف تحميل حسابك، يجب إغلاق Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "إنشاء حساب فوري ومجاني ومجهول",
   "onboardingBubbleNoPhoneNumber": "أنت لا تحتاج حتى إلى رقم هاتف للتسجيل.",
   "onboardingBubblePrivacyInYourPocket": "الخصوصية في جيبك.",
@@ -705,7 +702,6 @@
   "set": "تعيين",
   "settingsRestartDescription": "يجب عليك إعادة تشغيل {app_name} لتطبيق الإعدادات الجديدة.",
   "share": "شارك",
-  "shareAccountIdDescription": "ادعُ صديقك للدردشة معك على Session بمشاركة معرف حسابك معهم.",
   "shareAccountIdDescriptionCopied": "شارك مع أصدقائك حيثما تتحدث معهم عادةً — ثم نقل المحادثة هنا.",
   "shareExtensionDatabaseError": "هناك مشكلة في فتح قاعدة البيانات. يرجى إعادة تشغيل التطبيق والمحاولة مرة أخرى.",
   "shareToSession": "مشاركة إلى {app_Name}",
@@ -748,3 +744,4 @@
   "yes": "نعم",
   "you": "أنت"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Можете омогућити дозволу за гласовне и видео позиве у подешавањима приватности.",
   "callsReconnecting": "Поновно повезивање…",
   "callsRinging": "Звони...",
-  "callsSessionCall": "Позив на Sessionу",
   "callsSettings": "Позиви (бета)",
   "callsVoiceAndVideo": "Гласовни и видео позиви",
   "callsVoiceAndVideoBeta": "Гласовни и видео позиви (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Креирај налог",
   "onboardingAccountCreated": "Налог је креиран",
   "onboardingAccountExists": "Имам налог",
-  "onboardingBackAccountCreation": "Не можете да се вратите уназад. Да бисте отказали креирање налога, потребно је да изађете из Session-а.",
-  "onboardingBackLoadAccount": "Не можете да се вратите уназад. Да бисте престали да учитавате svoj налог, потребно је да изађете из Session-а.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Креирање налога је тренутно, бесплатно и анонимно",
   "onboardingBubbleNoPhoneNumber": "Не треба вам ни број телефона за пријаву.",
   "onboardingBubblePrivacyInYourPocket": "Приватност у вашем џепу.",
@@ -707,7 +704,6 @@
   "set": "Потврди",
   "settingsRestartDescription": "Морате рестартовати {app_name} да примените нова подешавања.",
   "share": "Дели",
-  "shareAccountIdDescription": "Позовите пријатеља на ћаскање на Session-у тако што ћете делити свој Account ID са њима.",
   "shareAccountIdDescriptionCopied": "Дели са својим пријатељима где год је уобичајено – затим настави разговор овде.",
   "shareExtensionDatabaseError": "Појавио се проблем при отварању базе података. Поново покрените апликацију и покушајте поново.",
   "shareToSession": "Дели са {app_Name}",
@@ -750,3 +746,4 @@
   "yes": "Да",
   "you": "Ти"
 }
+

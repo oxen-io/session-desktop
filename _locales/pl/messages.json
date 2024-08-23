@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Możesz włączyć uprawnienie 'Połączenia głosowe i wideo' w Ustawieniach Prywatności.",
   "callsReconnecting": "Ponowne łączenie…",
   "callsRinging": "Dzwonienie...",
-  "callsSessionCall": "Połączenie Session",
   "callsSettings": "Połączenia (Beta)",
   "callsVoiceAndVideo": "Połączenia głosowe i wideo",
   "callsVoiceAndVideoBeta": "Połączenia głosowe i wideo (beta)",
@@ -555,8 +554,6 @@
   "onboardingAccountCreate": "Utwórz konto",
   "onboardingAccountCreated": "Konto zostało utworzone",
   "onboardingAccountExists": "Posiadam już konto",
-  "onboardingBackAccountCreation": "Nie można cofnąć się dalej. Aby anulować tworzenie konta, Session musi zostać zamknięty.",
-  "onboardingBackLoadAccount": "Nie można cofnąć się dalej. Aby zatrzymać ładowanie konta, Session musi zostać zamknięty.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Creating an account is instant, free, and anonymous ",
   "onboardingBubbleNoPhoneNumber": "Nawet nie potrzebujesz numeru telefonu, aby się zarejestrować.",
   "onboardingBubblePrivacyInYourPocket": "Prywatność w Twojej kieszeni.",
@@ -697,7 +694,6 @@
   "set": "Zapisz",
   "settingsRestartDescription": "Musisz zrestartować {app_name}, aby zastosować nowe ustawienia.",
   "share": "Udostępnij",
-  "shareAccountIdDescription": "Zaproś znajomego do rozmowy na Session, udostępniając mu swój identyfikator konta.",
   "shareAccountIdDescriptionCopied": "Podziel się z przyjaciółmi, gdziekolwiek zazwyczaj z nimi rozmawiasz, następnie przenieś rozmowę tutaj.",
   "shareExtensionDatabaseError": "Wystąpił problem podczas otwierania bazy danych. Uruchom ponownie aplikację i spróbuj ponownie.",
   "shareToSession": "Udostępnij do {app_Name}",
@@ -740,3 +736,4 @@
   "yes": "Tak",
   "you": "Ty"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Hûn dikarin destûrê \"Deng û Vîdeoyê\" leyîn û mîhengên bi te birûskbike.",
   "callsReconnecting": "Herî dîsa bi têkiliye dike…",
   "callsRinging": "Lê dide...",
-  "callsSessionCall": "Banga Danûstandinê",
   "callsSettings": "Bangên (Beta)",
   "callsVoiceAndVideo": "Lêgerînên Dengî û Vîdeoyî",
   "callsVoiceAndVideoBeta": "Lêgerînên Dengî û Vîdeoyî (Beta)",
@@ -561,8 +560,6 @@
   "onboardingAccountCreate": "Hesabê çêke",
   "onboardingAccountCreated": "Hesab hate çêkirin",
   "onboardingAccountExists": "Ez hesabe yekî hebûme",
-  "onboardingBackAccountCreation": "Te nakeve bike. Bo dubarê sazkiriyê peyama te, divvê Session avêtin.",
-  "onboardingBackLoadAccount": "Te nakeve bike. Bo peyalekeriyîyê peyama te, divvê Session avêtin.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Hesabek çêkirin instant, belaş û anonim e",
   "onboardingBubbleNoPhoneNumber": "Te jî bi we hêxam nayê nîşandin ku bi telefoneke ser girêdan peyda bicinûsin.",
   "onboardingBubblePrivacyInYourPocket": "Nihênî di hindurê te de.",
@@ -706,7 +703,6 @@
   "set": "Danîn",
   "settingsRestartDescription": "Ji bo bi aliyekî kirina mîhengekên xwe yên nû, {app_name}ê ji nû ve vekin.",
   "share": "Par",
-  "shareAccountIdDescription": "<b>Nasnameya Kontê xwe</b> yekî ji bo daxwazekirina pêvekirina re <b>Mesaj</b> bipêşîn û şuweyşandina profîla te ya <b>Session</b> peyda bike.",
   "shareAccountIdDescriptionCopied": "Bi hevalên xwe bi hû zekê qeseyê bikin û niha baye birre deri zanînuwe.",
   "shareExtensionDatabaseError": "Hingehî bibe dazik xwe tisteka te bide qedandin. Ji kerema xwe karan daye ber xwe xwe dubare agir bike.",
   "show": "Nîşan bide",
@@ -748,3 +744,4 @@
   "yes": "Erê",
   "you": "Tu"
 }
+

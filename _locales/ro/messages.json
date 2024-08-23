@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Puteți activa permisiunea „Apeluri Vocale și Video” în Setările de Confidențialitate.",
   "callsReconnecting": "Reconectare...",
   "callsRinging": "Sună...",
-  "callsSessionCall": "Apel Session",
   "callsSettings": "Apeluri (Beta)",
   "callsVoiceAndVideo": "Apeluri video și audio",
   "callsVoiceAndVideoBeta": "Apeluri vocale și video (Beta)",
@@ -560,8 +559,6 @@
   "onboardingAccountCreate": "Creați un cont",
   "onboardingAccountCreated": "Cont creat",
   "onboardingAccountExists": "Am deja un cont",
-  "onboardingBackAccountCreation": "Nu poți reveni mai departe. Pentru a anula crearea contului tău, Session trebuie să se închidă.",
-  "onboardingBackLoadAccount": "Nu poți reveni mai departe. Pentru a opri încărcarea contului tău, Session trebuie să se închidă.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Crearea unui cont este instantanee, gratuită și anonimă",
   "onboardingBubbleNoPhoneNumber": "Nici măcar nu ai nevoie de un număr de telefon pentru a te înscrie.",
   "onboardingBubblePrivacyInYourPocket": "Confidențialitatea în buzunarul tău.",
@@ -705,7 +702,6 @@
   "set": "Setează",
   "settingsRestartDescription": "Trebuie să reporniți {app_name} pentru a aplica noile setări.",
   "share": "Partajează",
-  "shareAccountIdDescription": "Invită-ți prietenul să converseze cu tine pe Session împărtășindu-i ID-ul tău de cont.",
   "shareAccountIdDescriptionCopied": "Împărtășește cu prietenii tai oriunde comunici cu ei - apoi muta conversația aici.",
   "shareExtensionDatabaseError": "Există o problemă la deschiderea bazei de date. Te rugăm să repornești aplicația și să încerci din nou.",
   "shareToSession": "Partajează către {app_Name}",
@@ -748,3 +744,4 @@
   "yes": "Da",
   "you": "Tu"
 }
+

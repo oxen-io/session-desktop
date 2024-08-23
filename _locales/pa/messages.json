@@ -137,7 +137,6 @@
   "callsPermissionsRequiredDescription": "ਤੁਸੀਂ ਪ੍ਰਾਈਵੇਸੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ \"ਵਾਇਸ ਅਤੇ ਵੀਡੀਓ ਕਾਲਾਂ\" ਦੀ ਆਗਿਆ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।",
   "callsReconnecting": "ਰਿਕੋਨੈਕਟ ਕੀਤਾ",
   "callsRinging": "ਰਿੰਗ ਕਰਨ ਲੱਗੇ ਹਾਂ...",
-  "callsSessionCall": "Session ਕਾਲ",
   "callsSettings": "ਕਾਲਾਂ (ਬੇਟਾ)",
   "callsVoiceAndVideo": "ਆਵਾਜ਼ ਅਤੇ ਵਿਡੀਓ ਕਾਲਾਂ",
   "callsVoiceAndVideoBeta": "ਆਵਾਜ਼ ਅਤੇ ਵਿਡੀਓ ਕਾਲਾਂ (Beta)",
@@ -542,8 +541,6 @@
   "onboardingAccountCreate": "ਅਕਾਊਂਟ ਬਣਾਓ",
   "onboardingAccountCreated": "ਖਾਤਾ ਬਣਾਇਆ ਗਿਆ",
   "onboardingAccountExists": "ਮੇਰੇ ਕੋਲ ਇੱਕ ਖਾਤਾ ਹੈ",
-  "onboardingBackAccountCreation": "ਤੁਸੀਂ ਹੁਣ ਤੋਂ ਵਾਪਸ ਨਹੀਂ ਜਾ ਸਕਦੇ। ਆਪਣਾ ਖਾਤਾ ਬਣਾਉਣਾ ਰੱਦ ਕਰਨ ਲਈ, Session ਨੂੰ ਬੰਦ ਕਰਨਾ ਜ਼ਰੂਰੀ ਹੈ।",
-  "onboardingBackLoadAccount": "ਤੁਸੀਂ ਹੁਣ ਤੋਂ ਵਾਪਸ ਨਹੀਂ ਜਾ ਸਕਦੇ। ਆਪਣਾ ਖਾਤਾ ਲੋਡ ਕਰਨਾ ਰੋਕਣ ਲਈ, Session ਨੂੰ ਬੰਦ ਕਰਨਾ ਜਰੂਰੀ ਹੈ।",
   "onboardingBubbleCreatingAnAccountIsEasy": "ਅਕਾਊਂਟ ਬਣਾਉਣਾ ਝਟ ਪਟ ਤੇ ਮੁਫ਼ਤ ਹੈ ਅਤੇ ਗੁਪਤ ਬੁਨਿਆਦ ਉੱਤੇ ਹੈ ",
   "onboardingBubbleNoPhoneNumber": "ਤੁਹਾਨੂੰ ਸਾਈਨ ਅੱਪ ਕਰਨ ਲਈ ਫ਼ੋਨ ਨੰਬਰ ਦੀ ਵੀ ਲੋੜ ਨਹੀਂ।",
   "onboardingBubblePrivacyInYourPocket": "ਤੁਹਾਡੇ ਜੇਬ ਵਿੱਚ ਪ੍ਰਾਇਵੇਸੀ।",
@@ -684,7 +681,6 @@
   "set": "ਸੈੱਟ ਕਰੋ",
   "settingsRestartDescription": "ਤੁਹਾਨੂੰ ਆਪਣੇ ਨਵੇਂ ਸੈਟਿੰਗਾਂ ਲਾਗੂ ਕਰਨ ਲਈ {app_name} ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰਨਾ ਪਵੇਗਾ।",
   "share": "ਸਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕਰੋ",
-  "shareAccountIdDescription": "ਆਪਣੇ ਦੋਸਤਾਂ ਨਾਲ ਵਾਰਤਾਲਾਪ ਕਰਨ ਲਈ ਉਹਨਾਂ ਨੂੰ ਆਪਣੇ ਅਕਾਊਂਟ ਐਡੀ ਨੂੰ ਸਾਂਝਾ ਕਰ ਕੇ ਸੱਦੋ।",
   "shareAccountIdDescriptionCopied": "ਜਿੱਥੇ ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਉਹਨਾਂ ਨਾਲ ਗੱਲ ਕਰਦੇ ਹੋ, ਉਨਾਂ ਨਾਲ ਆਪਣੇ ਦੋਸਤਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ – ਫਿਰ ਗੱਲਬਾਤ ਇੱਥੇ ਲਿਆਓ।",
   "shareExtensionDatabaseError": "ਡਾਟਾਬੇਸ ਖੋਲ੍ਹਣ ਵਿੱਚ ਇੱਕ ਸਮੱਸਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਨੂੰ ਰੀਸਟਾਰਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
   "shareToSession": "{app_Name} ਦੇ ਨਾਲ ਸਾਂਝਾ ਕਰੋ",
@@ -727,3 +723,4 @@
   "yes": "ਹਾਂ",
   "you": "ਤੁਸੀਂ"
 }
+

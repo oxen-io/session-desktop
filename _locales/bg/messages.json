@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Можете да разрешите разрешението \"Гласови и видео разговори\" в настройките за поверителност.",
   "callsReconnecting": "Възстановяване на връзката…",
   "callsRinging": "Звъни...",
-  "callsSessionCall": "Обаждане през Session",
   "callsSettings": "Обаждания (Beta)",
   "callsVoiceAndVideo": "Гласови и видео разговори",
   "callsVoiceAndVideoBeta": "Гласови и видеозаписи (Бета)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Създай акаунт",
   "onboardingAccountCreated": "Акаунтът е създаден",
   "onboardingAccountExists": "Имам акаунт",
-  "onboardingBackAccountCreation": "Не можете да се върнете по-назад. За да анулирате създаването на акаунт, Session трябва да се затвори.",
-  "onboardingBackLoadAccount": "Не можете да се върнете по-назад. За да спрете зареждането на акаунта си, Session трябва да се затвори.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Създаването на акаунт е моментално, безплатно и анонимно ",
   "onboardingBubbleNoPhoneNumber": "Не ви е нужен телефонен номер, за да се запишете.",
   "onboardingBubblePrivacyInYourPocket": "Поверителност в джоба ви.",
@@ -708,7 +705,6 @@
   "set": "Задаване",
   "settingsRestartDescription": "Трябва да рестартирате {app_name}, за да приложите новите си настройки.",
   "share": "Споделяне",
-  "shareAccountIdDescription": "Поканете приятеля си да чатите в Session, като споделите своя ИД акаунт с него.",
   "shareAccountIdDescriptionCopied": "Споделете с вашите приятели там, където обикновено говорите с тях — след това преместете разговора тук.",
   "shareExtensionDatabaseError": "Съществува проблем при отварянето на базата данни. Моля, рестартирайте приложението и опитайте отново.",
   "shareToSession": "Споделяне в {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Да",
   "you": "Ти"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "תוכל/י לאפשר את ההרשאה \"שיחות קוליות ווידאו\" בהגדרות הפרטיות.",
   "callsReconnecting": "מתחבר מחדש…",
   "callsRinging": "מצלצל...",
-  "callsSessionCall": "שיחת Session",
   "callsSettings": "שיחות (בטא)",
   "callsVoiceAndVideo": "שיחות קוליות ווידיאו",
   "callsVoiceAndVideoBeta": "שיחות קוליות ווידיאו (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "יצירת חשבון",
   "onboardingAccountCreated": "חשבונך נוצר",
   "onboardingAccountExists": "יש לי חשבון",
-  "onboardingBackAccountCreation": "אינך יכול/ה לחזור אחורה יותר. כדי לבטל את יצירת החשבון שלך, Session צריכה להיסגר.",
-  "onboardingBackLoadAccount": "אינך יכול/ה לחזור אחורה יותר. כדי להפסיק את טעינת החשבון שלך, Session צריכה להיסגר.",
   "onboardingBubbleCreatingAnAccountIsEasy": "יצירת חשבון היא מיידית, חינמית ואנונימית",
   "onboardingBubbleNoPhoneNumber": "לא צריך/ה אפילו מספר טלפון כדי להירשם.",
   "onboardingBubblePrivacyInYourPocket": "פרטיוּת בכיס שלך.",
@@ -708,7 +705,6 @@
   "set": "הגדר",
   "settingsRestartDescription": "עליך להפעיל מחדש את {app_name} כדי להחיל את ההגדרות החדשות שלך.",
   "share": "שיתוף",
-  "shareAccountIdDescription": "הזמן את חברך לשוחח איתך על Session על ידי שיתוף מספר הזיהוי שלך איתו.",
   "shareAccountIdDescriptionCopied": "שתף עם חבריך היכן שאתה מדבר איתם בדרך כלל - ואז העבר את השיחה לכאן.",
   "shareExtensionDatabaseError": "יש בעיה בפתיחת מאגר הנתונים. אנא הפעל את האפליקציה מחדש ונסה שוב.",
   "shareToSession": "שתף ל־{app_Name}",
@@ -751,3 +747,4 @@
   "yes": "כן",
   "you": "את/ה"
 }
+

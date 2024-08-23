@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Mutha kuyambitsa chovomerezeka \"Mawumtchela ndi Mavidiyo kuitana\" mu Zoikamo Zachinsinsi.",
   "callsReconnecting": "Kubwezeretsanso…",
   "callsRinging": "Kayakun...",
-  "callsSessionCall": "Sessionwan kayachipay",
   "callsSettings": "Calls (Beta)",
   "callsVoiceAndVideo": "Mayankho a Mawu ndi Makanema",
   "callsVoiceAndVideoBeta": "Mayankho a Mawu ndi Makanema (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Pangani Akaunti",
   "onboardingAccountCreated": "Akaunti Amisika",
   "onboardingAccountExists": "Ndimakhala ndi akaunti",
-  "onboardingBackAccountCreation": "Simungathe kubwerera kwina. Kuyimitsa kupanga nambala yanu, {app_name} ayenera kusiya.",
-  "onboardingBackLoadAccount": "Simungathe kubwerera kwina. Kulephera kumaliza kunyamula nambala yanu, {app_name} ayenera kusiya.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Kupanga akaunti kumachitika nthawi yomweyo, kwaulere, komanso ndi achinsinsi",
   "onboardingBubbleNoPhoneNumber": "Simufuna nambala yafoni kulemba",
   "onboardingBubblePrivacyInYourPocket": "Chinsinsi mthumba mwanu.",
@@ -708,7 +705,6 @@
   "set": "Set",
   "settingsRestartDescription": "Muyenera kuyambiranso {app_name} kuti mutseke zosintha zanu zatsopano.",
   "share": " Yallichirina",
-  "shareAccountIdDescription": "Kayachina mnzanu woti azilankhula nanu pa Session powatumizirani Account ID yanu.",
   "shareAccountIdDescriptionCopied": "Share with your friends wherever you usually speak with them — then move the conversation here.",
   "shareExtensionDatabaseError": "Pali vuto pantchito yokonza deta. Chonde yambitsaninso pulogalamu ndikuyesanso.",
   "shareToSession": "Kaypi allichishka {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ari",
   "you": "Inu"
 }
+

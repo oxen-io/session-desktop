@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Podeu habilitar el permís de 'Telefonades de veu i vídeo' a la configuració de Privadesa.",
   "callsReconnecting": "S'està tornant a connectar…",
   "callsRinging": "Està sonant...",
-  "callsSessionCall": "Trucada del Session",
   "callsSettings": "Telefonades (Beta)",
   "callsVoiceAndVideo": "Telefonades de veu i de vídeo",
   "callsVoiceAndVideoBeta": "Telefonades de veu i de vídeo (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Crea un compte",
   "onboardingAccountCreated": "Compte creat",
   "onboardingAccountExists": "Tinc un compte",
-  "onboardingBackAccountCreation": "No podeu tornar més enrere. Per cancelar la creació del vostre compte, Session necessita tancar-se.",
-  "onboardingBackLoadAccount": "No podeu tornar més enrere. Per aturar la càrrega del vostre compte, Session necessita tancar-se.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Crear un compte és instantani, gratuït i anònim",
   "onboardingBubbleNoPhoneNumber": "No necessiteu ni tan sols un número de telèfon per registrar-vos.",
   "onboardingBubblePrivacyInYourPocket": "Privadesa a la teva butxaca.",
@@ -708,7 +705,6 @@
   "set": "Definir",
   "settingsRestartDescription": "Heu de reiniciar {app_name} per aplicar la vostra nova configuració.",
   "share": "Compartir",
-  "shareAccountIdDescription": "Convida el teu amic a xatejar amb tu a Session compartint la teva identificació de compte amb ells.",
   "shareAccountIdDescriptionCopied": "Compartiu amb els vostres amics allà on acostumeu a parlar-hi; després, traslladeu la conversa aquí.",
   "shareExtensionDatabaseError": "Hi ha un problema en obrir la base de dades. Siusplau, reinicieu l'aplicació i torneu-ho a provar.",
   "shareToSession": "Compartiu a {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Sí",
   "you": "Vós"
 }
+

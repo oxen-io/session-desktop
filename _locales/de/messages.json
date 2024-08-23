@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Du kannst die Berechtigung für \"Sprach- und Videoanrufe\" in den Datenschutzeinstellungen aktivieren.",
   "callsReconnecting": "Wiederverbinden…",
   "callsRinging": "Klingelt...",
-  "callsSessionCall": "Session-Anruf",
   "callsSettings": "Anrufe (Beta)",
   "callsVoiceAndVideo": "Sprach- und Videoanrufe",
   "callsVoiceAndVideoBeta": "Sprach- und Videoanrufe (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Konto erstellen",
   "onboardingAccountCreated": "Konto erstellt",
   "onboardingAccountExists": "Ich habe ein Konto",
-  "onboardingBackAccountCreation": "Du kannst nicht weiter zurückgehen. Um die Kontoerstellung abzubrechen, muss Session beendet werden.",
-  "onboardingBackLoadAccount": "Du kannst nicht weiter zurückgehen. Um das Laden deines Kontos zu stoppen, muss Session beendet werden.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Einen Account zu erstellen ist sofort möglich, kostenlos und anonym ",
   "onboardingBubbleNoPhoneNumber": "Du benötigst nicht einmal eine Telefonnummer, um dich anzumelden.",
   "onboardingBubblePrivacyInYourPocket": "Datenschutz in deiner Hosentasche.",
@@ -708,7 +705,6 @@
   "set": "Speichern",
   "settingsRestartDescription": "Du musst {app_name} neu starten, um die neuen Einstellungen zu übernehmen.",
   "share": "Teilen",
-  "shareAccountIdDescription": "Lade deinen Freund ein, mit dir auf Session zu chatten, indem du deine Account ID mit ihm teilst.",
   "shareAccountIdDescriptionCopied": "Teile deine Session-ID mit Freunden und verlagert eure Konversation gerne zu Session.",
   "shareExtensionDatabaseError": "Es gibt ein Problem beim Öffnen der Datenbank. Bitte starte die App neu und versuche es erneut.",
   "shareToSession": "Teilen auf {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ja",
   "you": "Du"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Μπορείτε να ενεργοποιήσετε την άδεια \"Κλήσεις Φωνής και Βίντεο\" στις Ρυθμίσεις Απορρήτου.",
   "callsReconnecting": "Επανασύνδεση...",
   "callsRinging": "Καλεί...",
-  "callsSessionCall": "Κλήση Session",
   "callsSettings": "Κλήσεις (Beta)",
   "callsVoiceAndVideo": "Κλήσεις Φωνής και Βίντεο",
   "callsVoiceAndVideoBeta": "Κλήσεις Φωνής και Βίντεο (Beta)",
@@ -559,8 +558,6 @@
   "onboardingAccountCreate": "Δημιουργία λογαριασμού",
   "onboardingAccountCreated": "Ο Λογαριασμός Δημιουργήθηκε",
   "onboardingAccountExists": "Έχω λογαριασμό",
-  "onboardingBackAccountCreation": "Δεν μπορείτε να επιστρέψετε περαιτέρω. Για να ακυρώσετε τη δημιουργία του λογαριασμού σας, το Session πρέπει να τερματιστεί.",
-  "onboardingBackLoadAccount": "Δεν μπορείτε να επιστρέψετε περαιτέρω. Για να διακόψετε τη φόρτωση του λογαριασμού σας, το Session πρέπει να τερματιστεί.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Creating an account is instant, free, and anonymous ",
   "onboardingBubbleNoPhoneNumber": "Δεν χρειάζεστε καν αριθμό τηλεφώνου για να εγγραφείτε.",
   "onboardingBubblePrivacyInYourPocket": "Απόρρητο στην τσέπη σας.",
@@ -704,7 +701,6 @@
   "set": "Ορισμός",
   "settingsRestartDescription": "Πρέπει να επανεκκινήσετε το {app_name} για να εφαρμόσετε τις νέες ρυθμίσεις σας.",
   "share": "Κοινοποίηση",
-  "shareAccountIdDescription": "Προσκαλέστε τον φίλο σας να συνομιλήσει μαζί σας στο Session μοιράζοντας το Account ID σας με αυτόν.",
   "shareAccountIdDescriptionCopied": "Μοιραστείτε με τους φίλους σας όπου και αν μιλάτε συνήθως μαζί τους — στη συνέχεια μετακινήστε τη συζήτηση εδώ.",
   "shareExtensionDatabaseError": "Υπάρχει ένα πρόβλημα κατά το άνοιγμα της βάσης δεδομένων. Παρακαλώ επανεκκινήστε την εφαρμογή και δοκιμάστε ξανά.",
   "shareToSession": "Κοινοποιήστε στο {app_Name}",
@@ -747,3 +743,4 @@
   "yes": "Ναι",
   "you": "Εσείς"
 }
+

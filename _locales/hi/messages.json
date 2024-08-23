@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "आप गोपनीयता सेटिंग्स में \"वॉइस और वीडियो कॉल्स\" अनुमति सक्षम कर सकते हैं।",
   "callsReconnecting": "पुन: कनेक्ट हो रहा है…",
   "callsRinging": "बज रहा है...",
-  "callsSessionCall": "Session कॉल",
   "callsSettings": "कॉल्स (बेटा)",
   "callsVoiceAndVideo": "वॉइस और वीडियो कॉल",
   "callsVoiceAndVideoBeta": "वॉइस और वीडियो कॉल (बीटा)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "नया खाता बनाएं",
   "onboardingAccountCreated": "खाता आईडी कॉपी की गई",
   "onboardingAccountExists": "मेरा खाता है",
-  "onboardingBackAccountCreation": "आप आगे नहीं जा सकते हैं। अपना खाता निर्माण रद्द करने के लिए, Session को छोड़ना होगा।",
-  "onboardingBackLoadAccount": "आप आगे नहीं जा सकते हैं। अपना खाता लोड करना रोकने के लिए, Session को छोड़ना होगा।",
   "onboardingBubbleCreatingAnAccountIsEasy": "एक खाता बनाना तात्कालिक, मुफ्त, और गुमनाम है ",
   "onboardingBubbleNoPhoneNumber": "आपको साइन अप करने के लिए फ़ोन नंबर की भी आवश्यकता नहीं है।",
   "onboardingBubblePrivacyInYourPocket": "आपकी जेब में गोपनीयता।",
@@ -708,7 +705,6 @@
   "set": "सेट करें",
   "settingsRestartDescription": "अपनी नई सेटिंग्स लागू करने के लिए आपको {app_name} पुनः प्रारंभ करना होगा।",
   "share": "शेयर करें",
-  "shareAccountIdDescription": "अपने मित्र को अपने साथ Session पर चैट करने के लिए Account ID साझा करके आमंत्रित करें।",
   "shareAccountIdDescriptionCopied": "अपने दोस्तों के साथ वहां साझा करें जहां आप आमतौर पर उनसे बात करते हैं - फिर यहां बातचीत को स्थानांतरित करें।",
   "shareExtensionDatabaseError": "डेटाबेस खोलने में समस्या हो रही है। कृपया एप्लिकेशन को पुनः प्रारंभ करें और फिर से कोशिश करें।",
   "shareToSession": "{app_Name} को साझा करें",
@@ -751,3 +747,4 @@
   "yes": "हाँ",
   "you": "आप"
 }
+

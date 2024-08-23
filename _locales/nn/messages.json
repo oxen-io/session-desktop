@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Du kan aktivere 'Lyd- og videosamtaler' tillatelsen i personvernsinnstillingene.",
   "callsReconnecting": "Kobler til på nytt…",
   "callsRinging": "Ringar...",
-  "callsSessionCall": "Session-samtale",
   "callsSettings": "Samtaler (Beta)",
   "callsVoiceAndVideo": "Lyd- og videosamtaler",
   "callsVoiceAndVideoBeta": "Lyd- og videosamtaler (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Opprett konto",
   "onboardingAccountCreated": "Konto oppretta",
   "onboardingAccountExists": "Eg har ein konto",
-  "onboardingBackAccountCreation": "Du kan ikkje gå lenger tilbake. For å avbryte kontoopprettelsen, må Session avsluttes.",
-  "onboardingBackLoadAccount": "Du kan ikkje gå lenger tilbake. For å stoppe innlasting av kontoen, må Session avsluttes.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Å opprette ein konto er umiddelbart, gratis og anonymt",
   "onboardingBubbleNoPhoneNumber": "Du treng ikkje ein gong telefonnummer for å registrere deg.",
   "onboardingBubblePrivacyInYourPocket": "Personvern i lomma.",
@@ -708,7 +705,6 @@
   "set": "Set",
   "settingsRestartDescription": "Du må starte {app_name} på nytt for å bruke dei nye innstillingane dine.",
   "share": "Del",
-  "shareAccountIdDescription": "Inviter vennen din til å chatte med deg på Session ved å dele din Account ID med dei.",
   "shareAccountIdDescriptionCopied": "Del med vennane dine der du vanlegvis pratar med dei — så flyttar du samtalen hit.",
   "shareExtensionDatabaseError": "Det er et problem med å åpne databasen. Vennligst start appen på nytt og prøv igjen.",
   "shareToSession": "Del til {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Ja",
   "you": "Du"
 }
+

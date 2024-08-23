@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "개인정보 설정에서 '음성 및 영상 통화' 항목을 활성화할 수 있습니다.",
   "callsReconnecting": "다시 연결 중…",
   "callsRinging": "전화 거는 중...",
-  "callsSessionCall": "Session 통화",
   "callsSettings": "통화 (베타)",
   "callsVoiceAndVideo": "음성 및 영상 통화",
   "callsVoiceAndVideoBeta": "음성 및 영상 통화 (Beta)",
@@ -558,8 +557,6 @@
   "onboardingAccountCreate": "계정 생성",
   "onboardingAccountCreated": "계정 생성됨",
   "onboardingAccountExists": "계정이 있습니다",
-  "onboardingBackAccountCreation": "더 이상 돌아갈 수 없습니다. 계정 생성을 취소하려면 Session을 종료해야 합니다.",
-  "onboardingBackLoadAccount": "더 이상 돌아갈 수 없습니다. 계정을 불러오기를 중단하려면 Session을 종료해야 합니다.",
   "onboardingBubbleCreatingAnAccountIsEasy": "계정 생성은 즉시, 무료이며 익명입니다",
   "onboardingBubbleNoPhoneNumber": "가입할 때 전화번호가 필요하지 않습니다.",
   "onboardingBubblePrivacyInYourPocket": "당신의 주머니 속 개인정보 보호.",
@@ -700,7 +697,6 @@
   "set": "설정",
   "settingsRestartDescription": "새 설정을 적용하려면 {app_name}을 재시작해야 합니다.",
   "share": "공유",
-  "shareAccountIdDescription": "친구에게 계정 ID를 공유하고 Session에서 친구들과 채팅하세요.",
   "shareAccountIdDescriptionCopied": "친구들이 자주 사용하는 곳에서 공유해 주세요 — 그러면 여기로 대화를 이동하십시오.",
   "shareExtensionDatabaseError": "데이터베이스를 열 때 문제가 발생했습니다. 앱을 재시작하고 다시 시도해주세요.",
   "shareToSession": "{app_Name}에 공유",
@@ -743,3 +739,4 @@
   "yes": "예",
   "you": "사용자"
 }
+

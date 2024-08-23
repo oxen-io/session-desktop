@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Anda dapat mengaktifkan izin \"Panggilan Suara dan Video\" di Pengaturan Privasi.",
   "callsReconnecting": "Menghubungkan kembali…",
   "callsRinging": "Berdering...",
-  "callsSessionCall": "Panggilan Session",
   "callsSettings": "Panggilan (Beta)",
   "callsVoiceAndVideo": "Panggilan Suara dan Video",
   "callsVoiceAndVideoBeta": "Panggilan Suara dan Video (Beta)",
@@ -562,8 +561,6 @@
   "onboardingAccountCreate": "Buat akun",
   "onboardingAccountCreated": "Akun telah dibuat",
   "onboardingAccountExists": "Saya punya akun",
-  "onboardingBackAccountCreation": "Anda tidak dapat kembali lebih jauh. Untuk membatalkan pembuatan akun Anda, Session perlu keluar.",
-  "onboardingBackLoadAccount": "Anda tidak dapat kembali lebih jauh. Untuk menghentikan pemuatan akun Anda, Session perlu keluar.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Membuat akun adalah cepat, gratis, dan anonim",
   "onboardingBubbleNoPhoneNumber": "Anda bahkan tidak membutuhkan nomor telepon untuk mendaftar.",
   "onboardingBubblePrivacyInYourPocket": "Privasi di saku anda.",
@@ -706,7 +703,6 @@
   "set": "Atur",
   "settingsRestartDescription": "Anda harus memulai ulang {app_name} untuk menerapkan setelan baru.",
   "share": "Bagikan",
-  "shareAccountIdDescription": "Undang teman Anda untuk mengobrol dengan Anda di Session dengan membagikan ID Akun Anda kepada mereka.",
   "shareAccountIdDescriptionCopied": "Bagikan dengan teman Anda di mana pun Anda biasa berbicara dengan mereka — lalu pindahkan percakapan ke sini.",
   "shareExtensionDatabaseError": "Terjadi masalah saat membuka database. Silakan mulai ulang aplikasi dan coba lagi.",
   "shareToSession": "Bagikan ke {app_Name}",
@@ -749,3 +745,4 @@
   "yes": "Ya",
   "you": "Anda"
 }
+

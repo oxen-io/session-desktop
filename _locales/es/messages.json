@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Puedes habilitar los permisos de \"Llamadas de Voz y Video\" en la Configuración de Privacidad.",
   "callsReconnecting": "Reconectando...",
   "callsRinging": "Llamando...",
-  "callsSessionCall": "Llamada de Session",
   "callsSettings": "Llamadas (beta)",
   "callsVoiceAndVideo": "Llamadas de voz y video",
   "callsVoiceAndVideoBeta": "Llamadas de Voz y Video (Beta)",
@@ -560,8 +559,6 @@
   "onboardingAccountCreate": "Crear cuenta",
   "onboardingAccountCreated": "¡Cuenta creada!",
   "onboardingAccountExists": "Iniciar sesión",
-  "onboardingBackAccountCreation": "No puedes retroceder más. Para cancelar la creación de tu cuenta, Session necesita cerrarse.",
-  "onboardingBackLoadAccount": "No puedes retroceder más. Para dejar de cargar tu cuenta, Session necesita cerrarse.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Crear una cuenta es instantáneo, gratis y anónimo",
   "onboardingBubbleNoPhoneNumber": "Ni siquiera necesitas un número de teléfono para registrarte.",
   "onboardingBubblePrivacyInYourPocket": "Privacidad en tu bolsillo.",
@@ -701,7 +698,6 @@
   "set": "Definir",
   "settingsRestartDescription": "Debes reiniciar {app_name} para aplicar las nuevas configuraciones.",
   "share": "Compartir",
-  "shareAccountIdDescription": "Invita a tu amigo a hablar contigo en Session compartiendo tu ID de Cuenta con él.",
   "shareAccountIdDescriptionCopied": "Comparte con tus amigos dondequiera que hables con ellos — luego mueve la conversación aquí.",
   "shareExtensionDatabaseError": "Hay un problema al abrir la base de datos. Por favor, reinicia la aplicación e inténtalo de nuevo.",
   "show": "Mostrar",
@@ -743,3 +739,4 @@
   "yes": "Sí",
   "you": "Tú"
 }
+

@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Puoi concedere l'autorizzazione alle 'Chiamate vocali e video' nelle impostazioni di privacy.",
   "callsReconnecting": "Riconnessione...",
   "callsRinging": "Squilla...",
-  "callsSessionCall": "Chiamata Session",
   "callsSettings": "Chiamate (Beta)",
   "callsVoiceAndVideo": "Chiamate vocali e video",
   "callsVoiceAndVideoBeta": "Chiamate vocali e video (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Crea account",
   "onboardingAccountCreated": "Account creato",
   "onboardingAccountExists": "Ho già un account",
-  "onboardingBackAccountCreation": "Non puoi tornare indietro ulteriormente. Per annullare la creazione dell'account, è necessario chiudere Session.",
-  "onboardingBackLoadAccount": "Non puoi tornare indietro ulteriormente. Per interrompere il caricamento del tuo account, è necessario chiudere Session.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Creare un account è immediato, gratuito e anonimo ",
   "onboardingBubbleNoPhoneNumber": "Non hai nemmeno bisogno di un numero di telefono per iscriverti.",
   "onboardingBubblePrivacyInYourPocket": "Privacy in your pocket.",
@@ -708,7 +705,6 @@
   "set": "Imposta",
   "settingsRestartDescription": "È necessario riavviare {app_name} per applicare le modifiche.",
   "share": "Condividi",
-  "shareAccountIdDescription": "Invita il tuo amico a chattare con te su Session condividendo con lui il tuo Account ID.",
   "shareAccountIdDescriptionCopied": "Condividi con i tuoi amici ovunque parliate di solito con loro — quindi sposta qui la conversazione.",
   "shareExtensionDatabaseError": "C'è un problema nell'apertura del database. Riavvia l'app e riprova.",
   "shareToSession": "Condividi su {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Sì",
   "you": "Tu"
 }
+

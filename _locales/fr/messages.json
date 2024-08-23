@@ -143,7 +143,6 @@
   "callsPermissionsRequiredDescription": "Vous pouvez activer la permission 'Appels vocaux et vidéo' dans les paramètres de confidentialité.",
   "callsReconnecting": "Reconnexion…",
   "callsRinging": "Ça sonne...",
-  "callsSessionCall": "Appel Session",
   "callsSettings": "Appels (Bêta)",
   "callsVoiceAndVideo": "Appels vocaux et vidéos",
   "callsVoiceAndVideoBeta": "Appels vocaux et vidéos (Beta)",
@@ -563,8 +562,6 @@
   "onboardingAccountCreate": "Créer un compte",
   "onboardingAccountCreated": "Compte créé",
   "onboardingAccountExists": "J'ai un compte",
-  "onboardingBackAccountCreation": "Vous ne pouvez pas revenir en arrière. Pour annuler la création de votre compte, Session doit se fermer.",
-  "onboardingBackLoadAccount": "Vous ne pouvez pas revenir en arrière. Pour arrêter de charger votre compte, Session doit se fermer.",
   "onboardingBubbleCreatingAnAccountIsEasy": "Créer un compte est instantané, gratuit et anonyme ",
   "onboardingBubbleNoPhoneNumber": "Vous n'avez même pas besoin d'un numéro de téléphone pour vous inscrire.",
   "onboardingBubblePrivacyInYourPocket": "Confidentialité dans votre poche.",
@@ -708,7 +705,6 @@
   "set": "Appliquer",
   "settingsRestartDescription": "Vous devez redémarrer {app_name} pour appliquer ces changements.",
   "share": "Partager",
-  "shareAccountIdDescription": "Invitez votre ami à discuter avec vous sur Session en partageant votre ID de compte avec lui.",
   "shareAccountIdDescriptionCopied": "Partagez avec vos amis où vous communiquez habituellement avec eux - puis déplacez la conversation ici.",
   "shareExtensionDatabaseError": "Il y a un problème pour ouvrir la base de données. Veuillez redémarrer l'application et réessayer.",
   "shareToSession": "Partager sur {app_Name}",
@@ -751,3 +747,4 @@
   "yes": "Oui",
   "you": "Vous"
 }
+

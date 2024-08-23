@@ -142,7 +142,6 @@
   "callsPermissionsRequiredDescription": "ඔබට රහස්‍යතා සැකසුම් තුළ 'හඬ සහ වීඩියෝ ඇමතුම්' අවසරය සබල කළ හැක.",
   "callsReconnecting": "නැවත සබැඳෙමින්…",
   "callsRinging": "නාද වෙනවා...",
-  "callsSessionCall": "Session ඇමතුම",
   "callsSettings": "ඇමතුම් (බීටා)",
   "callsVoiceAndVideo": "ශ්‍රව්‍ය හා දෘශ්‍ය ඇමතුම්",
   "callsVoiceAndVideoBeta": "ශ්‍රව්‍ය සහ වීඩියෝ ඇමතුම් (බීටා)",
@@ -557,8 +556,6 @@
   "onboardingAccountCreate": "ගිණුම සාදන්න",
   "onboardingAccountCreated": "Account නිර්මාණය කරන ලදී",
   "onboardingAccountExists": "මට ගිණුමක් තියෙනවා",
-  "onboardingBackAccountCreation": "තවත් වැඩි නොයනම්, ඔබගේ ගිණුම නිර්මාණය කළේ නැවැලිය යුතුයි.",
-  "onboardingBackLoadAccount": "තවත් වැඩි නොයනම්, ඔබගේ ගිණුම පූරන්න නැවැලිය යුතුයි.",
   "onboardingBubbleCreatingAnAccountIsEasy": "ගිණුමක් සාදීම ක්ෂණික, නොමිලයේ සහ අනන්‍යයි ",
   "onboardingBubbleNoPhoneNumber": "ඔබට ලියාපදිංචි වීමට දුරකථන අංකයක් අවශ්ය නොවේ.",
   "onboardingBubblePrivacyInYourPocket": "අවකාශයේ පෞද්ගලිකත්වය.",
@@ -700,7 +697,6 @@
   "set": "සකසන්න",
   "settingsRestartDescription": "ඔබේ නව සැකසුම් අදාළ කිරීමට {app_name} නැවත ආරම්භ කළ යුතුය.",
   "share": "බෙදාගන්න",
-  "shareAccountIdDescription": "Account ID බෙදාගෙන ඔබේ මිතුරාට Session එකේ ඔබ සමඟ සංවාදයකට අමතන්න",
   "shareAccountIdDescriptionCopied": "ඔබ ප්‍රයෝජනයේ පවතින ස්ථාන වල පිරිසුවල් සමඟ බෙදාගන්න — පසුව සංවාදය මෙහි ක්‍රමවේදය කරන්න.",
   "shareExtensionDatabaseError": "දත්තගබඩාව තුළ ගැටළුවක් ඇත. ඇප් නැවත ආරම්භ කොට උත්සාහ කරන්න.",
   "shareToSession": "{app_Name} වෙත බෙදාගන්න",
@@ -743,3 +739,4 @@
   "yes": "ඔව්",
   "you": "ඔබ"
 }
+
