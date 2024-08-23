@@ -7,32 +7,32 @@ import { initI18n, testDictionary } from './util';
 describe('getMessage', () => {
   const i18n = initI18n(testDictionary);
 
-  it('returns the raw message for a token', () => {
+  it('returns the message for a token', () => {
     const message = i18n('greeting', { name: 'Alice' });
     expect(message).to.equal('Hello, Alice!');
   });
 
-  it('returns the raw message for a plural token', () => {
+  it('returns the message for a plural token', () => {
     const message = i18n('search', { count: 1, found_count: 2 });
     expect(message).to.equal('2 of 1 match');
   });
 
-  it('returns the raw message for a token with no args', () => {
+  it('returns the message for a token with no args', () => {
     const message = i18n('noArgs');
     expect(message).to.equal('No args');
   });
 
-  it('returns the raw message for a token with args', () => {
+  it('returns the message for a token with args', () => {
     const message = i18n('args', { name: 'Alice' });
     expect(message).to.equal('Hello, Alice!');
   });
 
-  it('returns the raw message for a token with a tag', () => {
+  it('returns the message for a token with a tag', () => {
     const message = i18n('tag', { name: 'Alice' });
     expect(message).to.equal('Hello, Alice! <b>Welcome!</b>');
   });
 
-  it('returns the raw message for a token with a tag and args', () => {
+  it('returns the message for a token with a tag and args', () => {
     const message = i18n('argInTag', { name: 'Alice', arg: 'Bob' });
     expect(message).to.equal('Hello, Alice! <b>Welcome, Bob!</b>');
   });
