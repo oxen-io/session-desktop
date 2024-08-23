@@ -237,7 +237,7 @@ export const MessageSearchResult = (props: MessageSearchResultProps) => {
           <StyledTimestampContaimer>
             <Timestamp
               timestamp={serverTimestamp || timestamp || sent_at || received_at}
-              momentFromNow={false}
+              isConversationSearchResult={true}
             />
           </StyledTimestampContaimer>
         </ResultsHeader>

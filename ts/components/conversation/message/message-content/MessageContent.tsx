@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { MouseEvent, useCallback, useLayoutEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useSelector } from 'react-redux';
@@ -22,6 +21,7 @@ import {
 } from '../../../../state/selectors/conversations';
 import { useSelectedIsPrivate } from '../../../../state/selectors/selectedConversation';
 import { canDisplayImagePreview } from '../../../../types/Attachment';
+import { formatFullDate } from '../../../../util/i18n';
 import { MessageAttachment } from './MessageAttachment';
 import { MessageAvatar } from './MessageAvatar';
 import { MessageHighlighter } from './MessageHighlighter';
@@ -152,7 +152,7 @@ export const MessageContent = (props: Props) => {
 
   const hasContentBeforeAttachment = !isEmpty(previews) || !isEmpty(quote) || !isEmpty(text);
 
-  const toolTipTitle = moment(serverTimestamp || timestamp).format('llll');
+  const toolTipTitle = formatFullDate(new Date(serverTimestamp || timestamp));
 
   const isDetailViewAndSupportsAttachmentCarousel =
     isDetailView && canDisplayImagePreview(attachments);

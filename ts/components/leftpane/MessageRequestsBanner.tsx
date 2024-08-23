@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getUnreadConversationRequests } from '../../state/selectors/conversations';
-import { isSearching } from '../../state/selectors/search';
+import { useIsSearching } from '../../state/selectors/search';
 import { getHideMessageRequestBanner } from '../../state/selectors/userConfig';
 import { SessionIcon, SessionIconSize, SessionIconType } from '../icon';
 import { MessageRequestBannerContextMenu } from '../menu/MessageRequestBannerContextMenu';
@@ -87,7 +87,7 @@ export const MessageRequestsBanner = (props: { handleOnClick: () => any }) => {
   const hideRequestBanner = useSelector(getHideMessageRequestBanner);
 
   // when searching hide the message request banner
-  const isCurrentlySearching = useSelector(isSearching);
+  const isCurrentlySearching = useIsSearching();
 
   if (!conversationRequestsUnread || hideRequestBanner || isCurrentlySearching) {
     return null;

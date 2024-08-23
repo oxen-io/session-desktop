@@ -3,7 +3,7 @@ import { isNil } from 'lodash';
 import { MouseEvent, ReactNode, useCallback } from 'react';
 import { contextMenu } from 'react-contexify';
 import { createPortal } from 'react-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { CSSProperties } from 'styled-components';
 import { Avatar, AvatarSize } from '../../avatar/Avatar';
@@ -23,7 +23,7 @@ import {
   useIsPrivate,
   useMentionedUs,
 } from '../../../hooks/useParamSelector';
-import { isSearching } from '../../../state/selectors/search';
+import { useIsSearching } from '../../../state/selectors/search';
 import { useSelectedConversationKey } from '../../../state/selectors/selectedConversation';
 import { SpacerXS } from '../../basic/Text';
 import { MemoConversationListItemContextMenu } from '../../menu/ConversationListItemContextMenu';
@@ -71,7 +71,7 @@ export const ConversationListItem = (props: Props) => {
 
   let hasUnreadMentionedUs = useMentionedUs(conversationId);
   let isBlocked = useIsBlocked(conversationId);
-  const isSearch = useSelector(isSearching);
+  const isSearch = useIsSearching();
   const selectedConvo = useSelectedConversationKey();
 
   const isSelectedConvo = conversationId === selectedConvo && !isNil(selectedConvo);

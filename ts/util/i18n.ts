@@ -4,14 +4,22 @@ import {
   Duration,
   FormatDistanceStrictOptions,
   FormatDistanceToNowStrictOptions,
+  format,
   formatDistanceStrict,
   formatDistanceToNow,
   formatDistanceToNowStrict,
   formatDuration,
+  formatRelative,
   intervalToDuration,
+  isAfter,
+  isBefore,
+  subDays,
   subMilliseconds,
 } from 'date-fns';
 import timeLocales from 'date-fns/locale';
+import { deSanitizeHtmlTags, sanitizeArgs } from '../components/basic/I18n';
+import { LOCALE_DEFAULTS } from '../localization/constants';
+import { en } from '../localization/locales';
 import { GetNetworkTime } from '../session/apis/snode_api/getNetworkTime';
 import { DURATION_SECONDS } from '../session/constants';
 import { updateLocale } from '../state/ducks/dictionary';
@@ -25,9 +33,6 @@ import {
   PluralString,
   SetupI18nReturnType,
 } from '../types/Localizer';
-import { deSanitizeHtmlTags, sanitizeArgs } from '../components/basic/I18n';
-import { LOCALE_DEFAULTS } from '../localization/constants';
-import { en } from '../localization/locales';
 
 export function loadDictionary(locale: Locale) {
   return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
@@ -103,6 +108,8 @@ const timeLocaleMap = {
 
 export type Locale = keyof typeof timeLocaleMap;
 
+let initialLocale: Locale = 'en';
+
 function getPluralKey<R extends PluralKey | undefined>(string: PluralString): R {
   const match = /{(\w+), plural, one \[.+\] other \[.+\]}/g.exec(string);
   return (match?.[1] ?? undefined) as R;
@@ -157,20 +164,27 @@ function i18nLog(message: string) {
  * @param params - An object containing optional parameters.
  * @param params.fallback - The fallback locale to use if redux is not available. Defaults to en.
  */
-export function getLocale(params?: { fallback?: Locale }): Locale {
+export function getLocale(): Locale {
   const locale = window?.inboxStore?.getState().dictionary.locale;
 
   if (locale) {
     return locale;
   }
 
-  if (params?.fallback) {
-    i18nLog(`getLocale: No locale found in redux store. Using fallback: ${params.fallback}`);
-    return params.fallback;
+  if (initialLocale) {
+    i18nLog(
+      `getLocale: No locale found in redux store but initialLocale provided: ${initialLocale}`
+    );
+
+    return initialLocale;
   }
 
   i18nLog('getLocale: No locale found in redux store. No fallback provided. Using en.');
   return 'en';
+}
+
+function getLocaleDictionary() {
+  return timeLocaleMap[getLocale()];
 }
 
 /**
@@ -206,7 +220,7 @@ export const setupI18n = (params: {
   initialLocale: Locale;
   initialDictionary: LocalizerDictionary;
 }): SetupI18nReturnType => {
-  let initialLocale = params.initialLocale;
+  initialLocale = params.initialLocale;
   let initialDictionary = params.initialDictionary;
 
   if (!initialLocale) {
@@ -285,7 +299,7 @@ export const setupI18n = (params: {
         } else {
           const num = args?.[pluralKey as keyof typeof args] ?? 0;
 
-          const currentLocale = getLocale() ?? initialLocale;
+          const currentLocale = getLocale();
           const cardinalRule = new Intl.PluralRules(currentLocale).select(num);
 
           const pluralString = getStringForCardinalRule(localizedString, cardinalRule);
@@ -439,7 +453,7 @@ export const setupI18n = (params: {
   getMessage.getRawMessage = getRawMessage;
   getMessage.formatMessageWithArgs = formatMessageWithArgs;
 
-  i18nLog('Setup Complete');
+  i18nLog(`Setup Complete with locale: ${initialLocale}`);
 
   return getMessage as SetupI18nReturnType;
 };
@@ -480,10 +494,8 @@ export const formatTimeDuration = (
   durationMs: number,
   options?: Omit<FormatDistanceStrictOptions, 'locale'>
 ) => {
-  const locale = getLocale();
-
   return formatDistanceStrict(new Date(durationMs), new Date(0), {
-    locale: timeLocaleMap[locale],
+    locale: getLocaleDictionary(),
     ...options,
   });
 };
@@ -515,6 +527,28 @@ const secondsToDuration = (seconds: number): Duration => {
   }
 
   return duration;
+};
+
+export const formatWithLocale = ({ formatStr, date }: { date: Date; formatStr: string }) => {
+  return format(date, formatStr, { locale: getLocaleDictionary() });
+};
+
+/**
+ * Returns a formatted date like `Wednesday, Jun 12, 2024, 4:29 PM`
+ */
+export const formatFullDate = (date: Date) => {
+  return date.toLocaleString(getLocale(), {
+    year: 'numeric',
+    month: 'short',
+    weekday: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+};
+
+export const formatRelativeWithLocale = (timestampMs: number) => {
+  return formatRelative(timestampMs, Date.now(), { locale: getLocaleDictionary() });
 };
 
 /**
@@ -556,7 +590,7 @@ export const formatAbbreviatedExpireTimer = (timerSeconds: number) => {
   const duration = secondsToDuration(timerSeconds);
 
   const unlocalized = formatDuration(duration, {
-    locale: timeLocaleMap.en,
+    locale: timeLocaleMap.en, // we want this forced to english
   });
 
   return unlocalizedDurationToAbbreviated(unlocalized);
@@ -605,7 +639,7 @@ export const formatAbbreviatedExpireDoubleTimer = (timerSeconds: number) => {
   }
 
   const unlocalized = formatDuration(duration, {
-    locale: timeLocaleMap.en,
+    locale: timeLocaleMap.en, // we want this forced to english
     delimiter: '#',
     format,
   });
@@ -616,17 +650,69 @@ export const formatTimeDistanceToNow = (
   durationSeconds: number,
   options?: Omit<FormatDistanceToNowStrictOptions, 'locale'>
 ) => {
-  const locale = getLocale();
   return formatDistanceToNowStrict(durationSeconds * 1000, {
-    locale: timeLocaleMap[locale],
+    locale: getLocaleDictionary(),
     ...options,
   });
 };
 
 export const formatDateDistanceWithOffset = (date: Date): string => {
-  const locale = getLocale();
   const adjustedDate = subMilliseconds(date, GetNetworkTime.getLatestTimestampOffset());
-  return formatDistanceToNow(adjustedDate, { addSuffix: true, locale: timeLocaleMap[locale] });
+  return formatDistanceToNow(adjustedDate, { addSuffix: true, locale: getLocaleDictionary() });
+};
+
+/**
+ * Returns a localized string like "Aug 7, 2024 10:03 AM"
+ */
+export const getDateAndTimeShort = (date: Date) => {
+  return formatWithLocale({ date, formatStr: 'Pp' });
+};
+
+const getStartOfToday = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+};
+
+/**
+ * Returns
+ * - hh:mm when less than 24h ago
+ * - Tue hh:mm when less than 7d ago
+ * - dd/mm/yy otherwise
+ *
+ */
+export const getConversationItemString = (date: Date) => {
+  const now = new Date();
+
+  // if this is in the future, or older than 7 days ago we display date+time
+  if (isAfter(date, now) || isBefore(date, subDays(now, 7))) {
+    const formatter = new Intl.DateTimeFormat(getLocale(), {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true, // This will switch between 12-hour and 24-hour format depending on the locale
+    });
+    return formatter.format(date);
+  }
+
+  // if since our start of the day, display the hour and minute only, am/pm locale dependent
+  if (isAfter(date, getStartOfToday())) {
+    const formatter = new Intl.DateTimeFormat(getLocale(), {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true, // This will switch between 12-hour and 24-hour format depending on the locale
+    });
+    return formatter.format(date);
+  }
+  // less than 7 days ago, display the day of the week + time
+  const formatter = new Intl.DateTimeFormat(getLocale(), {
+    weekday: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true, // This will switch between 12-hour and 24-hour format depending on the locale
+  });
+  return formatter.format(date);
 };
 
 // RTL Support

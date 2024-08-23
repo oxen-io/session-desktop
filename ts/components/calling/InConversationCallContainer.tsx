@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import moment from 'moment';
 import useInterval from 'react-use/lib/useInterval';
 import styled from 'styled-components';
 import { CallManager, UserUtils } from '../../session/utils';
@@ -21,6 +20,7 @@ import { useVideoCallEventsListener } from '../../hooks/useVideoEventListener';
 import { DEVICE_DISABLED_DEVICE_ID } from '../../session/utils/calling/CallManager';
 import { CallWindowControls } from './CallButtons';
 
+import { useFormattedDuration } from '../../hooks/useFormattedDuration';
 import { SessionSpinner } from '../loading';
 
 const VideoContainer = styled.div`
@@ -95,7 +95,7 @@ const ConnectingLabel = () => {
 };
 
 const DurationLabel = () => {
-  const [callDuration, setCallDuration] = useState<undefined | number>(undefined);
+  const [callDurationSeconds, setCallDuration] = useState<number>(0);
   const ongoingCallWithFocusedIsConnected = useSelector(getCallWithFocusedConvosIsConnected);
 
   useInterval(() => {
@@ -104,15 +104,12 @@ const DurationLabel = () => {
       setCallDuration(duration);
     }
   }, 100);
+  const dateString = useFormattedDuration(callDurationSeconds, { forceHours: true });
 
-  if (!ongoingCallWithFocusedIsConnected || !callDuration || callDuration < 0) {
+  if (!ongoingCallWithFocusedIsConnected || !callDurationSeconds || callDurationSeconds < 0) {
     return null;
   }
 
-  const ms = callDuration * 1000;
-  const d = moment.duration(ms);
-
-  const dateString = Math.floor(d.asHours()) + moment.utc(ms).format(':mm:ss');
   return <StyledCenteredLabel>{dateString}</StyledCenteredLabel>;
 };
 

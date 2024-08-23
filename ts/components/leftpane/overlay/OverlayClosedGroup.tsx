@@ -11,13 +11,15 @@ import { SessionSpinner } from '../../loading';
 import { useSet } from '../../../hooks/useSet';
 import { VALIDATION } from '../../../session/constants';
 import { createClosedGroup } from '../../../session/conversations/createClosedGroup';
+import { ToastUtils } from '../../../session/utils';
+import LIBSESSION_CONSTANTS from '../../../session/utils/libsession/libsession_constants';
 import { clearSearch } from '../../../state/ducks/search';
 import { resetLeftOverlayMode } from '../../../state/ducks/section';
 import { getPrivateContactsPubkeys } from '../../../state/selectors/conversations';
 import {
   getSearchResultsContactOnly,
   getSearchTerm,
-  isSearching,
+  useIsSearching,
 } from '../../../state/selectors/search';
 import { MemberListItem } from '../../MemberListItem';
 import { SessionSearchInput } from '../../SessionSearchInput';
@@ -25,8 +27,6 @@ import { Flex } from '../../basic/Flex';
 import { SpacerLG, SpacerMD } from '../../basic/Text';
 import { SessionInput } from '../../inputs';
 import { StyledLeftPaneOverlay } from './OverlayMessage';
-import LIBSESSION_CONSTANTS from '../../../session/utils/libsession/libsession_constants';
-import { ToastUtils } from '../../../session/utils';
 
 const StyledMemberListNoContacts = styled.div`
   text-align: center;
@@ -108,7 +108,7 @@ export const OverlayClosedGroup = () => {
     addTo: addToSelected,
     removeFrom: removeFromSelected,
   } = useSet<string>([]);
-  const isSearch = useSelector(isSearching);
+  const isSearch = useIsSearching();
   const searchTerm = useSelector(getSearchTerm);
   const searchResultContactsOnly = useSelector(getSearchResultsContactOnly);
 

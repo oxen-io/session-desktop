@@ -1,5 +1,4 @@
 import { fromPairs, map } from 'lodash';
-import moment from 'moment';
 
 import { Provider } from 'react-redux';
 import useMount from 'react-use/lib/useMount';
@@ -40,7 +39,6 @@ import { SessionTheme } from '../themes/SessionTheme';
 import { Storage } from '../util/storage';
 import { NoticeBanner } from './NoticeBanner';
 import { Flex } from './basic/Flex';
-import { getLocale } from '../util/i18n';
 
 function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
   // Yep, we can't index into item without knowing what it is. True. But we want to.
@@ -49,11 +47,6 @@ function makeLookup<T>(items: Array<T>, key: string): { [key: string]: T } {
   return fromPairs(pairs);
 }
 
-// Default to the locale from env. It will be overridden if moment
-// does not recognize it with what moment knows which is the closest.
-// i.e. es-419 will return 'es'.
-// We just need to use what we got from moment in getLocale on the updateLocale below
-moment.locale(getLocale());
 
 const StyledGutter = styled.div`
   width: var(--left-panel-width) !important;

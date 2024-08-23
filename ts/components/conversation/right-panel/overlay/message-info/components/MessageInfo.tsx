@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 
 import styled from 'styled-components';
 import { MessageFrom } from '.';
@@ -20,7 +19,11 @@ import {
 
 import { isDevProd } from '../../../../../../shared/env_vars';
 import { useSelectedConversationKey } from '../../../../../../state/selectors/selectedConversation';
-import { formatTimeDuration, formatTimeDistanceToNow } from '../../../../../../util/i18n';
+import {
+  formatTimeDuration,
+  formatTimeDistanceToNow,
+  formatWithLocale,
+} from '../../../../../../util/i18n';
 import { Flex } from '../../../../../basic/Flex';
 import { SpacerSM } from '../../../../../basic/Text';
 import { CopyToClipboardIcon } from '../../../../../buttons';
@@ -71,8 +74,7 @@ export const LabelWithInfo = (props: LabelWithInfoProps) => {
   );
 };
 
-// Message timestamp format: "06:02 PM Tue, 15/11/2022"
-const formatTimestamps = 'hh:mm A ddd, D/M/Y';
+const formatTimestampStr = 'hh:mm d LLL, yyyy' as const;
 
 const showDebugLog = () => {
   ipcRenderer.send('show-debug-log');
@@ -124,8 +126,14 @@ export const MessageInfo = ({ messageId, errors }: { messageId: string; errors: 
     return null;
   }
 
-  const sentAtStr = `${moment(serverTimestamp || sentAt).format(formatTimestamps)}`;
-  const receivedAtStr = `${moment(receivedAt).format(formatTimestamps)}`;
+  const sentAtStr = formatWithLocale({
+    date: new Date(serverTimestamp || sentAt || 0),
+    formatStr: formatTimestampStr,
+  });
+  const receivedAtStr = formatWithLocale({
+    date: new Date(receivedAt || 0),
+    formatStr: formatTimestampStr,
+  });
 
   const hasError = !isEmpty(errors);
   const errorString = hasError

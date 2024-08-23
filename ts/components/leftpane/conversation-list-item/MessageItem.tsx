@@ -11,7 +11,7 @@ import {
   useLastMessage,
 } from '../../../hooks/useParamSelector';
 import { LastMessageStatusType } from '../../../state/ducks/types';
-import { isSearching } from '../../../state/selectors/search';
+import { useIsSearching } from '../../../state/selectors/search';
 import { getIsMessageRequestOverlayShown } from '../../../state/selectors/section';
 import { assertUnreachable } from '../../../types/sqlSharedTypes';
 import { TypingAnimation } from '../../conversation/TypingAnimation';
@@ -29,7 +29,7 @@ export const MessageItem = () => {
   const isMessageRequest = useSelector(getIsMessageRequestOverlayShown);
   const isOutgoingRequest = useIsOutgoingRequest(conversationId);
 
-  const isSearchingMode = useSelector(isSearching);
+  const isSearching = useIsSearching();
 
   if (isOutgoingRequest) {
     return null;
@@ -63,7 +63,7 @@ export const MessageItem = () => {
           <MessageBody text={text} disableJumbomoji={true} disableLinks={true} isGroup={isGroup} />
         )}
       </div>
-      {!isSearchingMode && lastMessage && lastMessage.status && !isMessageRequest ? (
+      {!isSearching && lastMessage && lastMessage.status && !isMessageRequest ? (
         <IconMessageStatus status={lastMessage.status} />
       ) : null}
     </div>

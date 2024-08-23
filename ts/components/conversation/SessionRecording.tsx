@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 
 import classNames from 'classnames';
-import moment from 'moment';
 
 import autoBind from 'auto-bind';
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -11,6 +10,7 @@ import { Constants } from '../../session';
 import { MAX_ATTACHMENT_FILESIZE_BYTES } from '../../session/constants';
 import { ToastUtils } from '../../session/utils';
 import { SessionIconButton } from '../icon';
+import { useFormattedDuration } from '../../hooks/useFormattedDuration';
 
 interface Props {
   onExitVoiceNoteView: () => void;
@@ -76,6 +76,36 @@ const StyledFlexWrapper = styled.div<StyledFlexWrapperProps>`
   }
 `;
 
+function RecordingDurations({
+  isRecording,
+  displaySeconds,
+  remainingSeconds,
+}: {
+  isRecording: boolean;
+  displaySeconds: number;
+  remainingSeconds: number;
+}) {
+  const displayTimeString = useFormattedDuration(displaySeconds, { forceHours: false });
+  const remainingTimeString = useFormattedDuration(remainingSeconds, { forceHours: false });
+
+  return (
+    <div className={classNames('session-recording--timer', !isRecording && 'playback-timer')}>
+      {displayTimeString + (remainingTimeString ? ` / ${remainingTimeString}` : '')}
+    </div>
+  );
+}
+
+function RecordingTimer({ displaySeconds }: { displaySeconds: number }) {
+  const displayTimeString = useFormattedDuration(displaySeconds, { forceHours: false });
+
+  return (
+    <div className={classNames('session-recording--timer')}>
+      {displayTimeString}
+      <StyledRecordTimerLight />
+    </div>
+  );
+}
+
 export class SessionRecording extends Component<Props, State> {
   private recorder?: any;
   private audioBlobMp3?: Blob;
@@ -134,13 +164,7 @@ export class SessionRecording extends Component<Props, State> {
           (this.audioElement.currentTime * 1000 || this.audioElement?.duration)) ||
         0;
 
-    const displayTimeString = moment.utc(displayTimeMs).format('m:ss');
     const recordingDurationMs = this.audioElement?.duration ? this.audioElement.duration * 1000 : 1;
-
-    let remainingTimeString = '';
-    if (recordingDurationMs !== undefined) {
-      remainingTimeString = ` / ${moment.utc(recordingDurationMs).format('m:ss')}`;
-    }
 
     const actionPauseFn = isPlaying ? this.pauseAudio : this.stopRecordingStream;
 
@@ -176,17 +200,14 @@ export class SessionRecording extends Component<Props, State> {
         </div>
 
         {hasRecording && !isRecording ? (
-          <div className={classNames('session-recording--timer', !isRecording && 'playback-timer')}>
-            {displayTimeString + remainingTimeString}
-          </div>
+          <RecordingDurations
+            isRecording={isRecording}
+            displaySeconds={Math.floor(displayTimeMs / 1000)}
+            remainingSeconds={Math.floor(recordingDurationMs / 1000)}
+          />
         ) : null}
 
-        {isRecording ? (
-          <div className={classNames('session-recording--timer')}>
-            {displayTimeString}
-            <StyledRecordTimerLight />
-          </div>
-        ) : null}
+        {isRecording ? <RecordingTimer displaySeconds={Math.floor(displayTimeMs / 1000)} /> : null}
 
         {!isRecording && (
           <div>
