@@ -265,7 +265,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       return description;
     }
     if ((this.get('attachments') || []).length > 0) {
-      return window.i18n('contentDescriptionMediaMessage');
+      return window.i18n.stripped('contentDescriptionMediaMessage');
     }
     if (this.isExpirationTimerUpdate()) {
       const expireTimerUpdate = this.getExpirationTimerUpdate();
@@ -285,20 +285,20 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       const authorName =
         getConversationController()
           .get(source || '')
-          ?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n('unknown');
+          ?.getNicknameOrRealUsernameOrPlaceholder() || window.i18n.stripped('unknown');
 
       if (!expireTimerUpdate || expirationMode === 'off' || !expireTimer || expireTimer === 0) {
-        return window.i18n('disappearingMessagesTurnedOff', {
+        return window.i18n.stripped('disappearingMessagesTurnedOff', {
           name: authorName,
         });
       }
 
       const localizedMode =
         expirationMode === 'deleteAfterRead'
-          ? window.i18n('disappearingMessagesTypeRead')
-          : window.i18n('disappearingMessagesTypeSent');
+          ? window.i18n.stripped('disappearingMessagesTypeRead')
+          : window.i18n.stripped('disappearingMessagesTypeSent');
 
-      return window.i18n('disappearingMessagesSet', {
+      return window.i18n.stripped('disappearingMessagesSet', {
         time: TimerOptions.getAbbreviated(expireTimerUpdate.expireTimer || 0),
         name: authorName,
         disappearing_messages_type: localizedMode,
@@ -1278,7 +1278,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
 
       if (groupUpdate.name) {
-        return window.i18n('groupNameNew', { group_name: groupUpdate.name });
+        return window.i18n.stripped('groupNameNew', { group_name: groupUpdate.name });
       }
 
       if (groupUpdate.joined?.length) {
@@ -1294,11 +1294,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       }
       window.log.warn('did not build a specific change for getDescription of ', groupUpdate);
 
-      return window.i18n('groupUpdated');
+      return window.i18n.stripped('groupUpdated');
     }
 
     if (this.isGroupInvitation()) {
-      return `😎 ${window.i18n('communityInvitation')}`;
+      return `😎 ${window.i18n.stripped('communityInvitation')}`;
     }
 
     if (this.isDataExtractionNotification()) {
@@ -1306,14 +1306,14 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
         'dataExtractionNotification'
       ) as DataExtractionNotificationMsg;
       if (dataExtraction.type === SignalService.DataExtractionNotification.Type.SCREENSHOT) {
-        return window.i18n('screenshotTaken', {
+        return window.i18n.stripped('screenshotTaken', {
           name: getConversationController().getContactProfileNameOrShortenedPubKey(
             dataExtraction.source
           ),
         });
       }
 
-      return window.i18n('attachmentsMediaSaved', {
+      return window.i18n.stripped('attachmentsMediaSaved', {
         name: getConversationController().getContactProfileNameOrShortenedPubKey(
           dataExtraction.source
         ),
@@ -1325,13 +1325,13 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
       );
       const callNotificationType = this.get('callNotificationType');
       if (callNotificationType === 'missed-call') {
-        return window.i18n('callsMissedCallFrom', { name });
+        return window.i18n.stripped('callsMissedCallFrom', { name });
       }
       if (callNotificationType === 'started-call') {
-        return window.i18n('callsYouCalled', { name });
+        return window.i18n.stripped('callsYouCalled', { name });
       }
       if (callNotificationType === 'answered-a-call') {
-        return window.i18n('callsInProgress');
+        return window.i18n.stripped('callsInProgress');
       }
     }
 
@@ -1353,11 +1353,11 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
               return '';
             case ConversationInteractionType.Leave:
               return isCommunity
-                ? window.i18n('communityLeaveError', {
+                ? window.i18n.stripped('communityLeaveError', {
                     community_name: convo.getNicknameOrRealUsernameOrPlaceholder(),
                   })
                 : isGroup
-                  ? window.i18n('groupLeaveErrorFailed', {
+                  ? window.i18n.stripped('groupLeaveErrorFailed', {
                       group_name: convo.getNicknameOrRealUsernameOrPlaceholder(),
                     })
                   : '';
@@ -1374,7 +1374,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
     if (this.get('reaction')) {
       const reaction = this.get('reaction');
       if (reaction && reaction.emoji && reaction.emoji !== '') {
-        return window.i18n('emojiReactsNotification', { emoji: reaction.emoji });
+        return window.i18n.stripped('emojiReactsNotification', { emoji: reaction.emoji });
       }
     }
     return this.get('body');
