@@ -6,10 +6,6 @@ import { getMessage } from './functions/getMessage';
 import { i18nLog, Locale, setInitialLocale } from './shared';
 import { setTranslationDictionary } from './translationDictionaries';
 
-export function loadDictionary(locale: Locale) {
-  return import(`../../_locales/${locale}/messages.json`) as Promise<LocalizerDictionary>;
-}
-
 /**
  * Sets up the i18n function with the provided locale and messages.
  *
