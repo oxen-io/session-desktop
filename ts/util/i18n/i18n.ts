@@ -2,11 +2,7 @@
 
 import { isEmpty } from 'lodash';
 import { LocalizerDictionary, SetupI18nReturnType } from '../../types/Localizer';
-import { formatMessageWithArgs } from './functions/formatMessageWithArgs';
 import { getMessage } from './functions/getMessage';
-import { getRawMessage } from './functions/getRawMessage';
-import { inEnglish } from './functions/inEnglish';
-import { stripped } from './functions/stripped';
 import { i18nLog, Locale, setInitialLocale } from './shared';
 import { setTranslationDictionary } from './translationDictionaries';
 
@@ -41,14 +37,7 @@ export const setupI18n = ({
   setTranslationDictionary(translationDictionary);
   setInitialLocale(locale);
 
-  const getMessageWithFunctions = getMessage;
-  // TODO - fix those `any`
-  (getMessageWithFunctions as any).inEnglish = inEnglish;
-  (getMessageWithFunctions as any).stripped = stripped;
-  (getMessageWithFunctions as any).getRawMessage = getRawMessage;
-  (getMessageWithFunctions as any).formatMessageWithArgs = formatMessageWithArgs;
-
   i18nLog(`Setup Complete with locale: ${locale}`);
 
-  return getMessageWithFunctions as SetupI18nReturnType;
+  return getMessage;
 };

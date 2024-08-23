@@ -116,7 +116,7 @@ export type I18nMethods = {
   /** @see {@link window.i18n.stripped} */
   stripped: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>
-  ) => R;
+  ) => R | T;
   /** @see {@link window.i18n.inEnglish} */
   inEnglish: <T extends LocalizerToken, R extends LocalizerDictionary[T]>(
     ...[token, args]: GetMessageArgs<T>

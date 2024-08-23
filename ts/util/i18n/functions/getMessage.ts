@@ -6,10 +6,13 @@ import {
   GetMessageArgs,
   ArgsRecord,
   DictionaryWithoutPluralStrings,
+  SetupI18nReturnType,
 } from '../../../types/Localizer';
 import { i18nLog } from '../shared';
 import { formatMessageWithArgs } from './formatMessageWithArgs';
 import { getRawMessage } from './getRawMessage';
+import { inEnglish } from './inEnglish';
+import { stripped } from './stripped';
 
 /**
  * Checks if a string contains a dynamic variable.
@@ -39,7 +42,7 @@ const isStringWithArgs = <R extends DictionaryWithoutPluralStrings[LocalizerToke
  * window.i18n('search', { count: 1, found_count: 1 });
  * // => '1 of 1 match'
  */
-export function getMessage<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
+function getMessageDefault<T extends LocalizerToken, R extends LocalizerDictionary[T]>(
   ...[token, args]: GetMessageArgs<T>
 ): R | T {
   try {
@@ -56,3 +59,10 @@ export function getMessage<T extends LocalizerToken, R extends LocalizerDictiona
     return token as R;
   }
 }
+
+getMessageDefault.inEnglish = inEnglish;
+getMessageDefault.stripped = stripped;
+getMessageDefault.getRawMessage = getRawMessage;
+getMessageDefault.formatMessageWithArgs = formatMessageWithArgs;
+
+export const getMessage: SetupI18nReturnType = getMessageDefault as SetupI18nReturnType;
