@@ -21,7 +21,6 @@ type ThemeGlobals = {
   '--font-default': string;
   '--font-accent': string;
   '--font-mono': string;
-  '--font-debug': string;
 
   '--font-size-xl': string;
   '--font-size-lg': string;
@@ -160,7 +159,6 @@ export const THEME_GLOBALS: ThemeGlobals = {
   '--font-default': 'Roboto',
   '--font-accent': 'Loor',
   '--font-mono': 'SpaceMono',
-  '--font-debug': "Monaco, Consolas, 'Courier New', Courier, monospace",
 
   '--font-size-xl': '19px',
   '--font-size-lg': '17px',

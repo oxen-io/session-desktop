@@ -152,8 +152,15 @@ const StyledPlaceholder = styled(motion.div)<{
   ${props => props.editable && 'cursor: pointer;'}
   line-height: 1;
 
+  padding: ${props => !props.centerText && 'var(--margins-md) 0'};
+
   background: transparent;
-  color: ${props => (props.error ? 'var(--danger-color)' : 'var(--input-text-color)')};
+  color: ${props =>
+    props.error
+      ? 'var(--danger-color)'
+      : props.editable
+        ? 'var(--input-text-placeholder-color)'
+        : 'var(--input-text-color)'};
 
   font-family: ${props => (props.monospaced ? 'var(--font-mono)' : 'var(--font-default)')};
   font-size: ${props => `var(--font-size-${props.textSize})`};
@@ -296,7 +303,7 @@ export const SessionInput = (props: Props) => {
   const [errorString, setErrorString] = useState('');
   const [textErrorStyle, setTextErrorStyle] = useState(false);
   const [forceShow, setForceShow] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(props.autoFocus || false);
 
   const textAreaRef = useRef(inputRef?.current || null);
 
@@ -312,7 +319,7 @@ export const SessionInput = (props: Props) => {
     setTextErrorStyle(false);
     if (isTextArea && textAreaRef && textAreaRef.current !== null) {
       const scrollHeight = `${textAreaRef.current.scrollHeight}px`;
-      if (isEmpty(val)) {
+      if (!autoFocus && isEmpty(val)) {
         // resets the height of the text area so it's centered if we clear the text
         textAreaRef.current.style.height = 'unset';
       }
@@ -344,7 +351,7 @@ export const SessionInput = (props: Props) => {
     onBlur: (event: ChangeEvent<HTMLInputElement>) => {
       if (editable && !disableOnBlurEvent) {
         updateInputValue(event);
-        if (isEmpty(value) && isFocused) {
+        if (isEmpty(value) && !autoFocus && isFocused) {
           setIsFocused(false);
         }
       }
@@ -380,6 +387,12 @@ export const SessionInput = (props: Props) => {
     }
   }, [error, errorString]);
 
+  useEffect(() => {
+    if (isTextArea && editable && isFocused && textAreaRef && textAreaRef.current !== null) {
+      textAreaRef.current.focus();
+    }
+  }, [editable, isFocused, isTextArea]);
+
   return (
     <StyledSessionInput
       className={className}
@@ -407,7 +420,7 @@ export const SessionInput = (props: Props) => {
             {isFocused ? (
               <textarea
                 {...inputProps}
-                placeholder={''}
+                placeholder={!autoFocus ? '' : editable ? placeholder : value}
                 ref={inputRef || textAreaRef}
                 aria-label={ariaLabel || 'session input text area'}
               />

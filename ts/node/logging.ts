@@ -7,14 +7,15 @@ import fs from 'fs';
 import { app, ipcMain as ipc } from 'electron';
 import Logger from 'bunyan';
 import _ from 'lodash';
-import firstline from 'firstline';
-import { readLastLinesEnc } from 'read-last-lines-ts';
 import rimraf from 'rimraf';
 
+import { readFile } from 'fs-extra';
 import { redactAll } from '../util/privacy';
 
 const LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'];
 let logger: Logger | undefined;
+
+let loggerFilePath: string | undefined;
 
 export type ConsoleCustom = typeof console & {
   _log: (...args: any) => void;
@@ -28,68 +29,76 @@ export async function initializeLogger() {
   }
 
   const basePath = app.getPath('userData');
-  const logPath = path.join(basePath, 'logs');
-  fs.mkdirSync(logPath, { recursive: true });
+  const logFolder = path.join(basePath, 'logs');
+  const logFile = path.join(logFolder, 'log.log');
+  loggerFilePath = logFile;
 
-  return cleanupLogs(logPath).then(() => {
-    if (logger) {
-      return;
+  fs.mkdirSync(logFolder, { recursive: true });
+
+  await cleanupLogs(logFile, logFolder);
+
+  console.warn('[log] filepath', logFile);
+
+  logger = Logger.createLogger({
+    name: 'log',
+    level: 'debug',
+    streams: [
+      {
+        stream: process.stdout,
+      },
+      {
+        path: logFile,
+      },
+    ],
+  });
+
+  logger.level('debug');
+  // eslint-disable-next-line dot-notation
+  (logger as any)['warn']('app start: logger created'); // keep this so we always have restart indications in the app
+
+  LEVELS.forEach(level => {
+    ipc.on(`log-${level}`, (_first, ...rest) => {
+      (logger as any)[level](...rest);
+    });
+  });
+
+  ipc.on('fetch-log', event => {
+    if (!fs.existsSync(logFolder)) {
+      fs.mkdirSync(logFolder, { recursive: true });
     }
 
-    const logFile = path.join(logPath, 'log.log');
-    logger = Logger.createLogger({
-      name: 'log',
-      streams: [
-        {
-          level: 'debug',
-          stream: process.stdout,
-        },
-        {
-          type: 'rotating-file',
-          path: logFile,
-          period: '1d',
-          count: 1,
-        },
-      ],
-    });
+    console.info('[log] fetching logs from', logFile);
 
-    LEVELS.forEach(level => {
-      ipc.on(`log-${level}`, (_first, ...rest) => {
-        (logger as any)[level](...rest);
-      });
-    });
-
-    ipc.on('fetch-log', event => {
-      fs.mkdirSync(logPath, { recursive: true });
-      console.info('fetching logs from logPath');
-
-      fetchLogFile(logPath).then(
-        data => {
-          event.sender.send('fetched-log', data);
-        },
-        error => {
-          logger?.error(`Problem loading log from disk: ${error.stack}`);
-        }
-      );
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    ipc.on('delete-all-logs', async event => {
-      try {
-        await deleteAllLogs(logPath);
-      } catch (error) {
-        logger?.error(`Problem deleting all logs: ${error.stack}`);
+    fetchLogFile(logFile).then(
+      data => {
+        event.sender.send('fetched-log', data);
+      },
+      error => {
+        logger?.error(`[log] Problem loading log from disk: ${error.stack}`);
       }
+    );
+  });
 
-      event.sender.send('delete-all-logs-complete');
-    });
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  ipc.on('delete-all-logs', async event => {
+    try {
+      await deleteAllLogs(logFile);
+    } catch (error) {
+      logger?.error(`[log] Problem deleting all logs: ${error.stack}`);
+    }
+
+    event.sender.send('delete-all-logs-complete');
   });
 }
 
-async function deleteAllLogs(logPath: string) {
+export function getLoggerFilePath() {
+  return loggerFilePath;
+}
+
+async function deleteAllLogs(logFile: string) {
   return new Promise((resolve, reject) => {
     rimraf(
-      logPath,
+      logFile,
       {
         disableGlob: true,
       },
@@ -105,85 +114,36 @@ async function deleteAllLogs(logPath: string) {
   });
 }
 
-async function cleanupLogs(logPath: string) {
+async function cleanupLogs(logFile: string, logFolder: string) {
   const now = new Date();
   const earliestDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 6)
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2) // we keep 2 days worth of logs when we start the app and delete the rest
   );
 
   try {
-    const remaining = await eliminateOutOfDateFiles(logPath, earliestDate);
-    const files = _.filter(remaining, file => !file.start && file.end);
-
-    if (!files.length) {
-      return;
-    }
-
-    await eliminateOldEntries(files, earliestDate);
+    await eliminateOldEntries(logFile, earliestDate);
   } catch (error) {
-    console.error('Error cleaning logs; deleting and starting over from scratch.', error.stack);
-
-    // delete and re-create the log directory
-    await deleteAllLogs(logPath);
-    fs.mkdirSync(logPath, { recursive: true });
+    console.error(
+      '[log] Error cleaning logs; deleting and starting over from scratch.',
+      error.stack
+    );
+    fs.mkdirSync(logFolder, { recursive: true });
   }
 }
 
-function isLineAfterDate(line: string, date: Date) {
-  if (!line) {
-    return false;
-  }
-
-  try {
-    const data = JSON.parse(line);
-    return new Date(data.time).getTime() > date.getTime();
-  } catch (e) {
-    console.log('error parsing log line', e.stack, line);
-    return false;
-  }
-}
-
-async function eliminateOutOfDateFiles(logPath: string, date: Date) {
-  const files = fs.readdirSync(logPath);
-  const paths = files.map(file => path.join(logPath, file));
-
-  return Promise.all(
-    _.map(paths, target =>
-      Promise.all([firstline(target), readLastLinesEnc('utf8')(target, 2)]).then(results => {
-        const start = results[0];
-        const end = results[1].split('\n');
-
-        const file = {
-          path: target,
-          start: isLineAfterDate(start, date),
-          end:
-            isLineAfterDate(end[end.length - 1], date) ||
-            isLineAfterDate(end[end.length - 2], date),
-        };
-
-        if (!file.start && !file.end) {
-          fs.unlinkSync(file.path);
-        }
-
-        return file;
-      })
-    )
-  );
-}
-
-async function eliminateOldEntries(files: any, date: Date) {
+async function eliminateOldEntries(logFile: string, date: Date) {
   const earliest = date.getTime();
 
-  return Promise.all(
-    _.map(files, file =>
-      fetchLog(file.path).then((lines: any) => {
-        const recent = _.filter(lines, line => new Date(line.time).getTime() >= earliest);
-        const text = _.map(recent, line => JSON.stringify(line)).join('\n');
+  if (!fs.existsSync(logFile)) {
+    return;
+  }
 
-        fs.writeFileSync(file.path, `${text}\n`);
-      })
-    )
-  );
+  const lines = await fetchLog(logFile);
+
+  const recent = _.filter(lines, line => new Date(line.time).getTime() >= earliest);
+  const text = _.map(recent, line => JSON.stringify(line)).join('\n');
+
+  fs.writeFileSync(logFile, `${text}\n`);
 }
 
 export function getLogger() {
@@ -194,56 +154,45 @@ export function getLogger() {
   return logger;
 }
 
-async function fetchLog(logFile: string) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(logFile, { encoding: 'utf8' }, (err, text) => {
-      if (err) {
-        reject(err);
-        return;
+type LogEntry = { level: number; time: string; msg: string };
+
+async function fetchLog(logFile: string): Promise<Array<LogEntry>> {
+  const text = await readFile(logFile, { encoding: 'utf8' });
+
+  const lines = _.compact(text.split('\n'));
+  const data = _.compact(
+    lines.map(line => {
+      try {
+        return _.pick(JSON.parse(line), ['level', 'time', 'msg']);
+      } catch (e) {
+        return null;
       }
+    })
+  );
 
-      const lines = _.compact(text.split('\n'));
-      const data = _.compact(
-        lines.map(line => {
-          try {
-            return _.pick(JSON.parse(line), ['level', 'time', 'msg']);
-          } catch (e) {
-            return null;
-          }
-        })
-      );
-
-      resolve(data);
-    });
-  });
+  return data;
 }
 
-export async function fetchLogFile(logPath: string) {
+async function fetchLogFile(logFile: string) {
   // Check that the file exists locally
-  if (!fs.existsSync(logPath)) {
-    (console as ConsoleCustom)._log(
-      'Log folder not found while fetching its content. Quick! Creating it.'
-    );
-    fs.mkdirSync(logPath, { recursive: true });
+  if (!fs.existsSync(logFile)) {
+    throw new Error('Log folder not found while fetching its content');
   }
-  const files = fs.readdirSync(logPath);
-  const paths = files.map(file => path.join(logPath, file));
 
   // creating a manual log entry for the final log result
   const now = new Date();
   const fileListEntry = {
     level: 30, // INFO
     time: now.toJSON(),
-    msg: `Loaded this list of log files from logPath: ${files.join(', ')}`,
+    msg: `Loaded this from logfile: "${logFile}"`,
   };
 
-  return Promise.all(paths.map(fetchLog)).then(results => {
-    const data = _.flatten(results);
+  const read = await fetchLog(logFile);
+  const data = _.flatten(read);
 
-    data.push(fileListEntry);
+  data.push(fileListEntry);
 
-    return _.sortBy(data, 'time');
-  });
+  return _.sortBy(data, 'time');
 }
 
 function logAtLevel(level: string, ...args: any) {

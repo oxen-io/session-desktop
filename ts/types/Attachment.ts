@@ -13,35 +13,40 @@ const MAX_HEIGHT = THUMBNAIL_SIDE;
 const MIN_WIDTH = THUMBNAIL_SIDE;
 const MIN_HEIGHT = THUMBNAIL_SIDE;
 
-// Used for display
+// Used for displaying attachments in the UI
+export type AttachmentScreenshot = {
+  contentType: MIME.MIMEType;
+  height: number;
+  width: number;
+  url?: string;
+  path?: string;
+};
+
+export type AttachmentThumbnail = {
+  contentType: MIME.MIMEType;
+  height: number;
+  width: number;
+  url?: string;
+  path?: string;
+};
 
 export interface AttachmentType {
-  caption?: string;
   contentType: MIME.MIMEType;
   fileName: string;
-  /** Not included in protobuf, needs to be pulled from flags */
-  isVoiceMessage?: boolean;
   /** For messages not already on disk, this will be a data url */
   url: string;
-  videoUrl?: string;
-  size?: number;
   fileSize: string | null;
   pending?: boolean;
+  screenshot: AttachmentScreenshot | null;
+  thumbnail: AttachmentThumbnail | null;
+  caption?: string;
+  size?: number;
   width?: number;
   height?: number;
   duration?: string;
-  screenshot: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-  } | null;
-  thumbnail: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-  } | null;
+  videoUrl?: string;
+  /** Not included in protobuf, needs to be pulled from flags */
+  isVoiceMessage?: boolean;
 }
 
 export interface AttachmentTypeWithPath extends AttachmentType {
@@ -49,21 +54,6 @@ export interface AttachmentTypeWithPath extends AttachmentType {
   id: number;
   flags?: number;
   error?: any;
-
-  screenshot: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-    path?: string;
-  } | null;
-  thumbnail: {
-    height: number;
-    width: number;
-    url?: string;
-    contentType: MIME.MIMEType;
-    path?: string;
-  } | null;
 }
 
 // UI-focused functions
@@ -167,7 +157,7 @@ export function isVideoAttachment(attachment?: AttachmentType): boolean {
 
 export function hasVideoScreenshot(attachments?: Array<AttachmentType>): boolean {
   const firstAttachment = attachments ? attachments[0] : null;
-  return Boolean(firstAttachment?.screenshot?.url);
+  return Boolean(firstAttachment?.screenshot?.url || firstAttachment?.pending);
 }
 
 type DimensionsType = {

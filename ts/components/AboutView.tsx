@@ -54,8 +54,10 @@ export const AboutView = () => {
   }
 
   const versionInfo = `v${window.getVersion()}`;
-  const commitInfo = `Commit ${window.getCommitHash()}` || '';
-  const osInfo = `${window.getOSRelease()}`;
+  const systemInfo = window.i18n('systemInformationDesktop', [window.getOSRelease()]);
+  const commitInfo = window.i18n('commitHashDesktop', [
+    window.getCommitHash() || window.i18n('unknown'),
+  ]);
 
   useEffect(() => {
     if (window.theme) {
@@ -93,11 +95,15 @@ export const AboutView = () => {
           buttonType={SessionButtonType.Simple}
         />
         <CopyToClipboardButton
+          className="os"
+          text={systemInfo}
+          buttonType={SessionButtonType.Simple}
+        />
+        <CopyToClipboardButton
           className="commitHash"
           text={commitInfo}
           buttonType={SessionButtonType.Simple}
         />
-        <CopyToClipboardButton className="os" text={osInfo} buttonType={SessionButtonType.Simple} />
         {environmentStates.length ? (
           <CopyToClipboardButton
             className="environment"

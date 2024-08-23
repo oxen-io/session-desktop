@@ -4,6 +4,7 @@ const { Storage } = require('./ts/util/storage');
 
 const { isTestNet, isTestIntegration } = require('./ts/shared/env_vars');
 
+const os = require('os');
 const url = require('url');
 
 const _ = require('lodash');
@@ -26,6 +27,9 @@ window.getAppInstance = () => configAny.appInstance;
 window.getVersion = () => configAny.version;
 window.getCommitHash = () => configAny.commitHash;
 window.getNodeVersion = () => configAny.node_version;
+window.getOSRelease = () =>
+  `${os.type()} ${os.release()}, Node.js ${config.node_version} ${os.platform()} ${os.arch()}`;
+window.saveLog = additionalText => ipcRenderer.send('save-debug-log', additionalText);
 
 window.sessionFeatureFlags = {
   useOnionRequests: true,

@@ -39,6 +39,7 @@ export async function createClosedGroup(groupName: string, members: Array<string
     groupPublicKey,
     ConversationTypeEnum.GROUP
   );
+  convo.set('lastJoinedTimestamp', Date.now());
   await convo.setIsApproved(true, false);
 
   // Ensure the current user is a member

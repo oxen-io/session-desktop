@@ -25,6 +25,7 @@ import {
   PropsForCallNotification,
   PropsForInteractionNotification,
 } from './types';
+import { AttachmentType } from '../../types/Attachment';
 
 export type MessageModelPropsWithoutConvoProps = {
   propsForMessage: PropsForMessageWithoutConvoProps;
@@ -128,35 +129,13 @@ export type PropsForGroupInvitation = {
   messageId: string;
 };
 
-export type PropsForAttachment = {
+export type PropsForAttachment = AttachmentType & {
   id: number;
-  contentType: string;
-  caption?: string;
-  size: number;
-  width?: number;
-  height?: number;
-  duration?: string;
-  url: string;
-  path: string;
-  fileSize: string | null;
   isVoiceMessage: boolean;
+  size: number;
+  path: string;
   pending: boolean;
-  fileName: string;
-  error?: number; // if the download somhehow failed, this will be set to true and be 0-1 once saved in the db
-  screenshot: {
-    contentType: string;
-    width: number;
-    height: number;
-    url?: string;
-    path?: string;
-  } | null;
-  thumbnail: {
-    contentType: string;
-    width: number;
-    height: number;
-    url?: string;
-    path?: string;
-  } | null;
+  error?: number; // if the download somehow failed, this will be set to true and be 0 or 1 in the db
 };
 
 export type PropsForQuote = {

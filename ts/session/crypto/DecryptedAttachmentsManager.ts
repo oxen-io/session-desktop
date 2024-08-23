@@ -10,7 +10,6 @@
  *
  */
 import path from 'path';
-import { reject } from 'lodash';
 
 import * as fse from 'fs-extra';
 
@@ -114,7 +113,7 @@ export const getDecryptedMediaUrl = async (
 
     urlToDecryptingPromise.set(
       url,
-      new Promise(async resolve => {
+      new Promise(async (resolve, reject) => {
         // window.log.debug('about to read and decrypt file :', url, path.isAbsolute(url));
         try {
           const absUrl = path.isAbsolute(url) ? url : getAbsoluteAttachmentPath(url);
@@ -149,7 +148,6 @@ export const getDecryptedMediaUrl = async (
         }
       })
     );
-
     return urlToDecryptingPromise.get(url) as Promise<string>;
   }
   // Not sure what we got here. Just return the file.

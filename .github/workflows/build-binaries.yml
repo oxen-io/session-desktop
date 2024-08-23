@@ -7,11 +7,13 @@ on:
       - clearnet
       - unstable
       - release/
+      - ci/
   pull_request:
     branches:
       - clearnet
       - unstable
       - release/
+      - ci/
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -22,7 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-12, ubuntu-20.04]
+        # We want a mac arm64 build, and according to this https://github.com/actions/runner-images#available-images macos-14 is always arm64
+        os: [windows-2022, ubuntu-20.04, macos-12, macos-14]
     env:
       SIGNAL_ENV: production
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,5 +78,5 @@ jobs:
       - name: Upload Production Artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ runner.OS }}-production
+          name: ${{ runner.os }}-${{ runner.arch }}-production
           path: release

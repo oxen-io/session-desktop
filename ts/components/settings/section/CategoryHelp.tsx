@@ -1,15 +1,14 @@
-import { ipcRenderer } from 'electron';
-
 import { SessionButtonShape, SessionButtonType } from '../../basic/SessionButton';
 
 import { SessionSettingButtonItem, SessionSettingsTitleWithLink } from '../SessionSettingListItem';
+import { saveLogToDesktop } from '../../../util/logging';
 
 export const SettingsCategoryHelp = () => {
   return (
     <>
       <SessionSettingButtonItem
         onClick={() => {
-          ipcRenderer.send('show-debug-log');
+          void saveLogToDesktop();
         }}
         buttonShape={SessionButtonShape.Square}
         buttonType={SessionButtonType.Solid}

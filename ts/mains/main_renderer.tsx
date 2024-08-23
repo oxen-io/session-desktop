@@ -13,7 +13,6 @@ import { Data } from '../data/data';
 import { OpenGroupData } from '../data/opengroups';
 import { SettingsKey } from '../data/settings-key';
 import { MessageModel } from '../models/message';
-import { deleteAllLogs } from '../node/logs';
 import { queueAllCached } from '../receiver/receiver';
 import { loadKnownBlindedKeys } from '../session/apis/open_group_api/sogsv3/knownBlindedkeys';
 import { getConversationController } from '../session/conversations';
@@ -207,8 +206,6 @@ Storage.onready(async () => {
     window.log.info(`New version detected: ${currentVersion}; previous: ${lastVersion}`);
 
     await Data.cleanupOrphanedAttachments();
-
-    await deleteAllLogs();
   }
 
   const themeSetting = window.Events.getThemeSetting();

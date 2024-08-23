@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import { isEmpty } from 'lodash';
 
 import styled from 'styled-components';
@@ -28,6 +27,7 @@ import {
   formatTimeDuration,
   formatWithLocale,
 } from '../../../../../../util/i18n/formater/generics';
+import { saveLogToDesktop } from '../../../../../../util/logging';
 
 export const MessageInfoLabel = styled.label<{ color?: string }>`
   font-size: var(--font-size-lg);
@@ -77,10 +77,6 @@ export const LabelWithInfo = (props: LabelWithInfoProps) => {
 
 const formatTimestampStr = 'hh:mm d LLL, yyyy' as const;
 
-const showDebugLog = () => {
-  ipcRenderer.send('show-debug-log');
-};
-
 const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
   const convoId = useSelectedConversationKey();
   const messageHash = useMessageHash(messageId);
@@ -88,6 +84,8 @@ const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
   const expirationType = useMessageExpirationType(messageId);
   const expirationDurationMs = useMessageExpirationDurationMs(messageId);
   const expirationTimestamp = useMessageExpirationTimestamp(messageId);
+  const timestamp = useMessageTimestamp(messageId);
+  const serverTimestamp = useMessageServerTimestamp(messageId);
 
   if (!isDevProd()) {
     return null;
@@ -98,6 +96,10 @@ const DebugMessageInfo = ({ messageId }: { messageId: string }) => {
       {convoId ? <LabelWithInfo label={`Conversation ID:`} info={convoId} /> : null}
       {messageHash ? <LabelWithInfo label={`Message Hash:`} info={messageHash} /> : null}
       {serverId ? <LabelWithInfo label={`Server ID:`} info={`${serverId}`} /> : null}
+      {timestamp ? <LabelWithInfo label={`Timestamp:`} info={String(timestamp)} /> : null}
+      {serverTimestamp ? (
+        <LabelWithInfo label={`Server Timestamp:`} info={String(serverTimestamp)} />
+      ) : null}
       {expirationType ? <LabelWithInfo label={`Expiration Type:`} info={expirationType} /> : null}
       {expirationDurationMs ? (
         <LabelWithInfo
@@ -163,7 +165,9 @@ export const MessageInfo = ({ messageId, errors }: { messageId: string; errors: 
             label={`${window.i18n('theError')}:`}
             info={errorString || window.i18n('errorUnknown')}
             dataColor={'var(--danger-color)'}
-            onClick={showDebugLog}
+            onClick={() => {
+              void saveLogToDesktop();
+            }}
           />
         </>
       )}

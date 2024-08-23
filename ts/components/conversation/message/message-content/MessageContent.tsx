@@ -20,7 +20,6 @@ import {
   getShouldHighlightMessage,
 } from '../../../../state/selectors/conversations';
 import { useSelectedIsPrivate } from '../../../../state/selectors/selectedConversation';
-import { canDisplayImagePreview } from '../../../../types/Attachment';
 import { MessageAttachment } from './MessageAttachment';
 import { MessageAvatar } from './MessageAvatar';
 import { MessageHighlighter } from './MessageHighlighter';
@@ -147,15 +146,11 @@ export const MessageContent = (props: Props) => {
     return null;
   }
 
-  const { direction, text, timestamp, serverTimestamp, previews, quote, attachments } =
-    contentProps;
+  const { direction, text, timestamp, serverTimestamp, previews, quote } = contentProps;
 
   const hasContentBeforeAttachment = !isEmpty(previews) || !isEmpty(quote) || !isEmpty(text);
 
   const toolTipTitle = formatFullDate(new Date(serverTimestamp || timestamp));
-
-  const isDetailViewAndSupportsAttachmentCarousel =
-    isDetailView && canDisplayImagePreview(attachments);
 
   return (
     <StyledMessageContent
@@ -204,14 +199,14 @@ export const MessageContent = (props: Props) => {
               <MessageText messageId={props.messageId} />
             </StyledMessageOpaqueContent>
           )}
-          {!isDeleted && isDetailViewAndSupportsAttachmentCarousel && !imageBroken ? null : (
+          {!isDeleted ? (
             <MessageAttachment
               messageId={props.messageId}
               imageBroken={imageBroken}
               handleImageError={handleImageError}
               highlight={highlight}
             />
-          )}
+          ) : null}
         </IsMessageVisibleContext.Provider>
       </InView>
     </StyledMessageContent>

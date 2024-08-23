@@ -1,5 +1,3 @@
-import { ipcRenderer } from 'electron';
-import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useMessageExpirationPropsById } from '../../../../hooks/useParamSelector';
@@ -11,6 +9,7 @@ import { useSelectedIsGroupOrCommunity } from '../../../../state/selectors/selec
 import { SpacerXS } from '../../../basic/Text';
 import { SessionIcon, SessionIconType } from '../../../icon';
 import { ExpireTimer } from '../../ExpireTimer';
+import { saveLogToDesktop } from '../../../../util/logging';
 
 type Props = {
   messageId: string;
@@ -235,9 +234,6 @@ const MessageStatusRead = ({
 };
 
 const MessageStatusError = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
-  const showDebugLog = useCallback(() => {
-    ipcRenderer.send('show-debug-log');
-  }, []);
   // when on error, we do not display the expire timer at all.
   const isGroup = useSelectedIsGroupOrCommunity();
 
@@ -245,8 +241,10 @@ const MessageStatusError = ({ dataTestId }: Omit<Props, 'isDetailView'>) => {
     <MessageStatusContainer
       data-testid={dataTestId}
       data-testtype="failed"
-      onClick={showDebugLog}
       title={window.i18n('messageStatusFailedToSend')}
+      onClick={() => {
+        void saveLogToDesktop();
+      }}
       isIncoming={false}
       clickable={true}
       isGroup={isGroup}

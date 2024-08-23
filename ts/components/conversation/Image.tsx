@@ -1,17 +1,26 @@
 import classNames from 'classnames';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { isNumber } from 'lodash';
 import { useDisableDrag } from '../../hooks/useDisableDrag';
-import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
 import { AttachmentType, AttachmentTypeWithPath } from '../../types/Attachment';
 import { Spinner } from '../loading';
+import { MessageGenericAttachment } from './message/message-content/MessageGenericAttachment';
+import { useEncryptedFileFetch } from '../../hooks/useEncryptedFileFetch';
+import { useMessageIdFromContext } from '../../contexts/MessageIdContext';
+import {
+  useMessageDirection,
+  useMessageSelected,
+  useMessageTimestamp,
+} from '../../state/selectors';
 
 type Props = {
   alt: string;
   attachment: AttachmentTypeWithPath | AttachmentType;
-  url: string | undefined; // url is undefined if the message is not visible yet
+  /** undefined if the message is not visible yet, '' if the attachment is broken */
+  url: string | undefined;
+  imageBroken?: boolean;
 
   height?: number | string;
   width?: number | string;
@@ -24,8 +33,8 @@ type Props = {
   playIconOverlay?: boolean;
   softCorners: boolean;
   forceSquare?: boolean;
-  dropShadow?: boolean;
   attachmentIndex?: number;
+  highlight?: boolean;
 
   onClick?: (attachment: AttachmentTypeWithPath | AttachmentType) => void;
   onClickClose?: (attachment: AttachmentTypeWithPath | AttachmentType) => void;
@@ -46,6 +55,7 @@ export const Image = (props: Props) => {
   const {
     alt,
     attachment,
+    imageBroken,
     closeButton,
     darkOverlay,
     height: _height,
@@ -56,33 +66,73 @@ export const Image = (props: Props) => {
     playIconOverlay,
     softCorners,
     forceSquare,
-    dropShadow,
     attachmentIndex,
+    highlight,
     url,
     width: _width,
   } = props;
 
-  const onErrorUrlFilterering = useCallback(() => {
-    if (url && onError) {
-      onError();
-    }
-  }, [url, onError]);
+  const messageId = useMessageIdFromContext();
+  const dropShadow = useMessageSelected(messageId);
+  const direction = useMessageDirection(messageId);
+  /** used for debugging */
+  const timestamp = useMessageTimestamp(messageId);
+
   const disableDrag = useDisableDrag();
+  const { loading, urlToLoad } = useEncryptedFileFetch(
+    url,
+    attachment.contentType,
+    false,
+    timestamp
+  );
 
   const { caption } = attachment || { caption: null };
-  let { pending } = attachment || { pending: true };
-  if (!url) {
-    // force pending to true if the url is undefined, so we show a loader while decrypting the attachemtn
-    pending = true;
-  }
+  const [pending, setPending] = useState<boolean>(attachment.pending || true);
+  const [mounted, setMounted] = useState<boolean>(
+    (!loading || !pending) && urlToLoad === undefined
+  );
+
   const canClick = onClick && !pending;
   const role = canClick ? 'button' : undefined;
-  const { loading, urlToLoad } = useEncryptedFileFetch(url || '', attachment.contentType, false);
-  // data will be url if loading is finished and '' if not
-  const srcData = !loading ? urlToLoad : '';
+
+  const onErrorUrlFilterering = useCallback(() => {
+    if (mounted && url && urlToLoad === '' && onError) {
+      onError();
+      setPending(false);
+    }
+  }, [mounted, onError, url, urlToLoad]);
 
   const width = isNumber(_width) ? `${_width}px` : _width;
   const height = isNumber(_height) ? `${_height}px` : _height;
+
+  useEffect(() => {
+    if (mounted && url === '') {
+      setPending(false);
+      onErrorUrlFilterering();
+    }
+
+    if (mounted && imageBroken && urlToLoad === '') {
+      setPending(false);
+      onErrorUrlFilterering();
+    }
+
+    if (url) {
+      setPending(false);
+      setMounted(!loading && !pending);
+    }
+  }, [imageBroken, loading, mounted, onErrorUrlFilterering, pending, url, urlToLoad]);
+
+  if (mounted && imageBroken) {
+    return (
+      <MessageGenericAttachment
+        attachment={attachment as AttachmentTypeWithPath}
+        pending={false}
+        highlight={!!highlight}
+        selected={!!dropShadow} // dropshadow is selected
+        direction={direction}
+      />
+    );
+  }
 
   return (
     <div
@@ -107,7 +157,7 @@ export const Image = (props: Props) => {
       }}
       data-attachmentindex={attachmentIndex}
     >
-      {pending || loading ? (
+      {!mounted ? (
         <div
           className="module-image__loading-placeholder"
           style={{
@@ -137,7 +187,7 @@ export const Image = (props: Props) => {
             width: forceSquare ? width : '',
             height: forceSquare ? height : '',
           }}
-          src={srcData}
+          src={urlToLoad}
           onDragStart={disableDrag}
         />
       )}
@@ -165,7 +215,7 @@ export const Image = (props: Props) => {
           className="module-image__close-button"
         />
       ) : null}
-      {!(pending || loading) && playIconOverlay ? (
+      {mounted && playIconOverlay ? (
         <div className="module-image__play-overlay__circle">
           <div className="module-image__play-overlay__icon" />
         </div>
