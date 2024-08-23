@@ -11,9 +11,7 @@ import {
   I18nMethods,
   LocalizerDictionary,
   LocalizerToken,
-  SetupI18nReturnType,
 } from './types/Localizer';
-import type { Locale } from './util/i18n';
 
 export interface LibTextsecure {
   messaging: boolean;

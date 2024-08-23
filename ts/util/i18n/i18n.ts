@@ -42,7 +42,6 @@ export const setupI18n = ({
   setInitialLocale(locale);
 
   const getMessageWithFunctions = getMessage;
-
   // TODO - fix those `any`
   (getMessageWithFunctions as any).inEnglish = inEnglish;
   (getMessageWithFunctions as any).stripped = stripped;
