@@ -633,6 +633,10 @@
   font-weight: 300;
 }
 
+.module-conversation-list-item__header__date {
+  flex-shrink: 0;
+}
+
 .module-conversation-list-item__header__name--with-unread {
   font-weight: 300;
 }
