@@ -1,15 +1,17 @@
 import { timeLocaleMap } from './timeLocaleMap';
 
+let mappedBrowserLocaleDisplayed = false;
+let initialLocale: Locale | undefined;
+
 /**
  * Logs an i18n message to the console.
  * @param message - The message to log.
  *
- * TODO - Replace this logging method when the new logger is created
  */
 export function i18nLog(message: string) {
   // eslint:disable: no-console
   // eslint-disable-next-line no-console
-  (window?.log?.error ?? console.log)(`i18n: ${message}`);
+  (window?.log?.info ?? console.log)(`i18n: ${message}`);
 }
 
 export type Locale = keyof typeof timeLocaleMap;
@@ -37,15 +39,15 @@ export function getBrowserLocale() {
   const userLocaleDashed = getLocale();
 
   const matchinglocales = Intl.DateTimeFormat.supportedLocalesOf(userLocaleDashed);
+  const mappingTo = matchinglocales?.[0] || 'en';
 
-  if (matchinglocales.length) {
-    return matchinglocales[0];
+  if (!mappedBrowserLocaleDisplayed) {
+    mappedBrowserLocaleDisplayed = true;
+    i18nLog(`userLocaleDashed: '${userLocaleDashed}', mapping to browser locale: ${mappingTo}`);
   }
 
-  return 'en';
+  return mappingTo;
 }
-
-let initialLocale: Locale | undefined;
 
 export function setInitialLocale(locale: Locale) {
   initialLocale = locale;

@@ -16,7 +16,6 @@ export const SettingsCategoryAppearance = () => {
       ? true
       : window.getSettingValue(SettingsKey.settingsMenuBar);
 
-  // TODO: strings - verify this merge
   return (
     <>
       <SettingsThemeSwitcher />

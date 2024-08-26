@@ -129,10 +129,11 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <StyledTrustSenderUI onClick={openConfirmationModal}>
       <SessionIcon iconSize="small" iconType="gallery" />
-      {/** TODO - Add file type */}
       <ClickToDownload>
         {window.i18n('attachmentsClickToDownload', {
-          file_type: fileType,
+          // Note: we don't want to change the case of a localized string, but as an exception this one is approved.
+          // The reason is that the attachments logic is scheduled to be changed soon :tm:
+          file_type: fileType.toLocaleLowerCase(),
         })}
       </ClickToDownload>
     </StyledTrustSenderUI>

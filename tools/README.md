@@ -57,10 +57,8 @@ python3 ./tools/findString.py <token> --open --limit 5
 
 When a CrowdIn PR is made to update the localizations
 the [./localization/crowdInPostInstall.sh](./localization/crowdInPostImport.sh) - This script processes the imported
-files by running the following scripts:
+files by running the following script:
 
-- [./util/sortJson.py](./util/sortJson.py) - This script sorts a json file and is run for all `messages.json` files
-  located in `./_locales/`.
 - [./localization/generateLocales.py](./localization/generateLocales.py) - This script generates the TypeScript type
   definitions [locales.ts](../ts/localization/locales.ts). This script also validates the dynamic variables in each
   locale file and flags any errors.

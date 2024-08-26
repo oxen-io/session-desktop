@@ -59,7 +59,7 @@ const generateContactsString = (
   let hasMe = false;
   let numberOfReactors = 0;
   senders.forEach(sender => {
-    // TODO - make sure to truncate with ellipsis if too long @will
+    // TODO truncate with ellipsis if too long?
     const contact = findAndFormatContact(sender);
     if (contact.isMe) {
       hasMe = true;

@@ -149,7 +149,6 @@ export const LeftPaneBanner = () => {
         padding={'var(--margins-md)'}
       >
         <Flex container={true} width={'100%'} alignItems="flex-start">
-          {/** TODO: String localization - remove */}
           <StyledBannerTitle>{window.i18n('recoveryPasswordBannerTitle')}</StyledBannerTitle>
           <SessionIcon
             iconType={isDarkTheme ? 'recoveryPasswordFill' : 'recoveryPasswordOutline'}

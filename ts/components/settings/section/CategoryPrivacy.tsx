@@ -60,7 +60,6 @@ export const SettingsCategoryPrivacy = (props: {
   const isLinkPreviewsOn = useHasLinkPreviewEnabled();
   const areBlindedRequestsEnabled = useHasBlindedMsgRequestsEnabled();
 
-  // TODO: strings - verify merge
   return (
     <>
       <SessionToggleWithDescription
@@ -108,7 +107,6 @@ export const SettingsCategoryPrivacy = (props: {
         active={areBlindedRequestsEnabled}
       />
 
-      {/* TODO: strings - verify merge */}
       {!props.hasPassword ? (
         <SessionSettingButtonItem
           title={window.i18n('lockApp')}
@@ -124,7 +122,6 @@ export const SettingsCategoryPrivacy = (props: {
         <>
           {/* We have a password, let's show the 'change' and 'remove' password buttons */}
           <SessionSettingButtonItem
-            // TODO: String localization - remove
             title={window.i18n('passwordChange')}
             description={window.i18n('passwordChangeDescription')}
             onClick={() => {

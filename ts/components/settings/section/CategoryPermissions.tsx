@@ -56,7 +56,6 @@ export const SettingsCategoryPermissions = () => {
   const forceUpdate = useUpdate();
   const isStartInTrayActive = Boolean(window.getSettingValue(SettingsKey.settingsStartInTray));
 
-  // TODO: strings - verify merge
   return (
     <>
       <SessionToggleWithDescription

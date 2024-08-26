@@ -184,7 +184,6 @@ export const UpdateGroupMembersDialog = (props: Props) => {
   const showNoMembersMessage = existingMembers.length === 0;
   const okText = window.i18n('okay');
   const cancelText = window.i18n('cancel');
-  // TODO: String localization - remove
   const titleText = window.i18n('groupName');
 
   return (

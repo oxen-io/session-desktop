@@ -331,7 +331,6 @@ export function useSelectedShortenedPubkeyOrFallback() {
   if (isPrivate) {
     return window.i18n('anonymous');
   }
-  // TODO: String localization - remove
   return window.i18n('unknown');
 }
 
