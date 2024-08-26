@@ -28,7 +28,7 @@ export const SettingsCategoryAppearance = () => {
             forceUpdate();
           }}
           title={window.i18n('appearanceHideMenuBar')}
-          description={window.i18n('appearanceHideMenuBar')}
+          description={window.i18n('hideMenuBarDescription')}
           active={isHideMenuBarActive}
         />
       )}

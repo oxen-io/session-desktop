@@ -3,9 +3,11 @@ import { Data } from '../../../../data/data';
 import { getConversationController } from '../../../../session/conversations';
 import { AttachmentDownloads } from '../../../../session/utils';
 import { updateConfirmModal } from '../../../../state/ducks/modalDialog';
+import { useMessageAttachments } from '../../../../state/selectors';
+import { isAudio } from '../../../../types/MIME';
+import { isImageTypeSupported, isVideoTypeSupported } from '../../../../util/GoogleChrome';
 import { SessionButtonColor } from '../../../basic/SessionButton';
 import { SessionIcon } from '../../../icon';
-import { useMessageAttachments } from '../../../../state/selectors';
 
 const StyledTrustSenderUI = styled.div`
   padding-inline: var(--margins-lg);
@@ -115,7 +117,13 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
     );
   };
 
-  const firstMimeType = attachments?.[0].contentType;
+  const firstMimeType = attachments?.[0].contentType || 'unknown';
+
+  const fileType = isAudio(firstMimeType)
+    ? window.i18n('audio')
+    : isVideoTypeSupported(firstMimeType) || isImageTypeSupported(firstMimeType)
+      ? window.i18n('media')
+      : window.i18n('file');
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -124,7 +132,7 @@ export const ClickToTrustSender = (props: { messageId: string }) => {
       {/** TODO - Add file type */}
       <ClickToDownload>
         {window.i18n('attachmentsClickToDownload', {
-          file_type: firstMimeType || window.i18n('unknown'),
+          file_type: fileType,
         })}
       </ClickToDownload>
     </StyledTrustSenderUI>
