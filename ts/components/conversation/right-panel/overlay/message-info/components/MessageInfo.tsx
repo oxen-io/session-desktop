@@ -149,11 +149,11 @@ export const MessageInfo = ({ messageId, errors }: { messageId: string; errors: 
 
   return (
     <Flex container={true} flexDirection="column">
-      <LabelWithInfo label={`${window.i18n('sent')}:`} info={sentAtStr} />
+      <LabelWithInfo label={window.i18n('sent')} info={sentAtStr} />
       <DebugMessageInfo messageId={messageId} />
 
       {direction === 'incoming' ? (
-        <LabelWithInfo label={`${window.i18n('received')}:`} info={receivedAtStr} />
+        <LabelWithInfo label={window.i18n('received')} info={receivedAtStr} />
       ) : null}
       <SpacerSM />
       <MessageFrom sender={sender} isSenderAdmin={isSenderAdmin} />

@@ -1,7 +1,7 @@
 /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.formatMessageWithArgs } and {@link window.i18n.formatMessageWithArgs } */
 
 import { LOCALE_DEFAULTS } from '../../../localization/constants';
-import {
+import type {
   ArgsRecord,
   DictionaryWithoutPluralStrings,
   LocalizerToken,

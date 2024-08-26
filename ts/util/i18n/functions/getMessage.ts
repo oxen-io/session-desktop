@@ -1,6 +1,6 @@
 /** NOTE: Because of docstring limitations changes MUST be manually synced between {@link setupI18n.getMessage } and {@link window.i18n } */
 
-import {
+import type {
   LocalizerToken,
   LocalizerDictionary,
   GetMessageArgs,

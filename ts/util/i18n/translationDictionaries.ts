@@ -1,5 +1,5 @@
 import { en } from '../../localization/locales';
-import { LocalizerDictionary } from '../../types/Localizer';
+import type { LocalizerDictionary } from '../../types/Localizer';
 import { i18nLog } from './shared';
 
 let translationDictionary: LocalizerDictionary | undefined;

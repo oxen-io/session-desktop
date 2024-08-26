@@ -5,20 +5,38 @@ import type { LocalizerDictionary } from '../types/Localizer';
 import { getAppRootPath } from './getRootPath';
 
 function normalizeLocaleName(locale: string) {
-  if (/^en-/.test(locale)) {
-    return 'en';
-  }
-  if (/^en_/.test(locale)) {
-    return 'en';
-  }
+  const dashedLocale = locale.replaceAll('_', '-');
 
-  return locale;
+  // Note: this is a pain, but we somehow needs to keep in sync this logic and the LOCALE_PATH_MAPPING from
+  // https://github.com/oxen-io/session-shared-scripts/blob/main/crowdin/generate_desktop_strings.py
+  // What we do, is keep as is, anything given in LOCALE_PATH_MAPPING, but otherwise, keep only the first part of the locale.
+  // So `es-419` is allowed, but `es-es` is hardcoded to es, fr_FR is hardcoded to fr, and so on.
+  if (
+    /^es-419/.test(dashedLocale) ||
+    /^hy-AM/.test(dashedLocale) ||
+    /^kmr-TR/.test(dashedLocale) ||
+    /^pt-BR/.test(dashedLocale) ||
+    /^pt-PT/.test(dashedLocale) ||
+    /^zh-CN/.test(dashedLocale) ||
+    /^zh-TW/.test(dashedLocale)
+  ) {
+    return dashedLocale;
+  }
+  const firstDash = dashedLocale.indexOf('-');
+  if (firstDash > 0) {
+    return dashedLocale.slice(0, firstDash);
+  }
+  return dashedLocale;
 }
 
 function getLocaleMessages(locale: string): LocalizerDictionary {
-  const onDiskLocale = locale.replace('-', '_');
+  if (locale.includes('_')) {
+    throw new Error(
+      "getLocaleMessages: expected locale to not have a '_' in it. Those should have been replaced to -"
+    );
+  }
 
-  const targetFile = path.join(getAppRootPath(), '_locales', onDiskLocale, 'messages.json');
+  const targetFile = path.join(getAppRootPath(), '_locales', locale, 'messages.json');
 
   return JSON.parse(fs.readFileSync(targetFile, 'utf-8'));
 }
@@ -36,30 +54,28 @@ export function load({ appLocale, logger }: { appLocale?: string; logger?: any }
   }
 
   const english = getLocaleMessages('en');
-
-  // Load locale - if we can't load messages for the current locale, we
-  // default to 'en'
-  //
-  // possible locales:
-  // https://github.com/electron/electron/blob/master/docs/api/locales.md
-  let localeName = normalizeLocaleName(appLocale);
-  let messages;
+  const normalizedLocaleName = normalizeLocaleName(appLocale);
 
   try {
-    messages = getLocaleMessages(localeName);
+    // Load locale - if we can't load messages for the current locale, we
+    // default to 'en'
+    //
+    // possible locales:
+    // https://github.com/electron/electron/blob/master/docs/api/locales.md
 
     // We start with english, then overwrite that with anything present in locale
-    messages = _.merge(english, messages);
+    const messages = _.merge(english, getLocaleMessages(normalizedLocaleName));
+    return {
+      name: normalizedLocaleName,
+      messages,
+    };
   } catch (e) {
-    logger.error(`Problem loading messages for locale ${localeName} ${e.stack}`);
+    logger.error(`Problem loading messages for locale ${normalizedLocaleName} ${e.stack}`);
     logger.error('Falling back to en locale');
 
-    localeName = 'en';
-    messages = english;
+    return {
+      name: 'en',
+      messages: english,
+    };
   }
-
-  return {
-    name: localeName,
-    messages,
-  };
 }

@@ -20,8 +20,6 @@ export function getTimeLocaleDictionary() {
 
 /**
  * Returns the current locale.
- * @param params - An object containing optional parameters.
- * @param params.fallback - The fallback locale to use if redux is not available. Defaults to en.
  */
 export function getLocale(): Locale {
   if (!initialLocale) {
@@ -30,6 +28,21 @@ export function getLocale(): Locale {
     throw new Error('initialLocale is unset');
   }
   return initialLocale;
+}
+
+/**
+ * Returns the closest supported locale by the browser.
+ */
+export function getBrowserLocale() {
+  const userLocaleDashed = getLocale();
+
+  const matchinglocales = Intl.DateTimeFormat.supportedLocalesOf(userLocaleDashed);
+
+  if (matchinglocales.length) {
+    return matchinglocales[0];
+  }
+
+  return 'en';
 }
 
 let initialLocale: Locale | undefined;
