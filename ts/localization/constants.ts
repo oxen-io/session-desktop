@@ -7,4 +7,9 @@ export enum LOCALE_DEFAULTS {
   app_name = 'Session',
   arbitrum = 'Arbitrum',
   arbiscan = 'Arbiscan',
+  session_download_url = 'https://getsession.org/download',
+  token_name_full = 'Session Token (SENT)',
+  token_bonus_title = 'Token Bonus:',
+  claim_your_tokens = 'Claim Your Tokens',
+  price_data_powered_by = 'Price data powered by CoinGecko',
 }

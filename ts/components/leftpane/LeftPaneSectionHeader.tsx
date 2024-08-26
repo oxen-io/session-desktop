@@ -94,7 +94,7 @@ function getLeftPaneHeaderLabel(
       label = window.i18n('groupCreate');
       break;
     case 'message':
-      label = window.i18n('messageNew');
+      label = window.i18n('messageNew', { count: 1 });
       break;
     case 'message-requests':
       label = window.i18n('sessionMessageRequests');

@@ -409,7 +409,8 @@ export const DeleteMessagesMenuItem = () => {
         deleteAllMessagesByConvoIdWithConfirmation(convoId);
       }}
     >
-      {window.i18n('deleteMessages')}
+      {/* just more than 1 to have the string Delete Messages */}
+      {window.i18n('deleteMessage', { count: 2 })}
     </Item>
   );
 };

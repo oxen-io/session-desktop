@@ -164,9 +164,7 @@ function update(forceRefresh = false) {
   // distinguishing between zero (0) and other (non-zero),
   // e.g. Russian:
   // http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
-  const newMessageCountLabel = `${messagesNotificationCount} ${
-    messagesNotificationCount === 1 ? window.i18n('messageNew') : window.i18n('messageNewMessages')
-  }`;
+  const newMessageCountLabel = window.i18n('messageNew', { count: messagesNotificationCount });
 
   if (!currentNotifications.length) {
     return;
@@ -221,7 +219,7 @@ function update(forceRefresh = false) {
 
   const shouldHideExpiringMessageBody = lastNotification.isExpiringMessage && isMacOS();
   if (shouldHideExpiringMessageBody) {
-    message = window.i18n('messageNew');
+    message = window.i18n('messageNew', { count: messagesNotificationCount });
   }
 
   window.drawAttention();

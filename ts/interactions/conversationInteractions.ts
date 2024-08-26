@@ -472,7 +472,7 @@ export function deleteAllMessagesByConvoIdWithConfirmation(conversationId: strin
 
   window?.inboxStore?.dispatch(
     updateConfirmModal({
-      title: window.i18n('deleteMessages'),
+      title: window.i18n('deleteMessage', { count: 2 }), // count of 2 to get the plural "Messages Deleted"
       i18nMessage: { token: 'deleteAfterGroupPR3DeleteMessagesConfirmation' },
       onClickOk,
       okTheme: SessionButtonColor.Danger,

@@ -68,7 +68,7 @@ export const OverlayChooseAction = () => {
         alignItems={'flex-start'}
       >
         <ActionRow
-          title={window.i18n('messageNew')}
+          title={window.i18n('messageNew', { count: 1 })}
           ariaLabel={'New message button'}
           iconType={'chatBubble'}
           iconSize={20}

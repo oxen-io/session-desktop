@@ -809,7 +809,7 @@ export class MessageModel extends Backbone.Model<MessageAttributes> {
   public async markAsDeleted() {
     this.set({
       isDeleted: true,
-      body: window.i18n('deleteMessageDeleted'),
+      body: window.i18n('deleteMessageDeleted', { count: 1 }),
       quote: undefined,
       groupInvitation: undefined,
       dataExtractionNotification: undefined,

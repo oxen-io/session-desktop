@@ -171,11 +171,11 @@ export function pushYouLeftTheGroup() {
 }
 
 export function someDeletionsFailed(count: number) {
-  pushToastWarning('deletionError', window.i18n.stripped('deleteMessagesFailed', { count }));
+  pushToastWarning('deletionError', window.i18n.stripped('deleteMessageFailed', { count }));
 }
 
-export function pushDeleted() {
-  pushToastSuccess('deleted', window.i18n.stripped('deleteMessagesDeleted'), undefined);
+export function pushDeleted(count: number) {
+  pushToastSuccess('deleted', window.i18n.stripped('deleteMessageDeleted', { count }), undefined);
 }
 
 export function pushCannotRemoveCreatorFromGroup() {

@@ -84,23 +84,23 @@ const getI18nComponent = (
   switch (numberOfReactors) {
     case 1:
       return isYou ? (
-        <I18n token="emojiReactsHoverYouDesktop" endTagProps={{ emoji }} />
+        <I18n token="emojiReactsHoverYouNameDesktop" endTagProps={{ emoji }} />
       ) : (
         <I18n token="emojiReactsHoverNameDesktop" args={{ name }} endTagProps={{ emoji }} />
       );
     case 2:
       return isYou ? (
-        <I18n token="emojiReactsHoverYouNameDesktop" args={{ name }} endTagProps={{ emoji }} />
+        <I18n token="emojiReactsHoverYouNameTwoDesktop" args={{ name }} endTagProps={{ emoji }} />
       ) : (
         <I18n
-          token="emojiReactsHoverTwoNameDesktop"
+          token="emojiReactsHoverNameTwoDesktop"
           args={{ name, other_name }}
           endTagProps={{ emoji }}
         />
       );
     case 3:
       return isYou ? (
-        <I18n token="emojiReactsHoverYouNameOneDesktop" args={{ name }} endTagProps={{ emoji }} />
+        <I18n token="emojiReactsHoverYouNameTwoDesktop" args={{ name }} endTagProps={{ emoji }} />
       ) : (
         <I18n
           token="emojiReactsHoverTwoNameOneDesktop"
