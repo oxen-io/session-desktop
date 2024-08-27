@@ -1,5 +1,5 @@
 import { isString } from 'lodash';
-import type { LocalizerDictionary } from '../types/Localizer';
+import type { SetupI18nReturnType } from '../types/Localizer';
 import { LOCALE_DEFAULTS } from '../localization/constants';
 
 /**
@@ -22,7 +22,7 @@ export const createTemplate = (
     saveDebugLog: (_event: any, additionalInfo?: string) => void;
     showWindow: () => void;
   },
-  messages: LocalizerDictionary
+  i18n: SetupI18nReturnType
 ) => {
   if (!isString(options.platform)) {
     throw new TypeError('`options.platform` must be a string');
@@ -33,81 +33,81 @@ export const createTemplate = (
 
   const template = [
     {
-      label: withAcceleratorPrefix(messages.file),
+      label: withAcceleratorPrefix(i18n('file')),
       submenu: [
         {
           type: 'separator',
         },
         {
           role: 'quit',
-          label: messages.quit,
+          label: i18n('quit'),
         },
       ],
     },
     {
-      label: withAcceleratorPrefix(messages.edit),
+      label: withAcceleratorPrefix(i18n('edit')),
       submenu: [
         {
           role: 'undo',
-          label: messages.undo,
+          label: i18n('undo'),
         },
         {
           role: 'redo',
-          label: messages.redo,
+          label: i18n('redo'),
         },
         {
           type: 'separator',
         },
         {
           role: 'cut',
-          label: messages.cut,
+          label: i18n('cut'),
         },
         {
           role: 'copy',
-          label: messages.copy,
+          label: i18n('copy'),
         },
         {
           role: 'paste',
-          label: messages.paste,
+          label: i18n('paste'),
         },
         {
           role: 'delete',
-          label: messages.delete,
+          label: i18n('delete'),
         },
         {
           role: 'selectall',
-          label: messages.selectAll,
+          label: i18n('selectAll'),
         },
       ],
     },
     {
-      label: withAcceleratorPrefix(messages.view),
+      label: withAcceleratorPrefix(i18n('view')),
       submenu: [
         {
           role: 'resetzoom',
-          label: messages.actualSize,
+          label: i18n('actualSize'),
         },
         {
           accelerator: platform === 'darwin' ? 'Command+=' : 'Control+Plus',
           role: 'zoomin',
-          label: messages.appearanceZoomIn,
+          label: i18n('appearanceZoomIn'),
         },
         {
           role: 'zoomout',
-          label: messages.appearanceZoomOut,
+          label: i18n('appearanceZoomOut'),
         },
         {
           type: 'separator',
         },
         {
           role: 'togglefullscreen',
-          label: messages.fullScreenToggle,
+          label: i18n('fullScreenToggle'),
         },
         {
           type: 'separator',
         },
         {
-          label: messages.debugLog,
+          label: i18n('debugLog'),
           click: () => {
             saveDebugLog('save-debug-log');
           },
@@ -117,37 +117,37 @@ export const createTemplate = (
         },
         {
           role: 'toggledevtools',
-          label: messages.developerToolsToggle,
+          label: i18n('developerToolsToggle'),
         },
       ],
     },
     {
-      label: withAcceleratorPrefix(messages.window),
+      label: withAcceleratorPrefix(i18n('window')),
       role: 'window',
       submenu: [
         {
           role: 'minimize',
-          label: messages.minimize,
+          label: i18n('minimize'),
         },
       ],
     },
     {
-      label: withAcceleratorPrefix(messages.sessionHelp),
+      label: withAcceleratorPrefix(i18n('sessionHelp')),
       role: 'help',
       submenu: [
         {
-          label: messages.updateReleaseNotes,
+          label: i18n('updateReleaseNotes'),
           click: openReleaseNotes,
         },
         {
-          label: messages.supportGoTo,
+          label: i18n('supportGoTo'),
           click: openSupportPage,
         },
         {
           type: 'separator',
         },
         {
-          label: messages.about,
+          label: i18n('about'),
           click: showAbout,
         },
       ],
@@ -155,7 +155,7 @@ export const createTemplate = (
   ];
 
   if (platform === 'darwin') {
-    return updateForMac(template, messages, {
+    return updateForMac(template, i18n, {
       showAbout,
       showWindow,
     });
@@ -166,7 +166,7 @@ export const createTemplate = (
 
 function updateForMac(
   template: any,
-  messages: LocalizerDictionary,
+  i18n: SetupI18nReturnType,
   options: { showAbout: () => void; showWindow: () => void }
 ) {
   const { showAbout, showWindow } = options;
@@ -183,7 +183,7 @@ function updateForMac(
     label: LOCALE_DEFAULTS.app_name,
     submenu: [
       {
-        label: messages.about,
+        label: i18n('about'),
         click: showAbout,
       },
       {
@@ -193,22 +193,22 @@ function updateForMac(
         type: 'separator',
       },
       {
-        label: messages.hide,
+        label: i18n('hide'),
         role: 'hide',
       },
       {
-        label: messages.hideOthers,
+        label: i18n('hideOthers'),
         role: 'hideothers',
       },
       {
-        label: messages.showAll,
+        label: i18n('showAll'),
         role: 'unhide',
       },
       {
         type: 'separator',
       },
       {
-        label: messages.quit,
+        label: i18n('quit'),
         role: 'quit',
       },
     ],
@@ -219,21 +219,21 @@ function updateForMac(
   // eslint-disable-next-line no-param-reassign
   template[windowMenuTemplateIndex].submenu = [
     {
-      label: messages.closeWindow,
+      label: i18n('closeWindow'),
       accelerator: 'CmdOrCtrl+W',
       role: 'close',
     },
     {
-      label: messages.minimize,
+      label: i18n('minimize'),
       accelerator: 'CmdOrCtrl+M',
       role: 'minimize',
     },
     {
-      label: messages.appearanceZoom,
+      label: i18n('appearanceZoom'),
       role: 'zoom',
     },
     {
-      label: messages.show,
+      label: i18n('show'),
       click: showWindow,
     },
   ];

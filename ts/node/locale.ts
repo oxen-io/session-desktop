@@ -1,8 +1,10 @@
 import fs from 'fs';
-import _ from 'lodash';
 import path from 'path';
-import type { LocalizerDictionary } from '../types/Localizer';
+import type { LocalizerDictionary, SetupI18nReturnType } from '../types/Localizer';
 import { getAppRootPath } from './getRootPath';
+import type { Locale } from '../util/i18n/shared';
+import { en } from '../localization/locales';
+import { setupI18n } from '../util/i18n/i18n';
 
 function normalizeLocaleName(locale: string) {
   const dashedLocale = locale.replaceAll('_', '-');
@@ -41,9 +43,12 @@ function getLocaleMessages(locale: string): LocalizerDictionary {
   return JSON.parse(fs.readFileSync(targetFile, 'utf-8'));
 }
 
-export function load({ appLocale, logger }: { appLocale?: string; logger?: any } = {}): {
-  name: string;
-  messages: LocalizerDictionary;
+export function loadLocalizedDictionary({
+  appLocale,
+  logger,
+}: { appLocale?: Locale; logger?: any } = {}): {
+  locale: Locale;
+  i18n: SetupI18nReturnType;
 } {
   if (!appLocale) {
     throw new TypeError('`appLocale` is required');
@@ -53,29 +58,31 @@ export function load({ appLocale, logger }: { appLocale?: string; logger?: any }
     throw new TypeError('`logger.error` is required');
   }
 
-  const english = getLocaleMessages('en');
-  const normalizedLocaleName = normalizeLocaleName(appLocale);
+  // Load locale - if we can't load messages for the current locale, we
+  // default to 'en'
+  //
+  // possible locales:
+  // https://github.com/electron/electron/blob/master/docs/api/locales.md
+  let locale = normalizeLocaleName(appLocale) as Locale;
+  let translationDictionary;
 
   try {
-    // Load locale - if we can't load messages for the current locale, we
-    // default to 'en'
-    //
-    // possible locales:
-    // https://github.com/electron/electron/blob/master/docs/api/locales.md
-
-    // We start with english, then overwrite that with anything present in locale
-    const messages = _.merge(english, getLocaleMessages(normalizedLocaleName));
-    return {
-      name: normalizedLocaleName,
-      messages,
-    };
+    translationDictionary = getLocaleMessages(locale);
   } catch (e) {
-    logger.error(`Problem loading messages for locale ${normalizedLocaleName} ${e.stack}`);
+    logger.error(`Problem loading messages for locale ${locale} ${e.stack}`);
     logger.error('Falling back to en locale');
 
-    return {
-      name: 'en',
-      messages: english,
-    };
+    locale = 'en';
+    translationDictionary = en;
   }
+
+  const i18n = setupI18n({
+    locale,
+    translationDictionary,
+  });
+
+  return {
+    locale,
+    i18n,
+  };
 }

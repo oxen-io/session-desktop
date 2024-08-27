@@ -89,12 +89,14 @@ async function doSearch(query: string): Promise<SearchResultsPayloadType> {
     messages: filteredMessages,
   };
 }
+
 export function clearSearch(): ClearSearchActionType {
   return {
     type: 'SEARCH_CLEAR',
     payload: null,
   };
 }
+
 export function updateSearchTerm(query: string): UpdateSearchTermActionType {
   return {
     type: 'SEARCH_UPDATE',

@@ -159,13 +159,16 @@ if (windowFromUserConfig) {
 import { readFile } from 'fs-extra';
 import { getAppRootPath } from '../node/getRootPath';
 import { setLastestRelease } from '../node/latest_desktop_release';
-import { load as loadLocale } from '../node/locale';
 import { isDevProd, isTestIntegration } from '../shared/env_vars';
 import { classicDark } from '../themes';
+import type { SetupI18nReturnType } from '../types/Localizer';
+import { getTranslationDictionary } from '../util/i18n/translationDictionaries';
+import { getLocale, isLocaleSet, type Locale } from '../util/i18n/shared';
+import { loadLocalizedDictionary } from '../node/locale';
 
 // Both of these will be set after app fires the 'ready' event
 let logger: Logger | null = null;
-let locale: ReturnType<typeof loadLocale>;
+let i18n: SetupI18nReturnType;
 
 function assertLogger(): Logger {
   if (!logger) {
@@ -181,7 +184,7 @@ function prepareURL(pathSegments: Array<string>, moreKeys?: { theme: any }) {
     slashes: true,
     query: {
       name: packageJson.productName,
-      locale: locale.name,
+      locale: getLocale(),
       version: app.getVersion(),
       commitHash: config.get('commitHash'),
       environment: (config as any).environment,
@@ -343,7 +346,7 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow(windowOptions);
-  setupSpellChecker(mainWindow, locale.messages);
+  setupSpellChecker(mainWindow, i18n);
 
   const setWindowFocus = () => {
     if (!mainWindow) {
@@ -492,6 +495,7 @@ ipc.on('set-release-from-file-server', (_event, releaseGotFromFileServer) => {
 });
 
 let isReadyForUpdates = false;
+
 async function readyForUpdates() {
   console.log('[updater] isReadyForUpdates', isReadyForUpdates);
   if (isReadyForUpdates) {
@@ -503,12 +507,13 @@ async function readyForUpdates() {
   // Second, start checking for app updates
   try {
     // if the user disabled auto updates, this will actually not start the updater
-    await updater.start(getMainWindow, userConfig, locale.messages, logger);
+    await updater.start(getMainWindow, userConfig, i18n, logger);
   } catch (error) {
     const log = logger || console;
     log.error('Error starting update checks:', error && error.stack ? error.stack : error);
   }
 }
+
 ipc.once('ready-for-updates', readyForUpdates);
 
 // Forcefully call readyForUpdates after 10 minutes.
@@ -527,6 +532,7 @@ function openSupportPage() {
 }
 
 let passwordWindow: BrowserWindow | null = null;
+
 async function showPasswordWindow() {
   if (passwordWindow) {
     passwordWindow.show();
@@ -614,7 +620,7 @@ async function showAbout() {
     width: 500,
     height: 500,
     resizeable: true,
-    title: locale.messages.about,
+    title: i18n('about'),
     autoHideMenuBar: true,
     backgroundColor: classicDark['--background-primary-color'],
     show: false,
@@ -710,10 +716,11 @@ app.on('ready', async () => {
   logger = getLogger();
   assertLogger().info('app ready');
   assertLogger().info(`starting version ${packageJson.version}`);
-  if (!locale) {
-    const appLocale = process.env.LANGUAGE || app.getLocale() || 'en';
-    locale = loadLocale({ appLocale, logger });
-    assertLogger().info(`locale is ${appLocale}`);
+  if (!isLocaleSet()) {
+    const appLocale = (process.env.LANGUAGE || app.getLocale() || 'en') as Locale;
+    const loadedLocale = loadLocalizedDictionary({ appLocale, logger });
+    i18n = loadedLocale.i18n;
+    assertLogger().info(`locale is ${loadedLocale.locale}`);
   }
 
   const key = getDefaultSQLKey();
@@ -774,7 +781,7 @@ async function showMainWindow(sqlKey: string, passwordAttempt = false) {
   await sqlNode.initializeSql({
     configDir: userDataPath,
     key: sqlKey,
-    messages: locale.messages,
+    i18n,
     passwordAttempt,
   });
   appStartInitialSpellcheckSetting = await getSpellCheckSetting();
@@ -789,7 +796,7 @@ async function showMainWindow(sqlKey: string, passwordAttempt = false) {
   await createWindow();
 
   if (getStartInTray().usingTrayIcon) {
-    tray = createTrayIcon(getMainWindow, locale.messages);
+    tray = createTrayIcon(getMainWindow, i18n);
   }
 
   setupMenu();
@@ -806,7 +813,7 @@ function setupMenu() {
     openSupportPage,
     platform,
   };
-  const template = createTemplate(menuOptions, locale.messages);
+  const template = createTemplate(menuOptions, i18n);
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }
@@ -897,7 +904,10 @@ app.on('web-contents-created', (_createEvent, contents) => {
 // Ingested in preload.js via a sendSync call
 ipc.on('locale-data', event => {
   // eslint-disable-next-line no-param-reassign
-  event.returnValue = locale.messages;
+  event.returnValue = {
+    dictionary: getTranslationDictionary(),
+    locale: getLocale(),
+  };
 });
 
 ipc.on('draw-attention', () => {
@@ -949,8 +959,7 @@ ipc.on('password-window-login', async (event, passPhrase) => {
     await showMainWindow(passPhrase, passwordAttempt);
     sendResponse(undefined);
   } catch (e) {
-    const localisedError = locale.messages.passwordIncorrect;
-    sendResponse(localisedError);
+    sendResponse(i18n('passwordIncorrect'));
   }
 });
 
@@ -959,7 +968,7 @@ ipc.on('start-in-tray-on-start', (event, newValue) => {
     userConfig.set('startInTray', newValue);
     if (newValue) {
       if (!tray) {
-        tray = createTrayIcon(getMainWindow, locale.messages);
+        tray = createTrayIcon(getMainWindow, i18n);
       }
     } else {
       // destroy is not working for a lot of desktop env. So for simplicity, we don't destroy it here but just
@@ -1011,10 +1020,7 @@ ipc.on('set-password', async (event, passPhrase, oldPhrase) => {
 
     const hashMatches = oldPhrase && PasswordUtil.matchesHash(oldPhrase, hash);
     if (hash && !hashMatches) {
-      const incorrectOldPassword = locale.messages.passwordCurrentIncorrect;
-      sendResponse(
-        incorrectOldPassword || 'Failed to set password: Old password provided is invalid'
-      );
+      sendResponse(i18n('passwordCurrentIncorrect'));
       return;
     }
 
@@ -1033,8 +1039,7 @@ ipc.on('set-password', async (event, passPhrase, oldPhrase) => {
       sendResponse(updatedHash);
     }
   } catch (e) {
-    const localisedError = locale.messages.passwordFailed;
-    sendResponse(localisedError || 'Failed to set password');
+    sendResponse(i18n('passwordFailed'));
   }
 });
 

@@ -1,7 +1,8 @@
-import { BrowserWindow } from 'electron';
+import type { BrowserWindow } from 'electron';
 import { start as startUpdater, stop as stopUpdater } from './updater';
-import { LoggerType, MessagesType } from './common';
-import { UserConfig } from '../node/config/user_config';
+import type { LoggerType } from './common';
+import type { UserConfig } from '../node/config/user_config';
+import type { SetupI18nReturnType } from '../types/Localizer';
 
 let initialized = false;
 let localUserConfig: UserConfig;
@@ -9,7 +10,7 @@ let localUserConfig: UserConfig;
 export async function start(
   getMainWindow: () => BrowserWindow | null,
   userConfig: UserConfig,
-  messages: MessagesType,
+  i18n: SetupI18nReturnType,
   logger?: LoggerType | null
 ) {
   if (initialized) {
@@ -20,8 +21,8 @@ export async function start(
     throw new Error('updater/start: userConfig is needed!');
   }
 
-  if (!messages) {
-    throw new Error('updater/start: Must provide messages!');
+  if (!i18n) {
+    throw new Error('updater/start: Must provide i18n!');
   }
   if (!logger) {
     throw new Error('updater/start: Must provide logger!');
@@ -35,7 +36,7 @@ export async function start(
     return;
   }
 
-  await startUpdater(getMainWindow, messages, logger);
+  await startUpdater(getMainWindow, i18n, logger);
 }
 
 export function stop() {

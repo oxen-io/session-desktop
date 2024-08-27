@@ -9,9 +9,13 @@ let initialLocale: Locale | undefined;
  *
  */
 export function i18nLog(message: string) {
-  // eslint:disable: no-console
-  // eslint-disable-next-line no-console
-  (window?.log?.info ?? console.log)(`i18n: ${message}`);
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    (window?.log?.error ?? console.log)(`i18n: ${message}`);
+  } else {
+    // eslint-disable-next-line no-console
+    console.log(`i18n: ${message}`);
+  }
 }
 
 export type Locale = keyof typeof timeLocaleMap;
@@ -51,4 +55,8 @@ export function getBrowserLocale() {
 
 export function setInitialLocale(locale: Locale) {
   initialLocale = locale;
+}
+
+export function isLocaleSet() {
+  return initialLocale !== undefined;
 }

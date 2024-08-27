@@ -15,6 +15,7 @@ import {
   intersection,
   isArray,
   isEmpty,
+  isFunction,
   isNumber,
   isObject,
   isString,
@@ -47,7 +48,7 @@ import {
   OPEN_GROUP_ROOMS_V2_TABLE,
   toSqliteBoolean,
 } from './database_utility';
-import type { LocalizerDictionary } from '../types/Localizer'; // checked - only node
+import type { SetupI18nReturnType } from '../types/Localizer'; // checked - only node
 import { StorageItem } from './storage_item'; // checked - only node
 
 import {
@@ -139,12 +140,12 @@ function showFailedToStart() {
 async function initializeSql({
   configDir,
   key,
-  messages,
+  i18n,
   passwordAttempt,
 }: {
   configDir: string;
   key: string;
-  messages: LocalizerDictionary;
+  i18n: SetupI18nReturnType;
   passwordAttempt: boolean;
 }) {
   console.info('initializeSql sqlnode');
@@ -158,8 +159,8 @@ async function initializeSql({
   if (!isString(key)) {
     throw new Error('initialize: key is required!');
   }
-  if (!isObject(messages)) {
-    throw new Error('initialize: message is required!');
+  if (!isFunction(i18n)) {
+    throw new Error('initialize: i18n is required!');
   }
 
   _initializePaths(configDir);
@@ -209,10 +210,10 @@ async function initializeSql({
     }
     console.log('Database startup error:', error.stack);
     const button = await dialog.showMessageBox({
-      buttons: [messages.errorCopyAndQuit, messages.clearDataAll],
+      buttons: [i18n('errorCopyAndQuit'), i18n('clearDataAll')],
       defaultId: 0,
       detail: redactAll(error.stack),
-      message: messages.errorDatabase,
+      message: i18n('errorDatabase'),
       noLink: true,
       type: 'error',
     });
@@ -249,6 +250,7 @@ function removeDB(configDir = null) {
 
 // Password hash
 const PASS_HASH_ID = 'passHash';
+
 function getPasswordHash() {
   const item = getItemById(PASS_HASH_ID);
   return item && item.value;
@@ -304,15 +306,18 @@ function updateGuardNodes(nodes: Array<string>) {
 function createOrUpdateItem(data: StorageItem, instance?: BetterSqlite3.Database) {
   createOrUpdate(ITEMS_TABLE, data, instance);
 }
+
 function getItemById(id: string, instance?: BetterSqlite3.Database) {
   return getById(ITEMS_TABLE, id, instance);
 }
+
 function getAllItems() {
   const rows = assertGlobalInstance()
     .prepare(`SELECT json FROM ${ITEMS_TABLE} ORDER BY id ASC;`)
     .all();
   return map(rows, row => jsonToObject(row.json));
 }
+
 function removeItemById(id: string) {
   removeById(ITEMS_TABLE, id);
 }
@@ -1858,9 +1863,11 @@ function resetAttachmentDownloadPending() {
     .prepare(`UPDATE ${ATTACHMENT_DOWNLOADS_TABLE} SET pending = 0 WHERE pending != 0;`)
     .run();
 }
+
 function removeAttachmentDownloadJob(id: string) {
   removeById(ATTACHMENT_DOWNLOADS_TABLE, id);
 }
+
 function removeAllAttachmentDownloadJobs() {
   assertGlobalInstance().exec(`DELETE FROM ${ATTACHMENT_DOWNLOADS_TABLE};`);
 }
