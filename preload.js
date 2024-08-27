@@ -1,5 +1,5 @@
 // eslint:disable: no-require-imports no-var-requires
-const { clipboard, ipcRenderer, webFrame } = require('electron/main');
+const { clipboard, ipcRenderer: ipc, webFrame } = require('electron/main');
 const { Storage } = require('./ts/util/storage');
 
 const { isTestNet, isTestIntegration } = require('./ts/shared/env_vars');
@@ -9,8 +9,14 @@ const url = require('url');
 
 const _ = require('lodash');
 
+const { setupI18n } = require('./ts/util/i18n/i18n');
+
+const { dictionary, locale } = ipc.sendSync('locale-data');
+
 const config = url.parse(window.location.toString(), true).query;
 const configAny = config;
+
+window.i18n = setupI18n({ locale, translationDictionary: dictionary });
 
 let title = config.name;
 if (config.environment !== 'production') {
@@ -29,7 +35,7 @@ window.getCommitHash = () => configAny.commitHash;
 window.getNodeVersion = () => configAny.node_version;
 window.getOSRelease = () =>
   `${os.type()} ${os.release()}, Node.js ${config.node_version} ${os.platform()} ${os.arch()}`;
-window.saveLog = additionalText => ipcRenderer.send('save-debug-log', additionalText);
+window.saveLog = additionalText => ipc.send('save-debug-log', additionalText);
 
 window.sessionFeatureFlags = {
   useOnionRequests: true,
@@ -52,9 +58,6 @@ window.versionInfo = {
   commitHash: window.getCommitHash(),
   appInstance: window.getAppInstance(),
 };
-
-const ipc = ipcRenderer;
-const localeMessages = ipc.sendSync('locale-data');
 
 window.updateZoomFactor = () => {
   const zoomFactor = window.getSettingValue('zoom-factor-setting') || 100;
@@ -236,7 +239,6 @@ if (config.proxyUrl) {
 window.nodeSetImmediate = setImmediate;
 
 const data = require('./ts/data/dataInit');
-const { setupI18n } = require('./ts/util/i18n/i18n');
 window.Signal = data.initData();
 
 const { getConversationController } = require('./ts/session/conversations/ConversationController');
@@ -257,9 +259,6 @@ window.getSeedNodeList = () =>
         'https://seed2.getsession.org:4443/',
         'https://seed3.getsession.org:4443/',
       ];
-
-const { locale } = config;
-window.i18n = setupI18n({ locale, translationDictionary: localeMessages });
 
 window.addEventListener('contextmenu', e => {
   const editable = e && e.target.closest('textarea, input, [contenteditable="true"]');
