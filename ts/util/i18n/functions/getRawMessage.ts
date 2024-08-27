@@ -60,7 +60,10 @@ export function getRawMessage<
   R extends DictionaryWithoutPluralStrings[T],
 >(...[token, args]: GetMessageArgs<T>): R | T {
   try {
-    if (window?.sessionFeatureFlags?.replaceLocalizedStringsWithKeys) {
+    if (
+      typeof window !== 'undefined' &&
+      window?.sessionFeatureFlags?.replaceLocalizedStringsWithKeys
+    ) {
       return token as T;
     }
 
