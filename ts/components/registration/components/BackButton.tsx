@@ -38,7 +38,7 @@ export const BackButtonWithinContainer = ({
   callback?: () => void;
   onQuitVisible?: () => void;
   shouldQuitOnClick?: boolean;
-  quitI18nMessageArgs?: I18nProps<LocalizerToken>;
+  quitI18nMessageArgs: I18nProps<LocalizerToken>;
 }) => {
   return (
     <StyledBackButtonContainer
@@ -70,7 +70,7 @@ export const BackButton = ({
   callback?: () => void;
   onQuitVisible?: () => void;
   shouldQuitOnClick?: boolean;
-  quitI18nMessageArgs?: I18nProps<LocalizerToken>;
+  quitI18nMessageArgs: I18nProps<LocalizerToken>;
 }) => {
   const step = useOnboardStep();
   const restorationStep = useOnboardAccountRestorationStep();
@@ -90,6 +90,7 @@ export const BackButton = ({
           if (onQuitVisible) {
             onQuitVisible();
           }
+
           dispatch(
             updateQuitModal({
               title: window.i18n('warning'),

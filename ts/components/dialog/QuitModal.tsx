@@ -1,50 +1,26 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useKey from 'react-use/lib/useKey';
-import styled from 'styled-components';
+import { CSSProperties } from 'styled-components';
 import { updateQuitModal } from '../../state/onboarding/ducks/modals';
 import { SessionWrapperModal } from '../SessionWrapperModal';
 import { Flex } from '../basic/Flex';
 import { SessionButton, SessionButtonColor, SessionButtonType } from '../basic/SessionButton';
 import { SpacerLG, SpacerSM } from '../basic/Text';
+import { SessionConfirmDialogProps } from './SessionConfirm';
+import { StyledI18nSubText } from '../basic/StyledI18nSubText';
 
-const StyledMessage = styled.span`
-  max-width: 300px;
-  width: 100%;
-  line-height: 1.4;
-`;
-
-type QuitModalProps = {
-  message?: string;
-  title?: string;
-  onOk?: any;
-  onClose?: any;
-  closeAfterInput?: boolean;
-
-  /**
-   * function to run on ok click. Closes modal after execution by default
-   * sometimes the callback might need arguments when using radioOptions
-   */
-  onClickOk?: (...args: Array<any>) => Promise<void> | void;
-
-  onClickClose?: () => any;
-
-  /**
-   * function to run on close click. Closes modal after execution by default
-   */
-  onClickCancel?: () => any;
-
-  okText?: string;
-  cancelText?: string;
-  okTheme?: SessionButtonColor;
-  closeTheme?: SessionButtonColor;
+const thisSpecificModalStyle: CSSProperties = {
+  maxWidth: '300px',
+  width: '100%',
+  lineHeight: 1.4,
 };
 
-export const QuitModal = (props: QuitModalProps) => {
+export const QuitModal = (props: SessionConfirmDialogProps) => {
   const dispatch = useDispatch();
   const {
     title = '',
-    message = '',
+    i18nMessage,
     okTheme,
     closeTheme = SessionButtonColor.Danger,
     onClickOk,
@@ -100,11 +76,19 @@ export const QuitModal = (props: QuitModalProps) => {
       showHeader={true}
       additionalClassName={'no-body-padding'}
     >
-      <Flex container={true} width={'100%'} justifyContent="center" alignItems="center">
-        <SpacerLG />
-        <StyledMessage>{message}</StyledMessage>
-        <SpacerLG />
-      </Flex>
+      {i18nMessage ? (
+        <Flex
+          container={true}
+          width={'100%'}
+          justifyContent="center"
+          alignItems="center"
+          style={thisSpecificModalStyle}
+        >
+          <SpacerLG />
+          <StyledI18nSubText {...i18nMessage}></StyledI18nSubText>
+          <SpacerLG />
+        </Flex>
+      ) : null}
       <SpacerSM />
       <Flex container={true} width={'100%'} justifyContent="center" alignItems="center">
         <SessionButton

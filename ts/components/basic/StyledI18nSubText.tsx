@@ -12,6 +12,7 @@ const StyledI18nSubTextContainer = styled('div')`
   // setting the max-width depending on the text length is **not** the way to go.
   // We should set the width on the dialog itself, depending on what we display.
   max-width: '60ch';
+  padding-inline: var(--margins-lg);
 `;
 
 const StyledI18nSubMessageTextContainer = styled('div')`
