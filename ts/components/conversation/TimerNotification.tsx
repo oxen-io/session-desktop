@@ -1,7 +1,6 @@
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { PropsForExpirationTimer } from '../../state/ducks/conversations';
-import { assertUnreachable } from '../../types/sqlSharedTypes';
 
 import { isLegacyDisappearingModeEnabled } from '../../session/disappearing_messages/legacy';
 import { UserUtils } from '../../session/utils';
