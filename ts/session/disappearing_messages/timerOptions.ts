@@ -36,7 +36,10 @@ const VALUES: Array<number> = [
 ];
 
 function getName(seconds = 0) {
-  if (seconds >= 0) {
+  if (seconds === 0) {
+    return window.i18n('off');
+  }
+  if (seconds > 0) {
     return formatTimeDuration(seconds * 1000);
   }
 

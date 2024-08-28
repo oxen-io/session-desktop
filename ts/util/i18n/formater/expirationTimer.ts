@@ -60,11 +60,11 @@ const secondsToDuration = (seconds: number): Duration => {
  * @returns '1h' for a duration of 3600s.
  */
 export const formatAbbreviatedExpireTimer = (timerSeconds: number) => {
-  // Note: we keep this function in this file even if it is not localizing anything
-  // so we have access to timeLocaleMap.en.
-
   if (timerSeconds > DURATION_SECONDS.WEEKS * 4) {
     throw new Error('formatAbbreviatedExpireTimer is not design to handle >4 weeks durations ');
+  }
+  if (timerSeconds <= 0) {
+    return window.i18n('off');
   }
 
   const duration = secondsToDuration(timerSeconds);
@@ -84,9 +84,6 @@ export const formatAbbreviatedExpireTimer = (timerSeconds: number) => {
  * @returns '1h' for a duration of 3600s.
  */
 export const formatAbbreviatedExpireDoubleTimer = (timerSeconds: number) => {
-  // Note: we keep this function in this file even if it is not localizing anything
-  // so we have access to timeLocaleMap.en.
-
   if (timerSeconds > DURATION_SECONDS.WEEKS * 4) {
     throw new Error(
       'formatAbbreviatedExpireDoubleTimer is not design to handle >4 weeks durations '
