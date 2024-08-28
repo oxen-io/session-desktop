@@ -98,14 +98,13 @@ export class UpdateGroupNameDialog extends Component<Props, State> {
   public render() {
     const okText = window.i18n('okay');
     const cancelText = window.i18n('cancel');
-    const titleText = window.i18n('groupInformationSet');
 
     const errorMsg = this.state.errorMessage;
     const isAdmin = !this.convo.isPublic();
 
     return (
       <SessionWrapperModal
-        title={titleText}
+        title={window.i18n('groupName')}
         onClose={() => this.closeDialog()}
         additionalClassName="update-group-dialog"
       >
@@ -131,7 +130,7 @@ export class UpdateGroupNameDialog extends Component<Props, State> {
           <input
             type="text"
             value={this.state.groupName}
-            placeholder={window.i18n('groupName')}
+            placeholder={window.i18n('groupNameEnter')}
             onChange={this.onGroupNameChanged}
             tabIndex={0}
             required={true}
