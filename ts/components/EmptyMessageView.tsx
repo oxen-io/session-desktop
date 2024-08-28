@@ -91,7 +91,7 @@ export const EmptyMessageView = () => {
           <StyledSessionWelcome
             color={isDarkTheme ? 'var(--primary-color)' : 'var(--text-primary-color)'}
           >
-            {window.i18n('onboardingBubbleWelcomeToSession')}
+            {window.i18n('onboardingBubbleWelcomeToSession', { emoji: '👋' })}
           </StyledSessionWelcome>
         </>
       ) : (

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { ClosedGroup, getMessageQueue } from '..';
+import { ConversationTypeEnum } from '../../models/types';
 import { addKeyPairToCacheAndDBIfNeeded } from '../../receiver/closedGroups';
 import { ECKeyPair } from '../../receiver/keypairs';
 import { openConversationWithMessages } from '../../state/ducks/conversations';
@@ -15,8 +16,6 @@ import { PubKey } from '../types';
 import { UserUtils } from '../utils';
 import { forceSyncConfigurationNowIfNeeded } from '../utils/sync/syncUtils';
 import { getConversationController } from './ConversationController';
-import { ConversationTypeEnum } from '../../models/types';
-import { I18nProps } from '../../types/Localizer';
 
 export async function createClosedGroup(groupName: string, members: Array<string>, isV3: boolean) {
   const setOfMembers = new Set(members);
@@ -104,7 +103,7 @@ function getMessageArgs(group_name: string, names: Array<string>) {
           group_name,
           name,
         },
-      } as I18nProps<'groupInviteFailedUser'>;
+      } as const;
     case 2:
       return {
         token: 'groupInviteFailedTwo',
@@ -113,16 +112,16 @@ function getMessageArgs(group_name: string, names: Array<string>) {
           name,
           other_name: names[1],
         },
-      } as I18nProps<'groupInviteFailedTwo'>;
+      } as const;
     default:
       return {
-        token: 'groupInviteFailedMore',
+        token: 'groupInviteFailedMultiple',
         args: {
           group_name,
           name,
           count: names.length - 1,
         },
-      } as I18nProps<'groupInviteFailedMore'>;
+      } as const;
   }
 }
 

@@ -78,21 +78,21 @@ export function getJoinedGroupUpdateChangeStr(joined: Array<string>, _groupName:
   if (us) {
     switch (others.length) {
       case 0:
-        return { token: 'groupMemberNew', args: { name: window.i18n('you') } };
+        return { token: 'legacyGroupMemberYouNew' };
       case 1:
-        return { token: 'groupMemberNewYouOther', args: { other_name: othersNames[0] } };
+        return { token: 'legacyGroupMemberNewYouOther', args: { other_name: othersNames[0] } };
       default:
-        return { token: 'groupMemberNewYouMultiple', args: { count: othersNames.length } };
+        return { token: 'legacyGroupMemberNewYouMultiple', args: { count: othersNames.length } };
     }
   }
   switch (others.length) {
     case 0:
       throw new Error('joined without anyone in it.');
     case 1:
-      return { token: 'groupMemberNew', args: { name: othersNames[0] } };
+      return { token: 'legacyGroupMemberNew', args: { name: othersNames[0] } };
     case 2:
       return {
-        token: 'groupMemberTwoNew',
+        token: 'legacyGroupMemberTwoNew',
         args: {
           name: othersNames[0],
           other_name: othersNames[1],
@@ -100,7 +100,7 @@ export function getJoinedGroupUpdateChangeStr(joined: Array<string>, _groupName:
       };
     default:
       return {
-        token: 'groupMemberMoreNew',
+        token: 'legacyGroupMemberNewMultiple',
         args: {
           name: others[0],
           count: othersNames.length - 1,

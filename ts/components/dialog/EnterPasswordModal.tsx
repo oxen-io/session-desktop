@@ -39,7 +39,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
     try {
       const passwordValue = passwordInputRef.current?.value;
       if (!passwordValue) {
-        ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('noGivenPassword'));
+        ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordIncorrect'));
 
         return;
       }
@@ -51,7 +51,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
       onPasswordVerified();
     } catch (e) {
       window.log.error('window.onTryPassword failed with', e);
-      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('invalidPassword'));
+      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordIncorrect'));
     }
   });
 

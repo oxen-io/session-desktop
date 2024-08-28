@@ -98,27 +98,17 @@ const getI18nComponent = (
           endTagProps={{ emoji }}
         />
       );
-    case 3:
-      return isYou ? (
-        <I18n token="emojiReactsHoverYouNameTwoDesktop" args={{ name }} endTagProps={{ emoji }} />
-      ) : (
-        <I18n
-          token="emojiReactsHoverTwoNameOneDesktop"
-          args={{ name, other_name }}
-          endTagProps={{ emoji }}
-        />
-      );
     default:
       return isYou ? (
         <I18n
           token="emojiReactsHoverYouNameMultipleDesktop"
-          args={{ name, count: numberOfReactors - 2 }}
+          args={{ name, count: numberOfReactors - 1 }}
           endTagProps={{ emoji }}
         />
       ) : (
         <I18n
           token="emojiReactsHoverTwoNameMultipleDesktop"
-          args={{ name, other_name, count: numberOfReactors - 2 }}
+          args={{ name, count: numberOfReactors - 1 }}
           endTagProps={{ emoji }}
         />
       );

@@ -979,7 +979,7 @@ ipc.on('password-recovery-phrase', async (event, passPhrase) => {
     // no issues. send back undefined, meaning OK
     sendResponse(undefined);
   } catch (e) {
-    const localisedError = locale.messages.removePasswordInvalid;
+    const localisedError = getTranslationDictionary().passwordIncorrect;
     // send back the error
     sendResponse(localisedError);
   }
