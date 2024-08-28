@@ -154,7 +154,7 @@ export const BanOrUnBanUserDialog = (props: {
                 buttonType={SessionButtonType.Simple}
                 buttonColor={SessionButtonColor.Danger}
                 onClick={startBanAndDeleteAllSequence}
-                text={i18n('banUser')}
+                text={i18n('banDeleteAll')}
                 disabled={inProgress}
               />
             </>

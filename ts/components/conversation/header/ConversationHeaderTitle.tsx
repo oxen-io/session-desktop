@@ -82,7 +82,7 @@ export const ConversationHeaderTitle = (props: ConversationHeaderTitleProps) => 
 
     if (isGroup && memberCount > 0 && !isKickedFromGroup) {
       const count = String(memberCount);
-      return i18n(isPublic ? 'membersActive' : 'members', { count });
+      return isPublic ? i18n('membersActive', { count }) : i18n('members', { count });
     }
 
     return null;
