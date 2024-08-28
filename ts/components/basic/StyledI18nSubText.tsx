@@ -15,28 +15,12 @@ const StyledI18nSubTextContainer = styled('div')`
   padding-inline: var(--margins-lg);
 `;
 
-const StyledI18nSubMessageTextContainer = styled('div')`
-  // Overrides SASS in this one case
-  margin-top: 0;
-  margin-bottom: var(--margins-md);
-`;
-
 export const StyledI18nSubText = forwardRef<HTMLSpanElement, I18nProps<LocalizerToken>>(
   ({ className, ...props }) => {
     return (
       <StyledI18nSubTextContainer className={className}>
         <I18n {...props} />
       </StyledI18nSubTextContainer>
-    );
-  }
-);
-
-export const StyledI18nSubMessageText = forwardRef<HTMLSpanElement, I18nProps<LocalizerToken>>(
-  ({ className, ...props }) => {
-    return (
-      <StyledI18nSubMessageTextContainer className={className}>
-        <I18n {...props} />
-      </StyledI18nSubMessageTextContainer>
     );
   }
 );
