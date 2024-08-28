@@ -428,8 +428,6 @@ describe('JobRunner', () => {
       clock.tick(11000);
       await runnerMulti.waitCurrentJob();
       await sleepFor(10);
-
-      await runnerMulti.waitCurrentJob();
       expect(runnerMulti.getJobList()).to.deep.eq([]);
     });
   });
