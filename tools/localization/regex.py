@@ -1,21 +1,33 @@
 import re
 
 
-def localization_regex(string):
-    e_str = re.escape(string)
+# The regex statements are designed to shortcut so are ordered from most common to least common. The advanced cases will also detect the same result as the simple cases. This is fine.
+def get_localization_regex_list(string):
+  key = re.escape(string)
+  # Regex is ordered from most common to least common
+  return [
+    fr"window\.i18n\('{key}'\)",
+    fr"window\.i18n\('{key}'(, {{[\S\s.]*}})?\)",
+    fr"\{{ token: '{key}'(, args: {{.*}})? \}}",
+    # This also captures the same group as `basic_object` but this is fine because basic_object shortcuts before reaching here if found.
+    fr"{{\s+token: '{key}',?\s+(\s*args: {{[\S\s.]*}},)?\s+\}}",
+    fr"window\.i18n\.(stripped|inEnglish|getRawMessage)\('{key}'(, {{[\S\s.]*}})?\)",
+    fr"<I18n[\S\s.]*token=\{{?['\"]{key}['\"]\}}?",
+    fr"<I18n[\S\s.]*token=[\S\s.]*{key}[\S\s.]*",
+    fr"i18n\('{key}'\)",
+    fr"i18n\('{key}'(, {{[\S\s.]*}})?\)",
+    fr"i18n\.(stripped|inEnglish|getRawMessage)\('{key}'(, {{[\S\s.]*}})?\)",
+    fr"window\?\.i18n\?\.\('{key}'(, {{[\S\s.]*}})?\)",
+    fr"<StyledI18nSubText[\S\s.]*token=[\S\s.]*{key}[\S\s.]*"
+  ]
 
-    rex_b = r"i18n\([\r\n]?\s*'{}'|messages.{}|'{}'".format(e_str, e_str, e_str)
-    rex_l = r"localizedKey\s*=\s*'{}'".format(e_str)
-    res_8n = r"window\.i18n\(\s*'{}'(?:,\s*(?:[^\)]+?))?\s*\)".format(e_str)
-    res_comp = r'<I18n\s+[^>]*?token=["\']{}["\'][^>]*?>'.format(e_str)
-    res_token = r'token=["\']{}["\']'.format(e_str)
-    res_8n_stripped = r"window\.i18n\.stripped\(\s*'{}'(?:,\s*(?:[^\)]+?))?\s*\)".format(e_str)
-    res_8n_inEnglish = r"window\.i18n\.inEnglish\(\s*'{}'(?:,\s*(?:[^\)]+?))?\s*\)".format(e_str)
-    res_8n_raw = r"window\.i18n\.getRawMessage\(\s*'{}'(?:,\s*(?:[^\)]+?))?\s*\)".format(e_str)
-    res_get_string = r"getString\(\s*'{}'(?:,\s*(?:[^\)]+?))?\s*\)".format(e_str)
-    res_i18n_args = r"{\s*token: '" + e_str + r"'(?:,\s*(?:[^\)]+?))?\s*}"
 
-    return re.compile(
-        f"{rex_b}|{rex_l}|{res_8n}|{res_comp}|{res_token}|{res_get_string}|{res_8n_stripped}|{res_8n_inEnglish}|{res_8n_raw}|{res_i18n_args}",
-        re.DOTALL,
+def localization_regex_as_list(string):
+  regex_ordered = get_localization_regex_list(string)
+  regex_compiled_list = []
+  for regex in regex_ordered:
+    regex_compiled_list.append(
+      re.compile(regex, re.DOTALL)
     )
+
+  return regex_compiled_list
