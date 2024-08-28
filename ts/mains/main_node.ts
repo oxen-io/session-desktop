@@ -963,6 +963,28 @@ ipc.on('password-window-login', async (event, passPhrase) => {
   }
 });
 
+ipc.on('password-recovery-phrase', async (event, passPhrase) => {
+  const sendResponse = (e: string | undefined) => {
+    event.sender.send('password-recovery-phrase-response', e);
+  };
+
+  try {
+    // Check if the hash we have stored matches the given password.
+    const hash = sqlNode.getPasswordHash();
+
+    const hashMatches = passPhrase && PasswordUtil.matchesHash(passPhrase, hash);
+    if (hash && !hashMatches) {
+      throw new Error('Invalid password');
+    }
+    // no issues. send back undefined, meaning OK
+    sendResponse(undefined);
+  } catch (e) {
+    const localisedError = locale.messages.removePasswordInvalid;
+    // send back the error
+    sendResponse(localisedError);
+  }
+});
+
 ipc.on('start-in-tray-on-start', (event, newValue) => {
   try {
     userConfig.set('startInTray', newValue);

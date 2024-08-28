@@ -1,8 +1,7 @@
-import { isEmpty } from 'lodash';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import useMount from 'react-use/lib/useMount';
 import styled from 'styled-components';
+import { useHotkey } from '../../../hooks/useHotkey';
 import { useIconToImageURL } from '../../../hooks/useIconToImageURL';
 import { usePasswordModal } from '../../../hooks/usePasswordModal';
 import { mnDecode } from '../../../session/crypto/mnemonic';
@@ -11,6 +10,7 @@ import {
   updateLightBoxOptions,
 } from '../../../state/ducks/modalDialog';
 import { showSettingsSection } from '../../../state/ducks/section';
+import { getIsModalVisble } from '../../../state/selectors/modal';
 import { useHideRecoveryPasswordEnabled } from '../../../state/selectors/settings';
 import { useIsDarkTheme } from '../../../state/selectors/theme';
 import { THEME_GLOBALS } from '../../../themes/globals';
@@ -18,6 +18,7 @@ import { prepareQRCodeForLightBox } from '../../../util/qrCodes';
 import { getCurrentRecoveryPhrase } from '../../../util/storage';
 import { QRCodeLogoProps, SessionQRCode } from '../../SessionQRCode';
 import { AnimatedFlex } from '../../basic/Flex';
+import { I18n } from '../../basic/I18n';
 import { SessionButtonColor } from '../../basic/SessionButton';
 import { SpacerMD, SpacerSM } from '../../basic/Text';
 import { CopyToClipboardIcon } from '../../buttons/CopyToClipboardButton';
@@ -27,9 +28,6 @@ import {
   SessionSettingsItemWrapper,
   StyledSettingItem,
 } from '../SessionSettingListItem';
-import { useHotkey } from '../../../hooks/useHotkey';
-import { getIsModalVisble } from '../../../state/selectors/modal';
-import { I18n } from '../../basic/I18n';
 
 const StyledSettingsItemContainer = styled.div`
   p {
@@ -68,9 +66,11 @@ const qrLogoProps: QRCodeLogoProps = {
 };
 
 export const SettingsCategoryRecoveryPassword = () => {
-  const [loadingSeed, setLoadingSeed] = useState(true);
-  const [recoveryPhrase, setRecoveryPhrase] = useState('');
-  const [hexEncodedSeed, setHexEncodedSeed] = useState('');
+  const recoveryPhrase = getCurrentRecoveryPhrase();
+  if (!recoveryPhrase) {
+    throw new Error('SettingsCategoryRecoveryPassword recovery seed is empty');
+  }
+  const hexEncodedSeed = mnDecode(recoveryPhrase, 'english');
   const [isQRVisible, setIsQRVisible] = useState(false);
 
   const hideRecoveryPassword = useHideRecoveryPasswordEnabled();
@@ -82,25 +82,9 @@ export const SettingsCategoryRecoveryPassword = () => {
   const dispatch = useDispatch();
 
   const { hasPassword, passwordValid } = usePasswordModal({
-    title: window.i18n('sessionRecoveryPassword'),
     onClose: () => {
       dispatch(showSettingsSection('privacy'));
     },
-  });
-
-  const fetchRecoverPhrase = () => {
-    const newRecoveryPhrase = getCurrentRecoveryPhrase();
-    setRecoveryPhrase(newRecoveryPhrase);
-    if (!isEmpty(newRecoveryPhrase)) {
-      setHexEncodedSeed(mnDecode(newRecoveryPhrase, 'english'));
-    }
-    setLoadingSeed(false);
-  };
-
-  useMount(() => {
-    if (!hasPassword || (hasPassword && passwordValid)) {
-      fetchRecoverPhrase();
-    }
   });
 
   useHotkey(
@@ -110,10 +94,10 @@ export const SettingsCategoryRecoveryPassword = () => {
         setIsQRVisible(!isQRVisible);
       }
     },
-    (hasPassword && !passwordValid) || loadingSeed || hideRecoveryPassword
+    (hasPassword && !passwordValid) || hideRecoveryPassword
   );
 
-  if ((hasPassword && !passwordValid) || loadingSeed || hideRecoveryPassword) {
+  if ((hasPassword && !passwordValid) || hideRecoveryPassword) {
     return null;
   }
 

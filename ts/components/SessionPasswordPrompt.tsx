@@ -110,10 +110,9 @@ class SessionPasswordPromptInner extends PureComponent<unknown, State> {
   }
 
   public async onLogin(passPhrase: string) {
-    const passPhraseTrimmed = passPhrase.trim();
-
+    // Note: we don't trim the password anymore. If the user entered a space at the end, so be it.
     try {
-      await window.onLogin(passPhraseTrimmed);
+      await window.onLogin(passPhrase);
     } catch (error) {
       // Increment the error counter and show the button if necessary
       this.setState({

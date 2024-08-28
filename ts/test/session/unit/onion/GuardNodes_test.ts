@@ -14,6 +14,7 @@ import {
 } from '../../../test-utils/utils';
 import { SeedNodeAPI } from '../../../../session/apis/seed_node_api';
 import { Snode } from '../../../../data/types';
+import { minSnodePoolCount } from '../../../../session/apis/snode_api/snodePool';
 
 chai.use(chaiAsPromised as any);
 chai.should();
@@ -51,7 +52,7 @@ describe('GuardNodes', () => {
       Sinon.restore();
     });
 
-    it('does not fetch from seed if we got 12 or more snodes in the db', async () => {
+    it('does not fetch from seed if we have 8 or more snodes in the db', async () => {
       stubData('getSnodePoolFromDb').resolves(fakeSnodePool);
 
       getSnodePoolFromDBOrFetchFromSeed = Sinon.stub(
@@ -76,14 +77,12 @@ describe('GuardNodes', () => {
         fetchFromSeedWithRetriesAndWriteToDb.callCount,
         'fetchFromSeedWithRetriesAndWriteToDb should not have been called'
       ).to.be.eq(0);
-      expect(
-        testGuardNode.callCount,
-        'firstGuardNode should have been called three times'
-      ).to.be.eq(3);
+      expect(testGuardNode.callCount, 'testGuardNode should have been called two times').to.be.eq(
+        2
+      ); // this should be desiredGuardCount
       const firstGuardNode = testGuardNode.firstCall.args[0];
       const secondGuardNode = testGuardNode.secondCall.args[0];
-      const thirdGuardNode = testGuardNode.thirdCall.args[0];
-      expect(fetchedGuardNodes).to.deep.equal([firstGuardNode, secondGuardNode, thirdGuardNode]);
+      expect(fetchedGuardNodes).to.deep.equal([firstGuardNode, secondGuardNode]);
     });
 
     it('throws an error if we got enough snodes in the db but none test passes', async () => {
@@ -116,10 +115,9 @@ describe('GuardNodes', () => {
         fetchFromSeedWithRetriesAndWriteToDb.callCount,
         'fetchFromSeedWithRetriesAndWriteToDb should not have been called'
       ).to.be.eq(0);
-      expect(
-        testGuardNode.callCount,
-        'firstGuardNode should have been called three times'
-      ).to.be.eq(18);
+      expect(testGuardNode.callCount, 'testGuardNode should have been called 12 times').to.be.eq(
+        12
+      );
       expect(throwedError).to.be.equal('selectGuardNodes stopping after attempts: 6');
     });
 
@@ -168,13 +166,15 @@ describe('GuardNodes', () => {
       // run the command
       const guardNodes = await OnionPaths.selectGuardNodes();
 
-      expect(guardNodes.length).to.be.equal(3);
-      expect(testGuardNode.callCount).to.be.equal(3);
+      // 2 because our desiredGuardCount is 2 (not putting the variable to make the test fails if we ever change it)
+      expect(guardNodes.length).to.be.equal(2);
+      expect(testGuardNode.callCount).to.be.equal(2);
     });
 
     it('throws if we have to fetch from seed, fetch from seed but not have enough fetched snodes', async () => {
-      const invalidSndodePool = fakeSnodePool.slice(0, 11);
-      stubData('getSnodePoolFromDb').resolves(invalidSndodePool);
+      const invalidLength = minSnodePoolCount - 1;
+      const invalidSnodePool = fakeSnodePool.slice(0, invalidLength);
+      stubData('getSnodePoolFromDb').resolves(invalidSnodePool);
       TestUtils.stubWindow('getSeedNodeList', () => [{ url: 'whatever' }]);
 
       getSnodePoolFromDBOrFetchFromSeed = Sinon.stub(
@@ -184,7 +184,7 @@ describe('GuardNodes', () => {
       fetchFromSeedWithRetriesAndWriteToDb = Sinon.stub(
         SeedNodeAPI,
         'fetchSnodePoolFromSeedNodeWithRetries'
-      ).resolves(invalidSndodePool);
+      ).resolves(invalidSnodePool);
 
       stubData('updateGuardNodes').resolves();
       // run the command
@@ -195,7 +195,7 @@ describe('GuardNodes', () => {
         throwedError = e.message;
       }
       expect(throwedError).to.be.equal(
-        'Could not select guard nodes. Not enough nodes in the pool: 11'
+        'Could not select guard nodes. Not enough nodes in the pool: 7' // this is invalidLength but we want this test to fail if we change minSnodePoolCount
       );
     });
   });

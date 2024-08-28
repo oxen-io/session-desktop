@@ -271,6 +271,7 @@ describe('JobRunner', () => {
 
     it('adding one job after the first is done schedules it', async () => {
       await runnerMulti.loadJobsFromDb();
+      TestUtils.stubWindowLog();
       const job = getFakeSleepForMultiJob({ timestamp: 100 });
       runnerMulti.startProcessing();
       clock.tick(110);
@@ -303,6 +304,8 @@ describe('JobRunner', () => {
 
       await job2.waitForCurrentTry();
       await runnerMulti.waitCurrentJob();
+      // we need to give some time for the jobrunner to handle the return of job2 and remove it
+      await sleepFor(100);
 
       expect(runnerMulti.getJobList()).to.deep.eq([]);
     });
@@ -401,7 +404,7 @@ describe('JobRunner', () => {
         currentRetry: 1,
       };
       // just give  time for the runnerMulti to pick up a new job
-      await sleepFor(10);
+      await sleepFor(100);
 
       // the job failed, so the job should still be there
       expect(runnerMulti.getJobList()).to.deep.eq([jobUpdated]);
@@ -409,14 +412,16 @@ describe('JobRunner', () => {
       // that job should be retried now
       clock.tick(11000);
       await runner.waitCurrentJob();
+      await runnerMulti.waitCurrentJob();
+
       const jobUpdated2 = {
         ...job.serializeJob(),
-        nextAttemptTimestamp: clock.now + 10000,
+        nextAttemptTimestamp: clock.now + job.persistedData.delayBetweenRetries,
         currentRetry: 2,
       };
+
       await sleepFor(10);
 
-      await runnerMulti.waitCurrentJob();
       expect(runnerMulti.getJobList()).to.deep.eq([jobUpdated2]);
 
       // that job should be retried one more time and then removed from the list of jobs to be run

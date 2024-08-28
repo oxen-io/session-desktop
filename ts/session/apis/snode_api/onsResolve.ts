@@ -39,6 +39,7 @@ async function getSessionIDForOnsName(onsNameCase: string) {
 
   if (isTestNet()) {
     window.log.info('OnsResolve response are not registered to anything on testnet');
+    throw new Error('OnsResolve response are not registered to anything on testnet');
   }
 
   const onsResolveRequests = buildOnsResolveRequests(base64EncodedNameHash);

@@ -2,9 +2,9 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { useRef } from 'react';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useMount from 'react-use/lib/useMount';
 import { ToastUtils } from '../../session/utils';
-import { matchesHash } from '../../util/passwordUtils';
 
 import { updateEnterPasswordModal } from '../../state/ducks/modalDialog';
 import { SpacerSM } from '../basic/Text';
@@ -18,47 +18,48 @@ const StyledModalContainer = styled.div`
 `;
 
 export type EnterPasswordModalProps = {
-  passwordHash: string;
-  passwordValid: boolean;
   setPasswordValid: (value: boolean) => void;
-  onClickOk?: () => any;
-  onClickClose?: () => any;
-  title?: string;
+  onClickOk?: () => void;
+  onClickClose?: () => void;
 };
 
 export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
-  const { passwordHash, setPasswordValid, onClickOk, onClickClose, title } = props;
+  const { setPasswordValid, onClickOk, onClickClose } = props;
+  const title = window.i18n('sessionRecoveryPassword');
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
+
+  const onPasswordVerified = () => {
+    onClickOk?.();
+    dispatch(updateEnterPasswordModal(null));
+  };
+
+  const [, verifyPassword] = useAsyncFn(async () => {
+    try {
+      const passwordValue = passwordInputRef.current?.value;
+      if (!passwordValue) {
+        ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('noGivenPassword'));
+
+        return;
+      }
+
+      // this throws if the password is invalid.
+      await window.onTryPassword(passwordValue);
+
+      setPasswordValid(true);
+      onPasswordVerified();
+    } catch (e) {
+      window.log.error('window.onTryPassword failed with', e);
+      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('invalidPassword'));
+    }
+  });
 
   const onClose = () => {
     if (onClickClose) {
       onClickClose();
     }
     dispatch(updateEnterPasswordModal(null));
-  };
-
-  const confirmPassword = () => {
-    const passwordValue = passwordInputRef.current?.value;
-    if (!passwordValue) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordErrorMatch'));
-
-      return;
-    }
-
-    const isPasswordValid = matchesHash(passwordValue, passwordHash);
-    if (passwordHash && !isPasswordValid) {
-      ToastUtils.pushToastError('enterPasswordErrorToast', window.i18n('passwordErrorMatch'));
-
-      return;
-    }
-
-    setPasswordValid(true);
-
-    if (onClickOk) {
-      void onClickOk();
-    }
   };
 
   useMount(() => {
@@ -69,7 +70,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
 
   useHotkey('Enter', (event: KeyboardEvent) => {
     if (event.target === passwordInputRef.current) {
-      confirmPassword();
+      void verifyPassword();
     }
   });
 
@@ -100,7 +101,7 @@ export const EnterPasswordModal = (props: EnterPasswordModalProps) => {
           <SessionButton
             text={window.i18n('done')}
             buttonType={SessionButtonType.Simple}
-            onClick={confirmPassword}
+            onClick={verifyPassword}
             dataTestId="session-confirm-ok-button"
           />
           <SessionButton

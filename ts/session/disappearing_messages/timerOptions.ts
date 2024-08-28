@@ -1,4 +1,4 @@
-import { isCI, isDevProd } from '../../shared/env_vars';
+import { isDevProd } from '../../shared/env_vars';
 import { formatAbbreviatedExpireTimer } from '../../util/i18n/formater/expirationTimer';
 import { formatTimeDuration } from '../../util/i18n/formater/generics';
 import { DURATION_SECONDS } from '../constants';
@@ -55,7 +55,7 @@ function getAbbreviated(seconds = 0) {
 }
 
 const filterOutDebugValues = (option: number) => {
-  return isDevProd() || isCI() || option > 60; // when not a dev build nor on CI, filter out options with less than 60s
+  return isDevProd() || option > 60; // when not a dev build, filter out options with less than 60s
 };
 
 const DELETE_AFTER_READ = VALUES.filter(option => {

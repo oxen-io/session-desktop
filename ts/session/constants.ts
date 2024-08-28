@@ -105,3 +105,14 @@ export const ONBOARDING_TIMES = {
   /** 0.2 seconds */
   RECOVERY_FINISHED: 0.2 * DURATION.SECONDS,
 };
+
+export const PASSWORD_LENGTH = {
+  /**
+   * 6 chars
+   */
+  MIN_PASSWORD_LEN: 6,
+  /**
+   * 64 chars
+   */
+  MAX_PASSWORD_LEN: 64,
+};

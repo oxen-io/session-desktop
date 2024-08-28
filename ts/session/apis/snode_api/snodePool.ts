@@ -10,6 +10,7 @@ import { ed25519Str } from '../../utils/String';
 import { SeedNodeAPI } from '../seed_node_api';
 import { ServiceNodesList } from './getServiceNodesList';
 import { requestSnodesForPubkeyFromNetwork } from './getSwarmFor';
+import { minimumGuardCount, ONION_REQUEST_HOPS } from '../../onions/onionPath';
 
 /**
  * If we get less than this snode in a swarm, we fetch new snodes for this pubkey
@@ -20,7 +21,7 @@ const minSwarmSnodeCount = 3;
  * If we get less than minSnodePoolCount we consider that we need to fetch the new snode pool from a seed node
  * and not from those snodes.
  */
-export const minSnodePoolCount = 12;
+export const minSnodePoolCount = minimumGuardCount * (ONION_REQUEST_HOPS + 1) * 2;
 
 /**
  * If we get less than this amount of snodes (24), lets try to get an updated list from those while we can

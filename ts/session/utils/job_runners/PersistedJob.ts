@@ -108,7 +108,19 @@ export abstract class PersistedJob<T extends PersistedJobData> {
 
   public async runJob() {
     if (!this.runningPromise) {
-      this.runningPromise = this.run();
+      // eslint-disable-next-line more/no-then
+      this.runningPromise = this.run()
+        .then(jobResult => {
+          this.runningPromise = null;
+          return jobResult;
+        })
+        .catch(e => {
+          window.log.warn(
+            'runJob() threw. this cannot happen, but rethrowing as this should be handled in each jobs run()',
+            e
+          );
+          throw e;
+        });
     }
     return this.runningPromise;
   }

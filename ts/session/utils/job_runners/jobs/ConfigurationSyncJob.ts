@@ -23,8 +23,8 @@ import {
 } from '../PersistedJob';
 import { DURATION } from '../../../constants';
 
-const defaultMsBetweenRetries = 15000; // a long time between retries, to avoid running multiple jobs at the same time, when one was postponed at the same time as one already planned (5s)
-const defaultMaxAttempts = 2;
+const defaultMsBetweenRetries = 5 * DURATION.SECONDS; // a long time between retries, to avoid running multiple jobs at the same time, when one was postponed at the same time as one already planned (5s)
+const defaultMaxAttempts = 4;
 
 /**
  * We want to run each of those jobs at least 3seconds apart.
@@ -55,8 +55,6 @@ async function retrieveSingleDestinationChanges(
 
   return { messages: outgoingConfResults, allOldHashes: compactedHashes };
 }
-
-let firstJobStart: number | undefined;
 
 /**
  * This function is run once we get the results from the multiple batch-send.
@@ -194,18 +192,6 @@ class ConfigurationSyncJob extends PersistedJob<ConfigurationSyncPersistedData> 
         return RunJobResult.Success;
       }
       const singleDestChanges = await retrieveSingleDestinationChanges(thisJobDestination);
-      if (!firstJobStart) {
-        firstJobStart = Date.now();
-      }
-
-      // not ideal, but we need to postpone the first sync job to after we've handled the incoming config messages
-      // otherwise we are pushing an incomplete config to the network, which will need to be merged and that action alone
-      // will bump the timestamp of the config.
-      // We rely on the timestamp of configs to know when to drop messages that would unhide/unremove a conversation.
-      // The whole thing is a dirty fix of a dirty fix, that will **eventually** need proper fixing
-      if (Date.now() - firstJobStart <= 20 * DURATION.SECONDS) {
-        return RunJobResult.RetryJobIfPossible;
-      }
 
       // If there are no pending changes then the job can just complete (next time something
       // is updated we want to try and run immediately so don't scuedule another run in this case)
@@ -332,18 +318,18 @@ async function queueNewJobIfNeeded() {
     !lastRunConfigSyncJobTimestamp ||
     lastRunConfigSyncJobTimestamp < Date.now() - defaultMsBetweenRetries
   ) {
-    // window.log.debug('Scheduling ConfSyncJob: ASAP');
-    // we postpone by 1000ms to make sure whoever is adding this job is done with what is needs to do first
+    // Note: we postpone by 3s for two reasons:
+    // - to make sure whoever is adding this job is done with what is needs to do first
+    // - to allow a recently created device to process incoming config messages before pushing a new one
     // this call will make sure that there is only one configuration sync job at all times
     await runners.configurationSyncRunner.addJob(
-      new ConfigurationSyncJob({ nextAttemptTimestamp: Date.now() + 1000 })
+      new ConfigurationSyncJob({ nextAttemptTimestamp: Date.now() + 3 * DURATION.SECONDS })
     );
   } else {
     // if we did run at t=100, and it is currently t=110, the difference is 10
     const diff = Math.max(Date.now() - lastRunConfigSyncJobTimestamp, 0);
     // but we want to run every 30, so what we need is actually `30-10` from now = 20
-    const leftBeforeNextTick = Math.max(defaultMsBetweenRetries - diff, 1000);
-    // window.log.debug('Scheduling ConfSyncJob: LATER');
+    const leftBeforeNextTick = Math.max(defaultMsBetweenRetries - diff, DURATION.SECONDS);
 
     await runners.configurationSyncRunner.addJob(
       new ConfigurationSyncJob({ nextAttemptTimestamp: Date.now() + leftBeforeNextTick })

@@ -18,9 +18,9 @@ import { UserUtils } from '../utils';
 import { allowOnlyOneAtATime } from '../utils/Promise';
 import { ed25519Str } from '../utils/String';
 
-const desiredGuardCount = 3;
-const minimumGuardCount = 2;
-const ONION_REQUEST_HOPS = 3;
+export const desiredGuardCount = 2;
+export const minimumGuardCount = 1;
+export const ONION_REQUEST_HOPS = 3;
 
 export function getOnionPathMinTimeout() {
   return DURATION.SECONDS;
@@ -31,9 +31,7 @@ export let onionPaths: Array<Array<Snode>> = [];
 /**
  * Used for testing only
  * @returns a copy of the onion path currently used by the app.
- *
  */
-
 export const TEST_getTestOnionPath = () => {
   return _.cloneDeep(onionPaths);
 };

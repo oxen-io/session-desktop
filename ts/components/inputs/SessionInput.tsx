@@ -427,6 +427,7 @@ export const SessionInput = (props: Props) => {
             ) : (
               <StyledPlaceholder
                 error={textErrorStyle}
+                data-testid={inputDataTestId}
                 textSize={textSize}
                 editable={editable}
                 centerText={centerText}
