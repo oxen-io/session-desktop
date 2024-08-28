@@ -147,9 +147,8 @@ function useTextToRenderI18nProps(props: PropsForExpirationTimer) {
   const { pubkey, profileName, expirationMode, timespanText: time, type, disabled } = props;
 
   const isPrivate = useSelectedIsPrivate();
-  const isMe = useSelectedIsNoteToSelf();
-  // when in a 1o1 not NTS, we have a setting per side of the conversation
-  const ownSideOnly = isPrivate && !isMe;
+  const isNoteToSelf = useSelectedIsNoteToSelf();
+  const isPrivateAndNotNoteToSelf = isPrivate && !isNoteToSelf;
 
   const name = profileName ?? pubkey;
 
@@ -169,46 +168,27 @@ function useTextToRenderI18nProps(props: PropsForExpirationTimer) {
       ? window.i18n('disappearingMessagesTypeRead')
       : window.i18n('disappearingMessagesTypeSent');
 
-  switch (type) {
-    case 'fromOther':
-      if (disabled) {
-        return { token: 'disappearingMessagesTurnedOff', args: { name } };
-      }
-
+  if (disabled) {
+    if (type === 'fromMe' || isPrivateAndNotNoteToSelf) {
       return {
-        token: 'disappearingMessagesSet',
-        args: {
-          name,
-          time,
-          disappearing_messages_type,
-        },
+        token: 'disappearingMessagesTurnedOffYou',
       };
-
-    case 'fromMe':
-    case 'fromSync':
-      if (disabled) {
-        return ownSideOnly
-          ? { token: 'disappearingMessagesTurnedOffYou' }
-          : {
-              token: 'disappearingMessagesTurnedOff',
-              args: {
-                name,
-              },
-            };
-      }
-
-      return {
-        token: 'disappearingMessagesSetYou',
-        args: {
-          time,
-          disappearing_messages_type,
-        },
-      };
-
-    default:
-      assertUnreachable(type, `TimerNotification: Missing case error "${type}"`);
+    }
+    return {
+      token: 'disappearingMessagesTurnedOff',
+      args: {
+        name,
+      },
+    };
   }
-  throw new Error('unhandled case');
+
+  return {
+    token: 'disappearingMessagesSetYou',
+    args: {
+      time,
+      disappearing_messages_type,
+    },
+  };
 }
 
 export const TimerNotification = (props: PropsForExpirationTimer) => {
