@@ -308,7 +308,7 @@ sys.stdout.write("\n")
 # Print the result statistics and file paths (linkable)
 
 if args.print_not_found:
-  [print(key) for key in not_found_keys]
+  [print(key) for key in sorted(not_found_keys)]
 
 
 def find_key_lazy(key):
