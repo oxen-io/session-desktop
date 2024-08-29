@@ -1,21 +1,13 @@
 import styled from 'styled-components';
-import { Fragment } from 'react';
-import {
+import type {
   ArgsRecord,
   GetMessageArgs,
   I18nProps,
   LocalizerDictionary,
   LocalizerToken,
 } from '../../types/Localizer';
-
 import { useIsDarkTheme } from '../../state/selectors/theme';
 import { SessionHtmlRenderer } from './SessionHTMLRenderer';
-import {
-  type CustomTag,
-  CustomTagProps,
-  SessionCustomTagRenderer,
-  supportedCustomTags,
-} from './SessionCustomTagRenderer';
 
 /** An array of supported html tags to render if found in a string */
 export const supportedFormattingTags = ['b', 'i', 'u', 's', 'br', 'span'];
@@ -27,10 +19,6 @@ function createSupportedFormattingTagsRegex() {
     `<(?:${supportedFormattingTags.join('|')})>.*?</(?:${supportedFormattingTags.join('|')})>|<(?:${supportedSelfClosingFormattingTags.join('|')})\\/>`,
     'g'
   );
-}
-
-function createSupportedCustomTagsRegex() {
-  return new RegExp(`<(${supportedCustomTags.join('|')})/>`, 'g');
 }
 
 /**
@@ -121,64 +109,17 @@ export const I18n = <T extends LocalizerToken>(props: I18nProps<T>) => {
   const containsFormattingTags = createSupportedFormattingTagsRegex().test(rawString);
   const cleanArgs = args && containsFormattingTags ? sanitizeArgs(args) : args;
 
-  let i18nString = window.i18n.formatMessageWithArgs<T, LocalizerDictionary[T]>(
+  const i18nString = window.i18n.formatMessageWithArgs(
     rawString as LocalizerDictionary[T],
     cleanArgs as ArgsRecord<T>
-  ) as string;
-
-  let startTag: CustomTag | null = null;
-  let endTag: CustomTag | null = null;
-
-  i18nString = i18nString.replace(
-    createSupportedCustomTagsRegex(),
-    /**
-     * @param match - The entire match, including the custom tag.
-     * @param group - The custom tag, without the angle brackets.
-     * @param index - The index of the match in the string.
-     */
-    (match: string, group: CustomTag, index: number) => {
-      if (index === 0) {
-        startTag = group;
-      } else if (index === i18nString.length - match.length) {
-        endTag = group;
-      } else {
-        /**
-         * If the match is not at the start or end of the string, throw an error.
-         * NOTE: This should never happen as this rule is enforced when the dictionary is generated.
-         */
-        throw new Error(
-          `Custom tag ${group} (${match}) is not at the start or end (i=${index}) of the string: ${i18nString}`
-        );
-      }
-
-      return '';
-    }
   );
 
-  const content = containsFormattingTags ? (
+  return containsFormattingTags ? (
     /** If the string contains a relevant formatting tag, render it as HTML */
     <StyledHtmlRenderer isDarkTheme={isDarkMode}>
       <SessionHtmlRenderer tag={props.asTag} html={i18nString} className={props.className} />
     </StyledHtmlRenderer>
   ) : (
     i18nString
-  );
-
-  return (
-    <Fragment>
-      {startTag ? (
-        <SessionCustomTagRenderer
-          tag={startTag}
-          tagProps={props.startTagProps as CustomTagProps<typeof startTag>}
-        />
-      ) : null}
-      {content}
-      {endTag ? (
-        <SessionCustomTagRenderer
-          tag={endTag}
-          tagProps={props.endTagProps as CustomTagProps<typeof endTag>}
-        />
-      ) : null}
-    </Fragment>
   );
 };

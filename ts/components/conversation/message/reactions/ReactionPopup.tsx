@@ -4,9 +4,12 @@ import { findAndFormatContact } from '../../../../models/message';
 import { PubKey } from '../../../../session/types/PubKey';
 
 import { I18n } from '../../../basic/I18n';
+import { nativeEmojiData } from '../../../../util/emoji';
+import { I18nProps, LocalizerToken } from '../../../../types/Localizer';
 
 export type TipPosition = 'center' | 'left' | 'right';
 
+// TODO: Look into adjusting the width to match the new strings better
 export const POPUP_WIDTH = 216; // px
 
 export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>`
@@ -52,6 +55,11 @@ export const StyledPopupContainer = styled.div<{ tooltipPosition: TipPosition }>
   }
 `;
 
+const StyledEmoji = styled.span`
+  font-size: 36px;
+  margin-block-start: 8px;
+`;
+
 const generateContactsString = (
   senders: Array<string>
 ): { contacts: Array<string>; numberOfReactors: number; hasMe: boolean } => {
@@ -72,46 +80,31 @@ const generateContactsString = (
   return { contacts, hasMe, numberOfReactors };
 };
 
-const getI18nComponent = (
+const getI18nComponentProps = (
   isYou: boolean,
   contacts: Array<string>,
   numberOfReactors: number,
-  emoji: string
-) => {
+  emoji: string,
+  emojiName?: string
+): I18nProps<LocalizerToken> => {
   const name = contacts[0];
   const other_name = contacts[1];
+  const emoji_name = emojiName ? `:${emojiName}:` : emoji;
+  const count = numberOfReactors - 1;
 
   switch (numberOfReactors) {
     case 1:
-      return isYou ? (
-        <I18n token="emojiReactsHoverYouNameDesktop" endTagProps={{ emoji }} />
-      ) : (
-        <I18n token="emojiReactsHoverNameDesktop" args={{ name }} endTagProps={{ emoji }} />
-      );
+      return isYou
+        ? { token: 'emojiReactsHoverYouNameDesktop', args: { emoji_name } }
+        : { token: 'emojiReactsHoverNameDesktop', args: { name, emoji_name } };
     case 2:
-      return isYou ? (
-        <I18n token="emojiReactsHoverYouNameTwoDesktop" args={{ name }} endTagProps={{ emoji }} />
-      ) : (
-        <I18n
-          token="emojiReactsHoverNameTwoDesktop"
-          args={{ name, other_name }}
-          endTagProps={{ emoji }}
-        />
-      );
+      return isYou
+        ? { token: 'emojiReactsHoverYouNameTwoDesktop', args: { name, emoji_name } }
+        : { token: 'emojiReactsHoverNameTwoDesktop', args: { name, other_name, emoji_name } };
     default:
-      return isYou ? (
-        <I18n
-          token="emojiReactsHoverYouNameMultipleDesktop"
-          args={{ name, count: numberOfReactors - 1 }}
-          endTagProps={{ emoji }}
-        />
-      ) : (
-        <I18n
-          token="emojiReactsHoverTwoNameMultipleDesktop"
-          args={{ name, count: numberOfReactors - 1 }}
-          endTagProps={{ emoji }}
-        />
-      );
+      return isYou
+        ? { token: 'emojiReactsHoverYouNameMultipleDesktop', args: { count, emoji_name } }
+        : { token: 'emojiReactsHoverTwoNameMultipleDesktop', args: { name, count, emoji_name } };
   }
 };
 
@@ -127,19 +120,30 @@ type Props = {
 export const ReactionPopup = (props: Props) => {
   const { emoji, senders, tooltipPosition = 'center', onClick } = props;
 
+  const { emojiName, emojiAriaLabel } = useMemo(
+    () => ({
+      emojiName: nativeEmojiData?.ids?.[emoji],
+      emojiAriaLabel: nativeEmojiData?.ariaLabels?.[emoji],
+    }),
+    [emoji]
+  );
+
   const { contacts, hasMe, numberOfReactors } = useMemo(
     () => generateContactsString(senders),
     [senders]
   );
 
-  const content = useMemo(
-    () => getI18nComponent(hasMe, contacts, numberOfReactors, emoji),
-    [hasMe, contacts, numberOfReactors, emoji]
+  const i18nProps = useMemo(
+    () => getI18nComponentProps(hasMe, contacts, numberOfReactors, emoji, emojiName),
+    [hasMe, contacts, numberOfReactors, emoji, emojiName]
   );
 
   return (
     <StyledPopupContainer tooltipPosition={tooltipPosition} onClick={onClick}>
-      {content}
+      <I18n {...i18nProps} />
+      <StyledEmoji role={'img'} aria-label={emojiAriaLabel}>
+        {emoji}
+      </StyledEmoji>
     </StyledPopupContainer>
   );
 };

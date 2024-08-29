@@ -51,6 +51,7 @@ export let i18nEmojiData: typeof I18n | null = null;
 
 export async function initialiseEmojiData(data: any): Promise<void> {
   const ariaLabels: Record<string, string> = {};
+  const ids: Record<string, string> = {};
   Object.entries(data.emojis).forEach(([key, value]: [string, any]) => {
     value.search = `,${[
       [value.id, false],
@@ -74,12 +75,14 @@ export async function initialiseEmojiData(data: any): Promise<void> {
 
     (value as FixedBaseEmoji).skins.forEach(skin => {
       ariaLabels[skin.native] = value.name;
+      ids[skin.native] = value.id;
     });
 
     data.emojis[key] = value;
   });
 
   data.ariaLabels = ariaLabels;
+  data.ids = ids;
   nativeEmojiData = data;
 
   i18nEmojiData = await loadEmojiPanelI18n();

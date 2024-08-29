@@ -41,6 +41,7 @@ export interface FixedBaseEmoji extends Emoji {
 
 export interface NativeEmojiData extends EmojiMartData {
   ariaLabels?: Record<string, string>;
+  ids?: Record<string, string>;
 }
 
 export enum Action {
