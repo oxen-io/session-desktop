@@ -26,6 +26,8 @@ function getFakeSleepForJobPersisted(timestamp: number): FakeSleepJobData {
   return getFakeSleepForJob(timestamp).serializeJob();
 }
 
+const multiJobSleepDuration = 5000;
+
 function getFakeSleepForMultiJob({
   timestamp,
   identifier,
@@ -41,7 +43,7 @@ function getFakeSleepForMultiJob({
     nextAttemptTimestamp: timestamp || 3000,
     currentRetry: 0,
     returnResult: isUndefined(returnResult) ? true : returnResult,
-    sleepDuration: 5000,
+    sleepDuration: multiJobSleepDuration,
   });
   return job;
 }
@@ -388,7 +390,7 @@ describe('JobRunner', () => {
 
     it('does await if there are jobs and one is started', async () => {
       await runnerMulti.loadJobsFromDb();
-      const job = getFakeSleepForMultiJob({ timestamp: 100, returnResult: false }); // this job keeps failing
+      const job = getFakeSleepForMultiJob({ timestamp: 100, returnResult: false }); // this job keeps failing, on purpose
       runnerMulti.startProcessing();
       clock.tick(110);
       // job should be started right away
@@ -396,27 +398,28 @@ describe('JobRunner', () => {
       expect(runnerMulti.getJobList()).to.deep.eq([job.serializeJob()]);
 
       expect(result).to.eq('job_started');
-      clock.tick(5010);
+      // the job takes 5 fake seconds, tick a bit less than that and then wait for it to finish
+      clock.tick(multiJobSleepDuration - 100);
       await runnerMulti.waitCurrentJob();
       const jobUpdated = {
         ...job.serializeJob(),
-        nextAttemptTimestamp: clock.now + 10000,
+        nextAttemptTimestamp: clock.now + job.persistedData.delayBetweenRetries,
         currentRetry: 1,
       };
-      // just give  time for the runnerMulti to pick up a new job
-      await sleepFor(100);
+      // just give time for the runnerMulti to sort out the job finishing
+      await sleepFor(10);
 
-      // the job failed, so the job should still be there
+      // the job failed, so the job should still be there with a currentRetry of 1
       expect(runnerMulti.getJobList()).to.deep.eq([jobUpdated]);
 
-      // that job should be retried now
-      clock.tick(11000);
-      await runner.waitCurrentJob();
+      // job should have been rescheduled after 10s, so if we tick 10000 + 4900ms, we should have that job about to be done again
+      clock.tick(job.persistedData.delayBetweenRetries + multiJobSleepDuration - 100);
       await runnerMulti.waitCurrentJob();
+      await sleepFor(10);
 
       const jobUpdated2 = {
         ...job.serializeJob(),
-        nextAttemptTimestamp: clock.now + job.persistedData.delayBetweenRetries,
+        nextAttemptTimestamp: clock.now + job.persistedData.delayBetweenRetries - 20, // the 20 is for the sleepFor we had earlier
         currentRetry: 2,
       };
 
@@ -425,11 +428,9 @@ describe('JobRunner', () => {
       expect(runnerMulti.getJobList()).to.deep.eq([jobUpdated2]);
 
       // that job should be retried one more time and then removed from the list of jobs to be run
-      clock.tick(11000);
+      clock.tick(job.persistedData.delayBetweenRetries + multiJobSleepDuration - 100);
       await runnerMulti.waitCurrentJob();
       await sleepFor(10);
-
-      await runnerMulti.waitCurrentJob();
       expect(runnerMulti.getJobList()).to.deep.eq([]);
     });
   });
