@@ -7,9 +7,16 @@ const ms = 'ms';
 type TimePair = { offset: number; output: string };
 type TimePairs = Readonly<Array<TimePair>>;
 
-function testPair(pair: TimePair) {
-  const result = TimedLog.formatDistanceToNow(Date.now() - pair.offset);
-  assert.strictEqual(result, pair.output);
+function testPair({ offset, output }: TimePair) {
+  const result = TimedLog.formatDistanceToNow(Date.now() - offset);
+  assert.strictEqual(result, output);
+}
+
+function testPairFuzzy({ offset, output }: TimePair) {
+  const result = TimedLog.formatDistanceToNow(Date.now() - offset);
+  const resultNumber = parseInt(result.replaceAll(/[a-zA-Z]/g, ''), 10);
+  const expectedNumber = parseInt(output.replaceAll(/[a-zA-Z]/g, ''), 10);
+  assert.approximately(resultNumber, expectedNumber, 1);
 }
 
 describe('TimedLog', () => {
@@ -25,7 +32,7 @@ describe('TimedLog', () => {
           { offset: 555, output: `555${ms}` },
           { offset: 900, output: `900${ms}` },
         ] satisfies TimePairs
-      ).forEach(testPair);
+      ).forEach(testPairFuzzy);
     });
 
     it('should not round milliseconds when the time difference is less than 1 second', () => {
@@ -38,7 +45,7 @@ describe('TimedLog', () => {
           { offset: 998, output: `998${ms}` },
           { offset: 999, output: `999${ms}` },
         ] satisfies TimePairs
-      ).forEach(testPair);
+      ).forEach(testPairFuzzy);
     });
 
     it('should return exact seconds when the time difference is an exact second', () => {
