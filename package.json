@@ -36,7 +36,7 @@
     "start-prod": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron .",
     "start-prod:pretty": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron . | npx bunyan",
     "start-dev": "cross-env NODE_ENV=development NODE_APP_INSTANCE=devprod$MULTI electron .",
-    "build-everything": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && python3 ./tools/localization/generateLocalizedStringsAnalysis.py && yarn build:locales-soft && tsc && yarn build:workers",
+    "build-everything": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales-soft && tsc && yarn build:workers",
     "build-everything:soft": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales-soft && tsc && yarn build:workers",
     "build-everything:watch": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales-soft && yarn build:workers && yarn tsc -w",
     "start-dev:pretty": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron . | npx bunyan",
