@@ -25,13 +25,13 @@ export const AttachmentInfo = (props: Props) => {
       />
       <StyledLabelContainer container={true} flexDirection="row" flexWrap="wrap">
         <LabelWithInfo
-          label={`${window.i18n('attachmentsFileType')}:`}
+          label={window.i18n('attachmentsFileType')}
           info={
             attachment?.contentType ? String(attachment.contentType) : window.i18n('attachmentsNa')
           }
         />
         <LabelWithInfo
-          label={`${window.i18n('attachmentsFileSize')}`}
+          label={window.i18n('attachmentsFileSize')}
           info={attachment?.fileSize ? String(attachment.fileSize) : window.i18n('attachmentsNa')}
         />
         <LabelWithInfo
@@ -43,7 +43,7 @@ export const AttachmentInfo = (props: Props) => {
           }
         />
         <LabelWithInfo
-          label={`${window.i18n('attachmentsDuration')}:`}
+          label={window.i18n('attachmentsDuration')}
           info={attachment?.duration ? attachment?.duration : window.i18n('attachmentsNa')}
         />
       </StyledLabelContainer>
