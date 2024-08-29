@@ -111,7 +111,7 @@ console.info("Scanning for localized strings...")
 files_to_ignore = ["./ts/localization/locales.ts"]
 ignore_patterns = [re.compile(re.escape(pattern)) for pattern in files_to_ignore]
 
-console.debug(f"Ignoring files: {", ".join(files_to_ignore)}")
+console.debug(f"Ignoring files: {', '.join(files_to_ignore)}")
 
 
 def should_ignore_file(path):
