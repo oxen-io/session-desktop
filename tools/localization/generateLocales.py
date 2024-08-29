@@ -136,9 +136,19 @@ if problems:
     console.warn(message)
 
 if found_old_dynamic_variables:
-    console.warn(
-        f"Old dynamic variables were found in the locales. Please update the locales to use the new dynamic variables. {f"See above for details{' (before the problems table).'if args.print_problems else '.'}" if args.print_old_dynamic_variables else 'Run the script with --print-old-dynamic-variables to see the old dynamic variables.'}"
-    )
+    warning_message = (
+    "Old dynamic variables were found in the locales. Please update the locales to use the new dynamic variables. "
+)
+    if args.print_old_dynamic_variables:
+        if args.print_problems:
+            warning_message += "See above for details (before the problems table)."
+        else:
+            warning_message += "See above for details."
+    else:
+        warning_message += "Run the script with --print-old-dynamic-variables to see the old dynamic variables."
+    console.warn(warning_message)
+
+
 
 console.debug("Locales generation complete")
 
