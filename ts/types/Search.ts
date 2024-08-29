@@ -1,6 +1,6 @@
 export type SearchOptions = {
   ourNumber: string;
-  noteToSelf: string;
+  noteToSelf: Array<string>;
   savedMessages: string;
 };
 
