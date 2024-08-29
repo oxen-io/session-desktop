@@ -43,7 +43,7 @@ def find_token_uses(token, root_dir="./ts/", exclude_files=EXCLUDE_FILES):
         for file in files:
             if file.endswith((".tsx", ".ts")) and file not in exclude_files:
                 file_path = os.path.join(root, file)
-                with open(file_path, "r") as f:
+                with open(file_path, "r", encoding='utf-8') as f:
                     for line_no, line in enumerate(f, start=1):
                         if regex.search(line):
                             matches.append(f"{file_path}:{line_no}")

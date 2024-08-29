@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 def parse_json(file_path):
     if not os.path.exists(file_path):
         return None
-    with open(file_path) as file:
+    with open(file_path, encoding='utf-8') as file:
         data = json.load(file)
     return data
 
@@ -29,7 +29,7 @@ def parse_strings(file_path):
     if not os.path.exists(file_path):
         return None
     data = {}
-    with open(file_path) as file:
+    with open(file_path, encoding='utf-8') as file:
         for line in file:
             if "=" in line:
                 key, value = line.strip().split("=")

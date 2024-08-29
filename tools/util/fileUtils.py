@@ -74,7 +74,7 @@ def writeFile(filePath, data):
       data (str): The data to write to the file.
     """
     makeDirIfNotExists(filePath)
-    with open(filePath, "w") as file:
+    with open(filePath, "w", encoding='utf-8') as file:
         file.write(data)
 
 

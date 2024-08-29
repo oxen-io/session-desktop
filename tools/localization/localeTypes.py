@@ -64,7 +64,7 @@ def generateLocalesType(locale):
       locale: The locale dictionary containing the localization data.
     """
     # write the locale_dict to a file
-    with open(OUTPUT_FILE, "w") as ts_file:
+    with open(OUTPUT_FILE, "w", encoding='utf-8') as ts_file:
         ts_file.write(
             f"{DISCLAIMER}"
             f"export const en = {generate_js_object(locale)} as const;\nexport type Dictionary = typeof en;"
