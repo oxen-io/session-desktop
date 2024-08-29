@@ -2,7 +2,7 @@
   "name": "session-desktop",
   "productName": "Session",
   "description": "Private messaging from your desktop",
-  "version": "1.13.1",
+  "version": "1.13.3",
   "license": "GPL-3.0",
   "author": {
     "name": "Oxen Labs",
@@ -36,7 +36,7 @@
     "start-prod": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron .",
     "start-prod:pretty": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron . | npx bunyan",
     "start-dev": "cross-env NODE_ENV=development NODE_APP_INSTANCE=devprod$MULTI electron .",
-    "build-everything": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales && tsc && yarn build:workers",
+    "build-everything": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && python3 ./tools/localization/generateLocalizedStringsAnalysis.py --print-not-found --delete-unused-keys && yarn build:locales-soft && tsc && yarn build:workers",
     "build-everything:soft": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales-soft && tsc && yarn build:workers",
     "build-everything:watch": "yarn clean && yarn protobuf && yarn update-git-info && yarn sass && yarn build:locales-soft && yarn build:workers && yarn tsc -w",
     "start-dev:pretty": "cross-env NODE_ENV=production NODE_APP_INSTANCE=devprod$MULTI electron . | npx bunyan",
