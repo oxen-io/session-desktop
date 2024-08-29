@@ -221,8 +221,9 @@ def process_keys():
     for_loop_iterations["keys"] = 0
     for_loop_iterations["files"] = 0
     for_loop_iterations["lines"] = 0
-  for i in range(number_of_keys):
-    key = key_list[i]
+  i = -1
+  for key in key_list:
+    i = i + 1
     regex_list = localization_regex_as_list(key)
 
     progress_bar(
