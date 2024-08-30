@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash';
 import { Component } from 'react';
 import { ToastUtils } from '../../session/utils';
 import { sessionPassword } from '../../state/ducks/modalDialog';
-import { LocalizerToken } from '../../types/Localizer';
 import type { PasswordAction } from '../../types/ReduxTypes';
 import { assertUnreachable } from '../../types/sqlSharedTypes';
 import { matchesHash, validatePassword } from '../../util/passwordUtils';
@@ -67,7 +66,7 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
         ];
         break;
       case 'remove':
-        placeholders = [window.i18n('passwordCreate')];
+        placeholders = [window.i18n('passwordRemove')];
         break;
       case 'enter':
         placeholders = [window.i18n('passwordCreate')];
@@ -78,18 +77,22 @@ export class SessionSetPasswordDialog extends Component<Props, State> {
 
     const confirmButtonText =
       passwordAction === 'remove' ? window.i18n('remove') : window.i18n('done');
-    // do this separately so typescript's compiler likes it
-    const localizedKeyAction: LocalizerToken =
-      passwordAction === 'change'
-        ? 'passwordChange'
-        : passwordAction === 'remove'
-          ? 'passwordRemove'
-          : passwordAction === 'enter'
-            ? 'passwordEnter'
-            : 'passwordSet';
+
+    const titleString = () => {
+      switch (passwordAction) {
+        case 'change':
+          return window.i18n('passwordChange');
+        case 'remove':
+          return window.i18n('passwordRemove');
+        case 'enter':
+          return window.i18n('passwordEnter');
+        default:
+          return window.i18n('passwordSet');
+      }
+    };
 
     return (
-      <SessionWrapperModal title={window.i18n(localizedKeyAction)} onClose={this.closeDialog}>
+      <SessionWrapperModal title={titleString()} onClose={this.closeDialog}>
         <SpacerSM />
 
         <div className="session-modal__input-group">
