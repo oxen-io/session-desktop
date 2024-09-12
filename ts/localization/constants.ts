@@ -5,4 +5,5 @@ export enum LOCALE_DEFAULTS {
   oxen_foundation = 'Oxen Foundation',
 }
 
-export const rtlLocales = ['ar', 'fa', 'he', 'ps', 'ur'] ;
+export const rtlLocales = ['ar', 'fa', 'he', 'ps', 'ur'];
+
