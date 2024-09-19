@@ -25,7 +25,12 @@ from util.fileUtils import createMappedJsonFileDictionary, writeFile
 ignored_strings_formatting = {
   "pl": [
     # disappearingMessagesTurnedOffYouGroup in pl only has one bold word as the word combines both bold words
-    "disappearingMessagesTurnedOffYouGroup"]
+    "disappearingMessagesTurnedOffYouGroup"],
+    "ru": [
+      # disappearingMessagesTurnedOffGroup in ru only has one bold word as the word combines both bold words
+      "disappearingMessagesTurnedOffGroup"
+    ]
+
 }
 
 # If the --throw-error-on-missing flag is passed, the script will exit with an error if there are any missing keys or dynamic variables
