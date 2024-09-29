@@ -17,7 +17,7 @@ from dynamicVariables import (
   prettyPrintIssuesTable,
   identifyAndPrintOldDynamicVariables, extractFormattingTags,
 )
-from localization.localeTypes import generateLocalesType
+from localization.localeTypes import generateLocalesType, generateLocalesMergedType
 from util.logger import console
 from util.fileUtils import createMappedJsonFileDictionary, writeFile
 
@@ -116,7 +116,7 @@ if args.en_only:
 
 # Generate the locales type and write it to a file
 if GENERATE_TYPES:
-  generateTypesOutputMessage = generateLocalesType(locales["en"])
+  generateTypesOutputMessage = generateLocalesMergedType(locales)
   console.info(generateTypesOutputMessage)
 
 localeVariables = dict()
