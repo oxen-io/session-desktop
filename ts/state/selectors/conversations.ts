@@ -302,7 +302,9 @@ const _getContacts = (
   });
 };
 
-const _getGlobalUnreadCount = (sortedConversations: Array<ReduxConversationType>): number => {
+export const _getGlobalUnreadCount = (
+  sortedConversations: Array<ReduxConversationType>
+): number => {
   let globalUnreadCount = 0;
   for (const conversation of sortedConversations) {
     // Blocked conversation are now only visible from the settings, not in the conversation list, so don't add it neither to the contacts list nor the conversation list

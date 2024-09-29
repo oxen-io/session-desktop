@@ -10,6 +10,7 @@ import {
   dialog,
   protocol as electronProtocol,
   ipcMain as ipc,
+  ipcMain,
   IpcMainEvent,
   Menu,
   nativeTheme,
@@ -1016,6 +1017,16 @@ ipc.on('get-start-in-tray', event => {
     event.sender.send('get-start-in-tray-response', val);
   } catch (e) {
     event.sender.send('get-start-in-tray-response', false);
+  }
+});
+
+ipcMain.on('update-badge-count', (_event, count) => {
+  if (app.isReady()) {
+    if (count === 0) {
+      app.setBadgeCount(0); // Clear the badge
+    } else {
+      app.setBadgeCount(count); // Set the badge count
+    }
   }
 });
 

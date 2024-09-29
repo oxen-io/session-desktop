@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
@@ -37,18 +38,18 @@ import { LeftPaneSectionContainer } from './LeftPaneSectionContainer';
 
 import { SettingsKey } from '../../data/settings-key';
 import { useFetchLatestReleaseFromFileServer } from '../../hooks/useFetchLatestReleaseFromFileServer';
+import { useHotkey } from '../../hooks/useHotkey';
 import {
   forceRefreshRandomSnodePool,
   getFreshSwarmFor,
 } from '../../session/apis/snode_api/snodePool';
 import { ConfigurationSync } from '../../session/utils/job_runners/jobs/ConfigurationSyncJob';
+import { getIsModalVisble } from '../../state/selectors/modal';
 import { useIsDarkTheme } from '../../state/selectors/theme';
 import { switchThemeTo } from '../../themes/switchTheme';
 import { ReleasedFeatures } from '../../util/releaseFeature';
 import { getOppositeTheme } from '../../util/theme';
 import { SessionNotificationCount } from '../icon/SessionNotificationCount';
-import { useHotkey } from '../../hooks/useHotkey';
-import { getIsModalVisble } from '../../state/selectors/modal';
 
 const Section = (props: { type: SectionType }) => {
   const ourNumber = useSelector(getOurNumber);
@@ -237,6 +238,16 @@ export const ActionsPanel = () => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  const globalUnreadMessageCount = useSelector(getGlobalUnreadMessageCount);
+  const unreadToShow = globalUnreadMessageCount;
+
+  // Reuse the unreadToShow from the global state to update the badge count
+  useEffect(() => {
+    if (unreadToShow !== undefined) {
+      ipcRenderer.send('update-badge-count', unreadToShow);
+    }
+  }, [unreadToShow]);
 
   useInterval(cleanUpOldDecryptedMedias, startCleanUpMedia ? cleanUpMediasInterval : null);
 
