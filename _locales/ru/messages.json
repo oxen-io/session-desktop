@@ -494,7 +494,7 @@
   "lockAppUnlocked": "Приложение {app_name} разблокировано",
   "max": "Максимальный",
   "media": "Медиа",
-  "members": "{count, plural, one [# участник] few [# участника] many [# участников] other [# участников]}",
+  "members": "{count, plural, one [# Участник] few [# участника] many [# участников] other [# участников]}",
   "membersActive": "{count, plural, one [# активный участник] few [# активных участника] many [# активных участников] other [# активных участников]}",
   "membersAddAccountIdOrOns": "Добавить Account ID или ONS",
   "membersInvite": "Пригласить друзей в Session",
