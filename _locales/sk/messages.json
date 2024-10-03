@@ -142,6 +142,7 @@
   "callsInProgress": "Prebiehajúci hovor",
   "callsIncoming": "Prichádzajúci hovor od {name}",
   "callsIncomingUnknown": "Prichádzajúci hovor",
+  "callsMicrophonePermissionsRequired": "Zmeškali ste hovor od <b>{name}</b>, pretože ste neudelili <b>prístup k mikrofónu</b>.",
   "callsMissed": "Zmeškaný hovor",
   "callsMissedCallFrom": "Zmeškaný hovor od {name}",
   "callsNotificationsRequired": "Hlasové a video hovory vyžadujú povolenie upozornení v systémových nastaveniach vášho zariadenia.",

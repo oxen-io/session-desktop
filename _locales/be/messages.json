@@ -694,7 +694,7 @@
   "recoveryPasswordErrorMessageIncorrect": "Некаторыя з слоў у вашым Recovery password няправільныя. Калі ласка, праверце і паспрабуйце яшчэ раз.",
   "recoveryPasswordErrorMessageShort": "The Recovery Password you entered is not long enough. Please check and try again.",
   "recoveryPasswordErrorTitle": "Няправільны Recovery Password",
-  "recoveryPasswordExplanation": "Для загрузкі вашага акаўнта ўвядзіце ваш Recovery Password.",
+  "recoveryPasswordExplanation": "Для загрузкі вашага ўліковага запісу ўвядзіце Recovery Password.",
   "recoveryPasswordHidePermanently": "Схаваць Recovery Password назусім",
   "recoveryPasswordHidePermanentlyDescription1": "Без вашага Recovery password вы не зможаце загрузіць свой уліковы запіс на новыя прылады. <br/><br/>Мы настойліва рэкамендуем захаваць ваш Recovery password у надзейным і бяспечным месцы перад прадаўжэннем.",
   "recoveryPasswordHidePermanentlyDescription2": "Вы ўпэўненыя, што жадаеце пастаянна схаваць ваш канчатковы пароль аднаўлення на гэтай прыладзе? Гэта немагчыма адмяніць.",
