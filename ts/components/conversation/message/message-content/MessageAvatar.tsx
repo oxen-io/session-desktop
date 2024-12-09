@@ -56,6 +56,7 @@ export const MessageAvatar = (props: Props) => {
   const isSenderAdmin = useMessageSenderIsAdmin(messageId);
 
   const userName = authorName || authorProfileName || sender;
+  const convoWithSender = getConversationController().get(sender);
 
   const onMessageAvatarClick = useCallback(async () => {
     if (!sender) {
@@ -64,7 +65,6 @@ export const MessageAvatar = (props: Props) => {
     if (isPublic && !PubKey.isBlinded(sender)) {
       // public chat but account id not blinded. disable showing user details if we do not have an active convo with that user.
       // an unactive convo with that user means that we never chatted with that id directyly, but only through a sogs
-      const convoWithSender = getConversationController().get(sender);
       if (!convoWithSender || !convoWithSender.get('active_at')) {
         // for some time, we might still get some unblinded messages, as in message sent unblinded because
         //    * older clients still send unblinded message and those are allowed by sogs if they doesn't enforce blinding
@@ -100,6 +100,20 @@ export const MessageAvatar = (props: Props) => {
         );
 
         privateConvoToOpen = foundRealSessionId || privateConvoToOpen;
+
+	if (foundRealSessionId && convoWithSender.get('active_at')) {
+	  // We know this user's real id and have an active conversation with
+	  // him. Go to it.
+	  await getConversationController()
+	    .get(privateConvoToOpen)
+	    .setOriginConversationID(selectedConvoKey);
+
+	  await openConversationWithMessages({ conversationKey: privateConvoToOpen, messageId: null });
+
+	  return;
+	}
+	// Public and blinded key for this message. Fall through to asking if we
+	// should start a conversation, which will send SOGS blinded message request.
       }
 
       await getConversationController()
