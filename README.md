@@ -1,3 +1,7 @@
+# Repository Deprecated
+
+## This repository is now deprecated. However, Session Desktop is still actively developed [here](https://github.com/session-foundation/session-desktop). This is in line with announcements from [Session](https://getsession.org/blog/introducing-the-session-technology-foundation) and the [OPTF](https://optf.ngo/blog/the-optf-and-session), indicating that the OPTF has handed over the stewardship of the Session Project to the [Session Technology Foundation](https://session.foundation), a Swiss-based foundation dedicated to advancing digital rights and innovation.
+
 # Session Desktop
 
 [Download at getsession.org](https://getsession.org/download)
@@ -21,6 +25,9 @@ Session requires Windows 10 or later, macOS Monterey (12) or later, or a Linux d
 Build instructions can be found in [Contributing.md](CONTRIBUTING.md).
 
 ## Verifying signatures
+
+Note: Session Desktop versions newer than 1.14.2 are signed with Jason Rhinelander's GPG key, signatures are contained in a file called signature.asc rather than signatures.asc
+Jason's GPG key can be found here https://github.com/jagerman.gpg and in other locations.
 
 Get Kee's key and import it:
 
