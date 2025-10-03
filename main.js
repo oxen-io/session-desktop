@@ -140,6 +140,7 @@ const loadLocale = require('./app/locale').load;
 // Both of these will be set after app fires the 'ready' event
 let logger;
 let locale;
+let newVarThatVoilatesSonar;
 
 function prepareURL(pathSegments, moreKeys) {
   return url.format({
